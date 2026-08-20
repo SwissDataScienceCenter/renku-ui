@@ -23,8 +23,8 @@ import type {
   RCloneOption,
 } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
-  appWillMount,
-  partitionDataConnectorsForApp,
+  evaluateAppMount,
+  listDataConnectorsForApp,
 } from "./appDataConnectors.utils";
 
 /** A sensitive-field entry, shaped enough for the predicate to count it. */
@@ -66,37 +66,37 @@ function makeDataConnector({
   } as unknown as DataConnectorRead;
 }
 
-describe("appWillMount", () => {
+describe("evaluateAppMount", () => {
   it("mounts a public connector with no secrets and a plain storage type", () => {
-    expect(appWillMount(makeDataConnector())).toBe(true);
+    expect(evaluateAppMount(makeDataConnector())).toEqual({ mounted: true });
   });
 
-  it("skips a private connector", () => {
-    expect(appWillMount(makeDataConnector({ visibility: "private" }))).toBe(
-      false,
-    );
+  it("skips a private connector as not public", () => {
+    expect(
+      evaluateAppMount(makeDataConnector({ visibility: "private" })),
+    ).toEqual({ mounted: false, blocker: "not-public" });
   });
 
   it("skips a public connector that carries static credentials", () => {
     expect(
-      appWillMount(makeDataConnector({ sensitiveFields: [SECRET_FIELD] })),
-    ).toBe(false);
+      evaluateAppMount(makeDataConnector({ sensitiveFields: [SECRET_FIELD] })),
+    ).toEqual({ mounted: false, blocker: "needs-credentials" });
   });
 
   // The load-bearing case, and the reason the OAuth set has to be duplicated at
   // all: an OAuth connector has no static secret fields, so the sensitive-field
   // check alone would wave a user's private Drive through.
   it.each(["drive", "dropbox"])(
-    "skips a public %s connector even with no sensitive fields",
+    "skips a public %s connector as needing an integration",
     (storageType) => {
       expect(
-        appWillMount(
+        evaluateAppMount(
           makeDataConnector({
             configuration: { type: storageType },
             sensitiveFields: [],
           }),
         ),
-      ).toBe(false);
+      ).toEqual({ mounted: false, blocker: "needs-integration" });
     },
   );
 
@@ -106,25 +106,50 @@ describe("appWillMount", () => {
     const connector = makeDataConnector({ configuration: { type: "drive" } });
     connector.storage.storage_type = "doi";
 
-    expect(appWillMount(connector)).toBe(false);
+    expect(evaluateAppMount(connector)).toEqual({
+      mounted: false,
+      blocker: "needs-integration",
+    });
   });
 
-  it("skips a connector whose configuration has no type", () => {
-    expect(appWillMount(makeDataConnector({ configuration: {} }))).toBe(false);
+  // The two fail-closed cases name no cause: the data needed to explain the row
+  // is exactly the data that is missing.
+  it("skips a connector whose configuration has no type without naming a cause", () => {
+    expect(evaluateAppMount(makeDataConnector({ configuration: {} }))).toEqual({
+      mounted: false,
+      blocker: "indeterminate",
+    });
   });
 
-  it("skips a connector with no sensitive-field list at all", () => {
+  it("skips a connector with no sensitive-field list without naming a cause", () => {
     const connector = makeDataConnector();
     // Fail-closed: an absent list is unknown, not empty.
     delete (connector.storage as { sensitive_fields?: unknown })
       .sensitive_fields;
 
-    expect(appWillMount(connector)).toBe(false);
+    expect(evaluateAppMount(connector)).toEqual({
+      mounted: false,
+      blocker: "indeterminate",
+    });
+  });
+
+  // The blocker is the first condition tripped, matching the backend's check
+  // order, so a row never has to present two causes at once.
+  it("reports only the first blocker when a connector trips several", () => {
+    expect(
+      evaluateAppMount(
+        makeDataConnector({
+          configuration: { type: "drive" },
+          sensitiveFields: [SECRET_FIELD],
+          visibility: "private",
+        }),
+      ),
+    ).toEqual({ mounted: false, blocker: "not-public" });
   });
 });
 
-describe("partitionDataConnectorsForApp", () => {
-  it("splits connectors while preserving their order in each half", () => {
+describe("listDataConnectorsForApp", () => {
+  it("keeps every connector, mounted ones first, order preserved within each group", () => {
     const publicS3 = makeDataConnector({ name: "public-s3" });
     const privateS3 = makeDataConnector({
       name: "private-s3",
@@ -139,27 +164,44 @@ describe("partitionDataConnectorsForApp", () => {
       name: "public-azure",
     });
 
-    const { mounted, skipped } = partitionDataConnectorsForApp([
+    const listed = listDataConnectorsForApp([
       publicS3,
       privateS3,
       publicDrive,
       publicAzure,
     ]);
 
-    expect(mounted.map(({ name }) => name)).toEqual([
-      "public-s3",
-      "public-azure",
-    ]);
-    expect(skipped.map(({ name }) => name)).toEqual([
-      "private-s3",
-      "public-drive",
+    expect(
+      listed.map(({ dataConnector, mountState }) => [
+        dataConnector.name,
+        mountState,
+      ]),
+    ).toEqual([
+      ["public-s3", { mounted: true }],
+      ["public-azure", { mounted: true }],
+      ["private-s3", { mounted: false, blocker: "not-public" }],
+      ["public-drive", { mounted: false, blocker: "needs-integration" }],
     ]);
   });
 
-  it("returns two empty halves for a project with no connectors", () => {
-    expect(partitionDataConnectorsForApp([])).toEqual({
-      mounted: [],
-      skipped: [],
-    });
+  // Every row carries a state, so the panel never has to treat a missing one as
+  // "mounted" — that is what distinguishes an app's list from a session's.
+  it("gives every connector a mount state, including when none qualify", () => {
+    const listed = listDataConnectorsForApp([
+      makeDataConnector({ name: "private-s3", visibility: "private" }),
+      makeDataConnector({
+        name: "with-secret",
+        sensitiveFields: [SECRET_FIELD],
+      }),
+    ]);
+
+    expect(listed.map(({ mountState }) => mountState)).toEqual([
+      { mounted: false, blocker: "not-public" },
+      { mounted: false, blocker: "needs-credentials" },
+    ]);
+  });
+
+  it("returns an empty list for a project with no connectors", () => {
+    expect(listDataConnectorsForApp([])).toEqual([]);
   });
 });

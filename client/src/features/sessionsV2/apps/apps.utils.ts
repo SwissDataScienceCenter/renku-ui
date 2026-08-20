@@ -57,43 +57,36 @@ export function hasAppOnAnotherLauncher(
 }
 
 /**
- * The state shown by the app status indicator next to a launcher's primary
- * action. This is the user-facing collapse of the backend AppStatus (`pending |
- * ready | failed`) plus the "no deployment yet" case:
- *   - not-running — no deployment exists for this launcher
- *   - starting    — a deployment is being created or is still pending
- *   - live        — the app is up and reachable
- *   - error       — the deployment failed
- *
- * Note that "live" only means a deployment exists and Knative reports it Ready.
- * Apps run with min-scale 0, and a scaled-to-zero service still reports Ready,
- * so a live app may still need a cold start before it answers a request.
+ * A start or stop that has not settled yet. Drives the disabled
+ * "Starting"/"Stopping" button in a launcher's primary action slot, so the slot
+ * keeps reporting progress instead of going empty mid-transition.
  */
-export type AppIndicatorState = "not-running" | "starting" | "live" | "error";
+export type AppTransition = "starting" | "stopping";
 
 /**
- * Derive the indicator state from the observed app (or its absence).
+ * Derive the in-flight transition, if any, from the observed app plus the
+ * caller's pending mutations.
  *
- * `isStarting` lets the caller force the "starting" state while a publish
- * mutation is in flight but the deployment has not yet appeared in the /apps
- * response, so the indicator reflects intent immediately rather than briefly
- * showing "not running". Kept as a pure function so the mapping can be
- * unit-tested independently of the React/RTK plumbing.
+ * `isStopping` takes precedence over `isStarting`: a deployment being torn down
+ * still reports `pending` server-side, so the status alone cannot tell the two
+ * apart. A `pending` app with no local mutation is a start triggered elsewhere
+ * (another tab, another user), which still reads as "starting" here. Kept as a
+ * pure function so the mapping can be unit-tested without the RTK plumbing.
  */
-export function getAppIndicatorState(
+export function getAppTransition(
   app: AppResponse | undefined,
-  { isStarting = false }: { isStarting?: boolean } = {},
-): AppIndicatorState {
+  {
+    isStarting = false,
+    isStopping = false,
+  }: { isStarting?: boolean; isStopping?: boolean } = {},
+): AppTransition | null {
+  if (isStopping) {
+    return "stopping";
+  }
   if (isStarting || app?.status === "pending") {
     return "starting";
   }
-  if (app == null) {
-    return "not-running";
-  }
-  if (app.status === "ready") {
-    return "live";
-  }
-  return "error";
+  return null;
 }
 
 /** Whether any app in the list is still `pending` (mid-transition server-side). */

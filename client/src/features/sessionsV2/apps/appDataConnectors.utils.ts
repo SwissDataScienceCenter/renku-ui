@@ -38,7 +38,29 @@ export const APP_OAUTH2_STORAGE_TYPES: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Whether an app would mount this data connector.
+ * The property that stops an app from mounting a connector.
+ *
+ * Carried instead of a bare `false` so each row of the panel can name its own
+ * cause. Without it the panel can only state the rule and leave the reader to
+ * work out which of three conditions a given connector tripped — and the reader
+ * cannot, because two of the three (credentials, integrations) are not visible
+ * anywhere on the row.
+ */
+export type AppMountBlocker =
+  | "not-public"
+  | "needs-credentials"
+  | "needs-integration"
+  | "indeterminate";
+
+/** Whether an app would mount a connector, and if not, what stopped it. */
+export type AppMountState =
+  | { mounted: true }
+  | { mounted: false; blocker: AppMountBlocker };
+
+const MOUNTED: AppMountState = { mounted: true };
+
+/**
+ * Whether an app would mount this data connector, and what blocked it if not.
  *
  * Apps are served to anonymous visitors, so the backend mounts a connector only
  * when it is public, needs no static credentials, and needs no OAuth
@@ -61,50 +83,80 @@ export const APP_OAUTH2_STORAGE_TYPES: ReadonlySet<string> = new Set([
  * Fail-closed, like the backend: anything unexpected (a connector missing its
  * sensitive-field list, a configuration with no type) counts as not mounted, so
  * a gap in the data understates what the app gets rather than overstating it.
+ * Those cases report `indeterminate` rather than guessing at a cause, because a
+ * wrong explanation on the row is worse than none — it sends the reader off to
+ * change a setting that was never the problem.
+ *
+ * The order of the checks is the order of the backend's, so the blocker a
+ * connector reports is the first one it trips rather than every one it trips: a
+ * private S3 bucket with stored keys reports `not-public`, and fixing only that
+ * leaves it reporting `needs-credentials`. That matches how the backend would
+ * answer if asked twice, and it keeps the row to one cause at a time.
  */
-export function appWillMount(dataConnector: DataConnectorRead): boolean {
+export function evaluateAppMount(
+  dataConnector: DataConnectorRead,
+): AppMountState {
   const { storage, visibility } = dataConnector;
 
   if (visibility !== "public") {
-    return false;
+    return { mounted: false, blocker: "not-public" };
   }
   if (storage?.sensitive_fields == null) {
-    return false;
+    return { mounted: false, blocker: "indeterminate" };
   }
   if (storage.sensitive_fields.length > 0) {
-    return false;
+    return { mounted: false, blocker: "needs-credentials" };
   }
 
   const storageType = storage.configuration?.["type"];
   if (typeof storageType !== "string") {
-    return false;
+    return { mounted: false, blocker: "indeterminate" };
   }
-  return !APP_OAUTH2_STORAGE_TYPES.has(storageType);
-}
-
-/** A project's connectors split by whether an app would mount them. */
-export interface PartitionedDataConnectors {
-  mounted: DataConnectorRead[];
-  skipped: DataConnectorRead[];
+  if (APP_OAUTH2_STORAGE_TYPES.has(storageType)) {
+    return { mounted: false, blocker: "needs-integration" };
+  }
+  return MOUNTED;
 }
 
 /**
- * Split a project's linked connectors into the ones an app mounts and the ones
- * it leaves behind.
+ * A connector as the panel lists it.
  *
- * Both halves are needed: the panel lists the first and explains the second,
- * and a project whose connectors all fall into `skipped` needs a different
- * message from one that has no connectors at all.
+ * `mountState` is absent when mounting is unconditional — a session or job
+ * launcher mounts everything linked to the project, so there is no distinction
+ * to draw and the panel says nothing about it. Its presence is what tells the
+ * panel to label the rows, so the labels can never appear where they would be
+ * meaningless.
  */
-export function partitionDataConnectorsForApp(
+export interface DataConnectorListItem {
+  dataConnector: DataConnectorRead;
+  mountState?: AppMountState;
+}
+
+/**
+ * List a project's linked connectors as an app sees them, mounted ones first.
+ *
+ * The panel lists every connector and dims the ones an app leaves behind, rather
+ * than hiding them: a connector that is linked to the project but absent from
+ * the panel reads as a bug or a lost link, whereas a dimmed row says the link is
+ * fine and the app simply cannot use it.
+ *
+ * Mounted-first ordering is safe to impose because the incoming order is the
+ * order the links came back in — nothing the reader is tracking — and it keeps
+ * the dimmed rows out of the way of the list's actual answer.
+ */
+export function listDataConnectorsForApp(
   dataConnectors: DataConnectorRead[],
-): PartitionedDataConnectors {
-  const mounted: DataConnectorRead[] = [];
-  const skipped: DataConnectorRead[] = [];
+): DataConnectorListItem[] {
+  const mounted: DataConnectorListItem[] = [];
+  const skipped: DataConnectorListItem[] = [];
 
   for (const dataConnector of dataConnectors) {
-    (appWillMount(dataConnector) ? mounted : skipped).push(dataConnector);
+    const mountState = evaluateAppMount(dataConnector);
+    (mountState.mounted ? mounted : skipped).push({
+      dataConnector,
+      mountState,
+    });
   }
 
-  return { mounted, skipped };
+  return [...mounted, ...skipped];
 }

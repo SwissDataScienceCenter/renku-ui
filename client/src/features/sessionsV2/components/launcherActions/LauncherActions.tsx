@@ -33,20 +33,6 @@ export function LauncherActions({
 }: LauncherActionsProps) {
   const category = getLauncherCategory(launcher);
 
-  if (category === "app") {
-    return (
-      <AppLauncherActions
-        builds={builds}
-        hasSession={hasSession}
-        lastBuild={lastBuild}
-        launcher={launcher}
-        otherActions={placement === "launcher-card" && otherActions}
-        project={project}
-        displayBuildActions={placement === "launcher-card"}
-      />
-    );
-  }
-
   return category === "session" ? (
     <SessionLauncherActions
       builds={builds}
@@ -57,6 +43,16 @@ export function LauncherActions({
       project={project}
       displayBuildActions={placement === "launcher-card"}
       alwaysShowLaunchAction={placement === "launcher-side-panel"}
+    />
+  ) : category === "app" ? (
+    <AppLauncherActions
+      builds={builds}
+      hasSession={hasSession}
+      lastBuild={lastBuild}
+      launcher={launcher}
+      otherActions={placement === "launcher-card" && otherActions}
+      project={project}
+      displayBuildActions={placement === "launcher-card"}
     />
   ) : (
     <JobLauncherActions

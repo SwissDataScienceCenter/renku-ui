@@ -43,6 +43,7 @@ import {
   ButtonWithMenuV2,
   SingleButtonWithMenu,
 } from "~/components/buttons/Button";
+import { Loader } from "~/components/Loader";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import type { AppStatus } from "~/features/sessionsV2/api/apps.api";
@@ -51,15 +52,16 @@ import {
   usePostAppsMutation,
 } from "~/features/sessionsV2/api/apps.api";
 import { DeleteAppModal } from "~/features/sessionsV2/apps/AppActionModals";
+import AppLiveIndicator from "~/features/sessionsV2/apps/AppLiveIndicator";
+import type { AppTransition } from "~/features/sessionsV2/apps/apps.utils";
 import {
   APP_ALREADY_EXISTS_MESSAGE,
   APP_PUBLIC_PROJECT_ONLY_MESSAGE,
-  getAppIndicatorState,
   getAppLobbyPath,
   getAppLobbyUrl,
+  getAppTransition,
   hasAppOnAnotherLauncher,
 } from "~/features/sessionsV2/apps/apps.utils";
-import AppStatusIndicator from "~/features/sessionsV2/apps/AppStatusIndicator";
 import useAppForLauncher from "~/features/sessionsV2/apps/useAppForLauncher.hook";
 import useWaitForAppStatus from "~/features/sessionsV2/apps/useWaitForAppStatus.hook";
 import {
@@ -183,13 +185,12 @@ export default function AppLauncherActions({
     resetDelete,
   ]);
 
-  // Busy while a mutation is in flight or its transition has not yet settled, so
-  // the button shows progress instead of a stale action the whole time.
-  const isBusy =
-    publishResult.isLoading ||
-    deleteResult.isLoading ||
-    isSpinningUp ||
-    isDeleting;
+  // The transition the primary action should report: a mutation is in flight, or
+  // it returned but the server-side effect has not settled yet.
+  const transition = getAppTransition(app, {
+    isStarting: publishResult.isLoading || isSpinningUp,
+    isStopping: deleteResult.isLoading || isDeleting,
+  });
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const toggleDelete = useCallback(() => setIsDeleteOpen((open) => !open), []);
@@ -232,10 +233,6 @@ export default function AppLauncherActions({
     renkuToastSuccess,
   ]);
 
-  const indicatorState = getAppIndicatorState(app, {
-    isStarting: isSpinningUp || publishResult.isLoading,
-  });
-
   const displayBuildActions =
     displayBuildActionsProp && isCodeEnvironment && write && !app;
   const applyDefaultBuildActions = Boolean(
@@ -244,7 +241,7 @@ export default function AppLauncherActions({
   );
 
   const menuItems = [
-    write && app && (
+    write && app && !transition && (
       <DropdownItem
         key="delete-app"
         className="text-danger"
@@ -275,11 +272,11 @@ export default function AppLauncherActions({
   const hasMenuItems = menuItems.length > 0;
 
   const defaultAction = useMemo(() => {
-    // A start/stop is in flight: don't show the "Checking launcher" spinner.
-    // The AppStatusIndicator already reflects the transition, and returning null
-    // lets the kebab menu (Stop app) carry the action while it settles.
-    if (isBusy) {
-      return null;
+    // A start or stop has not settled yet: hold the slot with a disabled
+    // progress button rather than dropping the primary action, so the card does
+    // not appear to lose its button mid-transition.
+    if (transition) {
+      return <AppTransitionButton transition={transition} />;
     }
 
     if (isLoadingApps || isLoadingContainerImage) {
@@ -319,6 +316,8 @@ export default function AppLauncherActions({
       return publishButton;
     }
 
+    // Defensive: every known status is handled above, so this only trips if the
+    // backend grows a new one.
     if (!isLive) {
       return null;
     }
@@ -345,13 +344,13 @@ export default function AppLauncherActions({
     hasOtherApp,
     hasValidImage,
     imageStatus,
-    isBusy,
     isLive,
     isLoadingApps,
     isLoadingContainerImage,
     isPublic,
     launcher,
     onPublish,
+    transition,
     write,
   ]);
 
@@ -370,9 +369,8 @@ export default function AppLauncherActions({
       {menuItems}
     </ButtonWithMenuV2>
   ) : (
-    // No primary action (an app that is still starting, or one whose start/stop
-    // is in flight): show a menu-only kebab so Stop app stays reachable without
-    // a primary button.
+    // No primary action to offer: fall back to a menu-only kebab so the actions
+    // stay reachable without a primary button.
     <div onClick={(event) => event.stopPropagation()}>
       <SingleButtonWithMenu color="primary" size="sm">
         {menuItems}
@@ -383,7 +381,7 @@ export default function AppLauncherActions({
   return (
     <>
       <div className={cx("d-flex", "align-items-center", "gap-2")}>
-        {!isLoadingApps && <AppStatusIndicator state={indicatorState} />}
+        {isLive && !transition && <AppLiveIndicator />}
         {actionControl}
       </div>
       {app && (
@@ -395,6 +393,32 @@ export default function AppLauncherActions({
         />
       )}
     </>
+  );
+}
+
+const TRANSITION_LABEL: Record<AppTransition, string> = {
+  starting: "Starting",
+  stopping: "Stopping",
+};
+
+/**
+ * The primary action slot while a start or stop is settling: a disabled button
+ * carrying a spinner and the transition's label.
+ */
+function AppTransitionButton({ transition }: { transition: AppTransition }) {
+  return (
+    <Button
+      className="text-nowrap"
+      color="primary"
+      data-app-transition={transition}
+      data-cy="app-transition-button"
+      disabled
+      size="sm"
+      type="button"
+    >
+      <Loader className="me-1" inline size={12} />
+      {TRANSITION_LABEL[transition]}
+    </Button>
   );
 }
 

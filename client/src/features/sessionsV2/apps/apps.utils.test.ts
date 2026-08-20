@@ -21,9 +21,9 @@ import { describe, expect, it } from "vitest";
 import type { AppResponse, AppStatus } from "../api/apps.api";
 import {
   findAppForLauncher,
-  getAppIndicatorState,
   getAppLobbyPath,
   getAppLobbyUrl,
+  getAppTransition,
   hasAppOnAnotherLauncher,
   hasPendingApp,
   hasReachedAppTarget,
@@ -64,36 +64,44 @@ describe("findAppForLauncher()", () => {
   });
 });
 
-describe("getAppIndicatorState()", () => {
-  it("reports 'not-running' when there is no app", () => {
-    expect(getAppIndicatorState(undefined)).toBe("not-running");
+describe("getAppTransition()", () => {
+  it("returns null when no app exists and nothing is in flight", () => {
+    expect(getAppTransition(undefined)).toBeNull();
   });
 
-  it.each<[AppStatus, string]>([
-    ["pending", "starting"],
-    ["ready", "live"],
-    ["failed", "error"],
-  ])("maps a %s app to '%s'", (status, expected) => {
-    expect(getAppIndicatorState(makeApp({ status }))).toBe(expected);
+  it("returns null for a settled app", () => {
+    expect(getAppTransition(makeApp({ status: "ready" }))).toBeNull();
+    expect(getAppTransition(makeApp({ status: "failed" }))).toBeNull();
   });
 
-  it("forces 'starting' while a publish is in flight, even before the app appears", () => {
-    expect(getAppIndicatorState(undefined, { isStarting: true })).toBe(
-      "starting",
-    );
+  it("reports starting for a pending app with no local mutation", () => {
+    expect(getAppTransition(makeApp({ status: "pending" }))).toBe("starting");
   });
 
-  it("lets an in-flight publish override a stale observed status", () => {
-    // isStarting reflects the caller's intent and takes precedence, so a brief
-    // window where the old app is still 'ready'/'failed' does not flicker away
-    // from the starting indicator.
+  it("reports starting before the deployment appears", () => {
+    expect(getAppTransition(undefined, { isStarting: true })).toBe("starting");
+  });
+
+  it("reports stopping while a delete is in flight", () => {
     expect(
-      getAppIndicatorState(makeApp({ status: "failed" }), { isStarting: true }),
-    ).toBe("starting");
+      getAppTransition(makeApp({ status: "ready" }), { isStopping: true }),
+    ).toBe("stopping");
   });
 
-  it("defaults isStarting to false when no options are passed", () => {
-    expect(getAppIndicatorState(makeApp({ status: "ready" }))).toBe("live");
+  it("reports stopping once the app is already gone", () => {
+    expect(getAppTransition(undefined, { isStopping: true })).toBe("stopping");
+  });
+
+  it("prefers stopping over a pending status, which a teardown also produces", () => {
+    expect(
+      getAppTransition(makeApp({ status: "pending" }), { isStopping: true }),
+    ).toBe("stopping");
+  });
+
+  it("prefers stopping when both flags are set", () => {
+    expect(
+      getAppTransition(undefined, { isStarting: true, isStopping: true }),
+    ).toBe("stopping");
   });
 });
 

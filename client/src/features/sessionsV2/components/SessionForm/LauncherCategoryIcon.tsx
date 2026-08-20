@@ -126,14 +126,17 @@ function AppIconSvg({ className, style }: SvgIconProps) {
       <circle cx="18" cy="26" r="2.5" fill="currentColor" />
       <circle cx="27" cy="26" r="2.5" fill="currentColor" />
       <circle cx="36" cy="26" r="2.5" fill="currentColor" />
-      {/* Globe inside the window */}
-      <circle cx="55" cy="63" r="19" stroke="currentColor" strokeWidth="4" />
-      <path d="M36 63H74" stroke="currentColor" strokeWidth="4" />
-      <path
-        d="M55 44C60.5 49.5 63.5 56 63.5 63C63.5 70 60.5 76.5 55 82C49.5 76.5 46.5 70 46.5 63C46.5 56 49.5 49.5 55 44Z"
+      {/* Circle-square mark inside the window */}
+      <rect
+        x="47"
+        y="55"
+        width="26"
+        height="26"
+        rx="2"
         stroke="currentColor"
         strokeWidth="4"
       />
+      <circle cx="50" cy="58" r="15" fill="currentColor" />
     </svg>
   );
 }
