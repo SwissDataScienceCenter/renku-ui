@@ -87,7 +87,7 @@ export default function BatchInputSection({
           rules={{ required: true }}
         />
         <div className="invalid-feedback">Please provide a list</div>
-        <Button className="mt-2" onClick={onFind}>
+        <Button className="mt-2" color="primary" onClick={onFind}>
           Find {MEMBER_TYPE_LABELS[memberType].plural}
         </Button>
       </div>

@@ -264,15 +264,11 @@ function AddMemberToResourcePoolModal({
         Add Member to Resource Pool <b>{resourcePool.name}</b>
       </ModalHeader>
       <ModalBody>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkOrDataServicesError error={result.error} />}
 
           <div className={cx("mb-3")}>
-            <ButtonGroup size="sm" className="w-100">
+            <ButtonGroup className="w-100">
               {INPUT_MODE_OPTIONS.map(({ value, icon: Icon, title, blurb }) => (
                 <Fragment key={value}>
                   <input
@@ -291,10 +287,9 @@ function AddMemberToResourcePoolModal({
                     className={cx(
                       "btn",
                       "btn-outline-primary",
-                      "p-2",
+                      "p-3",
                       "p-md-4",
                       "d-flex",
-                      "justify-content-center",
                       "w-50",
                     )}
                     data-cy={`add-member-input-mode-${value}`}
@@ -303,32 +298,11 @@ function AddMemberToResourcePoolModal({
                     <div
                       className={cx("d-flex", "flex-column", "gap-2", "w-100")}
                     >
-                      <div
-                        className={cx(
-                          "d-flex",
-                          "flex-row",
-                          "gap-3",
-                          "text-center",
-                          "text-md-start",
-                          "align-items-center",
-                        )}
-                      >
-                        <Icon
-                          className={cx("d-none", "d-md-block")}
-                          size={30}
-                        />
+                      <div className="fs-3">
+                        <Icon className="me-1" />
                         <span className="fw-bold">{title}</span>
                       </div>
-                      <p
-                        className={cx(
-                          "mb-0",
-                          "text-start",
-                          "d-none",
-                          "d-md-block",
-                        )}
-                      >
-                        {blurb}
-                      </p>
+                      <p className="mb-0">{blurb}</p>
                     </div>
                   </label>
                 </Fragment>

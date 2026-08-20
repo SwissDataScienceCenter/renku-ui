@@ -636,18 +636,18 @@ function ResourcePoolMemberItem({
 
   return (
     <li>
-      <div className={cx("hstack", "gap-2")}>
-        {resourcePoolMember.member_type === "user" && (
-          <PersonFill className={cx("bi", "me-1")} />
-        )}
-        {resourcePoolMember.member_type === "group" && (
-          <PeopleFill className={cx("bi", "me-1")} />
-        )}
-        {resourcePoolMember.member_type === "project" && (
-          <FolderFill className={cx("bi", "me-1")} />
-        )}
-        <div>{resolved.label}</div>
-        <div className="ms-3">
+      <div className={cx("hstack", "gap-3")}>
+        <div className={cx("d-flex", "align-items-center")}>
+          {resourcePoolMember.member_type === "user" ? (
+            <PersonFill className={cx("bi", "me-1")} />
+          ) : resourcePoolMember.member_type === "group" ? (
+            <PeopleFill className={cx("bi", "me-1")} />
+          ) : (
+            <FolderFill className={cx("bi", "me-1")} />
+          )}
+          <div>{resolved.label}</div>
+        </div>
+        <div>
           <RemoveMemberFromResourcePoolButton
             resourcePool={resourcePool}
             resourcePoolMember={resourcePoolMember}
