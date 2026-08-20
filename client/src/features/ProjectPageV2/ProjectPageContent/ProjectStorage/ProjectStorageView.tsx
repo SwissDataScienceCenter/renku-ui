@@ -31,7 +31,7 @@ import {
 import { InfoAlert } from "~/components/Alert";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
-import type { ProjectStorage } from "~/features/dataConnectorsV2/api/data-connectors.api";
+import type { ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
 import { InfoEntry } from "~/features/dataConnectorsV2/components/DataConnectorInfoBox";
 import {
   EditProjectStorageModal,
