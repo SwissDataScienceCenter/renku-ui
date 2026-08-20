@@ -260,7 +260,8 @@ function AddMemberToResourcePoolModal({
       toggle={toggle}
     >
       <ModalHeader tag="h2" toggle={toggle}>
-        Add Member to Resource Pool: {resourcePool.name}
+        <PersonFillAdd className={cx("bi", "me-1")} />
+        Add Member to Resource Pool <b>{resourcePool.name}</b>
       </ModalHeader>
       <ModalBody>
         <Form
