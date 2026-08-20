@@ -80,10 +80,6 @@ export const NEW_DOCS_QUICK_START_TUTORIAL = newDocsLinkPage(
   "docs/users/getting-started",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
-export const NEW_DOCS_MIGRATE_AWAY_FROM_GITLAB = newDocsLinkPage(
-  "docs/users/migrate-v1-v2/migrate-from-gitlab",
-)(DEFAULT_NEW_DOC_LINK_ARGS);
-
 export const NEW_DOCS_CREATE_PROJECT = newDocsLinkPage(
   "docs/users/getting-started/create-project",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
