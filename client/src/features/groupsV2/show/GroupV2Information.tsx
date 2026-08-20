@@ -35,17 +35,17 @@ export default function GroupInformation({
   if (!ctx || ctx.kind !== "group") return null;
   const { namespace, kind, group } = ctx;
 
-  const information = kind === "group" && (
+  const information = kind === "group" && namespace && (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <GroupInformationBox
         icon={<JournalAlbum className="bi" />}
         title="Identifier:"
       >
         <div className={cx("align-items-center", "d-flex", "gap-2")}>
-          <span className="text-truncate">@{namespace}</span>
+          <span className="text-truncate">{namespace}</span>
           <Clipboard
             className={cx("border-0", "btn", "p-0", "shadow-none")}
-            clipboardText={`@${namespace}`}
+            clipboardText={namespace}
           />
         </div>
       </GroupInformationBox>

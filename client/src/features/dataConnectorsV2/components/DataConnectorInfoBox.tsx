@@ -1,7 +1,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { capitalize } from "lodash-es";
-import { useMemo, useRef } from "react";
+import { ReactNode, useMemo, useRef } from "react";
 import {
   Folder,
   Globe2,
@@ -37,11 +37,13 @@ interface DataConnectorInfoBoxProps {
   dataConnector: DataConnectorRead;
   headerTag?: "h2" | "h3" | "h4";
   visibilityWarning?: boolean;
+  internalId?: ReactNode;
 }
 export default function DataConnectorInfoBox({
   dataConnector,
   headerTag = "h2",
   visibilityWarning,
+  internalId,
 }: DataConnectorInfoBoxProps) {
   // Get useful DC info
   const scope = useMemo(
@@ -248,19 +250,7 @@ export default function DataConnectorInfoBox({
 
         <DataConnectorAdditionalFields dataConnector={dataConnector} />
 
-        <InfoEntry title={"ID Code"} dataCy="id-code">
-          <div className={cx("align-items-center", "d-flex", "gap-2")}>
-            <span className="text-truncate">
-              {dataConnector?.id ?? "No available"}
-            </span>
-            {dataConnector?.id && (
-              <Clipboard
-                className={cx("border-0", "btn", "p-0", "shadow-none")}
-                clipboardText={dataConnector?.id}
-              />
-            )}
-          </div>
-        </InfoEntry>
+        {internalId}
       </CardBody>
     </Card>
   );

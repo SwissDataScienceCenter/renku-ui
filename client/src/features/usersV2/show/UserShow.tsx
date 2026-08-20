@@ -33,25 +33,26 @@ export default function UserShow() {
   const { kind, user } = ctx;
   const username = kind === "user" ? user?.username : null;
 
+  if (!username) {
+    return null;
+  }
+
   const information = (
     <div className={cx("d-flex", "flex-column")}>
       <div className="mb-0">
         <JournalAlbum className={cx("bi", "me-2")} />
         <span>Identifier:</span>
         <div className={cx("align-items-center", "d-flex", "gap-2")}>
-          <span className="text-truncate">@{username}</span>
+          <span className="text-truncate">{username}</span>
           <Clipboard
             className={cx("border-0", "btn", "p-0", "shadow-none")}
-            clipboardText={`@${username}`}
+            clipboardText={username}
           />
         </div>
       </div>
     </div>
   );
 
-  if (!username) {
-    return null;
-  }
   return (
     <Row className="g-4">
       <Col xs={12} md={8} xl={9}>

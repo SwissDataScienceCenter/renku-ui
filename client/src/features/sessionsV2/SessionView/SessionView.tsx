@@ -24,11 +24,11 @@ import {
   Braces,
   CircleFill,
   Clock,
-  CodeSquare,
   Cpu,
   Database,
   ExclamationTriangleFill,
   FileCode,
+  InfoCircle,
   Link45deg,
   Pencil,
   PlayCircle,
@@ -54,7 +54,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert } from "~/components/Alert";
-import { Clipboard } from "~/components/clipboard/Clipboard";
+import InternalIdField from "~/components/InternalIdField";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -715,25 +715,12 @@ export function SessionView({
                   )}
                 >
                   <h3 className={cx("mb-0", "me-2")}>
-                    <CodeSquare className={cx("me-1", "bi")} />
-                    ID Code
+                    <InfoCircle className={cx("me-1", "bi")} />
+                    Info
                   </h3>
                 </CardHeader>
                 <CardBody>
-                  <p className="mb-2">
-                    Launcher ID is a unique identifier for the session launcher.
-                  </p>
-                  <div className={cx("align-items-center", "d-flex", "gap-2")}>
-                    <span className="text-truncate">
-                      {launcher?.id ?? "Not available"}
-                    </span>
-                    {launcher?.id && (
-                      <Clipboard
-                        className={cx("border-0", "btn", "p-0", "shadow-none")}
-                        clipboardText={launcher?.id}
-                      />
-                    )}
-                  </div>
+                  <InternalIdField id={launcher.id} />
                 </CardBody>
               </Card>
             </>

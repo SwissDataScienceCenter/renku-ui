@@ -21,8 +21,8 @@ import cx from "classnames";
 import { useMemo } from "react";
 import {
   Bookmarks,
+  Clipboard2,
   Clock,
-  CodeSquare,
   Diagram3Fill,
   Eye,
   InfoCircle,
@@ -156,6 +156,22 @@ export default function ProjectInformation({
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <ProjectInformationBox
         icon={<JournalAlbum className="bi" />}
+        title="Identifier:"
+      >
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          <span className="text-truncate">
+            {project?.slug ?? "Not available"}
+          </span>
+          {project?.slug && (
+            <Clipboard
+              className={cx("border-0", "btn", "p-0", "shadow-none")}
+              clipboardText={project?.slug}
+            />
+          )}
+        </div>
+      </ProjectInformationBox>
+      <ProjectInformationBox
+        icon={<Clipboard2 className="bi" />}
         title="Namespace:"
       >
         <p className="mb-0">
@@ -208,22 +224,6 @@ export default function ProjectInformation({
         )}
       </ProjectInformationBox>
       <ProjectCopyTemplateInformationBox project={project} />
-      <ProjectInformationBox
-        icon={<CodeSquare className="bi" />}
-        title="ID Code:"
-      >
-        <div className={cx("align-items-center", "d-flex", "gap-2")}>
-          <span className="text-truncate">
-            {project?.id ?? "Not available"}
-          </span>
-          {project?.id && (
-            <Clipboard
-              className={cx("border-0", "btn", "p-0", "shadow-none")}
-              clipboardText={project?.id}
-            />
-          )}
-        </div>
-      </ProjectInformationBox>
     </div>
   );
   return output === "plain" ? (
