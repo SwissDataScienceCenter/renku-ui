@@ -18,7 +18,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { buildTypeScopedSearchQuery } from "./MemberAutoSuggest.utils";
+import { buildTypeScopedSearchQuery } from "./MemberSelect.utils";
 
 describe("buildTypeScopedSearchQuery", () => {
   it("prefixes the search term with a Group type filter", () => {

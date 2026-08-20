@@ -58,11 +58,7 @@ import {
   parseBatchInput,
 } from "./addMemberToResourcePool.utils";
 import BatchInputSection from "./BatchInputSection";
-import {
-  GroupAutoSuggest,
-  ProjectAutoSuggest,
-  UserAutoSuggest,
-} from "./MemberAutoSuggest";
+import { GroupSelect, ProjectSelect, UserSelect } from "./MemberSelect";
 
 const INPUT_MODE_OPTIONS = [
   {
@@ -452,11 +448,9 @@ function SearchInputSection({
           <Label className="form-label">
             {MEMBER_TYPE_LABELS[memberType].singular}
           </Label>
-          {memberType === "user" && <UserAutoSuggest onPick={onPickMember} />}
-          {memberType === "group" && <GroupAutoSuggest onPick={onPickMember} />}
-          {memberType === "project" && (
-            <ProjectAutoSuggest onPick={onPickMember} />
-          )}
+          {memberType === "user" && <UserSelect onPick={onPickMember} />}
+          {memberType === "group" && <GroupSelect onPick={onPickMember} />}
+          {memberType === "project" && <ProjectSelect onPick={onPickMember} />}
         </div>
       )}
     </div>
