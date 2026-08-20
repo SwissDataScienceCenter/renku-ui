@@ -33,6 +33,7 @@ import {
   Label,
 } from "reactstrap";
 
+import InternalIdField from "~/components/InternalIdField";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import SlugFormField from "~/features/projectsV2/fields/SlugFormField";
 import { useProject } from "~/routes/projects/root";
@@ -474,6 +475,8 @@ function ProjectSettingsForm({ project }: ProjectPageSettingsProps) {
           requestedPermission="write"
           userPermissions={permissions}
         />
+
+        <InternalIdField id={project.id} />
 
         {error && <RtkOrDataServicesError error={error} />}
 
