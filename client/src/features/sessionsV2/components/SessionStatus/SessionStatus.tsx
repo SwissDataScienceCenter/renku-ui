@@ -27,7 +27,7 @@ import {
   CheckCircleFill,
   CircleFill,
   Clock,
-  ExclamationDiamondFill,
+  ExclamationTriangleFill,
   GearFill,
   Hourglass,
   Icon,
@@ -39,6 +39,7 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import {
   getLauncherCategoryDefinition,
   JOB_STOPPING_BUTTON_LABEL,
@@ -153,18 +154,12 @@ interface ActiveSessionTitleV2Props {
 
 function UnknownStatusBadge() {
   return (
-    <SessionBadge
-      className={cx(
-        "border-warning",
-        "bg-warning-subtle",
-        "text-warning-emphasis",
-      )}
-    >
-      <ExclamationDiamondFill
-        className={cx("bi", "me-1", "text-warning-emphasis")}
-      />
-      Unknown status
-    </SessionBadge>
+    <>
+      <RenkuBadge color="warning">
+        <ExclamationTriangleFill className="me-1" />
+        Unknown status
+      </RenkuBadge>
+    </>
   );
 }
 
@@ -175,34 +170,21 @@ function WarningStatusBadge({
   icon: "circle" | "icon" | "loader";
   label: string;
 }) {
+  const color = icon === "loader" ? "light" : "warning";
+  const renderedIcon =
+    icon === "loader" ? (
+      <Loader className="me-1" size={12} inline />
+    ) : icon === "icon" ? (
+      <GearFill className={cx("me-1", statusStyles.spinIcon)} />
+    ) : (
+      <CircleFill className="me-1" />
+    );
+
   return (
-    <SessionBadge className={cx("border-warning", "bg-warning-subtle")}>
-      {icon === "loader" && (
-        <Loader
-          size={14}
-          className={cx("bi", "me-1", "text-warning-emphasis")}
-          inline
-        />
-      )}
-      {icon === "icon" && (
-        <GearFill
-          fontSize={16}
-          className={cx(
-            "bi",
-            "me-1",
-            "text-warning-emphasis",
-            statusStyles.spinIcon,
-          )}
-        />
-      )}
-      {icon === "circle" && (
-        <CircleFill
-          fontSize={14}
-          className={cx("bi", "me-1", "text-warning-emphasis")}
-        />
-      )}
-      <span className="text-warning-emphasis">{label}</span>
-    </SessionBadge>
+    <RenkuBadge className="fw-normal" color={color} pill>
+      {renderedIcon}
+      {label}
+    </RenkuBadge>
   );
 }
 
@@ -212,37 +194,28 @@ function LoaderStatusBadge({ label }: { label: string }) {
 
 function HibernatedStatusBadge({ label }: { label: string }) {
   return (
-    <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-      <CircleFill
-        className={cx("bi", "me-1", "text-light-emphasis")}
-        fontSize={14}
-      />
-      <span className="text-dark-emphasis">{label}</span>
-    </SessionBadge>
+    <RenkuBadge className="fw-normal" color="light" pill>
+      <CircleFill className="me-1" />
+      {label}
+    </RenkuBadge>
   );
 }
 
 function FailedStatusBadge({ label }: { label: string }) {
   return (
-    <SessionBadge className={cx("border-danger", "bg-danger-subtle")}>
-      <ExclamationDiamondFill
-        className={cx("bi", "me-1", "text-danger-emphasis")}
-        fontSize={16}
-      />
-      <span className="text-danger-emphasis">{label}</span>
-    </SessionBadge>
+    <RenkuBadge className="fw-normal" color="danger" pill>
+      <ExclamationTriangleFill className="me-1" />
+      {label}
+    </RenkuBadge>
   );
 }
 
 function SuccessStatusBadge({ label }: { label: string }) {
   return (
-    <SessionBadge className={cx("border-success", "bg-success-subtle")}>
-      <CheckCircleFill
-        fontSize={16}
-        className={cx("bi", "me-1", "text-success-emphasis")}
-      />
-      <span className="text-success-emphasis">{label}</span>
-    </SessionBadge>
+    <RenkuBadge className="fw-normal" color="success" pill>
+      <CheckCircleFill className="me-1" />
+      {label}
+    </RenkuBadge>
   );
 }
 

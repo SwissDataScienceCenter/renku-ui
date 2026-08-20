@@ -631,6 +631,15 @@ export type NodeAffinity = {
 export type NodeAffinityList = NodeAffinity[];
 export type IntegerId = number;
 export type QuotaEnforced = boolean;
+export type RemoteConfigurationFirecrestSystemName = string;
+export type RemoteConfigurationFirecrestPartition = string;
+export type RemoteClassConfigurationFirecrest = {
+  system_name?: RemoteConfigurationFirecrestSystemName;
+  partition?: RemoteConfigurationFirecrestPartition;
+  /** When true, Amalthea forwards the resource class CPU, memory, and GPU values to FirecREST. When false (the default), the HPC grid selects the resources; the class values are still used for display and quota matching.
+   */
+  forward_resource_values?: boolean;
+};
 export type ResourceClassWithId = {
   name: Name;
   default: DefaultFlag;
@@ -643,6 +652,7 @@ export type ResourceClassWithId = {
   node_affinities?: NodeAffinityList;
   id: IntegerId;
   quota_enforced?: QuotaEnforced;
+  remote?: RemoteClassConfigurationFirecrest;
 };
 export type ErrorResponse = {
   error: {
@@ -726,8 +736,6 @@ export type ResourceClassWithIdFiltered = ResourceClassWithId & {
 export type PublicFlag = boolean;
 export type RemoteConfigurationFirecrestProviderId = string;
 export type RemoteConfigurationFirecrestApiUrl = string;
-export type RemoteConfigurationFirecrestSystemName = string;
-export type RemoteConfigurationFirecrestPartition = string;
 export type RemoteConfigurationFirecrest = {
   /** Kind of remote resource pool */
   kind: "firecrest";
@@ -806,6 +814,7 @@ export type ResourceClass = {
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
   quota_enforced?: QuotaEnforced;
+  remote?: RemoteClassConfigurationFirecrest;
 };
 export type ResourceClasses = ResourceClass[];
 export type ResourcePool = {
@@ -854,6 +863,7 @@ export type ResourceClassProperties = {
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
   quota_enforced?: QuotaEnforced;
+  remote?: RemoteClassConfigurationFirecrest;
 };
 export type ResourceClassPatchWithId = ResourceClassProperties & {
   id: IntegerId;

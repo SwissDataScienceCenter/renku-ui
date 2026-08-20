@@ -42,6 +42,7 @@ import {
   type RemoteConfiguration,
 } from "../sessionsV2/api/computeResources.api";
 import type { ResourcePoolForm } from "./adminComputeResources.types";
+import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import ResourcePoolClusterIdInput from "./forms/ResourcePoolClusterIdInput";
 import ResourcePoolRemoteSection from "./forms/ResourcePoolRemoteSection";
 
@@ -130,10 +131,15 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
   const [addResourcePool, result] = usePostResourcePoolsMutation();
   const onSubmit = useCallback(
     (data: ResourcePoolForm) => {
+      const requiresIntegerCpu = poolRequiresIntegerCpu({
+        kind: data.remote.enabled ? data.remote.kind : null,
+      });
       const populatedClass = defaultSessionClass
         ? {
             name: defaultSessionClass.name,
-            cpu: defaultSessionClass.cpu,
+            cpu: requiresIntegerCpu
+              ? Math.ceil(defaultSessionClass.cpu)
+              : defaultSessionClass.cpu,
             memory: defaultSessionClass.memory,
             gpu: defaultSessionClass.gpu,
             max_storage: defaultSessionClass.max_storage,
