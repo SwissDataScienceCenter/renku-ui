@@ -356,11 +356,7 @@ function AddMemberToResourcePoolModal({
           Close
         </Button>
         {inputMode === "batch" && watchBatchItems.length > 0 && (
-          <Button
-            color="outline-primary"
-            onClick={onGoToInput}
-            type="button"
-          >
+          <Button color="outline-primary" onClick={onGoToInput} type="button">
             <ArrowLeft className={cx("bi", "me-1")} />
             Back
           </Button>
