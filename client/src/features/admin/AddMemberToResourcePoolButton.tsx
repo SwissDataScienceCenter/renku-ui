@@ -351,13 +351,13 @@ function AddMemberToResourcePoolModal({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
+        <Button color="outline-primary" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
         {inputMode === "batch" && watchBatchItems.length > 0 && (
           <Button
-            className="btn-outline-rk-green"
+            color="outline-primary"
             onClick={onGoToInput}
             type="button"
           >
@@ -367,6 +367,7 @@ function AddMemberToResourcePoolModal({
         )}
         {inputMode === "search" && (
           <Button
+            color="primary"
             disabled={pickedMember == null || result.isLoading}
             onClick={handleSubmit(onSubmit)}
             type="submit"
@@ -381,6 +382,7 @@ function AddMemberToResourcePoolModal({
         )}
         {inputMode === "batch" && watchBatchItems.length === 0 && (
           <Button
+            color="primary"
             disabled={parsedBatchInput.length === 0}
             onClick={onFindBatchItems}
             type="button"
@@ -391,6 +393,7 @@ function AddMemberToResourcePoolModal({
         )}
         {inputMode === "batch" && watchBatchItems.length > 0 && (
           <Button
+            color="primary"
             disabled={
               selectedCount === 0 || result.isLoading || isFetchingBatchItems
             }
