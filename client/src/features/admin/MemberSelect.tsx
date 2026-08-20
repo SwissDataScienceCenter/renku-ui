@@ -87,6 +87,11 @@ export default function MemberSelect<T>({
   onInputChange,
   isLoading,
 }: MemberSelectProps<T>) {
+  // Stable identity across re-renders; a new components object remounts the
+  // input on every keystroke and loses focus (react-select FAQ)
+  const selectClassNames = useMemo(() => makeSelectClassNames<T>(), []);
+  const selectComponents = useMemo(() => makeSelectComponents<T>(), []);
+
   return (
     <Select<T, false, GroupBase<T>>
       options={options}
@@ -98,8 +103,8 @@ export default function MemberSelect<T>({
       onInputChange={(value, { action }) => {
         if (action === "input-change") onInputChange(value);
       }}
-      classNames={makeSelectClassNames<T>()}
-      components={makeSelectComponents<T>()}
+      classNames={selectClassNames}
+      components={selectComponents}
       controlShouldRenderValue={false}
       filterOption={null}
       isClearable={false}
