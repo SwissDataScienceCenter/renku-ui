@@ -151,8 +151,8 @@ function DataConnectorSecrets({
           );
         })}
       </div>
-      {context === "session" && user?.isLoggedIn && (
-        <SaveCredentialsInput control={control} />
+      {(context === "session" || context === "job") && user?.isLoggedIn && (
+        <SaveCredentialsInput context={context} control={control} />
       )}
       {context === "storage" && hasIncompleteSavedCredentials && (
         <div className={cx("text-danger", "mb-3")}>
@@ -287,6 +287,12 @@ export default function DataConnectorSecretsModal({
   const hasSavedCredentials = dataConnectorConfigs.some(
     (csc) => csc.savedCredentialFields?.length > 0,
   );
+  const total = dataConnectorConfigs.length;
+  const showCredentialsCounter =
+    (context === "session" || context === "job") && total > 1;
+  const modalTitle = showCredentialsCounter
+    ? `${CONTEXT_STRINGS[context].header} ${index + 1} of ${total}`
+    : CONTEXT_STRINGS[context].header;
 
   return (
     <Modal
@@ -295,7 +301,7 @@ export default function DataConnectorSecretsModal({
       isOpen={isOpen}
       size="lg"
     >
-      <ModalHeader tag="h2">{CONTEXT_STRINGS[context].header}</ModalHeader>
+      <ModalHeader tag="h2">{modalTitle}</ModalHeader>
       <Form
         noValidate
         data-cy="data-connector-edit-options"
@@ -464,8 +470,10 @@ function ProgressBreadcrumbs({
 }
 
 function SaveCredentialsInput({
+  context,
   control,
-}: Pick<SensitiveFieldWidgetProps, "control">) {
+}: Pick<SensitiveFieldWidgetProps, "context" | "control">) {
+  const targetLabel = context === "job" ? "jobs" : "sessions";
   return (
     <div className="mb-3">
       <Controller
@@ -488,7 +496,7 @@ function SaveCredentialsInput({
         className={cx("form-check-label", "ms-2")}
         htmlFor="saveCredentials"
       >
-        Save credentials for future sessions
+        Save credentials for future {targetLabel}
       </Label>
     </div>
   );

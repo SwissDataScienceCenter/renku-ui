@@ -17,12 +17,13 @@
  */
 
 import cx from "classnames";
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useRef } from "react";
 import { generatePath } from "react-router";
-import { ButtonGroup } from "reactstrap";
+import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
 
 import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
+import { useGetResourcePoolsQuery } from "~/features/sessionsV2/api/computeResources.api";
 import { isTruthy } from "~/features/sessionsV2/session.utils";
 import useLauncherEnvironmentReadiness from "~/features/sessionsV2/useLauncherEnvironmentReadiness.hook";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
@@ -34,6 +35,36 @@ import CheckingLauncherButton from "../shared/CheckingLauncherButton";
 import SessionLaunchLink from "../shared/SessionLaunchLink";
 import ShowLauncherDetailsButton from "../shared/ShowLauncherDetailsButton";
 import type { LauncherCardActionsProps } from "../types";
+
+interface UsageQuotaReachedLaunchButtonProps {
+  className?: string;
+}
+
+function UsageQuotaReachedLaunchButton({
+  className,
+}: UsageQuotaReachedLaunchButtonProps) {
+  const tooltipTarget = useRef<HTMLSpanElement>(null);
+
+  return (
+    <>
+      <span ref={tooltipTarget}>
+        <Button
+          className={cx("disabled", className)}
+          color="outline-primary"
+          data-cy="start-session-button"
+          disabled
+          size="sm"
+        >
+          Quota Reached
+        </Button>
+      </span>
+      <UncontrolledTooltip target={tooltipTarget}>
+        Please launch using a different resource class. The quota for this
+        resource pool has been fully used.
+      </UncontrolledTooltip>
+    </>
+  );
+}
 
 interface SessionLauncherCardActionsProps extends LauncherCardActionsProps {
   alwaysShowLaunchAction?: boolean;
@@ -53,7 +84,6 @@ export default function SessionLauncherActions({
   const { isLoadingPermissions, write } = useProjectPermissions({
     projectId: launcher.project_id,
   });
-
   const {
     containerImage,
     forceLaunch,
@@ -67,6 +97,19 @@ export default function SessionLauncherActions({
     launcher,
     lastBuild,
   });
+  const { data: resourcePools, isLoading: isLoadingResourcePools } =
+    useGetResourcePoolsQuery({});
+  const resourceClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap(({ classes }) => classes)
+        .find(({ id }) => id === launcher.resource_class_id),
+    [launcher.resource_class_id, resourcePools],
+  );
+  const isUsageQuotaReached =
+    resourceClass?.quota_enforced === true &&
+    resourceClass.usage_hours_remaining != null &&
+    resourceClass.usage_hours_remaining <= 0;
 
   const startUrl = generatePath(
     ABSOLUTE_ROUTES.v2.projects.show.sessions.start,
@@ -76,7 +119,6 @@ export default function SessionLauncherActions({
       slug,
     },
   );
-
   const displayBuildActions =
     displayBuildActionsProp && isCodeEnvironment && write;
 
@@ -90,7 +132,6 @@ export default function SessionLauncherActions({
       [CUSTOM_LAUNCH_SEARCH_PARAM]: "1",
     }).toString(),
   };
-
   const displayLaunchButton =
     !isCodeEnvironment ||
     hasSuccessfulBuild ||
@@ -119,12 +160,19 @@ export default function SessionLauncherActions({
     ),
   ].filter(isTruthy);
   const hasMenuItems = menuItems.length > 0;
-
   const defaultAction = useMemo(() => {
-    if (isLoadingContainerImage) {
+    if (isLoadingContainerImage || isLoadingResourcePools) {
       return <CheckingLauncherButton />;
     }
-
+    if (isUsageQuotaReached) {
+      return (
+        <UsageQuotaReachedLaunchButton
+          className={
+            hasMenuItems ? cx("border-end-0", "rounded-end-0") : undefined
+          }
+        />
+      );
+    }
     const launchAction = (
       <SessionLaunchLink
         alreadyRunningSession={!!hasSession}
@@ -143,7 +191,6 @@ export default function SessionLauncherActions({
         imageStatus={imageStatus}
       />
     );
-
     if (applyDefaultBuildActions) {
       return (
         <ButtonGroup onClick={(e) => e.stopPropagation()}>
@@ -159,7 +206,6 @@ export default function SessionLauncherActions({
     if (displayLaunchButton || alwaysShowLaunchAction) {
       return launchAction;
     }
-
     return (
       <ShowLauncherDetailsButton
         launcherId={launcher.id}
@@ -172,6 +218,8 @@ export default function SessionLauncherActions({
     hasSession,
     isLaunchDisabled,
     isLoadingContainerImage,
+    isLoadingResourcePools,
+    isUsageQuotaReached,
     launcher,
     displayLaunchButton,
     startUrl,
@@ -180,7 +228,6 @@ export default function SessionLauncherActions({
     hasMenuItems,
     alwaysShowLaunchAction,
   ]);
-
   // Keep this guard after hooks and useMemo to preserve React hook call order.
   if (isLoadingPermissions) return <CheckingLauncherButton />;
 

@@ -239,6 +239,7 @@ interface SessionViewProps {
   toggleDelete?: () => void;
   toggleUpdateEnvironment?: () => void;
   toggleEnvVariables?: () => void;
+  toggleLogsHistory?: () => void;
 }
 export function SessionView({
   id,
@@ -252,6 +253,7 @@ export function SessionView({
   toggleUpdate,
   toggleUpdateEnvironment,
   toggleEnvVariables,
+  toggleLogsHistory,
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
@@ -306,9 +308,10 @@ export function SessionView({
   const launcherMenu = launcher && (
     <SessionV2Actions
       launcher={launcher}
-      toggleDelete={toggleDelete ?? undefined}
-      toggleUpdate={toggleUpdate ?? undefined}
-      toggleUpdateEnvironment={toggleUpdateEnvironment ?? undefined}
+      toggleDelete={toggleDelete}
+      toggleLogsHistory={toggleLogsHistory}
+      toggleUpdate={toggleUpdate}
+      toggleUpdateEnvironment={toggleUpdateEnvironment}
     />
   );
   const description = launcher?.description;
@@ -321,7 +324,13 @@ export function SessionView({
 
   const resourceDetails =
     !isLoadingLauncherResourceClass && launcherResourceRequests ? (
-      <SessionRowResourceRequests resourceRequests={launcherResourceRequests} />
+      <SessionRowResourceRequests
+        resourceRequests={launcherResourceRequests}
+        usageLimit={{
+          resourceClass: userLauncherResourceClass,
+          quotaEnforced: userLauncherResourceClass?.quota_enforced === true,
+        }}
+      />
     ) : (
       <p>This session launcher does not have a default resource class.</p>
     );

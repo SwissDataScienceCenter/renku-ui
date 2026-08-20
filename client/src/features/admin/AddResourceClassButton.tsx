@@ -39,6 +39,11 @@ import {
   type ResourcePoolWithId,
 } from "../sessionsV2/api/computeResources.api";
 import type { ResourceClassForm } from "./adminComputeResources.types";
+import {
+  buildResourceClassRemote,
+  poolRequiresIntegerCpu,
+} from "./adminComputeResources.utils";
+import ResourceClassFirecrestFields from "./forms/ResourceClassFirecrestFields";
 
 interface AddResourceClassButtonProps {
   resourcePool: ResourcePoolWithId;
@@ -79,6 +84,8 @@ function AddResourceClassModal({
   toggle,
 }: AddResourceClassModalProps) {
   const { id, quota } = resourcePool;
+  const requiresIntegerCpu = poolRequiresIntegerCpu(resourcePool.remote);
+  const cpuStep = requiresIntegerCpu ? 1 : 0.1;
 
   const [addResourceClass, result] =
     usePostResourcePoolsByResourcePoolIdClassesMutation();
@@ -89,13 +96,14 @@ function AddResourceClassModal({
     handleSubmit,
   } = useForm<ResourceClassForm>({
     defaultValues: {
-      cpu: 0.1,
+      cpu: cpuStep,
       default: false,
       default_storage: 1,
       gpu: 0,
       max_storage: 1,
       memory: 1,
       name: "",
+      remote: { systemName: "", partition: "", forwardResourceValues: false },
     },
   });
   const {
@@ -114,15 +122,17 @@ function AddResourceClassModal({
   const onSubmit = useCallback(
     (data: ResourceClassForm) => {
       const tolerations = data.tolerations.map(({ label }) => label);
+      const remote = buildResourceClassRemote(data.remote, requiresIntegerCpu);
       addResourceClass({
         resourcePoolId: resourcePool.id,
         resourceClass: {
           ...data,
           tolerations,
+          remote,
         },
       });
     },
-    [addResourceClass, resourcePool.id],
+    [addResourceClass, requiresIntegerCpu, resourcePool.id],
   );
 
   const onAddTolerationLabel = useCallback(() => {
@@ -191,13 +201,21 @@ function AddResourceClassModal({
                   className={cx(errors.cpu && "is-invalid")}
                   id={`addResourceClassCpu-${id}`}
                   type="number"
-                  min={0.1}
-                  step={0.1}
+                  min={cpuStep}
+                  step={cpuStep}
                   max={quota?.cpu}
                   {...field}
                 />
               )}
-              rules={{ min: 0.1, max: quota?.cpu }}
+              rules={{
+                min: cpuStep,
+                max: quota?.cpu,
+                validate: requiresIntegerCpu
+                  ? (value) =>
+                      Number.isInteger(Number(value)) ||
+                      "CPUs must be a whole number for firecrest pools"
+                  : undefined,
+              }}
             />
             <div className="invalid-feedback">Invalid value for CPUs</div>
           </div>
@@ -292,6 +310,17 @@ function AddResourceClassModal({
               )}
             />
           </div>
+
+          {requiresIntegerCpu && (
+            <div className="mb-3">
+              <div className="form-label">Firecrest options</div>
+              <ResourceClassFirecrestFields
+                control={control}
+                formPrefix="addResourceClass"
+                name="remote"
+              />
+            </div>
+          )}
 
           <div className="mb-3">
             <div className="form-label">Tolerations</div>
