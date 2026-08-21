@@ -67,7 +67,6 @@ import {
   SEARCH_PARAM_PROVIDER,
   SEARCH_PARAM_SOURCE,
 } from "~/features/connectedServices/connectedServices.constants";
-import RepositoryGitLabWarnBadge from "~/features/legacy/RepositoryGitLabWarnBadge";
 import {
   repositoriesApi,
   useGetRepositoryQuery,
@@ -466,11 +465,6 @@ export function RepositoryItem({
               </Col>
             </>
           )}
-        </Row>
-        <Row>
-          <Col data-cy="repo-gitlab-warning">
-            <RepositoryGitLabWarnBadge project={project} url={url} />
-          </Col>
         </Row>
       </ListGroupItem>
       {!readonly && (
