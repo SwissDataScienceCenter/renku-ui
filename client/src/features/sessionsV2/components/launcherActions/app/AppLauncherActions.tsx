@@ -73,6 +73,7 @@ import {
 import useLauncherEnvironmentReadiness from "~/features/sessionsV2/useLauncherEnvironmentReadiness.hook";
 import AppContext from "~/utils/context/appContext";
 import BuildLauncherButtons, {
+  CancelBuildDropdownItem,
   RebuildLauncherDropdownItem,
 } from "../../BuildLauncherButtons";
 import CheckingLauncherButton from "../shared/CheckingLauncherButton";
@@ -116,6 +117,7 @@ export default function AppLauncherActions({
   });
 
   const {
+    isBuildInProgress,
     isCodeEnvironment,
     isLoadingContainerImage,
     useOldImage: shouldUseOldImage,
@@ -260,6 +262,9 @@ export default function AppLauncherActions({
     displayBuildActions && !applyDefaultBuildActions && (
       <RebuildLauncherDropdownItem key="rebuild-launcher" launcher={launcher} />
     ),
+    displayBuildActions && isBuildInProgress && (
+      <CancelBuildDropdownItem key="cancel-build" launcher={launcher} />
+    ),
     write && app && (
       <DropdownItem
         key="app-logs"
@@ -323,7 +328,11 @@ export default function AppLauncherActions({
       if (applyDefaultBuildActions) {
         return (
           <ButtonGroup onClick={(e) => e.stopPropagation()}>
-            <BuildLauncherButtons launcher={launcher} isMainButton={false} />
+            <BuildLauncherButtons
+              launcher={launcher}
+              isMainButton={false}
+              showCancelBuild={false}
+            />
             {publishButton}
           </ButtonGroup>
         );
