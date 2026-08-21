@@ -24,6 +24,7 @@ import { Clipboard } from "~/components/clipboard/Clipboard";
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { TimeCaption } from "../../../components/TimeCaption";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
+import GroupV2ResourcePoolDisplay from "./GroupV2ResourcePoolDisplay";
 
 interface GroupInformationProps {
   output?: "plain" | "card";
@@ -54,7 +55,12 @@ export default function GroupInformation({
           <TimeCaption datetime={group?.creation_date} className={cx("fs-6")} />
         </p>
       </GroupInformationBox>
-      {namespace && <GroupV2MemberListDisplay group={namespace} />}
+      {namespace && (
+        <>
+          <GroupV2ResourcePoolDisplay group={namespace} />
+          <GroupV2MemberListDisplay group={namespace} />
+        </>
+      )}
     </div>
   );
   return output === "plain" ? (
