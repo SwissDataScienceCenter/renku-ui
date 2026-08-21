@@ -32,6 +32,17 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getAppsByAppNameLogs: build.query<
+      GetAppsByAppNameLogsApiResponse,
+      GetAppsByAppNameLogsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/apps/${queryArg.appName}/logs`,
+        params: {
+          max_lines: queryArg.maxLines,
+        },
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -58,6 +69,14 @@ export type DeleteAppsByAppNameApiArg = {
   /** The name of the app to delete */
   appName: AppName;
 };
+export type GetAppsByAppNameLogsApiResponse =
+  /** status 200 The app logs */ AppLogsResponse;
+export type GetAppsByAppNameLogsApiArg = {
+  /** The name of the app to get the logs of */
+  appName: AppName;
+  /** The maximum number of most-recent lines to return for each container */
+  maxLines?: number;
+};
 export type AppName = string;
 export type Ulid = string;
 export type AppStatus = "pending" | "ready" | "failed";
@@ -83,9 +102,13 @@ export type ErrorResponse = {
 export type AppPostRequest = {
   launcher_id: Ulid;
 };
+export type AppLogsResponse = {
+  [key: string]: string;
+};
 export const {
   useGetAppsQuery,
   usePostAppsMutation,
   useGetAppsByAppNameQuery,
   useDeleteAppsByAppNameMutation,
+  useGetAppsByAppNameLogsQuery,
 } = injectedRtkApi;

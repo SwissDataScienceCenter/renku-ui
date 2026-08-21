@@ -28,6 +28,7 @@ import {
 } from "react";
 import {
   BoxArrowUpRight,
+  FileEarmarkText,
   Link45deg,
   Power,
   ToggleOff,
@@ -45,6 +46,7 @@ import {
 } from "~/components/buttons/Button";
 import { Loader } from "~/components/Loader";
 import useRenkuToast from "~/components/toast/useRenkuToast";
+import AppLogsModal from "~/features/logsDisplay/AppLogsModal";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import type { AppStatus } from "~/features/sessionsV2/api/apps.api";
 import {
@@ -195,6 +197,9 @@ export default function AppLauncherActions({
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const toggleDelete = useCallback(() => setIsDeleteOpen((open) => !open), []);
 
+  const [isLogsOpen, setIsLogsOpen] = useState(false);
+  const toggleLogs = useCallback(() => setIsLogsOpen((open) => !open), []);
+
   const onPublish = useCallback(() => {
     publishApp({ appPostRequest: { launcher_id: launcher.id } });
   }, [publishApp, launcher.id]);
@@ -254,6 +259,16 @@ export default function AppLauncherActions({
     ),
     displayBuildActions && !applyDefaultBuildActions && (
       <RebuildLauncherDropdownItem key="rebuild-launcher" launcher={launcher} />
+    ),
+    write && app && (
+      <DropdownItem
+        key="app-logs"
+        data-cy="app-menu-view-logs"
+        onClick={toggleLogs}
+      >
+        <FileEarmarkText className={cx("bi", "me-1")} />
+        View logs
+      </DropdownItem>
     ),
     isLive && (
       <DropdownItem
@@ -385,12 +400,19 @@ export default function AppLauncherActions({
         {actionControl}
       </div>
       {app && (
-        <DeleteAppModal
-          appName={app.name}
-          isOpen={isDeleteOpen}
-          toggle={toggleDelete}
-          onConfirm={onDelete}
-        />
+        <>
+          <DeleteAppModal
+            appName={app.name}
+            isOpen={isDeleteOpen}
+            toggle={toggleDelete}
+            onConfirm={onDelete}
+          />
+          <AppLogsModal
+            appName={app.name}
+            isOpen={isLogsOpen}
+            toggle={toggleLogs}
+          />
+        </>
       )}
     </>
   );

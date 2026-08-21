@@ -44,6 +44,9 @@ const withTagHandling = appsGeneratedApi.enhanceEndpoints({
     deleteAppsByAppName: {
       invalidatesTags: ["App"],
     },
+    getAppsByAppNameLogs: {
+      keepUnusedDataFor: 0,
+    },
   },
 });
 
@@ -61,6 +64,7 @@ export const appsApi = withTagHandling.injectEndpoints({
 export const {
   useGetAppsQuery,
   useGetAppsByAppNameQuery,
+  useGetAppsByAppNameLogsQuery,
   usePostAppsMutation,
   useDeleteAppsByAppNameMutation,
   useInvalidateAppsMutation,

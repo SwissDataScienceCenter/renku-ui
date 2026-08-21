@@ -126,6 +126,48 @@
         },
         "tags": ["apps"]
       }
+    },
+    "/apps/{app_name}/logs": {
+      "get": {
+        "summary": "Get all logs from a specific app",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "app_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AppName"
+            },
+            "description": "The name of the app to get the logs of"
+          },
+          {
+            "in": "query",
+            "name": "max_lines",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 250
+            },
+            "description": "The maximum number of most-recent lines to return for each container"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The app logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppLogsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["apps"]
+      }
     }
   },
   "components": {
@@ -183,6 +225,16 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/AppResponse"
+        }
+      },
+      "AppLogsResponse": {
+        "description": "The logs of every container of every pod currently backing the app, keyed by\n\"<pod name>/<container name>\". Unlike a session, an app can be served by more\nthan one pod, so the pod name is part of the key. An app that has scaled to\nzero has no pods and therefore no logs.\n",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "example": {
+          "my-app-00001-deployment-6b9f7-2xqzt/user-container": "Log line 1\nLog line 2"
         }
       },
       "AppPostRequest": {
