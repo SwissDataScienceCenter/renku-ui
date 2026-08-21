@@ -43,13 +43,7 @@ export interface SvgIconProps {
 
 export type LauncherCategory = "session" | "job" | "app";
 
-/**
- * Shared API discriminator. For interactive sessions and jobs this matches both
- * `launcher_type` and `session_type`. Apps (`launcher_type === "app"`) never
- * produce a `session_type`, so this is keyed on the (wider) `launcher_type`.
- * `SessionType` is a strict subset of `LauncherType`, so passing a
- * `session_type` here remains type-safe.
- */
+/** Keyed on the wider `launcher_type`, since apps produce no `session_type`. */
 export type SessionLauncherKind = LauncherType;
 
 export const SESSION_LAUNCHER_KIND = {

@@ -18,7 +18,6 @@
 
 import { appsGeneratedApi } from "./apps.generated-api";
 
-// Adds tag handling for cache management
 const withTagHandling = appsGeneratedApi.enhanceEndpoints({
   addTagTypes: ["App"],
   endpoints: {
@@ -50,8 +49,6 @@ const withTagHandling = appsGeneratedApi.enhanceEndpoints({
   },
 });
 
-// Adds a tag invalidation endpoint used to force a refresh (e.g. after a
-// launcher of type "app" is created or deleted elsewhere).
 export const appsApi = withTagHandling.injectEndpoints({
   endpoints: (build) => ({
     invalidateApps: build.mutation<null, void>({

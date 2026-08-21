@@ -27,7 +27,6 @@ import {
   partitionDataConnectorsForApp,
 } from "./appDataConnectors.utils";
 
-/** A sensitive-field entry, shaped enough for the predicate to count it. */
 const SECRET_FIELD = {
   name: "secret_access_key",
   help: "The secret key.",
@@ -40,11 +39,6 @@ interface ConnectorOverrides {
   visibility?: "private" | "public";
 }
 
-/**
- * A connector that clears every condition, so each test can break exactly one.
- * Cast rather than fully populated: the predicate reads four fields and the
- * generated type carries a dozen that would only be noise here.
- */
 function makeDataConnector({
   configuration = { type: "s3", provider: "AWS" },
   name = "public-bucket",
@@ -83,9 +77,6 @@ describe("appWillMount", () => {
     ).toBe(false);
   });
 
-  // The load-bearing case, and the reason the OAuth set has to be duplicated at
-  // all: an OAuth connector has no static secret fields, so the sensitive-field
-  // check alone would wave a user's private Drive through.
   it.each(["drive", "dropbox"])(
     "skips a public %s connector even with no sensitive fields",
     (storageType) => {
@@ -100,8 +91,6 @@ describe("appWillMount", () => {
     },
   );
 
-  // The backend predicate reads configuration["type"]; storage_type records
-  // where a DOI-derived connector came from and can disagree with it.
   it("reads the storage type from the configuration, not from storage_type", () => {
     const connector = makeDataConnector({ configuration: { type: "drive" } });
     connector.storage.storage_type = "doi";
@@ -115,7 +104,6 @@ describe("appWillMount", () => {
 
   it("skips a connector with no sensitive-field list at all", () => {
     const connector = makeDataConnector();
-    // Fail-closed: an absent list is unknown, not empty.
     delete (connector.storage as { sensitive_fields?: unknown })
       .sensitive_fields;
 

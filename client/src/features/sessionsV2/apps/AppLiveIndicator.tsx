@@ -21,17 +21,6 @@ import { CircleFill } from "react-bootstrap-icons";
 
 import styles from "./AppLiveIndicator.module.scss";
 
-/**
- * A pulsing dot shown next to an app launcher's primary action while the app is
- * up. This is the only status the launcher header annotates: every other state
- * is already carried by the action button itself ("Start", "Restart",
- * "Starting", "Stopping"), so rendering it twice would just add noise. Callers
- * render nothing when the app is not live.
- *
- * Note that "live" only means a deployment exists and Knative reports it Ready.
- * Apps run with min-scale 0, and a scaled-to-zero service still reports Ready,
- * so a live app may still need a cold start before it answers a request.
- */
 export default function AppLiveIndicator() {
   return (
     <span

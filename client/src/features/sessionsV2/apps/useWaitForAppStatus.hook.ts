@@ -37,23 +37,6 @@ interface UseWaitForAppStatusArgs {
   skip?: boolean;
 }
 
-/**
- * Poll the /apps query while an app action is in flight, until the deployment
- * reaches the action's target (ready / failed / gone), then stop.
- *
- * This is the apps analog of useWaitForSessionStatus. The transitions are
- * server-driven and asynchronous — Knative scales up and down after the
- * mutation returns — so the single cache-invalidation refetch that a mutation
- * triggers is not enough on its own: it captures a snapshot that is often still
- * mid-transition (a starting app is briefly still "pending"; a stopped app is
- * briefly still present). The caller flips `skip` off when it fires a mutation
- * and reads `isWaiting` to know when the transition has settled.
- *
- * `isWaiting` stays true while a refetch is in flight so that the post-mutation
- * invalidation refetch — which may still be reporting the pre-action status —
- * does not read as "already at target" for actions whose start and target
- * states overlap (e.g. republishing an app that is currently "failed").
- */
 export default function useWaitForAppStatus({
   projectId,
   launcherId,
@@ -65,9 +48,6 @@ export default function useWaitForAppStatus({
   app: AppResponse | undefined;
 } {
   const result = useGetAppsQuery(skip ? skipToken : { projectId }, {
-    // Stay subscribed while an action is in flight (so the invalidation refetch
-    // reaches us) and poll until the app settles. RTK Query collapses this and
-    // the display query into one request stream per project.
     pollingInterval: skip ? 0 : pollingInterval,
   });
 

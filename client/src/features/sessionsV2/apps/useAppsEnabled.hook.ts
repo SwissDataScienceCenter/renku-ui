@@ -21,19 +21,7 @@ import { useContext } from "react";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 
-/**
- * Whether the apps feature is enabled for this deployment.
- *
- * Apps are gated by a deployment-level config value (APPS_ENABLED), delivered
- * via /config.json → AppParams, and driven by the `apps.enabled` value of the
- * renku Helm chart (the same value that sets APPS_ENABLED on the backend
- * data-service). This keeps the UI and backend gate in sync per-deployment,
- * rather than relying on a per-browser localStorage flag.
- *
- * Falls back to the default (disabled) while the config has not loaded yet, so
- * the gate fails closed.
- */
 export default function useAppsEnabled(): boolean {
   const { params } = useContext(AppContext);
-  return params?.APPS_ENABLED ?? DEFAULT_APP_PARAMS.APPS_ENABLED;
+  return params?.RENKU_APPS_ENABLED ?? DEFAULT_APP_PARAMS.RENKU_APPS_ENABLED;
 }

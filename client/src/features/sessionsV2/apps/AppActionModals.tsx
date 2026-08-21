@@ -24,16 +24,9 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { WarnAlert } from "~/components/Alert";
 
 interface AppActionModalProps {
-  /** Name of the app the action targets, shown in the confirmation copy. */
   appName: string;
   isOpen: boolean;
   toggle: () => void;
-  /**
-   * Perform the action. The owning component holds the mutation and the
-   * post-action polling (see AppLauncherActions); these modals are just the
-   * confirmation step, so they close as soon as the action is confirmed and any
-   * error is surfaced by the caller (via a toast).
-   */
   onConfirm: () => void;
 }
 
@@ -43,9 +36,7 @@ export function DeleteAppModal({
   toggle,
   onConfirm,
 }: AppActionModalProps) {
-  // "Stop" is the user-facing verb; under the hood this deletes the deployment
-  // (create/delete is the only lifecycle the backend offers), which is why the
-  // owning component still drives a delete mutation.
+  // "Stop" is the user-facing verb; the backend only offers create/delete.
   const onStop = useCallback(() => {
     onConfirm();
     toggle();

@@ -112,7 +112,6 @@ function AppIconSvg({ className, style }: SvgIconProps) {
       viewBox="0 0 110 110"
       style={style}
     >
-      {/* Browser window frame */}
       <rect
         x="8"
         y="18"
@@ -126,7 +125,6 @@ function AppIconSvg({ className, style }: SvgIconProps) {
       <circle cx="18" cy="26" r="2.5" fill="currentColor" />
       <circle cx="27" cy="26" r="2.5" fill="currentColor" />
       <circle cx="36" cy="26" r="2.5" fill="currentColor" />
-      {/* Circle-square mark inside the window */}
       <rect
         x="47"
         y="55"

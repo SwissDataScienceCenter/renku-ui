@@ -34,12 +34,6 @@ interface AppLogsModalProps {
   toggle: () => void;
 }
 
-/**
- * The logs of a running app, keyed by "<pod name>/<container name>". Unlike a
- * session an app can be backed by more than one pod, and an idle app scales to
- * zero and then has no pods at all — so an empty response is a normal outcome
- * here rather than a sign that something went wrong.
- */
 export default function AppLogsModal({
   appName,
   isOpen,

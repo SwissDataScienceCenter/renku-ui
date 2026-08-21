@@ -25,7 +25,6 @@ export interface AppParams {
   HOMEPAGE: HomepageParams;
   IMAGE_BUILDERS_ENABLED: boolean;
   BUILD_PRIVATE_REPO_BUILDS_ENABLED: boolean;
-  APPS_ENABLED: boolean;
   CULLING_THRESHOLDS: CullingThresholdsParams;
   KEYCLOAK_REALM: string;
   MAINTENANCE: string;
@@ -49,6 +48,7 @@ export interface AppParams {
   CONTACT_EMAIL: string;
   PERSISTED_LOGS_ENABLED: boolean;
   PERSISTED_LOGS_TTL_SECONDS: number;
+  RENKU_APPS_ENABLED: boolean;
 }
 
 export type AppParamsStrings = {

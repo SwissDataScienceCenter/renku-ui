@@ -79,9 +79,6 @@ import BuildLauncherButtons, {
 import CheckingLauncherButton from "../shared/CheckingLauncherButton";
 import type { LauncherCardActionsProps } from "../types";
 
-// Statuses that end a publish wait: the app is up ("ready") or it has settled
-// into a terminal failure. Kept module-level so the array is stable across
-// renders (it feeds a query-options object).
 const APP_SPIN_UP_TARGET: AppStatus[] = ["ready", "failed"];
 
 export default function AppLauncherActions({
@@ -125,16 +122,9 @@ export default function AppLauncherActions({
     imageStatus,
   } = useLauncherEnvironmentReadiness({ builds, launcher, lastBuild });
 
-  // One mutation instance per action so their life cycles (isLoading /
-  // isSuccess / reset) stay independent and can each drive their own wait.
   const [publishApp, publishResult] = usePostAppsMutation();
   const [deleteApp, deleteResult] = useDeleteAppsByAppNameMutation();
 
-  // While an action is in flight, poll /apps until the deployment reaches the
-  // action's target, then reset the mutation (which flips `skip` back on and
-  // stops the poll). This mirrors ActiveSessionButton + useWaitForSessionStatus:
-  // the transitions are async server-side, so the single cache-invalidation
-  // refetch a mutation triggers is not enough on its own.
   const { isWaiting: isSpinningUp } = useWaitForAppStatus({
     projectId: project.id,
     launcherId: launcher.id,
@@ -151,7 +141,6 @@ export default function AppLauncherActions({
   const { reset: resetPublish } = publishResult;
   const { reset: resetDelete } = deleteResult;
 
-  // Publish: clear once the app has settled (up, or failed), or on error.
   useEffect(() => {
     if (publishResult.isError) {
       renkuToastDanger({
@@ -170,7 +159,6 @@ export default function AppLauncherActions({
     resetPublish,
   ]);
 
-  // Delete: clear once the app is gone (or on error).
   useEffect(() => {
     if (deleteResult.isError) {
       renkuToastDanger({
@@ -189,8 +177,6 @@ export default function AppLauncherActions({
     resetDelete,
   ]);
 
-  // The transition the primary action should report: a mutation is in flight, or
-  // it returned but the server-side effect has not settled yet.
   const transition = getAppTransition(app, {
     isStarting: publishResult.isLoading || isSpinningUp,
     isStopping: deleteResult.isLoading || isDeleting,
@@ -292,9 +278,6 @@ export default function AppLauncherActions({
   const hasMenuItems = menuItems.length > 0;
 
   const defaultAction = useMemo(() => {
-    // A start or stop has not settled yet: hold the slot with a disabled
-    // progress button rather than dropping the primary action, so the card does
-    // not appear to lose its button mid-transition.
     if (transition) {
       return <AppTransitionButton transition={transition} />;
     }
@@ -303,7 +286,6 @@ export default function AppLauncherActions({
       return <CheckingLauncherButton />;
     }
 
-    // No deployment yet (or the previous one failed): offer "Publish".
     if (!app || app.status === "failed") {
       const publishDisabled =
         !write || !isPublic || hasOtherApp || !hasValidImage;
@@ -340,8 +322,6 @@ export default function AppLauncherActions({
       return publishButton;
     }
 
-    // Defensive: every known status is handled above, so this only trips if the
-    // backend grows a new one.
     if (!isLive) {
       return null;
     }
@@ -393,8 +373,6 @@ export default function AppLauncherActions({
       {menuItems}
     </ButtonWithMenuV2>
   ) : (
-    // No primary action to offer: fall back to a menu-only kebab so the actions
-    // stay reachable without a primary button.
     <div onClick={(event) => event.stopPropagation()}>
       <SingleButtonWithMenu color="primary" size="sm">
         {menuItems}
@@ -432,10 +410,6 @@ const TRANSITION_LABEL: Record<AppTransition, string> = {
   stopping: "Stopping",
 };
 
-/**
- * The primary action slot while a start or stop is settling: a disabled button
- * carrying a spinner and the transition's label.
- */
 function AppTransitionButton({ transition }: { transition: AppTransition }) {
   return (
     <Button
@@ -463,7 +437,6 @@ interface AppActionButtonProps {
   tooltip?: string;
 }
 
-/** A small button that guards its click when disabled and shows a tooltip. */
 function AppActionButton({
   color,
   dataCy,

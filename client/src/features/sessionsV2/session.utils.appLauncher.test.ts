@@ -126,10 +126,6 @@ describe("bring-your-own app frontend", () => {
   });
 
   it("does not send command/args for an app launcher", () => {
-    /* eslint-disable spellcheck/spell-checker */
-    // Approach (a): the start command comes from the repository Procfile, not
-    // from the form, so an app launcher must not serialize command/args.
-    /* eslint-enable spellcheck/spell-checker */
     const result = getFormattedEnvironmentValues(
       makeCustomBuildForm({
         command: '["python", "app.py"]',
@@ -179,9 +175,6 @@ describe("getLauncherApiType() round-trips the app category", () => {
 });
 
 describe("getLauncherChangeEffectMessage()", () => {
-  // A launcher has at most one app, so "next time you start a new app" is wrong
-  // twice: there is no next one to start, and it reads as "already done" while
-  // the live app still serves the old definition.
   it("does not promise app owners a next new app", () => {
     const message = getLauncherChangeEffectMessage("app");
 
@@ -189,8 +182,6 @@ describe("getLauncherChangeEffectMessage()", () => {
     expect(message).not.toContain("a new app");
   });
 
-  // The restart is what actually applies the change to a live app, so it has to
-  // be spelled out rather than left as "will not be affected".
   it("tells app owners how to apply the change to a running app", () => {
     const message = getLauncherChangeEffectMessage("app");
 
@@ -205,8 +196,6 @@ describe("getLauncherChangeEffectMessage()", () => {
     expect(getLauncherChangeEffectMessage(category)).toContain(phrase);
   });
 
-  // Every category has to produce something; a missing case would render the
-  // literal "undefined" into a success alert.
   it.each<LauncherCategory>(["app", "job", "session"])(
     "returns a non-empty sentence for %s",
     (category) => {

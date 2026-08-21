@@ -233,8 +233,6 @@ describe("getAppLobbyPath()", () => {
   });
 
   it("does not depend on an app existing", () => {
-    // The path is derived purely from the launcher, which is what lets a shared
-    // link keep working across a stop and re-publish.
     expect(getAppLobbyPath({ ...location, launcherId: "other" })).toBe(
       "/p/my-group/my-project/apps/other",
     );

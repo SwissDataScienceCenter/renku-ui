@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import type { ReactNode } from "react";
+import { ArrowLeft } from "react-bootstrap-icons";
 import { Link } from "react-router";
 
 import progressBoxStyles from "~/components/progress/ProgressBox.module.scss";
@@ -27,19 +28,6 @@ interface AppLobbyLayoutProps {
   children: ReactNode;
 }
 
-/**
- * Shared column layout for the lobby, so every state it can land in — waking,
- * not running, failed — puts its heading and controls in the same place. A
- * visitor following a shared link often sees two of these in succession, and
- * having them jump around reads as a page change rather than a status change.
- *
- * Borrows the width and vertical offset from the session launch screens
- * (`progressBoxSmall`) rather than setting its own. Waiting for an app to wake
- * and waiting for a session to start are the same moment to a user, so the box
- * should land in the same place on screen. The waking state goes further and
- * uses `ProgressStepsIndicator` itself; this layout covers the states that have
- * no progress to report — a load error, or an app with no address yet.
- */
 export default function AppLobbyLayout({
   title,
   children,
@@ -64,13 +52,10 @@ export default function AppLobbyLayout({
   );
 }
 
-/**
- * The way out of every dead end in the lobby. Always offered, because a visitor
- * who arrived on a shared link has no other navigation to fall back on.
- */
 export function BackToProjectLink({ projectUrl }: { projectUrl: string }) {
   return (
     <Link className="mt-2" data-cy="app-lobby-back-to-project" to={projectUrl}>
+      <ArrowLeft className={cx("bi", "me-1")} />
       Go to the project
     </Link>
   );

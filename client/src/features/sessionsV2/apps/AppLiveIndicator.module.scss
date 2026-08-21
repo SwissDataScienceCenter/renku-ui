@@ -1,5 +1,3 @@
-// A touch smaller than the surrounding controls, so the status reads as a quiet
-// annotation next to the primary action rather than competing with it.
 .statusText {
   font-size: 0.75rem;
 }
@@ -14,9 +12,6 @@
   animation-name: $name;
 }
 
-// A gently "breathing" status dot, used to signal that a published app is live
-// and reachable. Mirrors the CircleFill dot the session status badges use, but
-// animated so the live state reads as active rather than static.
 .pulseDot {
   --pulse-dot-animation-speed: 1.6s;
 
@@ -38,8 +33,6 @@
   animation-timing-function: ease-in-out;
 }
 
-// Honour users who have asked the OS to minimise motion: keep the dot, drop the
-// animation.
 @media (prefers-reduced-motion: reduce) {
   .pulseDot {
     animation: none;

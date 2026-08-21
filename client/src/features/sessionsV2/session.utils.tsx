@@ -119,16 +119,6 @@ export function getLauncherChangeEffectMessage(
   return `The changes will take effect the next time you ${text.action} a ${text.inline} with this launcher. Current ${text.inline}s will not be affected.`;
 }
 
-/**
- * Whether a launcher category exposes the full set of session-style launcher
- * form fields — Default URL, port, mount/working directory, UID/GID,
- * strip-path-prefix, and the builder frontend/advanced settings.
- *
- * Apps currently mirror sessions here; jobs deliberately do not (they only
- * take a command/args). This is expected to change once apps get their own
- * curated field set, so the policy lives in this one predicate rather than
- * being scattered as `=== "app"` checks across the form components.
- */
 export function showsSessionLauncherFields(
   launcherCategory: LauncherCategory,
 ): boolean {

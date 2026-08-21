@@ -35,15 +35,6 @@ interface AppRuntimeCardProps {
   project: Project;
 }
 
-/**
- * The running-deployment card for an app launcher — the app-shaped counterpart
- * to SessionView's "Launched session" card. Shows the app's share link and
- * direct URL, start time, and image when one exists, and always renders the status
- * indicator + primary action (Open / Start / Stop) via the shared
- * LauncherActions dispatcher (which routes apps to AppLauncherActions). The app
- * is read through the shared useAppForLauncher query, so this does not add a
- * second request — it collapses into the launcher card's existing /apps read.
- */
 export default function AppRuntimeCard({
   launcher,
   project,

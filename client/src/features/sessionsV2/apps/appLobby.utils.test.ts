@@ -29,7 +29,6 @@ import {
   isAppLobbyBusy,
 } from "./appLobby.utils";
 
-/** Replay a sequence of events from a starting state. */
 function reduceAll(
   state: AppLobbyState,
   events: AppLobbyEvent[],
@@ -37,7 +36,6 @@ function reduceAll(
   return events.reduce(appLobbyReducer, state);
 }
 
-/** The event pair that carries the lobby from one probe to the next. */
 const FAIL_THEN_RETRY: AppLobbyEvent[] = [
   { type: "probe-failed" },
   { type: "retry-delay-elapsed" },
@@ -77,7 +75,6 @@ describe("appLobbyReducer()", () => {
   });
 
   it("spends exactly APP_LOBBY_MAX_ATTEMPTS probes before giving up", () => {
-    // Fail every probe but the last, so the machine is on its final attempt.
     const onFinalAttempt = reduceAll(
       INITIAL_APP_LOBBY_STATE,
       Array.from(
@@ -90,7 +87,6 @@ describe("appLobbyReducer()", () => {
       attempt: APP_LOBBY_MAX_ATTEMPTS,
     });
 
-    // The final failure escalates to the user rather than backing off again.
     expect(appLobbyReducer(onFinalAttempt, { type: "probe-failed" })).toEqual({
       status: "exhausted",
       attempt: APP_LOBBY_MAX_ATTEMPTS,
@@ -108,8 +104,6 @@ describe("appLobbyReducer()", () => {
   });
 
   describe("ignores events that do not apply to the current status", () => {
-    // An aborted probe can still settle after the machine has moved on. A late
-    // event must not consume an attempt or undo a terminal state.
     it("ignores a late probe result while backing off", () => {
       const waiting: AppLobbyState = { status: "waiting", attempt: 2 };
       expect(appLobbyReducer(waiting, { type: "probe-failed" })).toBe(waiting);
@@ -142,10 +136,6 @@ describe("appLobbyReducer()", () => {
 });
 
 describe("lobby timing budget", () => {
-  // These three constants only mean anything together, and the one people reach
-  // for is the probe timeout. Raising it alone silently stretches how long a
-  // visitor stares at a spinner before the page admits it does not know, which
-  // is the number the copy on that page is written against. Pin the product.
   it("gives up between five and six minutes after the first probe", () => {
     expect(APP_LOBBY_TOTAL_BUDGET_MS).toBeGreaterThanOrEqual(5 * 60_000);
     expect(APP_LOBBY_TOTAL_BUDGET_MS).toBeLessThanOrEqual(6 * 60_000);
@@ -159,16 +149,10 @@ describe("lobby timing budget", () => {
   });
 
   it("keeps a single probe under the shortest timeout on the path", () => {
-    // A probe that outlives a gateway collects that gateway's 504 — which,
-    // being opaque, reads exactly like a 200 and would send the visitor to an
-    // error page. 60 s is the smallest plausible hop timeout in front of us.
     expect(APP_LOBBY_PROBE_TIMEOUT_MS).toBeLessThan(60_000);
   });
 
   it("pauses long enough that a failing URL cannot spin the budget away", () => {
-    // A refused connection rejects in milliseconds, so with no pause all the
-    // attempts would be spent in a single frame and the visitor would be told
-    // the app is "taking longer than expected" instantly.
     expect(APP_LOBBY_RETRY_DELAY_MS).toBeGreaterThanOrEqual(1_000);
   });
 });

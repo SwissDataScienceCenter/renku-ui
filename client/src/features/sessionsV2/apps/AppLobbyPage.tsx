@@ -49,17 +49,8 @@ import useAppLobby from "./useAppLobby.hook";
 import progressBoxStyles from "~/components/progress/ProgressBox.module.scss";
 
 /**
- * The app lobby.
- *
- * This is the page every shared app link points at. Apps run with min-scale 0,
- * so an app that exists and reports Ready may still be scaled to zero and need
- * a cold start before it answers a request. The lobby absorbs that wait: it
- * kicks the app awake, waits for it to answer, and only then hands the visitor
- * over to the app itself.
- *
- * Routing guarantees the three params, but useParams types them as optional.
- * Validating them here — before any other hook runs — lets the rest of the page
- * take them as plain strings.
+ * The page every shared app link points at. Apps run with min-scale 0, so it
+ * wakes the app, waits for it to answer, then hands the visitor over.
  */
 export default function AppLobbyPage() {
   const { namespace, slug, launcherId } = useParams<{
@@ -90,17 +81,13 @@ function AppLobby({ namespace, slug, launcherId }: AppLobbyProps) {
 
   const projectId = project?.id;
 
-  // The launcher is what the URL actually addresses, so it decides whether this
-  // link is meaningful at all — separately from whether an app is deployed.
   const {
     data: launchers,
     isLoading: isLoadingLaunchers,
     error: launchersError,
   } = useGetProjectSessionLaunchersQuery(projectId ? { projectId } : skipToken);
 
-  // useAppForLauncher polls while any app in the project is pending, so a
-  // deployment that is still being created settles into ready here without the
-  // lobby having to poll for it.
+  // useAppForLauncher polls while the app is pending, so the lobby need not.
   const {
     app,
     isLoading: isLoadingApp,
@@ -116,9 +103,6 @@ function AppLobby({ namespace, slug, launcherId }: AppLobbyProps) {
     slug,
   });
 
-  // Deliberately not waiting on the launchers query here. The probe is what
-  // wakes the app, so every millisecond before it goes out is added to the
-  // visitor's cold start — and the probe needs nothing but the app's URL.
   if (isLoadingProject || isLoadingApp) {
     return <PageLoader />;
   }
@@ -135,10 +119,6 @@ function AppLobby({ namespace, slug, launcherId }: AppLobbyProps) {
 
   const launcher = launchers?.find(({ id }) => id === launcherId);
 
-  // Start waking the app the moment we know there is one, without waiting for
-  // the launcher. An app found by launcher id proves that launcher exists, so
-  // the checks below cannot change this outcome — the launcher only supplies a
-  // name, which appears on its own once the query lands.
   if (app != null && app.status !== "failed") {
     return (
       <AppLobbyProbe
@@ -149,23 +129,17 @@ function AppLobby({ namespace, slug, launcherId }: AppLobbyProps) {
     );
   }
 
-  // Past here there is nothing to wake, and the launcher is what decides
-  // between a dead link and a stopped app — so now it is worth waiting for.
+  // Nothing left to wake: the launcher decides dead link vs stopped app.
   if (isLoadingLaunchers) {
     return <PageLoader />;
   }
 
-  // A launcher id that does not resolve is a bad address, not a stopped app —
-  // a deleted launcher or a mistyped link. Saying "this app isn't running"
-  // there would imply the link will start working again, which it will not.
-  // Only trust the absence when the query actually succeeded: on an error we
-  // fall through and let the app itself decide what to show.
+  // A launcher id that does not resolve is a bad address, not a stopped app.
+  // Only trust the absence when the query succeeded.
   if (launchersError == null && launcher == null) {
     return <LazyNotFound />;
   }
 
-  // The lobby only means anything for app launchers. A session launcher has no
-  // shareable public address, so this URL is not one of its pages.
   if (launcher != null && getLauncherCategory(launcher) !== "app") {
     return <LazyNotFound />;
   }
@@ -186,18 +160,9 @@ interface AppLobbyProbeProps {
   projectUrl: string;
 }
 
-/**
- * The wake-and-wait stage, reached once a deployment exists.
- *
- * Split out from AppLobby so the state machine is mounted only when there is
- * genuinely an app to probe, and so it survives the /apps poll: remounting on
- * every refetch would restart the retry budget.
- */
 function AppLobbyProbe({ app, appName, projectUrl }: AppLobbyProbeProps) {
   const appUrl = app.url ? toSecureAppUrl(app.url) : undefined;
 
-  // A pending app is still being created, so there is nothing to wake yet. The
-  // /apps poll flips it to ready and the probe starts then.
   const isDeploying = app.status === "pending";
   const { state, retry } = useAppLobby({
     appUrl,
@@ -206,10 +171,6 @@ function AppLobbyProbe({ app, appName, projectUrl }: AppLobbyProbeProps) {
 
   const isReady = state.status === "ready";
 
-  // A cold start is long enough that people switch tabs while they wait, which
-  // is exactly where the favicon is the only thing still reporting. Sessions
-  // already do this during launch; the lobby needs it more, since it has no
-  // in-page progress to come back to.
   const favicon: FaviconStatus =
     state.status === "exhausted" ? "error" : isReady ? "running" : "waiting";
 
@@ -219,8 +180,6 @@ function AppLobbyProbe({ app, appName, projectUrl }: AppLobbyProbeProps) {
     dispatch(setFavicon(favicon));
   }, [dispatch, favicon]);
 
-  // Reset only on unmount. Folding this into the effect above would reset and
-  // re-set on every status change, which flickers the tab icon.
   useEffect(
     () => () => {
       dispatch(resetFavicon());
@@ -230,9 +189,7 @@ function AppLobbyProbe({ app, appName, projectUrl }: AppLobbyProbeProps) {
 
   useEffect(() => {
     if (isReady && appUrl != null) {
-      // replace(), not assign(): the lobby is only a stop along the way, so
-      // Back should return the visitor to where they came from rather than
-      // drop them into the wait again.
+      // replace(), not assign(): Back should skip the lobby.
       window.location.replace(appUrl);
     }
   }, [appUrl, isReady]);
@@ -251,12 +208,6 @@ function AppLobbyProbe({ app, appName, projectUrl }: AppLobbyProbeProps) {
 
   const isExhausted = state.status === "exhausted";
 
-  // The same two-stage shape the session launch page uses, and for the same
-  // reason: both stages are genuinely observable, so the checklist reports
-  // rather than guesses. "Publishing" comes from the app's own status via the
-  // /apps poll; "waking" is the probe. There is deliberately no third,
-  // finer-grained stage — the probe is a no-cors request whose response is
-  // opaque by construction, so nothing can be known about its progress.
   const steps: StepsProgressBar[] = [
     {
       id: 0,
@@ -310,9 +261,6 @@ function AppLobbyProbe({ app, appName, projectUrl }: AppLobbyProbeProps) {
         title={appName ? `Launching app ${appName}` : "Launching app"}
         type={ProgressType.Determinate}
       />
-      {/* ProgressStepsIndicator renders its description as plain text, so the
-          change of state is visible but never announced. Screen readers get
-          it from here instead. */}
       <p
         aria-live="polite"
         className="visually-hidden"
@@ -330,11 +278,6 @@ interface ExhaustedActionsProps {
   retry: () => void;
 }
 
-/**
- * What the visitor can do once the retry budget is spent. Rendered inside the
- * progress box rather than replacing it, so the failed stage stays on screen
- * and the buttons read as a response to it.
- */
 function ExhaustedActions({
   appUrl,
   projectUrl,
@@ -347,8 +290,6 @@ function ExhaustedActions({
           <ArrowRepeat className={cx("bi", "me-1")} aria-hidden="true" />
           Try again
         </Button>
-        {/* The probe is a heuristic, not a health check, so let the visitor
-            overrule it and go straight to the app. */}
         <Button
           color="outline-primary"
           data-cy="app-lobby-open-anyway"
@@ -359,8 +300,6 @@ function ExhaustedActions({
           Open it anyway
         </Button>
       </div>
-      {/* Block-level so the link sits under the buttons rather than trailing
-          them — the Link's own margin is inline and would not separate it. */}
       <div>
         <BackToProjectLink projectUrl={projectUrl} />
       </div>

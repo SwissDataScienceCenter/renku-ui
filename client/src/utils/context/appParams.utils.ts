@@ -74,11 +74,11 @@ export function validatedAppParams(params: unknown): AppParams {
     params_,
     "BUILD_PRIVATE_REPO_BUILDS_ENABLED",
   );
-  const APPS_ENABLED = validateBoolean(params_, "APPS_ENABLED");
   const PERSISTED_LOGS_ENABLED = validateBoolean(
     params_,
     "PERSISTED_LOGS_ENABLED",
   );
+  const RENKU_APPS_ENABLED = validateBoolean(params_, "RENKU_APPS_ENABLED");
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -108,7 +108,6 @@ export function validatedAppParams(params: unknown): AppParams {
     HOMEPAGE,
     IMAGE_BUILDERS_ENABLED,
     BUILD_PRIVATE_REPO_BUILDS_ENABLED,
-    APPS_ENABLED,
     KEYCLOAK_REALM,
     MAINTENANCE,
     PREVIEW_THRESHOLD,
@@ -130,6 +129,7 @@ export function validatedAppParams(params: unknown): AppParams {
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
     PERSISTED_LOGS_ENABLED,
     PERSISTED_LOGS_TTL_SECONDS,
+    RENKU_APPS_ENABLED,
   };
 }
 

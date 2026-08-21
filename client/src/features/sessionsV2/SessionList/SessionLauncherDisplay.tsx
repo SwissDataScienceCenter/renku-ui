@@ -112,9 +112,6 @@ export function SessionLauncherDisplay({
     [launcher.id, setHash],
   );
 
-  // Apps do not spawn per-user sessions; their runtime state comes from the
-  // dedicated /apps API (fetched inside the app-specific components), so we
-  // skip the sessions query entirely for app launchers.
   const isApp = isAppLauncher(launcher);
   const { data: sessions } = useGetSessionsQueryV2(
     isApp

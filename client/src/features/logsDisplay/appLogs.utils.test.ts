@@ -21,8 +21,6 @@ import { describe, expect, it } from "vitest";
 import { formatAppLogTabLabel, isAppUserContainerLog } from "./appLogs.utils";
 
 /* eslint-disable spellcheck/spell-checker */
-// The pod name suffixes below are Kubernetes-generated random strings, copied in
-// the shape they really have so the label formatting is exercised faithfully.
 
 describe("isAppUserContainerLog", () => {
   it("matches the user container of a pod", () => {

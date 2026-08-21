@@ -60,16 +60,12 @@ export default function NewLauncherModal({
   const { data: project } = useGetNamespacesByNamespaceProjectsAndSlugQuery(
     namespace && slug ? { namespace, slug } : skipToken,
   );
-  // Apps can only be created in public projects (enforced by the backend).
   const isProjectPublic = project?.visibility === "public";
 
-  // The apps feature is gated behind a feature flag until it is released.
   const launcherOptions = appsEnabled
     ? LAUNCHER_OPTIONS
     : LAUNCHER_OPTIONS.filter((category) => category !== "app");
 
-  // Lay every option out on a single row: split the 12-column grid evenly, so
-  // three options are 4 wide (3-up) and two options stay 6 wide (2-up).
   const optionColMd = Math.max(1, Math.floor(12 / launcherOptions.length));
 
   const isCategoryDisabled = useCallback(

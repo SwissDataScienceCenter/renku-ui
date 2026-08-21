@@ -171,8 +171,6 @@ export default function BuilderEnvironmentFields({
         <CodeRepositoryAdvancedSettings control={control} />
       </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
-      {/* Apps have no user-interface choice: they always bring their own web
-          app (frontend "none"), so the picker is only shown for sessions. */}
       {launcherCategory === "session" && (
         <BuilderFrontendSelector name="frontend_variant" control={control} />
       )}
@@ -181,7 +179,7 @@ export default function BuilderEnvironmentFields({
           selectedFrontend === "none")) && (
         <InfoAlert dismissible={false} timeout={0}>
           <p className="mb-1">
-            RenkuLab won&apos;t add a user interface to this environment.
+            Renku won&apos;t add a user interface to this environment.
             You&apos;re responsible for starting your own web app:
           </p>
           <ul className="mb-1">
