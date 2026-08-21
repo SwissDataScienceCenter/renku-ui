@@ -48,6 +48,7 @@ export interface AppParams {
   CONTACT_EMAIL: string;
   PERSISTED_LOGS_ENABLED: boolean;
   PERSISTED_LOGS_TTL_SECONDS: number;
+  RENKU_APPS_ENABLED: boolean;
 }
 
 export type AppParamsStrings = {

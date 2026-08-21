@@ -99,6 +99,7 @@ export default function SessionLauncherCard({
   } = useLauncherEnvironmentReadiness({ launcher });
 
   const hasSession = !!sessions?.length;
+
   const sessionType = sessions?.at(0)?.session_type ?? "interactive";
   // Orphan sessions have no launcher; get category from the session itself
   const launcherCategory = sessionLauncherKindToCategory(
@@ -107,6 +108,7 @@ export default function SessionLauncherCard({
   const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   const LauncherTypeIcon = launcherDefinition?.icon || PlayCircle;
   const launcherTypeLabel = launcherDefinition?.text.display || null;
+  const isApp = launcherCategory === "app";
 
   sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
     launcher && isBuildInProgress
@@ -182,43 +184,80 @@ export default function SessionLauncherCard({
         >
           <Row className="g-2">
             <Col className={cx("align-items-center")} xs={12} lg={6} xl={7}>
-              {launcher && (
-                <Row className={cx("g-2", "mb-0")}>
-                  <Col
-                    xs={12}
-                    xl={4}
-                    className={cx(
-                      "d-inline-block",
-                      "link-primary",
-                      "text-body",
-                    )}
-                  >
-                    <span
-                      className={cx(
-                        "small",
-                        "text-muted",
-                        "me-3",
-                        "d-inline-flex",
-                        "align-items-center",
-                        "gap-1",
-                      )}
+              {launcher &&
+                (isApp ? (
+                  <Row className={cx("align-items-center", "g-2", "mb-1")}>
+                    <Col
+                      xs="auto"
+                      xl={isCodeEnvironment ? 5 : "auto"}
+                      className={cx("link-primary", "text-body")}
                     >
-                      <LauncherTypeIcon className={cx("bi")} size={14} />
-                      <span className="fw-bold">{launcherTypeLabel}</span>{" "}
-                      Launcher
-                    </span>
-                  </Col>
-                  <Col xs={12} xl="auto">
+                      <span
+                        className={cx(
+                          "small",
+                          "text-muted",
+                          "d-inline-flex",
+                          "align-items-center",
+                          "gap-1",
+                        )}
+                      >
+                        <LauncherTypeIcon className={cx("bi")} size={14} />
+                        <span className="fw-bold">
+                          {launcherTypeLabel}
+                        </span>{" "}
+                        Launcher
+                      </span>
+                    </Col>
                     {launcher?.environment &&
                       getEnvironmentKindLabel(launcher.environment) != null && (
-                        <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
-                          <LauncherEnvironmentIcon launcher={launcher} />
-                          {getEnvironmentKindLabel(launcher.environment)}
-                        </span>
+                        <Col xs="auto">
+                          <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
+                            <LauncherEnvironmentIcon launcher={launcher} />
+                            {getEnvironmentKindLabel(launcher.environment)}
+                          </span>
+                        </Col>
                       )}
-                  </Col>
-                </Row>
-              )}
+                  </Row>
+                ) : (
+                  <Row className={cx("g-2", "mb-0")}>
+                    <Col
+                      xs={12}
+                      xl={4}
+                      className={cx(
+                        "d-inline-block",
+                        "link-primary",
+                        "text-body",
+                      )}
+                    >
+                      <span
+                        className={cx(
+                          "small",
+                          "text-muted",
+                          "me-3",
+                          "d-inline-flex",
+                          "align-items-center",
+                          "gap-1",
+                        )}
+                      >
+                        <LauncherTypeIcon className={cx("bi")} size={14} />
+                        <span className="fw-bold">
+                          {launcherTypeLabel}
+                        </span>{" "}
+                        Launcher
+                      </span>
+                    </Col>
+                    <Col xs={12} xl="auto">
+                      {launcher?.environment &&
+                        getEnvironmentKindLabel(launcher.environment) !=
+                          null && (
+                          <span className={cx(ENVIRONMENT_KIND_CLASSES)}>
+                            <LauncherEnvironmentIcon launcher={launcher} />
+                            {getEnvironmentKindLabel(launcher.environment)}
+                          </span>
+                        )}
+                    </Col>
+                  </Row>
+                ))}
               <Row className={cx("g-2", isCodeEnvironment && "mb-2")}>
                 <Col
                   xs={12}

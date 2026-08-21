@@ -1,5 +1,6 @@
 import cx from "classnames";
 import {
+  CircleSquare,
   Database,
   FileCode,
   Gear,
@@ -34,6 +35,8 @@ export default function OffcanvasHeaderWithType({
     <Gear className="me-1" />
   ) : entityType === "code-repository" ? (
     <FileCode className="me-1" />
+  ) : entityType === "app-launcher" ? (
+    <CircleSquare className="me-1" />
   ) : (
     <QuestionCircle className="me-1" />
   );
@@ -48,7 +51,9 @@ export default function OffcanvasHeaderWithType({
           ? "Session launcher"
           : entityType === "code-repository"
             ? "Code repository"
-            : "Unknown";
+            : entityType === "app-launcher"
+              ? "App launcher"
+              : "Unknown";
 
   return (
     <div>

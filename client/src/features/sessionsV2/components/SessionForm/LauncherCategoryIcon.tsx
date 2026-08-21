@@ -99,6 +99,46 @@ function SessionIconSvg({ className, style }: SvgIconProps) {
   );
 }
 
+function AppIconSvg({ className, style }: SvgIconProps) {
+  return (
+    <svg
+      aria-hidden
+      className={className}
+      focusable={false}
+      role="img"
+      width="110"
+      height="110"
+      fill="none"
+      viewBox="0 0 110 110"
+      style={style}
+    >
+      <rect
+        x="8"
+        y="18"
+        width="94"
+        height="74"
+        rx="6"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path d="M8 34H102" stroke="currentColor" strokeWidth="4" />
+      <circle cx="18" cy="26" r="2.5" fill="currentColor" />
+      <circle cx="27" cy="26" r="2.5" fill="currentColor" />
+      <circle cx="36" cy="26" r="2.5" fill="currentColor" />
+      <rect
+        x="47"
+        y="55"
+        width="26"
+        height="26"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <circle cx="50" cy="58" r="15" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function LauncherCategoryIcon({
   size = 110,
   className,
@@ -106,11 +146,12 @@ export function LauncherCategoryIcon({
 }: {
   size?: number;
   className?: string;
-  type: "session" | "job";
+  type: "session" | "job" | "app";
 }) {
   const iconMap = {
     session: SessionIconSvg,
     job: JobIconSvg,
+    app: AppIconSvg,
   };
 
   const Icon = iconMap[type];

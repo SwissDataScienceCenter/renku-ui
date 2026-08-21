@@ -34,6 +34,7 @@ import {
   getFormattedEnvironmentValuesForEdit,
   getLauncherCategory,
   getLauncherCategoryDefinition,
+  getLauncherChangeEffectMessage,
   getLauncherDefaultValues,
 } from "../../session.utils";
 import { LauncherCategory, SessionLauncherForm } from "../../sessionsV2.types";
@@ -176,11 +177,8 @@ const ConfirmationUpdate = ({
           {launcherDefinition.text.display} launcher metadata updated
           successfully!
         </p>
-        <p className="mb-0">
-          The changes will take effect the next time you{" "}
-          {launcherDefinition.text.action} a new{" "}
-          {launcherDefinition.text.inline} with this launcher. Current{" "}
-          {launcherDefinition.text.inline}s will not be affected.
+        <p className="mb-0" data-cy="launcher-change-effect">
+          {getLauncherChangeEffectMessage(launcherCategory)}
         </p>
       </SuccessAlert>
     </div>

@@ -82,8 +82,12 @@ export default function NewLauncherCreateModal({
     categoryDefinition.allowedEnvironmentSelects[0];
 
   const defaultFormValues = useMemo(
-    () => getNewLauncherFormDefaultValues(defaultEnvironmentSelect),
-    [defaultEnvironmentSelect],
+    () =>
+      getNewLauncherFormDefaultValues(
+        defaultEnvironmentSelect,
+        launcherCategory,
+      ),
+    [defaultEnvironmentSelect, launcherCategory],
   );
 
   const useFormResult = useForm<SessionLauncherForm>({

@@ -1,0 +1,40 @@
+.statusText {
+  font-size: 0.75rem;
+}
+
+@mixin custom-animation() {
+  $name: inline-#{unique-id()};
+
+  @keyframes #{$name} {
+    @content;
+  }
+
+  animation-name: $name;
+}
+
+.pulseDot {
+  --pulse-dot-animation-speed: 1.6s;
+
+  display: inline-block;
+
+  @include custom-animation() {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(0.82);
+    }
+  }
+  animation-duration: var(--pulse-dot-animation-speed);
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulseDot {
+    animation: none;
+  }
+}

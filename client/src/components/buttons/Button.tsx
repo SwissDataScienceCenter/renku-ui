@@ -24,7 +24,11 @@
 
 import cx from "classnames";
 import { ReactNode, useRef, useState } from "react";
-import { ArrowRight, ChevronDown } from "react-bootstrap-icons";
+import {
+  ArrowRight,
+  ChevronDown,
+  ThreeDotsVertical,
+} from "react-bootstrap-icons";
 import { Link } from "react-router";
 import {
   ButtonDropdown,
@@ -154,6 +158,38 @@ export function ButtonWithMenuV2({
         data-cy={dataCy ?? "button-with-menu-dropdown"}
         disabled={isDisabledDropdownToggle ?? disabled}
       />
+      <DropdownMenu end>{children}</DropdownMenu>
+    </UncontrolledDropdown>
+  );
+}
+
+export function SingleButtonWithMenu({
+  children,
+  className,
+  color,
+  direction,
+  disabled,
+  id,
+  size,
+}: Omit<ButtonWithMenuV2Props, "default" | "preventPropagation">) {
+  return (
+    <UncontrolledDropdown
+      className={className}
+      color={color ?? "primary"}
+      direction={direction ?? "down"}
+      disabled={disabled}
+      id={id}
+      size={size ?? "md"}
+    >
+      <DropdownToggle
+        caret={false}
+        data-bs-toggle="dropdown"
+        color={color ?? "primary"}
+        data-cy="button-with-menu-dropdown"
+        disabled={disabled}
+      >
+        <ThreeDotsVertical />
+      </DropdownToggle>
       <DropdownMenu end>{children}</DropdownMenu>
     </UncontrolledDropdown>
   );
