@@ -38,6 +38,102 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.body,
       }),
     }),
+    postStorage: build.mutation<PostStorageApiResponse, PostStorageApiArg>({
+      query: (queryArg) => ({
+        url: `/storage`,
+        method: "POST",
+        body: queryArg.projectStoragePost,
+      }),
+    }),
+    getStorageConfig: build.query<
+      GetStorageConfigApiResponse,
+      GetStorageConfigApiArg
+    >({
+      query: () => ({ url: `/storage/config` }),
+    }),
+    getStorageAllow: build.query<
+      GetStorageAllowApiResponse,
+      GetStorageAllowApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage/allow`,
+        params: {
+          params: queryArg.params,
+        },
+      }),
+    }),
+    postStorageAllow: build.mutation<
+      PostStorageAllowApiResponse,
+      PostStorageAllowApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage/allow`,
+        method: "POST",
+        body: queryArg.projectStorageAllowPost,
+      }),
+    }),
+    getStorageAllowByProjectId: build.query<
+      GetStorageAllowByProjectIdApiResponse,
+      GetStorageAllowByProjectIdApiArg
+    >({
+      query: (queryArg) => ({ url: `/storage/allow/${queryArg.projectId}` }),
+    }),
+    patchStorageAllowByProjectId: build.mutation<
+      PatchStorageAllowByProjectIdApiResponse,
+      PatchStorageAllowByProjectIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage/allow/${queryArg.projectId}`,
+        method: "PATCH",
+        body: queryArg.projectStorageAllowPatch,
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
+      }),
+    }),
+    deleteStorageAllowByProjectId: build.mutation<
+      DeleteStorageAllowByProjectIdApiResponse,
+      DeleteStorageAllowByProjectIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage/allow/${queryArg.projectId}`,
+        method: "DELETE",
+      }),
+    }),
+    getStorageByStorageId: build.query<
+      GetStorageByStorageIdApiResponse,
+      GetStorageByStorageIdApiArg
+    >({
+      query: (queryArg) => ({ url: `/storage/${queryArg.storageId}` }),
+    }),
+    patchStorageByStorageId: build.mutation<
+      PatchStorageByStorageIdApiResponse,
+      PatchStorageByStorageIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage/${queryArg.storageId}`,
+        method: "PATCH",
+        body: queryArg.projectStoragePatch,
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
+      }),
+    }),
+    deleteStorageByStorageId: build.mutation<
+      DeleteStorageByStorageIdApiResponse,
+      DeleteStorageByStorageIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage/${queryArg.storageId}`,
+        method: "DELETE",
+      }),
+    }),
+    getProjectsByProjectIdStorage: build.query<
+      GetProjectsByProjectIdStorageApiResponse,
+      GetProjectsByProjectIdStorageApiArg
+    >({
+      query: (queryArg) => ({ url: `/projects/${queryArg.projectId}/storage` }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -62,6 +158,64 @@ export type PostStorageSchemaObscureApiArg = {
   body: {
     configuration: RCloneConfig;
   };
+};
+export type PostStorageApiResponse =
+  /** status 201 The data connector was created */ ProjectStorage;
+export type PostStorageApiArg = {
+  projectStoragePost: ProjectStoragePost;
+};
+export type GetStorageConfigApiResponse =
+  /** status 200 The configuration data */ ProjectStorageConfig;
+export type GetStorageConfigApiArg = void;
+export type GetStorageAllowApiResponse =
+  /** status 200 List of storage allow entries */ ProjectStorageAllowList;
+export type GetStorageAllowApiArg = {
+  /** query parameters */
+  params?: ProjectStorageAllowListQuery;
+};
+export type PostStorageAllowApiResponse =
+  /** status 201 The project was added to the allow list */ ProjectStorageAllowPost;
+export type PostStorageAllowApiArg = {
+  projectStorageAllowPost: ProjectStorageAllowPost;
+};
+export type GetStorageAllowByProjectIdApiResponse =
+  /** status 200 The project storage allow entry */ ProjectStorageAllow;
+export type GetStorageAllowByProjectIdApiArg = {
+  projectId: Ulid;
+};
+export type PatchStorageAllowByProjectIdApiResponse =
+  /** status 200 The patched project storage allow entry */ ProjectStorageAllow;
+export type PatchStorageAllowByProjectIdApiArg = {
+  projectId: Ulid;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
+  projectStorageAllowPatch: ProjectStorageAllowPatch;
+};
+export type DeleteStorageAllowByProjectIdApiResponse = unknown;
+export type DeleteStorageAllowByProjectIdApiArg = {
+  projectId: Ulid;
+};
+export type GetStorageByStorageIdApiResponse =
+  /** status 200 The project storage information */ ProjectStorage;
+export type GetStorageByStorageIdApiArg = {
+  storageId: Ulid;
+};
+export type PatchStorageByStorageIdApiResponse =
+  /** status 200 The patched project storage entry */ ProjectStorage;
+export type PatchStorageByStorageIdApiArg = {
+  storageId: Ulid;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
+  projectStoragePatch: ProjectStoragePatch;
+};
+export type DeleteStorageByStorageIdApiResponse = unknown;
+export type DeleteStorageByStorageIdApiArg = {
+  storageId: Ulid;
+};
+export type GetProjectsByProjectIdStorageApiResponse =
+  /** status 200 The list of project storages (currently either one or empty). */ ProjectStorageList;
+export type GetProjectsByProjectIdStorageApiArg = {
+  projectId: Ulid;
 };
 export type RCloneOption = {
   /** name of the option */
@@ -136,9 +290,77 @@ export type RCloneConfig = {
   [key: string]: number | (string | null) | boolean | object;
 };
 export type SourcePath = string;
+export type Ulid = string;
+export type CreationDate = string;
+export type UserId = string;
+export type ETag = string;
+export type ProjectStorage = {
+  id: Ulid;
+  project_id: Ulid;
+  size: number;
+  mount_path: string;
+  creation_date: CreationDate;
+  created_by: UserId;
+  updated_at: CreationDate;
+  etag: ETag;
+};
+export type ProjectSlug = string;
+export type ProjectStoragePost = {
+  namespace: ProjectSlug;
+  size: number;
+  mount_path: string;
+};
+export type MaxStorageSize = number;
+export type ProjectStorageConfig = {
+  enabled: boolean;
+  max_size: MaxStorageSize;
+};
+export type ProjectStorageAllow = {
+  project_id: Ulid;
+  name: string;
+  namespace: string;
+  max_size: MaxStorageSize;
+  etag: ETag;
+};
+export type ProjectStorageAllowList = ProjectStorageAllow[];
+export type PaginationRequest = {
+  /** Result's page number starting from 1 */
+  page?: number;
+  /** The number of results per page */
+  per_page?: number;
+};
+export type ProjectStorageAllowListQuery = PaginationRequest & {
+  /** Filter by project name (partial match). */
+  project_name?: string;
+};
+export type ProjectStorageAllowPost = {
+  project_id: Ulid;
+  max_size: MaxStorageSize;
+};
+export type ProjectStorageAllowPatch = {
+  max_size?: MaxStorageSize;
+};
+export type ProjectStoragePatch = {
+  /** The maximum size in GB */
+  size?: number;
+  /** The mount path for the storage */
+  mount_path?: string;
+};
+export type ProjectStorageList = ProjectStorage[];
 export const {
   useGetStorageSchemaQuery,
   usePostStorageSchemaValidateMutation,
   usePostStorageSchemaTestConnectionMutation,
   usePostStorageSchemaObscureMutation,
+  usePostStorageMutation,
+  useGetStorageConfigQuery,
+  useGetStorageAllowQuery,
+  usePostStorageAllowMutation,
+  useGetStorageAllowByProjectIdQuery,
+  usePatchStorageAllowByProjectIdMutation,
+  useDeleteStorageAllowByProjectIdMutation,
+  useGetStorageByStorageIdQuery,
+  usePatchStorageByStorageIdMutation,
+  useDeleteStorageByStorageIdMutation,
+  useGetProjectsByProjectIdStorageQuery,
 } = injectedRtkApi;
