@@ -57,13 +57,9 @@ import { ErrorAlert, InfoAlert } from "~/components/Alert";
 import InternalIdField from "~/components/InternalIdField";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
+import type { DataConnectorRead } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
-import {
-  listDataConnectorsForApp,
-  type AppMountBlocker,
-  type AppMountState,
-  type DataConnectorListItem,
-} from "~/features/sessionsV2/apps/appDataConnectors.utils";
+import { partitionDataConnectorsForApp } from "~/features/sessionsV2/apps/appDataConnectors.utils";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -303,13 +299,11 @@ export function SessionView({
   );
 
   const isApp = launcherCategory === "app";
-  const dataConnectorItems = useMemo<DataConnectorListItem[]>(
-    () =>
-      isApp
-        ? listDataConnectorsForApp(dataConnectors)
-        : dataConnectors.map((dataConnector) => ({ dataConnector })),
-    [dataConnectors, isApp],
-  );
+  const { mounted: appDataConnectors, skipped: skippedDataConnectors } =
+    useMemo(
+      () => partitionDataConnectorsForApp(dataConnectors),
+      [dataConnectors],
+    );
 
   const {
     resourceClass: launcherResourceClass,
@@ -638,7 +632,10 @@ export function SessionView({
             </Card>
           )}
 
-          <DataConnectorsCard dataConnectors={dataConnectorItems} />
+          <DataConnectorsCard
+            dataConnectors={isApp ? appDataConnectors : dataConnectors}
+            skippedCount={isApp ? skippedDataConnectors.length : 0}
+          />
 
           {!isApp && (
             <>
@@ -752,23 +749,19 @@ export function SessionView({
   );
 }
 
-/**
- * Why an app skipped a connector, phrased as the property the reader can go and
- * look at. `indeterminate` gets no cause because the UI genuinely does not know
- * one, and naming a wrong setting is worse than naming none.
- */
-const APP_MOUNT_BLOCKER_REASONS: Record<AppMountBlocker, string> = {
-  "not-public": "not public",
-  "needs-credentials": "needs credentials",
-  "needs-integration": "needs a connected account",
-  indeterminate: "",
-};
-
 interface DataConnectorsCardProps {
-  dataConnectors: DataConnectorListItem[];
+  dataConnectors: DataConnectorRead[];
+  skippedCount: number;
 }
 
-function DataConnectorsCard({ dataConnectors }: DataConnectorsCardProps) {
+function DataConnectorsCard({
+  dataConnectors,
+  skippedCount,
+}: DataConnectorsCardProps) {
+  const skippedLabel = `${skippedCount} data connector${
+    skippedCount === 1 ? "" : "s"
+  } not mounted`;
+
   return (
     <Card>
       <CardHeader className={cx("align-items-center", "d-flex")}>
@@ -781,77 +774,33 @@ function DataConnectorsCard({ dataConnectors }: DataConnectorsCardProps) {
       <CardBody>
         {dataConnectors.length > 0 ? (
           <ListGroup flush>
-            {dataConnectors.map(({ dataConnector, mountState }) => {
-              const isSkipped = mountState != null && !mountState.mounted;
-              return (
-                <ListGroupItem
-                  className={cx(isSkipped && "text-body-secondary")}
-                  data-cy={
-                    isSkipped ? "app-data-connectors-skipped" : undefined
-                  }
-                  key={dataConnector.id}
-                >
-                  <div className={cx("align-items-center", "d-flex", "gap-2")}>
-                    <span>Name: {dataConnector.name}</span>
-                    {mountState != null && (
-                      <MountStateBadge mountState={mountState} />
-                    )}
-                  </div>
-                  <div>Type: {dataConnector.storage.storage_type}</div>
-                </ListGroupItem>
-              );
-            })}
+            {dataConnectors.map((storage, index) => (
+              <ListGroupItem key={`storage-${index}`}>
+                <div>Name: {storage.name}</div>
+                <div>Type: {storage.storage.storage_type}</div>
+              </ListGroupItem>
+            ))}
           </ListGroup>
         ) : (
-          <p className={cx("mb-0", "fst-italic")}>
-            No data connectors included
+          <p
+            className={cx("mb-0", "fst-italic")}
+            data-cy={
+              skippedCount > 0 ? "app-data-connectors-skipped" : undefined
+            }
+          >
+            {skippedCount > 0 ? skippedLabel : "No data connectors included"}
+          </p>
+        )}
+        {skippedCount > 0 && dataConnectors.length > 0 && (
+          <p
+            className={cx("mb-0", "mt-2", "small", "text-body-secondary")}
+            data-cy="app-data-connectors-skipped"
+          >
+            {skippedLabel}
           </p>
         )}
       </CardBody>
     </Card>
-  );
-}
-
-/**
- * States both outcomes, not just the negative one. A lone "Not mounted" pill
- * leaves every other row ambiguous — silence could mean "mounted" or "we did not
- * check" — so the reader has to infer the good case from the absence of a
- * warning. Marking both makes each row answer the question on its own.
- */
-function MountStateBadge({ mountState }: { mountState: AppMountState }) {
-  if (mountState.mounted) {
-    return (
-      <Badge
-        className={cx(
-          "bg-success-subtle",
-          "border",
-          "border-success",
-          "fs-small",
-          "fw-normal",
-          "text-success-emphasis",
-        )}
-        pill
-      >
-        Mounted
-      </Badge>
-    );
-  }
-
-  const reason = APP_MOUNT_BLOCKER_REASONS[mountState.blocker];
-  return (
-    <Badge
-      className={cx(
-        "bg-warning-subtle",
-        "border",
-        "border-warning",
-        "fs-small",
-        "fw-normal",
-        "text-warning-emphasis",
-      )}
-      pill
-    >
-      {reason ? `Not mounted — ${reason}` : "Not mounted"}
-    </Badge>
   );
 }
 
