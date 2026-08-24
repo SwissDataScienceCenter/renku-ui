@@ -823,14 +823,14 @@
         "description": "A project to be added to the storage allow list.\n",
         "additionalProperties": false,
         "properties": {
-          "project_id": {
-            "$ref": "#/components/schemas/Ulid"
+          "project_ref": {
+            "$ref": "#/components/schemas/ProjectRef"
           },
           "max_size": {
             "$ref": "#/components/schemas/MaxStorageSize"
           }
         },
-        "required": ["project_id", "max_size"]
+        "required": ["project_ref", "max_size"]
       },
       "ProjectStorageAllow": {
         "description": "A project in the storage allow list.\n",
@@ -949,6 +949,38 @@
         "minLength": 3,
         "example": "user/my-project",
         "pattern": "^[a-zA-Z0-9]+([_.\\-/][a-zA-Z0-9]+)*[_.\\-/]?[a-zA-Z0-9]$"
+      },
+      "ProjectIdRef": {
+        "type": "object",
+        "description": "A reference to a project using its id",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        },
+        "required": ["id"]
+      },
+      "ProjectSlugRef": {
+        "type": "object",
+        "description": "A reference to a project using its slug",
+        "additionalProperties": false,
+        "properties": {
+          "slug": {
+            "$ref": "#/components/schemas/ProjectSlug"
+          }
+        },
+        "required": ["slug"]
+      },
+      "ProjectRef": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ProjectIdRef"
+          },
+          {
+            "$ref": "#/components/schemas/ProjectSlugRef"
+          }
+        ]
       }
     },
     "responses": {

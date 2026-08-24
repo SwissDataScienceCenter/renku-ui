@@ -333,8 +333,15 @@ export type ProjectStorageAllowListQuery = PaginationRequest & {
   /** Filter by project name (partial match). */
   project_name?: string;
 };
+export type ProjectIdRef = {
+  id: Ulid;
+};
+export type ProjectSlugRef = {
+  slug: ProjectSlug;
+};
+export type ProjectRef = ProjectIdRef | ProjectSlugRef;
 export type ProjectStorageAllowPost = {
-  project_id: Ulid;
+  project_ref: ProjectRef;
   max_size: MaxStorageSize;
 };
 export type ProjectStorageAllowPatch = {

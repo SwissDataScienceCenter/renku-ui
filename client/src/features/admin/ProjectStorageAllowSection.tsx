@@ -138,7 +138,7 @@ function EditProjectStorageAllowButton({
 }
 
 interface ProjectStorageAllowForm {
-  project_id: string;
+  project_slug: string;
   max_size: number;
 }
 
@@ -159,7 +159,7 @@ function AddOrEditProjectStorageAllowModal({
   const { control, handleSubmit, reset } = useForm<ProjectStorageAllowForm>({
     mode: "onChange",
     defaultValues: {
-      project_id: project?.project_id ?? "",
+      project_slug: "",
       max_size: project?.max_size ?? maxSize,
     },
   });
@@ -187,7 +187,7 @@ function AddOrEditProjectStorageAllowModal({
     // Create new project storage allow entry
     const result = await postStorageAllowMutation({
       projectStorageAllowPost: {
-        project_id: values.project_id,
+        project_ref: { slug: values.project_slug },
         max_size: values.max_size,
       },
     });
@@ -228,20 +228,20 @@ function AddOrEditProjectStorageAllowModal({
             </div>
           ) : (
             <div className="mb-3">
-              <Label for="project_id">Project Id</Label>
+              <Label for="project_slug">Project Slug</Label>
               <Controller
                 control={control}
-                name="project_id"
+                name="project_slug"
                 render={({ field, fieldState: { error } }) => (
                   <>
                     <Input
-                      id="project_id"
+                      id="project_slug"
                       className={cx(error && "is-invalid")}
                       type="text"
                       {...field}
                     />
                     <div className="invalid-feedback">
-                      {error?.message || "Please enter a valid project id."}
+                      {error?.message || "Please enter a valid project slug."}
                     </div>
                   </>
                 )}
