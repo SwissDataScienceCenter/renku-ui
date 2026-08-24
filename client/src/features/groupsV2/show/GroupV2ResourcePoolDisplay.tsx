@@ -26,7 +26,7 @@ import {
 } from "~/features/sessionsV2/api/computeResources.generated-api";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
-import { GroupInformationBox } from "../show/GroupV2Information";
+import { GroupInformationBox } from "./GroupV2Information";
 
 interface GroupV2ResourcePoolDisplayProps {
   group: string;
@@ -39,11 +39,16 @@ export default function GroupV2ResourcePoolDisplay({
     groupSlug: group,
   });
 
-  if (error || !data) {
-    return <RtkOrDataServicesError error={error} dismissible={false} />;
-  }
-
-  return (
+  return isLoading ? (
+    <div className={cx("d-flex", "justify-content-center", "w-100")}>
+      <div className={cx("d-flex", "flex-column")}>
+        <Loader />
+        <div>Retrieving resource pools...</div>
+      </div>
+    </div>
+  ) : error ? (
+    <RtkOrDataServicesError error={error} dismissible={false} />
+  ) : data ? (
     <GroupInformationBox
       icon={<Cpu className="bi" />}
       title={
@@ -53,20 +58,12 @@ export default function GroupV2ResourcePoolDisplay({
         </>
       }
     >
-      {!data.length && <p>There are no resource pools in this group.</p>}
-      {isLoading && (
-        <div className={cx("d-flex", "justify-content-center", "w-100")}>
-          <div className={cx("d-flex", "flex-column")}>
-            <Loader />
-            <div>Retrieving resource pools...</div>
-          </div>
-        </div>
-      )}
-      {data?.map((rp) => (
+      {data.length === 0 && <p>There are no resource pools in this group.</p>}
+      {data.map((rp) => (
         <GroupV2ResourcePool key={rp.id} rp={rp} />
       ))}
     </GroupInformationBox>
-  );
+  ) : null;
 }
 
 interface GroupV2ResourcePoolProps {
@@ -75,9 +72,8 @@ interface GroupV2ResourcePoolProps {
 function GroupV2ResourcePool({ rp }: GroupV2ResourcePoolProps) {
   const { name } = rp;
 
-  if (!name) {
-    return null;
-  }
+  if (!name) return null;
+
   return (
     <div className={cx("d-flex", "gap-2")}>
       <div
