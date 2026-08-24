@@ -15,6 +15,7 @@ import { generatePath } from "react-router";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
+import InternalIdField from "~/components/InternalIdField";
 import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
@@ -154,6 +155,8 @@ export default function DataConnectorSettings() {
               Change generic properties like name, owner, visibility, access
               mode, keywords, and mount point.
             </p>
+
+            {dataConnector?.id && <InternalIdField id={dataConnector?.id} />}
 
             <div className={cx("d-flex", "gap-2")}>
               <PermissionsGuard

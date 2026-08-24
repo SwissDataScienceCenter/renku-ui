@@ -108,6 +108,16 @@ export function isTruthy<T>(
   return Boolean(value);
 }
 
+/**
+ * PATCH uses `null` to clear command/args. An empty array is invalid
+ * and a missing field leaves the previous value unchanged.
+ */
+function jsonStringArrayOrNull(
+  value: string[] | null | undefined,
+): string[] | null {
+  return value?.length ? value : null;
+}
+
 export function getNewLauncherFormDefaultValues(
   environmentSelect: EnvironmentSelectOption,
 ): Pick<
@@ -278,10 +288,9 @@ export function getFormattedEnvironmentValues(
       if (!argsFormatted.parsed) {
         return { success: false, error: "Invalid job args format" };
       }
-      if (argsFormatted.data == null || argsFormatted.data.length === 0) {
-        return { success: false, error: "Job args can't be empty" };
+      if (argsFormatted.data?.length) {
+        buildPayload.args = argsFormatted.data;
       }
-      buildPayload.args = argsFormatted.data;
     }
     return { success: true, data: buildPayload };
   }
@@ -336,8 +345,10 @@ export function getFormattedEnvironmentValuesForEdit(
   if (!result.success) {
     return result;
   }
-  const commandParsed = safeParseJSONStringArray(data.command);
-  const argsParsed = safeParseJSONStringArray(data.args);
+  const command = jsonStringArrayOrNull(
+    safeParseJSONStringArray(data.command).data,
+  );
+  const args = jsonStringArrayOrNull(safeParseJSONStringArray(data.args).data);
 
   if (
     environmentSelect === "global" ||
@@ -349,10 +360,8 @@ export function getFormattedEnvironmentValuesForEdit(
       ...result,
       data: {
         ...environment,
-        ...(commandParsed.data
-          ? { command: commandParsed.data }
-          : { command: null }),
-        ...(argsParsed.data ? { args: argsParsed.data } : { args: null }),
+        command,
+        args,
       },
     };
   }
@@ -370,7 +379,7 @@ export function getFormattedEnvironmentValuesForEdit(
       (value) => value === platform_,
     ) ?? BUILDER_PLATFORMS[0].value;
 
-  if (launcherCategory === "job" && !commandParsed.data?.length) {
+  if (launcherCategory === "job" && !command?.length) {
     return { success: false, error: "Job command is required" };
   }
 
@@ -379,8 +388,8 @@ export function getFormattedEnvironmentValuesForEdit(
     data: {
       environment_image_source: "build",
       environment_kind: "CUSTOM",
-      ...(commandParsed.data && { command: commandParsed.data }),
-      ...(argsParsed.data && { args: argsParsed.data }),
+      command,
+      args,
       build_parameters: {
         builder_variant,
         frontend_variant,
@@ -389,7 +398,7 @@ export function getFormattedEnvironmentValuesForEdit(
         context_dir: context_dir ?? "",
         platforms: [platform],
       },
-    },
+    } as SessionLauncherEnvironmentPatchParams,
   };
 }
 

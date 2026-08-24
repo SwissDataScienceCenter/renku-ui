@@ -18,7 +18,15 @@
 
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { CheckLg, PersonFillX, TrashFill, XLg } from "react-bootstrap-icons";
+import {
+  CheckLg,
+  FolderFill,
+  PeopleFill,
+  PersonFill,
+  PersonFillX,
+  TrashFill,
+  XLg,
+} from "react-bootstrap-icons";
 import {
   Button,
   Card,
@@ -42,22 +50,21 @@ import { useGetResourcePoolsByResourcePoolIdLimitsQuery } from "../resourceUsage
 import UpdateResourceClassCostButton from "../resourceUsage/UpdateResourceClassCostButton";
 import UpdateResourcePoolUsageLimitsButton from "../resourceUsage/UpdateResourcePoolUsageLimitsButton";
 import {
+  useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation,
   useDeleteResourcePoolsByResourcePoolIdMutation,
-  useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,
-  useGetResourcePoolsByResourcePoolIdUsersQuery,
+  useGetResourcePoolsByResourcePoolIdMembersQuery,
   useGetResourcePoolsQuery,
-  type PoolUserWithId,
+  type PoolMemberResponse,
   type ResourceClassWithId,
   type ResourcePoolWithId,
   type ResourcePoolWithIdFiltered,
 } from "../sessionsV2/api/computeResources.api";
 import { useGetUsersQuery } from "../usersV2/api/users.api";
-import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton";
+import AddMemberToResourcePoolButton from "./AddMemberToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
-import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
+import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
-import { KeycloakUser } from "./adminKeycloak.types";
 import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
@@ -340,7 +347,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
 
           {!isPublic && (
             <div className={cx("border-bottom", "py-2")}>
-              <ResourcePoolUsers resourcePool={resourcePool} />
+              <ResourcePoolMembers resourcePool={resourcePool} />
             </div>
           )}
         </CardBody>
@@ -452,6 +459,7 @@ function ResourceClassItem({
   } = resourceClass;
 
   const columnClasses = ["col-12", "col-sm-4", "col-md-3", "col-xl-2"];
+  const requiresIntegerCpu = poolRequiresIntegerCpu(resourcePool.remote);
 
   return (
     <li>
@@ -473,6 +481,20 @@ function ResourceClassItem({
         <div className={cx(columnClasses)}>
           node affinities: {node_affinities?.length ?? 0}
         </div>
+        {requiresIntegerCpu && (
+          <>
+            <div className={cx(columnClasses)}>
+              system: {resourceClass.remote?.system_name ?? "—"}
+            </div>
+            <div className={cx(columnClasses)}>
+              partition: {resourceClass.remote?.partition ?? "—"}
+            </div>
+            <div className={cx(columnClasses)}>
+              forward resources:{" "}
+              {resourceClass.remote?.forward_resource_values ? "yes" : "no"}
+            </div>
+          </>
+        )}
         <div
           className={cx(
             columnClasses,
@@ -527,109 +549,111 @@ function ResourceClassItem({
   );
 }
 
-function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
+function ResourcePoolMembers({ resourcePool }: ResourcePoolItemProps) {
   const { id } = resourcePool;
 
   const {
-    data: resourcePoolUsers,
-    error: resourcePoolUsersError,
-    isLoading: resourcePoolUsersIsLoading,
-  } = useGetResourcePoolsByResourcePoolIdUsersQuery({ resourcePoolId: id });
+    data: resourcePoolMembers,
+    error: resourcePoolMembersError,
+    isLoading: resourcePoolMembersIsLoading,
+  } = useGetResourcePoolsByResourcePoolIdMembersQuery({ resourcePoolId: id });
 
-  const isLoading = resourcePoolUsersIsLoading;
-  const error = resourcePoolUsersError;
+  const isLoading = resourcePoolMembersIsLoading;
+  const error = resourcePoolMembersError;
 
   if (isLoading) {
     return (
       <div>
         <Loader className="me-1" inline size={16} />
-        Loading users...
+        Loading members...
       </div>
     );
   }
 
-  if (error || !resourcePoolUsers) {
+  if (error || !resourcePoolMembers) {
     return <RtkOrDataServicesError error={error} />;
   }
 
   return (
     <div>
-      <p className="mb-0">Users: {resourcePoolUsers.length}</p>
+      <p className="mb-0">Members: {resourcePoolMembers.length}</p>
       <div className={cx("d-flex", "flex-column", "flex-sm-row", "flex-wrap")}>
-        <AddUserToResourcePoolButton resourcePool={resourcePool} />
-        <span className={cx("me-2", "py-1")} />
-        <AddManyUsersToResourcePoolButton resourcePool={resourcePool} />
+        <AddMemberToResourcePoolButton resourcePool={resourcePool} />
       </div>
-      <ResourcePoolUsersList
+      <ResourcePoolMembersList
         resourcePool={resourcePool}
-        resourcePoolUsers={resourcePoolUsers}
+        resourcePoolMembers={resourcePoolMembers}
       />
     </div>
   );
 }
 
-interface ResourcePoolUsersListProps {
+interface ResourcePoolMembersListProps {
   resourcePool: ResourcePoolWithId;
-  resourcePoolUsers: PoolUserWithId[];
+  resourcePoolMembers: PoolMemberResponse[];
 }
 
-function ResourcePoolUsersList({
+function ResourcePoolMembersList({
   resourcePool,
-  resourcePoolUsers,
-}: ResourcePoolUsersListProps) {
+  resourcePoolMembers,
+}: ResourcePoolMembersListProps) {
   return (
     <ul className={cx("mt-2", "mb-0", "vstack", "gap-2")}>
-      {resourcePoolUsers.map((user) => (
-        <ResourcePoolUserItem
-          key={user.id}
+      {resourcePoolMembers.map((member) => (
+        <ResourcePoolMemberItem
+          key={`${member.member_type}-${member.id}`}
           resourcePool={resourcePool}
-          resourcePoolUser={user}
+          resourcePoolMember={member}
         />
       ))}
     </ul>
   );
 }
 
-interface ResourcePoolUserItemProps {
+interface ResourcePoolMemberItemProps {
   resourcePool: ResourcePoolWithId;
-  resourcePoolUser: PoolUserWithId;
+  resourcePoolMember: PoolMemberResponse;
 }
 
-function ResourcePoolUserItem({
+function ResourcePoolMemberItem({
   resourcePool,
-  resourcePoolUser,
-}: ResourcePoolUserItemProps) {
-  const realm = useKeycloakRealm();
-  const {
-    data: user,
-    error,
-    isLoading,
-  } = useGetKeycloakUserQuery({
-    realm,
-    userId: resourcePoolUser.id,
-  });
+  resourcePoolMember,
+}: ResourcePoolMemberItemProps) {
+  const resolved = useResolveResourcePoolMember(resourcePoolMember);
 
-  if (isLoading) {
+  if (resolved.isLoading) {
     return (
       <li>
         <Loader className="me-1" inline size={16} />
-        <span className="fst-italic">loading user {resourcePoolUser.id}</span>
+        <span className="fst-italic">
+          loading member {resourcePoolMember.id}
+        </span>
       </li>
     );
   }
 
-  if (error || !user) {
-    return <li>Error loading user {resourcePoolUser.id}</li>;
+  if (resolved.error || resolved.label == null) {
+    return <li>Error loading member {resourcePoolMember.id}</li>;
   }
 
   return (
     <li>
-      <div className={cx("hstack", "gap-2")}>
-        <div>{`${user.firstName} ${user.lastName} <${user.email}>`}</div>
-        <div className="ms-3">
-          <RemoveUserFromResourcePoolButton
+      <div className={cx("hstack", "gap-3")}>
+        <div className={cx("d-flex", "align-items-center")}>
+          {resourcePoolMember.member_type === "user" ? (
+            <PersonFill className={cx("bi", "me-1")} />
+          ) : resourcePoolMember.member_type === "group" ? (
+            <PeopleFill className={cx("bi", "me-1")} />
+          ) : (
+            <FolderFill className={cx("bi", "me-1")} />
+          )}
+          <div>{resolved.label}</div>
+        </div>
+        <div>
+          <RemoveMemberFromResourcePoolButton
             resourcePool={resourcePool}
-            user={user}
+            resourcePoolMember={resourcePoolMember}
+            label={resolved.label}
           />
         </div>
       </div>
@@ -637,15 +661,62 @@ function ResourcePoolUserItem({
   );
 }
 
-interface RemoveUserFromResourcePoolButtonProps {
-  resourcePool: ResourcePoolWithId;
-  user: KeycloakUser;
+function useResolveResourcePoolMember(member: PoolMemberResponse) {
+  const realm = useKeycloakRealm();
+
+  const {
+    data: keycloakUser,
+    error,
+    isLoading,
+  } = useGetKeycloakUserQuery(
+    {
+      realm,
+      userId: member.id,
+    },
+    { skip: member.member_type !== "user" },
+  );
+
+  switch (member.member_type) {
+    case "user": {
+      const label =
+        keycloakUser != null
+          ? `${keycloakUser.firstName} ${keycloakUser.lastName} <${keycloakUser.email}>`
+          : (member.email ?? member.id);
+
+      return {
+        isLoading,
+        error,
+        label,
+      };
+    }
+    case "group": {
+      return {
+        isLoading: false,
+        error: undefined,
+        label: `${member.name} (${member.slug})`,
+      };
+    }
+    case "project": {
+      return {
+        isLoading: false,
+        error: undefined,
+        label: `${member.name} (${member.namespace})`,
+      };
+    }
+  }
 }
 
-function RemoveUserFromResourcePoolButton({
+interface RemoveMemberFromResourcePoolButtonProps {
+  resourcePool: ResourcePoolWithId;
+  resourcePoolMember: PoolMemberResponse;
+  label: string;
+}
+
+function RemoveMemberFromResourcePoolButton({
   resourcePool,
-  user,
-}: RemoveUserFromResourcePoolButtonProps) {
+  resourcePoolMember,
+  label,
+}: RemoveMemberFromResourcePoolButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -657,37 +728,46 @@ function RemoveUserFromResourcePoolButton({
         <PersonFillX className={cx("bi", "me-1")} />
         Remove
       </Button>
-      <RemoveUserFromResourcePoolModal
+      <RemoveMemberFromResourcePoolModal
         isOpen={isOpen}
+        label={label}
         resourcePool={resourcePool}
+        resourcePoolMember={resourcePoolMember}
         toggle={toggle}
-        user={user}
       />
     </>
   );
 }
 
-interface RemoveUserFromResourcePoolModalProps {
+interface RemoveMemberFromResourcePoolModalProps {
   isOpen: boolean;
+  label: string;
   resourcePool: ResourcePoolWithId;
+  resourcePoolMember: PoolMemberResponse;
   toggle: () => void;
-  user: KeycloakUser;
 }
 
-function RemoveUserFromResourcePoolModal({
+function RemoveMemberFromResourcePoolModal({
   isOpen,
+  label,
   resourcePool,
+  resourcePoolMember,
   toggle,
-  user,
-}: RemoveUserFromResourcePoolModalProps) {
-  const [removeUserFromResourcePool, result] =
-    useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation();
+}: RemoveMemberFromResourcePoolModalProps) {
+  const [removeMemberFromResourcePool, result] =
+    useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation();
   const onRemove = useCallback(() => {
-    removeUserFromResourcePool({
+    removeMemberFromResourcePool({
       resourcePoolId: resourcePool.id,
-      userId: user.id,
+      memberType: resourcePoolMember.member_type,
+      memberId: resourcePoolMember.id,
     });
-  }, [removeUserFromResourcePool, resourcePool.id, user.id]);
+  }, [
+    removeMemberFromResourcePool,
+    resourcePool.id,
+    resourcePoolMember.id,
+    resourcePoolMember.member_type,
+  ]);
 
   useEffect(() => {
     if (result.isSuccess || result.isError) {
@@ -702,9 +782,8 @@ function RemoveUserFromResourcePoolModal({
           Are you sure?
         </h3>
         <p className="mb-0">
-          Please confirm that you want to remove{" "}
-          <strong>{`${user.firstName} ${user.lastName} <${user.email}>`}</strong>{" "}
-          from the <strong>{resourcePool.name}</strong> resource pool.
+          Please confirm that you want to remove <strong>{label}</strong> from
+          the <strong>{resourcePool.name}</strong> resource pool.
         </p>
       </ModalBody>
       <ModalFooter className="pt-0">
@@ -718,7 +797,7 @@ function RemoveUserFromResourcePoolModal({
           ) : (
             <CheckLg className={cx("bi", "me-1")} />
           )}
-          Yes, remove user
+          Yes, remove member
         </Button>
       </ModalFooter>
     </Modal>
