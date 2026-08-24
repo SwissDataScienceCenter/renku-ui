@@ -20,14 +20,16 @@ import { describe, expect, it } from "vitest";
 
 import type { AppLobbyEvent, AppLobbyState } from "./appLobby.utils";
 import {
-  APP_LOBBY_MAX_ATTEMPTS,
-  APP_LOBBY_PROBE_TIMEOUT_MS,
-  APP_LOBBY_RETRY_DELAY_MS,
-  APP_LOBBY_TOTAL_BUDGET_MS,
-  appLobbyReducer,
+  appLobbyTotalBudgetMs,
+  createAppLobbyReducer,
+  DEFAULT_APP_LOBBY_CONFIG,
   INITIAL_APP_LOBBY_STATE,
   isAppLobbyBusy,
 } from "./appLobby.utils";
+
+const { maxAttempts, probeTimeoutMs, retryDelayMs } = DEFAULT_APP_LOBBY_CONFIG;
+
+const appLobbyReducer = createAppLobbyReducer(DEFAULT_APP_LOBBY_CONFIG);
 
 function reduceAll(
   state: AppLobbyState,
@@ -74,29 +76,56 @@ describe("appLobbyReducer()", () => {
     expect(state).toEqual({ status: "ready", attempt: 3 });
   });
 
-  it("spends exactly APP_LOBBY_MAX_ATTEMPTS probes before giving up", () => {
+  it("spends exactly maxAttempts probes before giving up", () => {
     const onFinalAttempt = reduceAll(
       INITIAL_APP_LOBBY_STATE,
-      Array.from(
-        { length: APP_LOBBY_MAX_ATTEMPTS - 1 },
-        () => FAIL_THEN_RETRY,
-      ).flat(),
+      Array.from({ length: maxAttempts - 1 }, () => FAIL_THEN_RETRY).flat(),
     );
     expect(onFinalAttempt).toEqual({
       status: "probing",
-      attempt: APP_LOBBY_MAX_ATTEMPTS,
+      attempt: maxAttempts,
     });
 
     expect(appLobbyReducer(onFinalAttempt, { type: "probe-failed" })).toEqual({
       status: "exhausted",
-      attempt: APP_LOBBY_MAX_ATTEMPTS,
+      attempt: maxAttempts,
+    });
+  });
+
+  it("honors a deployment-configured attempt budget", () => {
+    const reducer = createAppLobbyReducer({
+      ...DEFAULT_APP_LOBBY_CONFIG,
+      maxAttempts: 2,
+    });
+
+    const onFinalAttempt = FAIL_THEN_RETRY.reduce(
+      reducer,
+      INITIAL_APP_LOBBY_STATE,
+    );
+    expect(onFinalAttempt).toEqual({ status: "probing", attempt: 2 });
+
+    expect(reducer(onFinalAttempt, { type: "probe-failed" })).toEqual({
+      status: "exhausted",
+      attempt: 2,
+    });
+  });
+
+  it("gives up after a single probe when the budget is one attempt", () => {
+    const reducer = createAppLobbyReducer({
+      ...DEFAULT_APP_LOBBY_CONFIG,
+      maxAttempts: 1,
+    });
+
+    expect(reducer(INITIAL_APP_LOBBY_STATE, { type: "probe-failed" })).toEqual({
+      status: "exhausted",
+      attempt: 1,
     });
   });
 
   it("restores the full budget on a manual retry", () => {
     const exhausted: AppLobbyState = {
       status: "exhausted",
-      attempt: APP_LOBBY_MAX_ATTEMPTS,
+      attempt: maxAttempts,
     };
     expect(
       appLobbyReducer(exhausted, { type: "manual-retry-requested" }),
@@ -136,24 +165,35 @@ describe("appLobbyReducer()", () => {
 });
 
 describe("lobby timing budget", () => {
+  const defaultBudgetMs = appLobbyTotalBudgetMs(DEFAULT_APP_LOBBY_CONFIG);
+
   it("gives up between five and six minutes after the first probe", () => {
-    expect(APP_LOBBY_TOTAL_BUDGET_MS).toBeGreaterThanOrEqual(5 * 60_000);
-    expect(APP_LOBBY_TOTAL_BUDGET_MS).toBeLessThanOrEqual(6 * 60_000);
+    expect(defaultBudgetMs).toBeGreaterThanOrEqual(5 * 60_000);
+    expect(defaultBudgetMs).toBeLessThanOrEqual(6 * 60_000);
   });
 
   it("derives the budget from every probe and every pause between them", () => {
-    expect(APP_LOBBY_TOTAL_BUDGET_MS).toBe(
-      APP_LOBBY_MAX_ATTEMPTS * APP_LOBBY_PROBE_TIMEOUT_MS +
-        (APP_LOBBY_MAX_ATTEMPTS - 1) * APP_LOBBY_RETRY_DELAY_MS,
+    expect(defaultBudgetMs).toBe(
+      maxAttempts * probeTimeoutMs + (maxAttempts - 1) * retryDelayMs,
     );
   });
 
+  it("charges no backoff for a single-attempt budget", () => {
+    expect(
+      appLobbyTotalBudgetMs({
+        maxAttempts: 1,
+        probeTimeoutMs: 10_000,
+        retryDelayMs: 5_000,
+      }),
+    ).toBe(10_000);
+  });
+
   it("keeps a single probe under the shortest timeout on the path", () => {
-    expect(APP_LOBBY_PROBE_TIMEOUT_MS).toBeLessThan(60_000);
+    expect(probeTimeoutMs).toBeLessThan(60_000);
   });
 
   it("pauses long enough that a failing URL cannot spin the budget away", () => {
-    expect(APP_LOBBY_RETRY_DELAY_MS).toBeGreaterThanOrEqual(1_000);
+    expect(retryDelayMs).toBeGreaterThanOrEqual(1_000);
   });
 });
 

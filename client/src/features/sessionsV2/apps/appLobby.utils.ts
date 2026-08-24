@@ -16,15 +16,31 @@
  * limitations under the License.
  */
 
-export const APP_LOBBY_PROBE_TIMEOUT_MS = 45_000;
+export interface AppLobbyConfig {
+  maxAttempts: number;
+  probeTimeoutMs: number;
+  retryDelayMs: number;
+}
 
-export const APP_LOBBY_RETRY_DELAY_MS = 2_000;
+export const DEFAULT_APP_LOBBY_CONFIG: AppLobbyConfig = {
+  maxAttempts: 7,
+  probeTimeoutMs: 45_000,
+  retryDelayMs: 2_000,
+};
 
-export const APP_LOBBY_MAX_ATTEMPTS = 7;
+export const APP_LOBBY_CONFIG_BOUNDS = {
+  maxAttempts: { min: 1, max: 100 },
+  probeTimeoutMs: { min: 1_000, max: 300_000 },
+  retryDelayMs: { min: 0, max: 60_000 },
+} as const;
 
-export const APP_LOBBY_TOTAL_BUDGET_MS =
-  APP_LOBBY_MAX_ATTEMPTS * APP_LOBBY_PROBE_TIMEOUT_MS +
-  (APP_LOBBY_MAX_ATTEMPTS - 1) * APP_LOBBY_RETRY_DELAY_MS;
+export function appLobbyTotalBudgetMs({
+  maxAttempts,
+  probeTimeoutMs,
+  retryDelayMs,
+}: AppLobbyConfig): number {
+  return maxAttempts * probeTimeoutMs + (maxAttempts - 1) * retryDelayMs;
+}
 
 export type AppLobbyStatus = "probing" | "waiting" | "ready" | "exhausted";
 
@@ -39,41 +55,47 @@ export type AppLobbyEvent =
   | { type: "retry-delay-elapsed" }
   | { type: "manual-retry-requested" };
 
+export type AppLobbyReducer = (
+  state: AppLobbyState,
+  event: AppLobbyEvent,
+) => AppLobbyState;
+
 export const INITIAL_APP_LOBBY_STATE: AppLobbyState = {
   status: "probing",
   attempt: 1,
 };
 
-export function appLobbyReducer(
-  state: AppLobbyState,
-  event: AppLobbyEvent,
-): AppLobbyState {
-  switch (state.status) {
-    case "probing":
-      if (event.type === "probe-succeeded") {
-        return { status: "ready", attempt: state.attempt };
-      }
-      if (event.type === "probe-failed") {
-        return state.attempt >= APP_LOBBY_MAX_ATTEMPTS
-          ? { status: "exhausted", attempt: state.attempt }
-          : { status: "waiting", attempt: state.attempt };
-      }
-      return state;
+export function createAppLobbyReducer({
+  maxAttempts,
+}: AppLobbyConfig): AppLobbyReducer {
+  return function appLobbyReducer(state, event) {
+    switch (state.status) {
+      case "probing":
+        if (event.type === "probe-succeeded") {
+          return { status: "ready", attempt: state.attempt };
+        }
+        if (event.type === "probe-failed") {
+          return state.attempt >= maxAttempts
+            ? { status: "exhausted", attempt: state.attempt }
+            : { status: "waiting", attempt: state.attempt };
+        }
+        return state;
 
-    case "waiting":
-      if (event.type === "retry-delay-elapsed") {
-        return { status: "probing", attempt: state.attempt + 1 };
-      }
-      return state;
+      case "waiting":
+        if (event.type === "retry-delay-elapsed") {
+          return { status: "probing", attempt: state.attempt + 1 };
+        }
+        return state;
 
-    case "exhausted":
-      return event.type === "manual-retry-requested"
-        ? INITIAL_APP_LOBBY_STATE
-        : state;
+      case "exhausted":
+        return event.type === "manual-retry-requested"
+          ? INITIAL_APP_LOBBY_STATE
+          : state;
 
-    case "ready":
-      return state;
-  }
+      case "ready":
+        return state;
+    }
+  };
 }
 
 export function isAppLobbyBusy(state: AppLobbyState): boolean {

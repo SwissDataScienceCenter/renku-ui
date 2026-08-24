@@ -90,6 +90,7 @@ export const CONFIG_JSON = {
   PERSISTED_LOGS_ENABLED: process.env.PERSISTED_LOGS_ENABLED,
   PERSISTED_LOGS_TTL_SECONDS: process.env.PERSISTED_LOGS_TTL_SECONDS,
   RENKU_APPS_ENABLED: process.env.RENKU_APPS_ENABLED,
+  APP_LOBBY: safeJsonToObject(process.env.APP_LOBBY),
 };
 
 export const SAMPLE_PRIVACY_CONTENT = `# Privacy statement

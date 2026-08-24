@@ -64,7 +64,6 @@ export const {
   useGetAppsByAppNameLogsQuery,
   usePostAppsMutation,
   useDeleteAppsByAppNameMutation,
-  useInvalidateAppsMutation,
 } = appsApi;
 
 export type * from "./apps.generated-api";

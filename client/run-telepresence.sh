@@ -205,7 +205,12 @@ tee > ./public/config.json << EOF
   "CONTACT_EMAIL":  "hello@renku.io",
   "PERSISTED_LOGS_ENABLED": true,
   "PERSISTED_LOGS_TTL_SECONDS": 86400,
-  "RENKU_APPS_ENABLED": true
+  "RENKU_APPS_ENABLED": true,
+  "APP_LOBBY": {
+    "maxAttempts": 7,
+    "probeTimeoutMs": 45000,
+    "retryDelayMs": 2000
+  }
 }
 EOF
 

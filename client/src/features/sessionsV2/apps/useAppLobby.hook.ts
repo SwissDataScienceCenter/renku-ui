@@ -16,15 +16,14 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 
 import type { AppLobbyState } from "./appLobby.utils";
 import {
-  APP_LOBBY_PROBE_TIMEOUT_MS,
-  APP_LOBBY_RETRY_DELAY_MS,
-  appLobbyReducer,
+  createAppLobbyReducer,
   INITIAL_APP_LOBBY_STATE,
 } from "./appLobby.utils";
+import useAppLobbyConfig from "./useAppLobbyConfig.hook";
 
 interface UseAppLobbyArgs {
   appUrl: string | undefined;
@@ -40,10 +39,11 @@ export default function useAppLobby({
   appUrl,
   enabled = true,
 }: UseAppLobbyArgs): UseAppLobbyResult {
-  const [state, dispatch] = useReducer(
-    appLobbyReducer,
-    INITIAL_APP_LOBBY_STATE,
-  );
+  const config = useAppLobbyConfig();
+  const { probeTimeoutMs, retryDelayMs } = config;
+
+  const reducer = useMemo(() => createAppLobbyReducer(config), [config]);
+  const [state, dispatch] = useReducer(reducer, INITIAL_APP_LOBBY_STATE);
 
   const isProbing = state.status === "probing";
   const isWaiting = state.status === "waiting";
@@ -55,10 +55,7 @@ export default function useAppLobby({
     }
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      APP_LOBBY_PROBE_TIMEOUT_MS,
-    );
+    const timeoutId = setTimeout(() => controller.abort(), probeTimeoutMs);
     let isCurrent = true;
 
     fetch(appUrl, {
@@ -87,7 +84,7 @@ export default function useAppLobby({
       clearTimeout(timeoutId);
       controller.abort();
     };
-  }, [appUrl, attempt, enabled, isProbing]);
+  }, [appUrl, attempt, enabled, isProbing, probeTimeoutMs]);
 
   useEffect(() => {
     if (!enabled || !isWaiting) {
@@ -96,13 +93,13 @@ export default function useAppLobby({
 
     const timerId = setTimeout(
       () => dispatch({ type: "retry-delay-elapsed" }),
-      APP_LOBBY_RETRY_DELAY_MS,
+      retryDelayMs,
     );
 
     return () => {
       clearTimeout(timerId);
     };
-  }, [enabled, isWaiting]);
+  }, [enabled, isWaiting, retryDelayMs]);
 
   const retry = useCallback(() => {
     dispatch({ type: "manual-retry-requested" });
