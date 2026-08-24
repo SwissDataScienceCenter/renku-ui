@@ -94,7 +94,8 @@ describe("admin page", () => {
       .userAdmin()
       .resourcePoolsTest()
       .adminResourcePoolUsers()
-      .adminKeycloakUser();
+      .adminKeycloakUser()
+      .resourcePoolMembers();
     cy.visit("/");
     cy.wait("@getUser");
 
@@ -172,11 +173,11 @@ describe("admin page", () => {
 
     cy.get(".card")
       .contains(".card", "Special GPU pool")
-      .contains("button", "Add User")
+      .contains("button", "Add Member")
       .should("be.visible")
       .click();
     cy.get(".modal")
-      .contains(".modal-title", "Add User to Resource Pool: Special GPU pool")
+      .contains(".modal-title", "Add Member to Resource Pool: Special GPU pool")
       .should("be.visible");
     cy.get(".modal").contains("button", "Close").should("be.visible").click();
 
@@ -311,5 +312,56 @@ describe("admin page", () => {
       });
     cy.get("#UpdateResourceClassCost-2").type("2");
     cy.contains("5.00 hours / user").should("be.visible");
+  });
+
+  it("should add members via the batch flow", () => {
+    fixtures
+      .userAdmin()
+      .resourcePoolsTest()
+      .adminResourcePoolUsers()
+      .adminKeycloakUser()
+      .adminKeycloakUsers()
+      .resourcePoolMembers()
+      .postResourcePoolMembers();
+    cy.visit("/");
+    cy.wait("@getUser");
+
+    cy.visit("/admin");
+
+    // open the Special GPU pool and the Add Member modal
+    cy.get(".card")
+      .contains("button", "Special GPU pool")
+      .should("be.visible")
+      .click();
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("button", "Add Member")
+      .should("be.visible")
+      .click();
+
+    // switch to Batch mode and paste a user email
+    cy.getDataCy("add-member-input-mode-batch").should("be.visible").click();
+    cy.get("#addMembersBatchInput").should("be.visible").type("user1@renku.ch");
+
+    // find the batch items
+    cy.get(".modal")
+      .contains("button", "Next: find (1)")
+      .should("be.visible")
+      .click();
+    cy.wait("@getKeycloakUsers");
+
+    // the resolved row should be found and checked
+    cy.get(".modal")
+      .contains("li", "user1@renku.ch")
+      .find("input[type='checkbox']")
+      .should("be.checked");
+
+    // the Add button should reflect the selected count and be clickable
+    cy.get(".modal")
+      .contains("button", "Add (1) Users")
+      .should("be.visible")
+      .and("not.be.disabled")
+      .click();
+    cy.wait("@postResourcePoolMembers");
   });
 });
