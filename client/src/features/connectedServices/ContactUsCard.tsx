@@ -60,10 +60,7 @@ export default function ContactUsCard() {
   const urlStr = url.toString().replace(/[+]/g, "%20");
 
   return (
-    <div
-      data-cy="connected-services-contact-us-card"
-      className={cx("col-12", "col-lg-6")}
-    >
+    <div data-cy="connected-services-contact-us-card">
       <Card className={cx("border-0", styles.card)}>
         <CardBody>
           <CardTitle>
@@ -77,6 +74,7 @@ export default function ContactUsCard() {
               color="outline-primary"
               tag="a"
               href={urlStr}
+              target="_blank"
             >
               <Send className={cx("bi", "me-1")} />
               Contact us

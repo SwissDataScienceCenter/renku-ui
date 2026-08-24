@@ -155,9 +155,7 @@ export default function ConnectedServicesPage() {
       Anonymous users cannot connect to external services.
     </InfoAlert>
   ) : !providers || providers.length === 0 ? (
-    <>
-      <p>There are currently no external services users can connect to.</p>
-    </>
+    <p>There are currently no external services users can connect to.</p>
   ) : (
     <>
       {targetedProvider && !IsTargetedProviderVisible && actionRequired && (
@@ -255,7 +253,7 @@ export default function ConnectedServicesPage() {
           </Row>
         </Col>
         {isUserLoggedIn && (
-          <Col xs={12} md={4}>
+          <Col xs={12} md={4} className={cx("d-flex", "flex-column", "gap-3")}>
             <ContactUsCard />
             <Card className={cx("border-1")}>
               <CardBody>
