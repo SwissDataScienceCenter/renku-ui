@@ -25,7 +25,6 @@ import {
   CardBody,
   CardHeader,
   Col,
-  DropdownItem,
   ListGroup,
   ListGroupItem,
   Row,
@@ -33,7 +32,10 @@ import {
 } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
+import {
+  MenuButton,
+  MenuButtonItem,
+} from "../../../../components/buttons/MenuButton";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
@@ -46,16 +48,18 @@ import AddProjectMemberModal from "../../../projectsV2/fields/AddProjectMemberMo
 import EditProjectMemberModal from "../../../projectsV2/fields/EditProjectMemberModal";
 import RemoveProjectMemberModal from "../../../projectsV2/fields/RemoveProjectMemberModal";
 import { ProjectMemberDisplay } from "../../../projectsV2/shared/ProjectMemberDisplay";
+import { getMemberNameToDisplay } from "../../utils/roleUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 type MemberActionMenuProps = Omit<
   ProjectPageSettingsMembersListItemProps,
   "member" | "members" | "numberOfOwners" | "projectId"
-> & { disabled?: boolean; tooltip?: React.ReactNode };
+> & { disabled?: boolean; memberName: string; tooltip?: React.ReactNode };
 
 function MemberActionMenu({
   disabled,
   index,
+  memberName,
   onRemove,
   onEdit,
   tooltip,
@@ -75,16 +79,17 @@ function MemberActionMenu({
   return (
     <>
       <span ref={ref}>
-        <ButtonWithMenuV2
+        <MenuButton
           color="outline-primary"
           default={defaultAction}
           disabled={disabled}
+          label={`More actions for ${memberName}`}
           size="sm"
         >
-          <DropdownItem onClick={onRemove}>
+          <MenuButtonItem onClick={onRemove}>
             <Trash className={cx("bi", "me-1")} /> Remove
-          </DropdownItem>
-        </ButtonWithMenuV2>
+          </MenuButtonItem>
+        </MenuButton>
       </span>
       {tooltip && (
         <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
@@ -132,6 +137,7 @@ function ProjectMemberAction({
           numberOfOwners >= 2 || userMember.role !== "owner" ? (
             <MemberActionMenu
               index={index}
+              memberName={getMemberNameToDisplay(member)}
               onRemove={onRemove}
               onEdit={onEdit}
             />
@@ -139,6 +145,7 @@ function ProjectMemberAction({
             <MemberActionMenu
               disabled={true}
               index={index}
+              memberName={getMemberNameToDisplay(member)}
               onRemove={onRemove}
               onEdit={onEdit}
               tooltip={"A project requires at least one owner."}
@@ -155,7 +162,12 @@ function ProjectMemberAction({
     <PermissionsGuard
       disabled={null}
       enabled={
-        <MemberActionMenu index={index} onRemove={onRemove} onEdit={onEdit} />
+        <MemberActionMenu
+          index={index}
+          memberName={getMemberNameToDisplay(member)}
+          onRemove={onRemove}
+          onEdit={onEdit}
+        />
       }
       requestedPermission="change_membership"
       userPermissions={permissions}

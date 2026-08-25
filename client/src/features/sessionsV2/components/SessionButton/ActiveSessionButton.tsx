@@ -33,7 +33,6 @@ import { SingleValue } from "react-select";
 import {
   Button,
   Col,
-  DropdownItem,
   Modal,
   ModalBody,
   ModalFooter,
@@ -42,7 +41,7 @@ import {
 } from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
-import { ButtonWithMenuV2 } from "~/components/buttons/Button";
+import { MenuButton, MenuButtonItem } from "~/components/buttons/MenuButton";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import SessionLogsModal from "~/features/logsDisplay/SessionLogsModal";
 import StopJobContent from "~/features/sessionsV2/components/SessionModals/StopJobContent";
@@ -317,63 +316,63 @@ export default function ActiveSessionButton({
     !isStopping &&
     !isHibernating &&
     isUserLoggedIn && (
-      <DropdownItem onClick={onHibernateSession}>
+      <MenuButtonItem onClick={onHibernateSession}>
         <PauseCircle className={cx("bi", "me-1")} />
         Pause session
-      </DropdownItem>
+      </MenuButtonItem>
     );
   const deleteAction = status !== "stopping" && !isStopping && (
-    <DropdownItem
+    <MenuButtonItem
       data-cy="delete-session-button"
       onClick={isUserLoggedIn ? toggleStopSession : onStopSession}
     >
       <Trash className={cx("bi", "me-1")} />
       Shut down session
-    </DropdownItem>
+    </MenuButtonItem>
   );
   const dismissAction = launcherCategory === "job" && (
-    <DropdownItem
+    <MenuButtonItem
       data-cy="delete-session-button"
       onClick={isRunning ? toggleStopSession : onStopSession}
     >
       <Trash className={cx("bi", "me-1")} />
       {isRunning ? "Cancel" : "Dismiss"}
-    </DropdownItem>
+    </MenuButtonItem>
   );
   const modifyAction = (status === "hibernated" || status === "failed") &&
     !isStopping &&
     !isHibernating &&
     !failedScheduling && (
-      <DropdownItem
+      <MenuButtonItem
         data-cy="modify-session-button"
         onClick={toggleModifySession}
       >
         <Tools className={cx("bi", "me-1")} />
         Modify session resources
-      </DropdownItem>
+      </MenuButtonItem>
     );
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
-    <DropdownItem href={session.url} target="_blank">
+    <MenuButtonItem href={session.url} target="_blank">
       <BoxArrowUpRight className={cx("bi", "me-1")} />
       Open in new tab
-    </DropdownItem>
+    </MenuButtonItem>
   );
   const logsAction = status !== "hibernated" && (
-    <DropdownItem data-cy="session-log-button" onClick={toggleLogsModal}>
+    <MenuButtonItem data-cy="session-log-button" onClick={toggleLogsModal}>
       <FileEarmarkText className={cx("bi", "me-1")} />
       View logs
-    </DropdownItem>
+    </MenuButtonItem>
   );
 
   return (
     <div className={cx("d-flex", "flex-row", "gap-2")}>
-      <ButtonWithMenuV2
+      <MenuButton
         className={cx(className)}
         color={launcherCategory === "job" ? "outline-primary" : "primary"}
         default={defaultAction}
+        label={`More actions for ${session.name}`}
         preventPropagation
-        size="sm"
       >
         {launcherCategory === "job" ? (
           dismissAction
@@ -383,12 +382,12 @@ export default function ActiveSessionButton({
             {deleteAction}
             {modifyAction}
             {(hibernateAction || deleteAction || modifyAction) &&
-              (openInNewTabAction || logsAction) && <DropdownItem divider />}
+              (openInNewTabAction || logsAction) && <MenuButtonItem divider />}
             {openInNewTabAction}
             {logsAction}
           </>
         )}
-      </ButtonWithMenuV2>
+      </MenuButton>
       <ConfirmDeleteModal
         isOpen={showModalStopSession}
         isStopping={isStopping}

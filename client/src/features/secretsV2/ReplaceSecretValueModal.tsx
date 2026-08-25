@@ -40,14 +40,12 @@ import SecretValueField from "./fields/SecretValueField";
 
 interface ReplaceSecretValueModalProps {
   isOpen: boolean;
-  isV2?: boolean;
   secret: SecretWithId;
   toggle: () => void;
 }
 
 export default function ReplaceSecretValueModal({
   isOpen,
-  isV2,
   secret,
   toggle,
 }: ReplaceSecretValueModalProps) {
@@ -106,7 +104,7 @@ export default function ReplaceSecretValueModal({
   }, [result.isSuccess, toggle]);
 
   const usageAlert =
-    (sessionSecretSlotIds.length > 0 || dataConnectorIds.length > 0) && isV2 ? (
+    sessionSecretSlotIds.length > 0 || dataConnectorIds.length > 0 ? (
       <InfoAlert dismissible={false} timeout={0}>
         This secret is used for{" "}
         {sessionSecretSlotIds.length > 1 ? (
@@ -124,20 +122,11 @@ export default function ReplaceSecretValueModal({
         ) : null}
         .
       </InfoAlert>
-    ) : sessionSecretSlotIds.length > 0 || dataConnectorIds.length > 0 ? (
-      <InfoAlert dismissible={false} timeout={0}>
-        This secret is in use in Renku 2.0.
-      </InfoAlert>
     ) : null;
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <Form
-        className={cx(!isV2 && "form-rk-green")}
-        data-cy="replace-secret-value-form"
-        noValidate
-        onSubmit={onSubmit}
-      >
+      <Form data-cy="replace-secret-value-form" noValidate onSubmit={onSubmit}>
         <ModalHeader tag="h2" toggle={toggle}>
           <Save className={cx("bi", "me-1")} />
           Replace secret value
@@ -158,15 +147,12 @@ export default function ReplaceSecretValueModal({
           <SecretValueField control={control} errors={errors} name="value" />
         </ModalBody>
         <ModalFooter>
-          <Button
-            color={isV2 ? "outline-primary" : "outline-rk-green"}
-            onClick={toggle}
-          >
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Close
           </Button>
           <Button
-            color={isV2 ? "primary" : "rk-green"}
+            color="primary"
             disabled={!isDirty || result.isLoading}
             type="submit"
           >

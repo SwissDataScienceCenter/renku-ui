@@ -24,8 +24,9 @@ import {
   FileEarmarkText,
   XOctagon,
 } from "react-bootstrap-icons";
-import { Button, ButtonGroup, DropdownItem } from "reactstrap";
+import { Button, ButtonGroup } from "reactstrap";
 
+import { MenuButtonItem } from "~/components/buttons/MenuButton";
 import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -48,10 +49,10 @@ export function RebuildLauncherDropdownItem({ launcher }: BuildActionsProps) {
   if (launcher.environment.environment_image_source !== "build") return null;
 
   return (
-    <DropdownItem data-cy="session-view-menu-rebuild" onClick={triggerBuild}>
+    <MenuButtonItem data-cy="session-view-menu-rebuild" onClick={triggerBuild}>
       <BootstrapReboot className={cx("bi", "me-1")} />
       Rebuild
-    </DropdownItem>
+    </MenuButtonItem>
   );
 }
 
