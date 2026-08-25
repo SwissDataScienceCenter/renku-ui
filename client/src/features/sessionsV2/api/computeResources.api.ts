@@ -40,7 +40,7 @@ const withFixedEndpoints = computeResourcesGeneratedApi.injectEndpoints({
 
 // Adds tag handling for cache management
 export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
-  addTagTypes: ["ResourceClass", "ResourcePool", "ResourcePoolUser"],
+  addTagTypes: ["ResourceClass", "ResourcePool", "ResourcePoolMember"],
   endpoints: {
     getResourcePools: {
       providesTags: (result) =>
@@ -92,26 +92,26 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
         "ResourceClass",
       ],
     },
-    getResourcePoolsByResourcePoolIdUsers: {
+    getResourcePoolsByResourcePoolIdMembers: {
       providesTags: (result, _error, { resourcePoolId }) =>
         result
           ? [
-              ...result.map(({ id }) => ({
-                id,
-                type: "ResourcePoolUser" as const,
+              ...result.map((member) => ({
+                id: `${member.member_type}-${member.id}`,
+                type: "ResourcePoolMember" as const,
               })),
-              { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
+              { id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" },
             ]
-          : [{ id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" }],
+          : [{ id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" }],
     },
-    postResourcePoolsByResourcePoolIdUsers: {
+    postResourcePoolsByResourcePoolIdMembers: {
       invalidatesTags: (_result, _error, { resourcePoolId }) => [
-        { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
+        { id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" },
       ],
     },
-    deleteResourcePoolsByResourcePoolIdUsersAndUserId: {
+    deleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberId: {
       invalidatesTags: (_result, _error, { resourcePoolId }) => [
-        { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
+        { id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" },
       ],
     },
   },
@@ -131,10 +131,10 @@ export const {
   usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
 
-  // "users" hooks
-  useGetResourcePoolsByResourcePoolIdUsersQuery,
-  usePostResourcePoolsByResourcePoolIdUsersMutation,
-  useDeleteResourcePoolsByResourcePoolIdUsersAndUserIdMutation,
+  // "members" hooks
+  useGetResourcePoolsByResourcePoolIdMembersQuery,
+  usePostResourcePoolsByResourcePoolIdMembersMutation,
+  useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation,
 } = computeResourcesApi;
 
 export type * from "./computeResources.generated-api";
