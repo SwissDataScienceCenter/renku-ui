@@ -813,7 +813,7 @@ function AppContentsNotice() {
       timeout={0}
     >
       <p className="mb-0">
-        Repositories and session secrets are not mounted. Only public,
+        Code repositories and session secrets are not mounted. Only public,
         credential-free data connectors are mounted.
       </p>
     </InfoAlert>
