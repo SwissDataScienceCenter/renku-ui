@@ -57,6 +57,7 @@ import { ErrorAlert } from "~/components/Alert";
 import InternalIdField from "~/components/InternalIdField";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -73,7 +74,6 @@ import { ModifyResourcesLauncherModal } from "../components/SessionModals/Modify
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import { SessionRowResourceRequests } from "../components/SessionsList";
 import {
-  SessionBadge,
   SessionStatusV2Badge,
   SessionStatusV2Description,
   SessionStatusV2Title,
@@ -184,13 +184,11 @@ function SessionCardNotRunning({
         </div>
       }
       contentLabel={
-        <div className="my-auto">
-          <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-            <CircleFill className={cx("me-1", "bi", "text-light-emphasis")} />
-            <span className="text-dark-emphasis" data-cy="session-status">
-              Not Running
-            </span>
-          </SessionBadge>
+        <div data-cy="session-status" className="my-auto">
+          <RenkuBadge className="fw-normal" color="light" pill>
+            <CircleFill className="me-1" />
+            Not Running
+          </RenkuBadge>
         </div>
       }
       contentSession={
