@@ -15,6 +15,18 @@ const jsRules = {
   "no-eval": "error",
   "no-unused-vars": "off",
   "no-console": "warn",
+  "no-restricted-imports": [
+    "error",
+    {
+      patterns: [
+        {
+          group: ["bootstrap/js/**"],
+          message:
+            "Import Dropdown from src/utils/bootstrap/bootstrap.client.ts. Deep imports of bootstrap/js/** create a second module instance and a second Dropdown registry.",
+        },
+      ],
+    },
+  ],
   "react/prop-types": "off",
   "react/jsx-indent": [0],
   "max-nested-callbacks": ["warn", 3],
@@ -51,6 +63,7 @@ const jsRules = {
         "autosaved",
         "autosaves",
         "autostart",
+        "autodocs",
         "autosuggest",
         "azureblob",
         "backend",
@@ -93,6 +106,9 @@ const jsRules = {
         "dockerignore",
         "dropbox",
         "dropdown",
+        "dropup",
+        "dropend",
+        "dropstart",
         "dropzone",
         "enum",
         "envi",
@@ -143,6 +159,7 @@ const jsRules = {
         "mailto",
         "maintenances",
         "matcher",
+        "menuitem",
         "mathbf",
         "mathjax",
         "memoization",
@@ -195,6 +212,7 @@ const jsRules = {
         "pygments",
         "Ravey",
         "rclone",
+        "reactstrap",
         "rcloud",
         "react",
         "readme",

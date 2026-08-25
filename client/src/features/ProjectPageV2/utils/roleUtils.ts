@@ -18,7 +18,6 @@
 
 import type {
   ProjectMemberListResponse,
-  ProjectMemberResponse,
   Role,
 } from "../../projectsV2/api/projectV2.api";
 
@@ -59,9 +58,13 @@ export function toSortedMembers(members: ProjectMemberListResponse) {
   });
 }
 
-export function getMemberNameToDisplay(member: ProjectMemberResponse): string {
+export function getMemberNameToDisplay(member: {
+  first_name?: string;
+  last_name?: string;
+  namespace?: string;
+}): string {
   return member.first_name || member.last_name
-    ? `${member.first_name ?? ""} ${member.last_name ?? ""}`
+    ? `${member.first_name ?? ""} ${member.last_name ?? ""}`.trim()
     : member.namespace
       ? `@${member.namespace}`
       : "(unknown)";

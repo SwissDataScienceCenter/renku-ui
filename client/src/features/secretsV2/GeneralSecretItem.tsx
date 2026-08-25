@@ -83,7 +83,7 @@ export default function GeneralSecretItem({ secret }: GeneralSecretItemProps) {
             "gap-1",
           )}
         >
-          <SecretItemActions isV2 secret={secret} />
+          <SecretItemActions secret={secret} />
           <div className={cx("text-light-emphasis", "small")}>
             Edited{" "}
             <TimeCaption datetime={modification_date} enableTooltip noCaption />
