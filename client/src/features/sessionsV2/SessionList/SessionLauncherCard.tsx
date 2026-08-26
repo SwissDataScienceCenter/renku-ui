@@ -30,7 +30,6 @@ import {
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
-import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
 import JobCard from "~/features/sessionsV2/SessionList/JobCard";
 import { Loader } from "../../../components/Loader";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -236,11 +235,6 @@ export default function SessionLauncherCard({
                       </span>
                     )}
                   </span>
-                </Col>
-              </Row>
-              <Row>
-                <Col data-cy="session-gitlab-warning" xs={12}>
-                  <SessionEnvironmentGitLabWarningBadge launcher={launcher} />
                 </Col>
               </Row>
               {isCodeEnvironment ? (

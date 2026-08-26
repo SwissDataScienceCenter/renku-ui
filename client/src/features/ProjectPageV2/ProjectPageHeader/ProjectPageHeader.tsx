@@ -19,7 +19,6 @@
 import cx from "classnames";
 import { useLocation } from "react-router";
 
-import ProjectGitLabWarnBanner from "../../legacy/ProjectGitLabWarnBanner";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import ProjectAutostartRedirectBanner from "./ProjectAutostartRedirectBanner";
 import ProjectCopyBanner from "./ProjectCopyBanner";
@@ -55,7 +54,6 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
       {isAutostartRedirect && (
         <ProjectAutostartRedirectBanner project={project} />
       )}
-      <ProjectGitLabWarnBanner project={project} />
     </div>
   );
 }

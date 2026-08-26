@@ -125,24 +125,3 @@ describe("View v2 landing page empty", () => {
     cy.getDataCy("search-filter-type-Project").should("be.checked");
   });
 });
-
-describe("No legacy support", () => {
-  beforeEach(() => {
-    fixtures
-      .config({ fixture: "config-no-legacy.json" })
-      .userTest()
-      .namespaces()
-      .getSessionsV2({ fixture: "sessions/sessionsV2.json" })
-      .listManyGroupV2()
-      .listManyProjectV2()
-      .readProjectV2ById();
-    cy.visit("/");
-  });
-
-  it("view dashboard", () => {
-    cy.contains("My sessions").should("be.visible");
-    cy.contains("My projects").should("be.visible");
-    cy.contains("My groups").should("be.visible");
-    cy.contains("Looking for your Renku Legacy projects?").should("not.exist");
-  });
-});
