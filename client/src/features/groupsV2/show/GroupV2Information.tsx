@@ -90,14 +90,16 @@ interface GroupInformationBoxProps {
   children: React.ReactNode;
   icon: React.ReactNode;
   title: React.ReactNode;
+  dataCy?: string;
 }
 export function GroupInformationBox({
   children,
   icon,
   title,
+  dataCy,
 }: GroupInformationBoxProps) {
   return (
-    <div>
+    <div data-cy={dataCy || "group-info-box"}>
       <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
         {icon}
         {title}

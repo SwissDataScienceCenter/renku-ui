@@ -20,12 +20,14 @@ import cx from "classnames";
 import { Cpu } from "react-bootstrap-icons";
 import { Badge } from "reactstrap";
 
+import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
 import {
   ResourcePoolWithIdFiltered,
   useGetGroupsByGroupSlugResourcePoolsQuery,
 } from "~/features/sessionsV2/api/computeResources.generated-api";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
+import useGroupPermissions from "../utils/useGroupPermissions.hook";
 import { GroupInformationBox } from "./GroupV2Information";
 
 interface GroupV2ResourcePoolDisplayProps {
@@ -50,6 +52,7 @@ export default function GroupV2ResourcePoolDisplay({
     <RtkOrDataServicesError error={error} dismissible={false} />
   ) : data ? (
     <GroupInformationBox
+      dataCy="group-resource-pools"
       icon={<Cpu className="bi" />}
       title={
         <>
@@ -58,7 +61,7 @@ export default function GroupV2ResourcePoolDisplay({
         </>
       }
     >
-      {data.length === 0 && <p>There are no resource pools in this group.</p>}
+      {!data.length && <AddEmptyListForGroupNamespace namespace={group} />}
       {data.map((rp) => (
         <GroupV2ResourcePool key={rp.id} rp={rp} />
       ))}
@@ -66,26 +69,36 @@ export default function GroupV2ResourcePoolDisplay({
   ) : null;
 }
 
+function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
+  const { permissions } = useGroupPermissions({ groupSlug: namespace });
+
+  return (
+    <PermissionsGuard
+      disabled={
+        <p
+          className={cx("mb-0", "text-body-secondary")}
+          data-cy="group-resource-pools-not-visible"
+        >
+          This group has no visible resource pools.
+        </p>
+      }
+      enabled={
+        <p
+          className={cx("mb-0", "text-body-secondary")}
+          data-cy="group-resource-pools-empty"
+        >
+          There are no resource pools explicitly linked to this group.
+        </p>
+      }
+      requestedPermission="write"
+      userPermissions={permissions}
+    />
+  );
+}
+
 interface GroupV2ResourcePoolProps {
   rp: ResourcePoolWithIdFiltered;
 }
 function GroupV2ResourcePool({ rp }: GroupV2ResourcePoolProps) {
-  const { name } = rp;
-
-  if (!name) return null;
-
-  return (
-    <div className={cx("d-flex", "gap-2")}>
-      <div
-        className={cx(
-          "d-flex",
-          "flex-column",
-          "justify-content-center",
-          "text-truncate",
-        )}
-      >
-        <p className={cx("m-0", "text-truncate")}>{name}</p>
-      </div>
-    </div>
-  );
+  return rp.name && <p className={cx("m-0", "text-truncate")}>{rp.name}</p>;
 }
