@@ -27,6 +27,21 @@ export const APP_PUBLIC_PROJECT_ONLY_MESSAGE =
 export const APP_ALREADY_EXISTS_MESSAGE =
   "Another launcher in this project already has an app. Only one app is allowed per project at a time.";
 
+export const APP_STARTING_MESSAGE =
+  "The app is still starting and cannot be opened yet.";
+
+export const APP_STATUS_POLLING_INTERVAL_MS = 5_000;
+
+export type AppTransition = "starting" | "stopping";
+
+export type AppWaitTarget = { desiredStatus: AppStatus[] } | { deletion: true };
+
+interface AppLobbyLocation {
+  namespace: string;
+  slug: string;
+  launcherId: string;
+}
+
 export function findAppForLauncher(
   apps: AppResponse[] | undefined,
   launcherId: string,
@@ -40,8 +55,6 @@ export function hasAppOnAnotherLauncher(
 ): boolean {
   return !!apps?.some((app) => app.launcher_id !== launcherId);
 }
-
-export type AppTransition = "starting" | "stopping";
 
 export function getAppTransition(
   app: AppResponse | undefined,
@@ -63,10 +76,6 @@ export function hasPendingApp(apps: AppResponse[] | undefined): boolean {
   return !!apps?.some((app) => app.status === "pending");
 }
 
-export const APP_STATUS_POLLING_INTERVAL_MS = 5_000;
-
-export type AppWaitTarget = { desiredStatus: AppStatus[] } | { deletion: true };
-
 export function hasReachedAppTarget(
   app: AppResponse | undefined,
   target: AppWaitTarget,
@@ -79,13 +88,6 @@ export function hasReachedAppTarget(
 
 export function toSecureAppUrl(url: string): string {
   return url.replace(/^http:\/\//i, "https://");
-}
-
-/** Everything needed to address a launcher's lobby. */
-interface AppLobbyLocation {
-  namespace: string;
-  slug: string;
-  launcherId: string;
 }
 
 export function getAppLobbyPath({

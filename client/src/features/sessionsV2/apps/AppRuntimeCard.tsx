@@ -61,9 +61,7 @@ export default function AppRuntimeCard({
       <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
         {app ? (
           <dl className={cx("mb-0", "row", "g-2")}>
-            <dt className={cx("col-sm-3", "text-muted", "fw-normal")}>
-              Share link
-            </dt>
+            <dt className={cx("col-sm-3", "fw-normal")}>Share link</dt>
             <dd className={cx("col-sm-9", "mb-0")}>
               <CommandCopy command={lobbyUrl} noMargin />
               <p className={cx("form-text", "mb-0")}>
@@ -73,9 +71,7 @@ export default function AppRuntimeCard({
             </dd>
             {app.url && (
               <>
-                <dt className={cx("col-sm-3", "text-muted", "fw-normal")}>
-                  Direct URL
-                </dt>
+                <dt className={cx("col-sm-3", "fw-normal")}>Direct URL</dt>
                 <dd className={cx("col-sm-9", "mb-0")}>
                   <CommandCopy command={toSecureAppUrl(app.url)} noMargin />
                   <p className={cx("form-text", "mb-0")}>
@@ -87,19 +83,15 @@ export default function AppRuntimeCard({
             )}
             {app.started && (
               <>
-                <dt className={cx("col-sm-3", "text-muted", "fw-normal")}>
-                  Started
-                </dt>
+                <dt className={cx("col-sm-3", "fw-normal")}>Started</dt>
                 <dd className={cx("col-sm-9", "mb-0")}>
-                  <TimeCaption datetime={app.started} enableTooltip />
+                  <TimeCaption datetime={app.started} enableTooltip noCaption />
                 </dd>
               </>
             )}
             {app.image && (
               <>
-                <dt className={cx("col-sm-3", "text-muted", "fw-normal")}>
-                  Image
-                </dt>
+                <dt className={cx("col-sm-3", "fw-normal")}>Image</dt>
                 <dd className={cx("col-sm-9", "mb-0")}>
                   <CommandCopy command={app.image} noMargin />
                 </dd>

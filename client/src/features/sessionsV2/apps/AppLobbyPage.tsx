@@ -248,13 +248,13 @@ function AppLobbyProbe({ app, appName, projectUrl }: AppLobbyProbeProps) {
       <ProgressStepsIndicator
         description={description}
         moreOptions={
-          isExhausted ? (
+          isExhausted && (
             <ExhaustedActions
               appUrl={appUrl}
               projectUrl={projectUrl}
               retry={retry}
             />
-          ) : undefined
+          )
         }
         status={steps}
         style={ProgressStyle.Light}

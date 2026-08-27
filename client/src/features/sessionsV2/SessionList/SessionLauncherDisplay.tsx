@@ -151,7 +151,9 @@ export function SessionLauncherDisplay({
         toggleSessionView={toggleSessionView}
         openSessionViewWithJob={openSessionViewWithJob}
         toggleEnvVariables={toggleEnvVariables}
-        toggleLogsHistory={persistedLogsEnabled ? toggleLogsHistory : undefined}
+        toggleLogsHistory={
+          persistedLogsEnabled && !isApp ? toggleLogsHistory : undefined
+        }
       />
       <SessionView
         id={launcherHash}
@@ -165,7 +167,9 @@ export function SessionLauncherDisplay({
         toggleDelete={toggleDelete}
         toggleUpdateEnvironment={toggleUpdateEnvironment}
         toggleEnvVariables={toggleEnvVariables}
-        toggleLogsHistory={persistedLogsEnabled ? toggleLogsHistory : undefined}
+        toggleLogsHistory={
+          persistedLogsEnabled && !isApp ? toggleLogsHistory : undefined
+        }
       />
       {launcher && (
         <>

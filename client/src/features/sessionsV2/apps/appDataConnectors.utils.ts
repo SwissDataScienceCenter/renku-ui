@@ -27,6 +27,11 @@ export const APP_OAUTH2_STORAGE_TYPES: ReadonlySet<string> = new Set([
   "dropbox",
 ]);
 
+export interface PartitionedDataConnectors {
+  mounted: DataConnectorRead[];
+  skipped: DataConnectorRead[];
+}
+
 /**
  * Whether an app would mount this data connector: public, no static credentials,
  * no OAuth integration. Read-only mirror of `is_app_mountable`
@@ -50,11 +55,6 @@ export function appWillMount(dataConnector: DataConnectorRead): boolean {
     return false;
   }
   return !APP_OAUTH2_STORAGE_TYPES.has(storageType);
-}
-
-export interface PartitionedDataConnectors {
-  mounted: DataConnectorRead[];
-  skipped: DataConnectorRead[];
 }
 
 export function partitionDataConnectorsForApp(

@@ -50,6 +50,7 @@ export function DeleteAppModal({
         tag="h2"
         toggle={toggle}
       >
+        <StopCircle className={cx("bi", "me-1")} />
         Stop app
       </ModalHeader>
       <ModalBody>

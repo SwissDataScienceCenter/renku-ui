@@ -64,10 +64,6 @@ async function main() {
   });
 }
 
-// NOTE: renku_apps is still on a feature branch in renku-data-services, so this
-// will 404 against DATA_SERVICES_RELEASE ("main") until that branch is merged.
-// It is also deliberately left out of the aggregate "update-api" script for the
-// same reason — add it there once the backend lands on main.
 async function updateAppsApi() {
   updateApiFiles({
     specFile: "components/renku_data_services/renku_apps/api.spec.yaml",

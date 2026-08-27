@@ -59,7 +59,7 @@ export default function AppLogsModal({
       toggle={toggle}
       defaultTab={isAppUserContainerLog}
       tabLabel={formatAppLogTabLabel}
-      emptyMessage="No logs available. An app with no traffic scales down to zero and keeps no logs; send it a request and try again."
+      emptyMessage="No logs available. Only applications with traffic produce logs."
     />
   );
 }

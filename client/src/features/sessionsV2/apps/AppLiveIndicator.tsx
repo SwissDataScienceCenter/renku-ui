@@ -33,7 +33,7 @@ export default function AppLiveIndicator() {
         "text-success-emphasis",
       )}
     >
-      <CircleFill className={cx("bi", "me-1", styles.pulseDot)} fontSize={14} />
+      <CircleFill className={cx("bi", "me-1")} fontSize={14} />
       Live
     </span>
   );

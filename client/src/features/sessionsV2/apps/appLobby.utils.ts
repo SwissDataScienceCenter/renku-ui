@@ -16,12 +16,6 @@
  * limitations under the License.
  */
 
-export interface AppLobbyConfig {
-  maxAttempts: number;
-  probeTimeoutMs: number;
-  retryDelayMs: number;
-}
-
 export const DEFAULT_APP_LOBBY_CONFIG: AppLobbyConfig = {
   maxAttempts: 7,
   probeTimeoutMs: 45_000,
@@ -34,12 +28,15 @@ export const APP_LOBBY_CONFIG_BOUNDS = {
   retryDelayMs: { min: 0, max: 60_000 },
 } as const;
 
-export function appLobbyTotalBudgetMs({
-  maxAttempts,
-  probeTimeoutMs,
-  retryDelayMs,
-}: AppLobbyConfig): number {
-  return maxAttempts * probeTimeoutMs + (maxAttempts - 1) * retryDelayMs;
+export const INITIAL_APP_LOBBY_STATE: AppLobbyState = {
+  status: "probing",
+  attempt: 1,
+};
+
+export interface AppLobbyConfig {
+  maxAttempts: number;
+  probeTimeoutMs: number;
+  retryDelayMs: number;
 }
 
 export type AppLobbyStatus = "probing" | "waiting" | "ready" | "exhausted";
@@ -60,10 +57,13 @@ export type AppLobbyReducer = (
   event: AppLobbyEvent,
 ) => AppLobbyState;
 
-export const INITIAL_APP_LOBBY_STATE: AppLobbyState = {
-  status: "probing",
-  attempt: 1,
-};
+export function appLobbyTotalBudgetMs({
+  maxAttempts,
+  probeTimeoutMs,
+  retryDelayMs,
+}: AppLobbyConfig): number {
+  return maxAttempts * probeTimeoutMs + (maxAttempts - 1) * retryDelayMs;
+}
 
 export function createAppLobbyReducer({
   maxAttempts,

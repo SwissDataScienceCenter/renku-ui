@@ -133,7 +133,11 @@ export default function NewLauncherModal({
                       "border",
                       "shadow-none",
                       disabled
-                        ? ["border-dark-subtle", "text-body-secondary"]
+                        ? [
+                            styles.LauncherOptionCardDisabled,
+                            "border-dark-subtle",
+                            "text-body-secondary",
+                          ]
                         : ["border-primary", "cursor-pointer", "text-primary"],
                     )}
                     data-cy={`launcher-option-${category}`}

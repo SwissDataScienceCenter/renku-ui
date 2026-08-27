@@ -31,7 +31,7 @@ import {
   FileEarmarkText,
   Link45deg,
   Power,
-  ToggleOff,
+  StopCircle,
 } from "react-bootstrap-icons";
 import {
   Button,
@@ -40,10 +40,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import {
-  ButtonWithMenuV2,
-  SingleButtonWithMenu,
-} from "~/components/buttons/Button";
+import { ButtonWithMenuV2 } from "~/components/buttons/Button";
 import { Loader } from "~/components/Loader";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import AppLogsModal from "~/features/logsDisplay/AppLogsModal";
@@ -59,6 +56,7 @@ import type { AppTransition } from "~/features/sessionsV2/apps/apps.utils";
 import {
   APP_ALREADY_EXISTS_MESSAGE,
   APP_PUBLIC_PROJECT_ONLY_MESSAGE,
+  APP_STARTING_MESSAGE,
   getAppLobbyPath,
   getAppLobbyUrl,
   getAppTransition,
@@ -237,11 +235,10 @@ export default function AppLauncherActions({
     write && app && !transition && (
       <DropdownItem
         key="delete-app"
-        className="text-danger"
         data-cy="app-menu-delete"
         onClick={toggleDelete}
       >
-        <ToggleOff className={cx("bi", "me-1")} />
+        <StopCircle className={cx("bi", "me-1")} />
         Stop app
       </DropdownItem>
     ),
@@ -323,7 +320,16 @@ export default function AppLauncherActions({
     }
 
     if (!isLive) {
-      return null;
+      return (
+        <AppActionButton
+          color="primary"
+          dataCy="open-app-button"
+          disabled
+          icon={<BoxArrowUpRight className={cx("bi", "me-1")} />}
+          label="Open"
+          tooltip={APP_STARTING_MESSAGE}
+        />
+      );
     }
 
     return (
@@ -362,7 +368,7 @@ export default function AppLauncherActions({
     <CheckingLauncherButton />
   ) : !hasMenuItems ? (
     defaultAction
-  ) : defaultAction ? (
+  ) : (
     <ButtonWithMenuV2
       color="primary"
       default={defaultAction}
@@ -372,12 +378,6 @@ export default function AppLauncherActions({
     >
       {menuItems}
     </ButtonWithMenuV2>
-  ) : (
-    <div onClick={(event) => event.stopPropagation()}>
-      <SingleButtonWithMenu color="primary" size="sm">
-        {menuItems}
-      </SingleButtonWithMenu>
-    </div>
   );
 
   return (
@@ -433,7 +433,7 @@ interface AppActionButtonProps {
   disabled?: boolean;
   icon: React.ReactNode;
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
   tooltip?: string;
 }
 
@@ -446,36 +446,37 @@ function AppActionButton({
   onClick,
   tooltip,
 }: AppActionButtonProps) {
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
-      if (disabled) {
-        event.preventDefault();
-        return;
-      }
-      onClick();
+      onClick?.();
     },
-    [disabled, onClick],
+    [onClick],
   );
 
   return (
     <>
-      <Button
-        innerRef={buttonRef}
-        aria-disabled={disabled || undefined}
-        className={cx("text-nowrap", disabled && "opacity-75")}
-        color={color}
-        data-cy={dataCy}
-        onClick={handleClick}
-        size="sm"
-        type="button"
+      <div
+        className="d-inline-block"
+        onClick={(event) => event.stopPropagation()}
+        ref={wrapperRef}
       >
-        {icon}
-        {label}
-      </Button>
+        <Button
+          className="text-nowrap"
+          color={color}
+          data-cy={dataCy}
+          disabled={disabled}
+          onClick={handleClick}
+          size="sm"
+          type="button"
+        >
+          {icon}
+          {label}
+        </Button>
+      </div>
       {tooltip ? (
-        <UncontrolledTooltip placement="top" target={buttonRef}>
+        <UncontrolledTooltip placement="top" target={wrapperRef}>
           {tooltip}
         </UncontrolledTooltip>
       ) : null}
