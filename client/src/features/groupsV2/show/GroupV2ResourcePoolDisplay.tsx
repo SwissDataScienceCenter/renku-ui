@@ -20,14 +20,11 @@ import cx from "classnames";
 import { Cpu } from "react-bootstrap-icons";
 import { Badge } from "reactstrap";
 
-import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
 import {
   ResourcePoolWithIdFiltered,
   useGetGroupsByGroupSlugResourcePoolsQuery,
 } from "~/features/sessionsV2/api/computeResources.generated-api";
-import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
-import useGroupPermissions from "../utils/useGroupPermissions.hook";
 import { GroupInformationBox } from "./GroupV2Information";
 
 interface GroupV2ResourcePoolDisplayProps {
@@ -48,52 +45,36 @@ export default function GroupV2ResourcePoolDisplay({
         <div>Retrieving resource pools...</div>
       </div>
     </div>
-  ) : error ? (
-    <RtkOrDataServicesError error={error} dismissible={false} />
-  ) : data ? (
+  ) : error || data ? (
     <GroupInformationBox
       dataCy="group-resource-pools"
       icon={<Cpu className="bi" />}
       title={
         <>
           <span>Resource Pools</span>
-          <Badge>{data.length ?? 0}</Badge>
+          <Badge>{data?.length ?? 0}</Badge>
         </>
       }
     >
-      {!data.length && <AddEmptyListForGroupNamespace namespace={group} />}
-      {data.map((rp) => (
-        <GroupV2ResourcePool key={rp.id} rp={rp} />
-      ))}
-    </GroupInformationBox>
-  ) : null;
-}
-
-function AddEmptyListForGroupNamespace({ namespace }: { namespace: string }) {
-  const { permissions } = useGroupPermissions({ groupSlug: namespace });
-
-  return (
-    <PermissionsGuard
-      disabled={
+      {error ? (
         <p
           className={cx("mb-0", "text-body-secondary")}
           data-cy="group-resource-pools-not-visible"
         >
           This group has no visible resource pools.
         </p>
-      }
-      enabled={
+      ) : !data.length ? (
         <p
           className={cx("mb-0", "text-body-secondary")}
           data-cy="group-resource-pools-empty"
         >
           There are no resource pools explicitly linked to this group.
         </p>
-      }
-      requestedPermission="write"
-      userPermissions={permissions}
-    />
-  );
+      ) : (
+        data.map((rp) => <GroupV2ResourcePool key={rp.id} rp={rp} />)
+      )}
+    </GroupInformationBox>
+  ) : null;
 }
 
 interface GroupV2ResourcePoolProps {
