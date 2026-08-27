@@ -149,7 +149,6 @@ export default function JobLauncherActions({
       color="primary"
       default={defaultAction}
       preventPropagation
-      size="sm"
       dataCy="job-button-with-menu-dropdown"
       label={`More actions for ${launcher.name}`}
     >

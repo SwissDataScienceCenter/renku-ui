@@ -29,9 +29,10 @@ import {
 } from "react-bootstrap-icons";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
+import { MenuButtonItem } from "~/components/buttons/MenuButton";
+import useClickableHostHandlers from "~/components/buttons/useClickableHostHandlers.hook";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import JobCard from "~/features/sessionsV2/SessionList/JobCard";
-import { MenuButtonItem } from "../../../components/buttons/MenuButton";
 import { Loader } from "../../../components/Loader";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
@@ -157,6 +158,8 @@ export default function SessionLauncherCard({
     );
   }, [launcher?.resource_class_id, resourcePools]);
 
+  const hostHandlers = useClickableHostHandlers(toggleSessionView);
+
   return (
     <Card
       className={cx(
@@ -171,7 +174,7 @@ export default function SessionLauncherCard({
       <CardBody className={cx("p-0")}>
         <div
           className={cx(hasSession && "border-bottom", "p-3")}
-          onClick={toggleSessionView}
+          onClick={hostHandlers.onClick}
           aria-label={
             toggleSessionView
               ? "View session details for this launcher"

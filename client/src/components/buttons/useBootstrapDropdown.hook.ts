@@ -20,8 +20,7 @@ import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 
 import { Dropdown } from "~/utils/bootstrap/bootstrap.client";
 
-// Mirrors Bootstrap's open state into React so re-renders, disabled, and focus
-// restore cannot fight the Dropdown instance that actually owns the menu.
+// Keep React state in sync with Bootstrap, which owns the dropdown state
 export function useBootstrapDropdown(
   toggleRef: RefObject<HTMLButtonElement | null>,
   menuRef: RefObject<HTMLDivElement | null>,

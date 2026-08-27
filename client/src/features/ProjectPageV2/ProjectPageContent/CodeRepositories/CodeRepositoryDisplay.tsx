@@ -52,6 +52,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
+import useClickableHostHandlers from "~/components/buttons/useClickableHostHandlers.hook";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import ExternalLink from "~/components/ExternalLink";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
@@ -430,6 +431,9 @@ export function RepositoryItem({
   const toggleDetails = useCallback(() => {
     setShowDetails((open) => !open);
   }, []);
+  const rowHandlers = useClickableHostHandlers(
+    readonly ? undefined : toggleDetails,
+  );
   const canonicalUrlStr = useMemo(
     () => `${url.replace(/(?:\.git|\/)$/i, "")}`,
     [url],
@@ -442,7 +446,7 @@ export function RepositoryItem({
         className: cx(
           !readonly && ["cursor-pointer", "link-primary", "text-body"],
         ),
-        onClick: toggleDetails,
+        onClick: rowHandlers.onClick,
       }
     : {};
 
@@ -469,7 +473,11 @@ export function RepositoryItem({
           {!readonly && (
             <>
               <Col xs={12} sm="auto" className="ms-auto">
-                <CodeRepositoryActions project={project} url={url} />
+                <CodeRepositoryActions
+                  project={project}
+                  url={url}
+                  title={title}
+                />
               </Col>
             </>
           )}

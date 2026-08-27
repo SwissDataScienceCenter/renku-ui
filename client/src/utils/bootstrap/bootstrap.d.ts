@@ -1,13 +1,8 @@
+// Bootstrap's dist build ships no types. Declare only the Dropdown API this app uses.
 declare module "bootstrap" {
   export class Dropdown {
-    static getOrCreateInstance(
-      element: Element,
-      config?: Record<string, unknown>,
-    ): Dropdown;
-    static getInstance(element: Element): Dropdown | null;
-    show(): void;
+    static getOrCreateInstance(element: Element): Dropdown;
     hide(): void;
-    toggle(): void;
     dispose(): void;
   }
 }
