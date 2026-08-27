@@ -35,5 +35,16 @@ export function Admin<T extends FixturesConstructor>(Parent: T) {
       }).as(name);
       return this;
     }
+
+    adminKeycloakUsers(
+      name = "getKeycloakUsers",
+      fixture = "admin/users-search.json",
+      realm = "Renku",
+    ) {
+      cy.intercept(`/api/kc/admin/realms/${realm}/users*`, {
+        fixture,
+      }).as(name);
+      return this;
+    }
   };
 }

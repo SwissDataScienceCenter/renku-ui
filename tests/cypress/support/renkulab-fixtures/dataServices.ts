@@ -114,6 +114,27 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    resourcePoolMembers(
+      name = "getResourcePoolMembers",
+      fixture = "dataServices/resource-pool-members.json",
+    ) {
+      cy.intercept("GET", "/api/data/resource_pools/*/members", {
+        fixture,
+      }).as(name);
+      return this;
+    }
+
+    postResourcePoolMembers(
+      name = "postResourcePoolMembers",
+      fixture = "dataServices/resource-pool-members.json",
+    ) {
+      cy.intercept("POST", "/api/data/resource_pools/*/members", {
+        fixture,
+        statusCode: 201,
+      }).as(name);
+      return this;
+    }
+
     resourcePoolLimits(args?: ResourcePoolIdFixture) {
       const {
         fixture = "dataServices/resource-pool-limits.json",
