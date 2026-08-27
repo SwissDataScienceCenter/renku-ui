@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { MouseEvent, ReactNode, useLayoutEffect, useRef } from "react";
 
+import { MenuButtonHideContext } from "./MenuButtonItem";
 import { useBootstrapDropdown } from "./useBootstrapDropdown.hook";
 
 export { MenuButtonItem } from "./MenuButtonItem";
@@ -42,7 +43,6 @@ export interface MenuButtonProps {
   id?: string;
   label?: string;
   preventPropagation?: boolean;
-  size?: "sm";
 }
 
 export function MenuButton({
@@ -56,56 +56,55 @@ export function MenuButton({
   id,
   label = "More actions",
   preventPropagation,
-  size = "sm",
 }: MenuButtonProps) {
   const toggleRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const { isOpen, hide } = useBootstrapDropdown(toggleRef, menuRef);
-  const isToggleDisabled = disabled;
 
   useLayoutEffect(() => {
-    if (isToggleDisabled && isOpen) hide();
-  }, [isToggleDisabled, isOpen, hide]);
+    if (disabled && isOpen) hide();
+  }, [disabled, isOpen, hide]);
 
   const onRootClick = preventPropagation
     ? (event: MouseEvent) => event.stopPropagation()
     : undefined;
 
   return (
-    <div
-      className={cx(
-        "btn-group",
-        `btn-group-${size}`,
-        DIRECTION_CLASS[direction],
-        className,
-      )}
-      id={id}
-      onClick={onRootClick}
-    >
-      {defaultButton}
-      <button
-        aria-disabled={isToggleDisabled || undefined}
-        aria-label={label}
-        className={cx(
-          "btn",
-          `btn-${color}`,
-          "dropdown-toggle",
-          defaultButton && "dropdown-toggle-split",
-          defaultButton && "border-start-0",
-          isOpen && "show",
-        )}
-        data-bs-toggle="dropdown"
-        data-cy={dataCy ?? "button-with-menu-dropdown"}
-        disabled={isToggleDisabled && !isOpen}
-        ref={toggleRef}
-        type="button"
-      />
+    <MenuButtonHideContext.Provider value={hide}>
       <div
-        className={cx("dropdown-menu", "dropdown-menu-end", isOpen && "show")}
-        ref={menuRef}
+        className={cx(
+          "btn-group",
+          "btn-group-sm",
+          DIRECTION_CLASS[direction],
+          className,
+        )}
+        id={id}
+        onClick={onRootClick}
       >
-        {children}
+        {defaultButton}
+        <button
+          aria-label={label}
+          className={cx(
+            "btn",
+            `btn-${color}`,
+            "dropdown-toggle",
+            defaultButton && "dropdown-toggle-split",
+            defaultButton && "border-start-0",
+            isOpen && "show",
+          )}
+          data-bs-toggle="dropdown"
+          data-cy={dataCy ?? "button-with-menu-dropdown"}
+          disabled={disabled && !isOpen}
+          ref={toggleRef}
+          type="button"
+        />
+        <div
+          className={cx("dropdown-menu", "dropdown-menu-end", isOpen && "show")}
+          ref={menuRef}
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    </MenuButtonHideContext.Provider>
   );
 }

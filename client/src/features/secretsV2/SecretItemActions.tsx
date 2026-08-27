@@ -76,26 +76,24 @@ export default function SecretItemActions({ secret }: SecretItemActionsProps) {
     </Button>
   );
 
-  const menu = (
-    <MenuButton
-      color="outline-primary"
-      default={defaultAction}
-      label={`More actions for ${secret.name}`}
-    >
-      <MenuButtonItem onClick={toggleEdit}>
-        <Pencil className={cx("bi", "me-1")} />
-        Edit
-      </MenuButtonItem>
-      <MenuButtonItem onClick={toggleDelete}>
-        <Trash className={cx("bi", "me-1")} />
-        Delete
-      </MenuButtonItem>
-    </MenuButton>
-  );
-
   return (
     <>
-      <div data-cy="user-secret-actions">{menu}</div>
+      <div data-cy="user-secret-actions">
+        <MenuButton
+          color="outline-primary"
+          default={defaultAction}
+          label={`More actions for ${secret.name}`}
+        >
+          <MenuButtonItem onClick={toggleEdit}>
+            <Pencil className={cx("bi", "me-1")} />
+            Edit
+          </MenuButtonItem>
+          <MenuButtonItem onClick={toggleDelete}>
+            <Trash className={cx("bi", "me-1")} />
+            Delete
+          </MenuButtonItem>
+        </MenuButton>
+      </div>
       <ReplaceSecretValueModal
         isOpen={isReplaceOpen}
         secret={secret}

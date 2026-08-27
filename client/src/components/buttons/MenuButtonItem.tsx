@@ -17,9 +17,9 @@
  */
 
 import cx from "classnames";
-import { MouseEvent, ReactNode } from "react";
+import { createContext, MouseEvent, ReactNode, useContext } from "react";
 
-import { Dropdown } from "~/utils/bootstrap/bootstrap.client";
+export const MenuButtonHideContext = createContext<(() => void) | null>(null);
 
 export interface MenuButtonItemProps {
   children?: ReactNode;
@@ -33,16 +33,6 @@ export interface MenuButtonItemProps {
   target?: string;
 }
 
-// Bootstrap closes on document click; preventPropagation stops that, so close here.
-function hideOwningDropdown(item: HTMLElement) {
-  if (!Dropdown) return;
-  const menu = item.closest(".dropdown-menu");
-  const toggle = menu?.parentElement?.querySelector(
-    "[data-bs-toggle='dropdown']",
-  );
-  if (toggle) Dropdown.getInstance(toggle)?.hide();
-}
-
 export function MenuButtonItem({
   children,
   className,
@@ -54,12 +44,13 @@ export function MenuButtonItem({
   rel,
   target,
 }: MenuButtonItemProps) {
+  const hide = useContext(MenuButtonHideContext);
+
   if (divider) {
     return (
       <div className={cx("dropdown-divider", className)} data-cy={dataCy} />
     );
   }
-
 
   const onItemClick = (event: MouseEvent<HTMLElement>) => {
     if (disabled) {
@@ -67,7 +58,7 @@ export function MenuButtonItem({
       return;
     }
     onClick?.(event);
-    hideOwningDropdown(event.currentTarget);
+    hide?.();
   };
 
   const classes = cx("dropdown-item", disabled && "disabled", className);
@@ -88,12 +79,18 @@ export function MenuButtonItem({
     );
   }
 
+  const onMouseDown = (event: MouseEvent<HTMLElement>) => {
+    // Keep focus on the toggle so a modal/offcanvas can return to it.
+    event.preventDefault();
+  };
+
   return (
     <button
       className={classes}
       data-cy={dataCy}
       disabled={disabled}
       onClick={onItemClick}
+      onMouseDown={onMouseDown}
       type="button"
     >
       {children}

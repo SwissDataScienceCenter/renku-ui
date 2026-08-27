@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 import { Button } from "reactstrap";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
@@ -6,6 +7,7 @@ import {
   MenuButton,
   MenuButtonItem,
 } from "../../components/buttons/MenuButton";
+import useClickableHostHandlers from "../../components/buttons/useClickableHostHandlers.hook";
 
 export default {
   args: {
@@ -224,3 +226,100 @@ export const PreventPropagationOnCard: Story = {
     expect(args.onCardClick).not.toHaveBeenCalled();
   },
 };
+
+export const TabThenClickOpens: Story = {
+  render: () => (
+    <MenuButton>
+      <BasicItems />
+    </MenuButton>
+  ),
+  play: async ({ canvasElement }) => {
+    const toggle = getToggle(canvasElement);
+    toggle.focus();
+    expect(toggle).toHaveFocus();
+    await userEvent.click(toggle);
+    await waitForOpen(canvasElement);
+  },
+};
+
+export const HostClickIgnoresMenu: Story = {
+  args: { onCardClick: fn() },
+  render: (args) => <HostCard onCardClick={args.onCardClick} />,
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByText("Card body"));
+    expect(args.onCardClick).toHaveBeenCalledTimes(1);
+
+    const toggle = getToggle(canvasElement);
+    await userEvent.click(toggle);
+    await waitForOpen(canvasElement);
+    expect(args.onCardClick).toHaveBeenCalledTimes(1);
+
+    await userEvent.click(canvas.getByRole("button", { name: "Edit" }));
+    await waitForClosed(canvasElement);
+    expect(args.onCardClick).toHaveBeenCalledTimes(1);
+  },
+};
+
+export const HrefItemNavigates: Story = {
+  render: () => (
+    <MenuButton>
+      <MenuButtonItem href="#menu-button-link">Open docs</MenuButtonItem>
+    </MenuButton>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const toggle = getToggle(canvasElement);
+    await userEvent.click(toggle);
+    await waitForOpen(canvasElement);
+    const link = canvas.getByRole("link", { name: "Open docs" });
+    expect(link).toHaveAttribute("href", "#menu-button-link");
+    await userEvent.click(link);
+    await waitForClosed(canvasElement);
+  },
+};
+
+export const DisabledWhileOpenCloses: Story = {
+  render: () => <DisableWhileOpenExample />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const toggle = getToggle(canvasElement);
+    await userEvent.click(toggle);
+    await waitForOpen(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "disable" }));
+    await waitForClosed(canvasElement);
+    expect(toggle).toBeDisabled();
+  },
+};
+
+function HostCard({ onCardClick }: { onCardClick: () => void }) {
+  const handlers = useClickableHostHandlers(onCardClick);
+  return (
+    <div {...handlers}>
+      <span>Card body</span>
+      <MenuButton>
+        <BasicItems />
+      </MenuButton>
+    </div>
+  );
+}
+
+function DisableWhileOpenExample() {
+  const [disabled, setDisabled] = useState(false);
+  return (
+    <div>
+      <MenuButton disabled={disabled}>
+        <BasicItems />
+      </MenuButton>
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          setDisabled(true);
+        }}
+      >
+        disable
+      </button>
+    </div>
+  );
+}

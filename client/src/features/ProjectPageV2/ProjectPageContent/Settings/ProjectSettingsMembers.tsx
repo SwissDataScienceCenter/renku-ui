@@ -84,7 +84,6 @@ function MemberActionMenu({
           default={defaultAction}
           disabled={disabled}
           label={`More actions for ${memberName}`}
-          size="sm"
         >
           <MenuButtonItem onClick={onRemove}>
             <Trash className={cx("bi", "me-1")} /> Remove
