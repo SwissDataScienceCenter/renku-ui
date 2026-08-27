@@ -8,6 +8,7 @@ import {
   QuestionCircle,
 } from "react-bootstrap-icons";
 
+import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import { EntityTypes } from "../entities/entities.types";
 
 interface OffcanvasHeaderWithTypeProps {
@@ -29,6 +30,8 @@ export default function OffcanvasHeaderWithType({
     _entityIcon
   ) : entityType === "data-connector" ? (
     <Database className="me-1" />
+  ) : entityType === "project-storage" ? (
+    <RenkuStorageIcon className="me-1" />
   ) : entityType === "session-launcher" ? (
     <PlayCircle className="me-1" />
   ) : entityType === "job-launcher" ? (
@@ -45,15 +48,17 @@ export default function OffcanvasHeaderWithType({
     ? _entityName
     : entityType === "data-connector"
       ? "Data connector"
-      : entityType === "job-launcher"
-        ? "Job launcher"
-        : entityType === "session-launcher"
-          ? "Session launcher"
-          : entityType === "code-repository"
-            ? "Code repository"
-            : entityType === "app-launcher"
-              ? "App launcher"
-              : "Unknown";
+      : entityType === "project-storage"
+        ? "Renku storage"
+        : entityType === "job-launcher"
+          ? "Job launcher"
+          : entityType === "session-launcher"
+            ? "Session launcher"
+            : entityType === "code-repository"
+              ? "Code repository"
+              : entityType === "app-launcher"
+                ? "App launcher"
+                : "Unknown";
 
   return (
     <div>
