@@ -23,7 +23,6 @@ import { Link, To, useLocation } from "react-router";
 import {
   Button,
   Col,
-  DropdownItem,
   ListGroupItem,
   Modal,
   ModalBody,
@@ -33,7 +32,7 @@ import {
 } from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
-import { ButtonWithMenuV2 } from "~/components/buttons/Button";
+import { MenuButton, MenuButtonItem } from "~/components/buttons/MenuButton";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import { useDeleteStorageByStorageIdMutation } from "~/features/cloudStorage/api/projectCloudStorage.api";
@@ -229,7 +228,7 @@ export function ProjectStorageActions({
         {actions[0].content}
       </Button>
     ) : (
-      <ButtonWithMenuV2
+      <MenuButton
         color="outline-primary"
         dataCy="project-storage-menu-dropdown"
         default={
@@ -242,14 +241,13 @@ export function ProjectStorageActions({
             {actions[0].content}
           </Button>
         }
-        size="sm"
       >
         {actions.slice(1).map(({ key, onClick, content }) => (
-          <DropdownItem key={key} data-cy={key} onClick={onClick}>
+          <MenuButtonItem key={key} data-cy={key} onClick={onClick}>
             {content}
-          </DropdownItem>
+          </MenuButtonItem>
         ))}
-      </ButtonWithMenuV2>
+      </MenuButton>
     );
 
   return (

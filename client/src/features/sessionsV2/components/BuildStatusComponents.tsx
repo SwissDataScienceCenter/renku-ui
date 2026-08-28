@@ -31,13 +31,7 @@ import {
   XLg,
   XOctagon,
 } from "react-bootstrap-icons";
-import {
-  Button,
-  Col,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Col, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
