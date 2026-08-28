@@ -47,11 +47,11 @@ export default function ContactUsCard() {
     [user],
   );
 
-  if (!SESSION_CLASS_EMAIL_US.enabled) {
-    return null;
-  }
+  const email = SESSION_CLASS_EMAIL_US.enabled
+    ? SESSION_CLASS_EMAIL_US?.email.to
+    : DEFAULT_APP_PARAMS.CONTACT_EMAIL;
 
-  const url = new URL(`mailto:${SESSION_CLASS_EMAIL_US.email.to}`);
+  const url = new URL(`mailto:${email}`);
   url.searchParams.set("subject", SUBJECT);
   const signature = name || "<signature>";
   const renderedBody = BODY.replace(/[{][{]full_name[}][}]/g, `${signature}`);
