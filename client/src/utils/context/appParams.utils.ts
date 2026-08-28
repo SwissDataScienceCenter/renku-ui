@@ -82,7 +82,7 @@ export function validatedAppParams(params: unknown): AppParams {
     params_,
     "PERSISTED_LOGS_ENABLED",
   );
-  const RENKU_APPS_ENABLED = validateBoolean(params_, "RENKU_APPS_ENABLED");
+  const APPS_ENABLED = validateBoolean(params_, "APPS_ENABLED");
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -134,7 +134,7 @@ export function validatedAppParams(params: unknown): AppParams {
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
     PERSISTED_LOGS_ENABLED,
     PERSISTED_LOGS_TTL_SECONDS,
-    RENKU_APPS_ENABLED,
+    APPS_ENABLED,
     APP_LOBBY,
   };
 }

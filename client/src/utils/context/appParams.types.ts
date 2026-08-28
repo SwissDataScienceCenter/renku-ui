@@ -49,7 +49,7 @@ export interface AppParams {
   CONTACT_EMAIL: string;
   PERSISTED_LOGS_ENABLED: boolean;
   PERSISTED_LOGS_TTL_SECONDS: number;
-  RENKU_APPS_ENABLED: boolean;
+  APPS_ENABLED: boolean;
   APP_LOBBY: AppLobbyConfig;
 }
 

@@ -23,5 +23,5 @@ import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 
 export default function useAppsEnabled(): boolean {
   const { params } = useContext(AppContext);
-  return params?.RENKU_APPS_ENABLED ?? DEFAULT_APP_PARAMS.RENKU_APPS_ENABLED;
+  return params?.APPS_ENABLED ?? DEFAULT_APP_PARAMS.APPS_ENABLED;
 }
