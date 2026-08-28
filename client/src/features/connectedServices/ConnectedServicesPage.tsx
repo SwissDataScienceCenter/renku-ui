@@ -36,7 +36,6 @@ import {
 } from "react-bootstrap-icons";
 import { Link, useSearchParams } from "react-router";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
@@ -57,6 +56,7 @@ import {
 
 import ExternalLink from "~/components/ExternalLink";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon.tsx";
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import type { AppInstallationsPaginated } from "~/features/connectedServices/api/connectedServices.types";
 import { useOAuthProviderConnect } from "~/features/connectedServices/useOAuthProviderConnect.hook";
 import { NEW_DOCS_USER_INTEGRATIONS } from "~/utils/constants/NewDocs";
@@ -279,37 +279,16 @@ interface ConnectedServiceStatusProps {
 function ConnectedServiceStatus({ connection }: ConnectedServiceStatusProps) {
   const status =
     connection == null
-      ? {
-          text: "Not connected",
-          classes: [
-            "bg-danger-subtle",
-            "border-danger",
-            "text-danger-emphasis",
-          ],
-        }
+      ? { text: "Not connected", color: "danger" as const }
       : connection.status === "connected"
-        ? {
-            text: "Connected",
-            classes: [
-              "bg-success-subtle",
-              "border-success",
-              "text-success-emphasis",
-            ],
-          }
-        : {
-            text: "Pending",
-            classes: [
-              "bg-warning-subtle",
-              "border-warning",
-              "text-warning-emphasis",
-            ],
-          };
+        ? { text: "Connected", color: "success" as const }
+        : { text: "Pending", color: "warning" as const };
 
   return (
-    <Badge className={cx("border", ...status.classes)} color="info">
-      <CircleFill className={cx("bi", "me-1")} />
+    <RenkuBadge className="fw-normal" color={status.color} pill>
+      <CircleFill className="me-1" />
       {status.text}
-    </Badge>
+    </RenkuBadge>
   );
 }
 
