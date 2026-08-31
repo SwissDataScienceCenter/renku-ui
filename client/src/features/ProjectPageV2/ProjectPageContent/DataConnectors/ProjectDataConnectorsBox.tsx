@@ -29,6 +29,8 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import { useGetProjectsByProjectIdStorageQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import { type ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
 import {
   type DataConnectorToProjectLink,
   type GetProjectsByProjectIdDataConnectorLinksApiResponse,
@@ -47,6 +49,7 @@ import DataConnectorBoxListDisplay, {
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import ProjectStorageLinkDisplay from "../ProjectStorage/ProjectStorageLinkDisplay";
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
 
 interface DataConnectorListDisplayProps {
@@ -68,7 +71,19 @@ export default function ProjectDataConnectorsBox({
     projectId: project.id,
   });
 
-  if (isLoading || inaccessibleDataConnectorsIsLoading)
+  const {
+    data: projectStorageData,
+    error: projectStorageError,
+    isLoading: projectStorageIsLoading,
+  } = useGetProjectsByProjectIdStorageQuery({
+    projectId: project.id,
+  });
+
+  if (
+    isLoading ||
+    inaccessibleDataConnectorsIsLoading ||
+    projectStorageIsLoading
+  )
     return <DataConnectorLoadingBoxContent />;
 
   if (error) {
@@ -85,40 +100,51 @@ export default function ProjectDataConnectorsBox({
   }
 
   return (
-    <ProjectDataConnectorBoxContent
-      data={data}
-      project={project}
-      inaccessibleDataConnectorsCount={
-        inaccessibleDataConnectorsData?.count || 0
-      }
-    />
+    <>
+      <ProjectDataConnectorBoxContent
+        data={data}
+        project={project}
+        inaccessibleDataConnectorsCount={
+          inaccessibleDataConnectorsData?.count || 0
+        }
+        projectStorageData={projectStorageData}
+      />
+      {projectStorageError && (
+        <RtkOrDataServicesError className="mt-2" error={projectStorageError} />
+      )}
+    </>
   );
 }
 
 interface ProjectDataConnectorBoxContentProps extends DataConnectorListDisplayProps {
   data: GetProjectsByProjectIdDataConnectorLinksApiResponse;
   inaccessibleDataConnectorsCount: number;
+  projectStorageData?: ProjectStorage[];
 }
 function ProjectDataConnectorBoxContent({
   data,
   project,
   inaccessibleDataConnectorsCount,
+  projectStorageData,
 }: ProjectDataConnectorBoxContentProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const toggleOpen = useCallback(() => {
     setModalOpen((open) => !open);
   }, []);
+  const accessibleDataConnectorsCount =
+    data.length + (projectStorageData?.length ?? 0);
+
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <Card className="h-100" data-cy="data-connector-box">
         <ProjectDataConnectorBoxHeader
           projectId={project.id}
           toggleOpen={toggleOpen}
-          accessibleDataConnectorsCount={data.length}
+          accessibleDataConnectorsCount={accessibleDataConnectorsCount}
           inaccessibleDataConnectorsCount={inaccessibleDataConnectorsCount}
         />
         <CardBody>
-          {data.length === 0 && (
+          {accessibleDataConnectorsCount === 0 && (
             <p className={cx("m-0", "text-body-secondary")}>
               Add published datasets from data repositories, and connect to
               cloud storage to read and write custom data.
@@ -132,6 +158,13 @@ function ProjectDataConnectorBoxContent({
                   dataConnectorLink={dc}
                   projectPath={`${project.namespace}/${project.slug}`}
                 />
+              ))}
+            </ListGroup>
+          )}
+          {projectStorageData && projectStorageData.length > 0 && (
+            <ListGroup flush>
+              {projectStorageData.map((ps) => (
+                <ProjectStorageLinkDisplay key={ps.id} projectStorage={ps} />
               ))}
             </ListGroup>
           )}

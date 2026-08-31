@@ -30,13 +30,7 @@ import {
   Pencil,
 } from "react-bootstrap-icons";
 import { Link, To, useLocation } from "react-router";
-import {
-  Badge,
-  Col,
-  ListGroupItem,
-  Row,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Col, ListGroupItem, Row, UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
@@ -358,20 +352,11 @@ function DataConnectorNotVisibleToAllUsersBadge({
 
   return (
     <>
-      <Badge
-        className={cx(
-          "rounded-pill",
-          "border",
-          "bg-warning-subtle",
-          "border-warning",
-          "text-warning-emphasis",
-          className,
-        )}
-        color="primary"
-        innerRef={ref}
-      >
-        Visibility warning
-      </Badge>
+      <span ref={ref}>
+        <RenkuBadge className={className} color="warning" pill>
+          Visibility warning
+        </RenkuBadge>
+      </span>
       <UncontrolledTooltip target={ref} placement="bottom">
         {DATA_CONNECTORS_VISIBILITY_WARNING}
       </UncontrolledTooltip>

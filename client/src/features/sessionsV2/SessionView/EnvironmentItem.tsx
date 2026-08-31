@@ -21,9 +21,10 @@ import cx from "classnames";
 import { ReactNode, useContext, useEffect, useMemo } from "react";
 import { CircleFill, Clock, Plugin, Send } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router";
-import { Badge, Col, ListGroupItem, Row } from "reactstrap";
+import { Col, ListGroupItem, Row } from "reactstrap";
 
 import { ErrorAlert, WarnAlert } from "~/components/Alert";
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
@@ -656,19 +657,9 @@ export function EnvironmentJSONArrayRowWithLabel({
 
 function NotReadyStatusBadge() {
   return (
-    <Badge
-      className={cx(
-        "border",
-        "bg-danger-subtle",
-        "border-danger",
-        "text-danger-emphasis",
-        "fs-small",
-        "fw-normal",
-      )}
-      pill
-    >
-      <CircleFill className={cx("bi", "me-1")} />
+    <RenkuBadge className="fw-normal" color="danger" pill>
+      <CircleFill className="me-1" />
       Not ready
-    </Badge>
+    </RenkuBadge>
   );
 }

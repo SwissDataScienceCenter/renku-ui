@@ -29,7 +29,7 @@ import {
 } from "react-bootstrap-icons";
 import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
 
-import SessionEnvironmentGitLabWarningBadge from "~/features/legacy/SessionEnvironmentGitLabWarnBadge";
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import JobCard from "~/features/sessionsV2/SessionList/JobCard";
 import { Loader } from "../../../components/Loader";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
@@ -45,7 +45,6 @@ import {
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
 import { LauncherEnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
-import { SessionBadge } from "../components/SessionStatus/SessionStatus";
 import { getEnvironmentKindLabel } from "../launcherEnvironment.utils";
 import {
   getLauncherCategory,
@@ -238,11 +237,6 @@ export default function SessionLauncherCard({
                   </span>
                 </Col>
               </Row>
-              <Row>
-                <Col data-cy="session-gitlab-warning" xs={12}>
-                  <SessionEnvironmentGitLabWarningBadge launcher={launcher} />
-                </Col>
-              </Row>
               {isCodeEnvironment ? (
                 <Row className="g-2">
                   <Col xs={12} xl={5}>
@@ -250,18 +244,10 @@ export default function SessionLauncherCard({
                     (isLoadingBuilds ||
                       isLoadingContainerImage ||
                       isLoadingResourcePools) ? (
-                      <SessionBadge
-                        className={cx("border-warning", "bg-warning-subtle")}
-                      >
-                        <Loader
-                          size={12}
-                          className={cx("me-1", "text-warning-emphasis")}
-                          inline
-                        />
-                        <span className="text-warning-emphasis">
-                          Loading build status
-                        </span>
-                      </SessionBadge>
+                      <RenkuBadge className="fw-normal" color="light" pill>
+                        <Loader size={12} className="me-1" inline />
+                        Loading build status
+                      </RenkuBadge>
                     ) : isCodeEnvironment && lastBuild ? (
                       <BuildStatusBadge
                         build={lastBuild}

@@ -47,11 +47,11 @@ export default function ContactUsCard() {
     [user],
   );
 
-  if (!SESSION_CLASS_EMAIL_US.enabled) {
-    return null;
-  }
+  const email = SESSION_CLASS_EMAIL_US.enabled
+    ? SESSION_CLASS_EMAIL_US?.email.to
+    : DEFAULT_APP_PARAMS.CONTACT_EMAIL;
 
-  const url = new URL(`mailto:${SESSION_CLASS_EMAIL_US.email.to}`);
+  const url = new URL(`mailto:${email}`);
   url.searchParams.set("subject", SUBJECT);
   const signature = name || "<signature>";
   const renderedBody = BODY.replace(/[{][{]full_name[}][}]/g, `${signature}`);
@@ -60,16 +60,13 @@ export default function ContactUsCard() {
   const urlStr = url.toString().replace(/[+]/g, "%20");
 
   return (
-    <div
-      data-cy="connected-services-contact-us-card"
-      className={cx("col-12", "col-lg-6")}
-    >
+    <div data-cy="connected-services-contact-us-card">
       <Card className={cx("border-0", styles.card)}>
         <CardBody>
           <CardTitle>
-            <h4>
+            <p>
               Do you have another platform you&apos;d like to connect to Renku?
-            </h4>
+            </p>
           </CardTitle>
           <CardText>
             <Button
@@ -77,6 +74,7 @@ export default function ContactUsCard() {
               color="outline-primary"
               tag="a"
               href={urlStr}
+              target="_blank"
             >
               <Send className={cx("bi", "me-1")} />
               Contact us
