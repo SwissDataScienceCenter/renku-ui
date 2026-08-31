@@ -71,7 +71,11 @@ export default function GroupV2ResourcePoolDisplay({
           There are no resource pools explicitly linked to this group.
         </p>
       ) : (
-        data.map((rp) => <GroupV2ResourcePool key={rp.id} rp={rp} />)
+        <ul className={cx("ps-3", "mb-0")}>
+          {data.map((rp) => (
+            <GroupV2ResourcePool key={rp.id} rp={rp} />
+          ))}
+        </ul>
       )}
     </GroupInformationBox>
   ) : null;
@@ -81,5 +85,5 @@ interface GroupV2ResourcePoolProps {
   rp: ResourcePoolWithIdFiltered;
 }
 function GroupV2ResourcePool({ rp }: GroupV2ResourcePoolProps) {
-  return rp.name && <p className={cx("m-0", "text-truncate")}>{rp.name}</p>;
+  return rp.name && <li>{rp.name}</li>;
 }
