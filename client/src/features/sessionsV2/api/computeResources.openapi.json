@@ -1803,6 +1803,47 @@
         "tags": ["users"]
       }
     },
+    "/groups/{group_slug}/resource_pools": {
+      "get": {
+        "summary": "Get all resource pools that the group has access to",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "group_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource pools that the group has access to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourcePoolsWithIdFiltered"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The group does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["groups"]
+      }
+    },
     "/version": {
       "get": {
         "summary": "Get the version of the service",
