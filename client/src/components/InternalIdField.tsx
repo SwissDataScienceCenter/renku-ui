@@ -1,5 +1,5 @@
 /*!
- * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,14 +17,25 @@
  */
 
 import cx from "classnames";
-import { EmojiDizzyFill } from "react-bootstrap-icons";
-import { Badge } from "reactstrap";
+import { Label } from "reactstrap";
 
-export default function InternalGitLabReferenceWarnBadge() {
+import { Clipboard } from "~/components/clipboard/Clipboard";
+
+export default function InternalIdField({ id }: { id?: string }) {
   return (
-    <Badge pill color="take-action">
-      <EmojiDizzyFill className={cx("bi", "me-1")} />
-      Migration needed
-    </Badge>
+    <div>
+      <Label className="form-label" for="internal-id">
+        Internal ID
+      </Label>
+      <div className={cx("align-items-center", "d-flex", "gap-2")}>
+        <span className="text-truncate">{id ?? "Not available"}</span>
+        {id && (
+          <Clipboard
+            className={cx("border-0", "btn", "p-0", "shadow-none")}
+            clipboardText={id}
+          />
+        )}
+      </div>
+    </div>
   );
 }

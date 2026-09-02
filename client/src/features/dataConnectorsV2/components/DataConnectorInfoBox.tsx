@@ -46,11 +46,13 @@ interface DataConnectorInfoBoxProps {
   dataConnector: DataConnectorRead;
   headerTag?: "h2" | "h3" | "h4";
   visibilityWarning?: boolean;
+  internalId?: React.ReactNode;
 }
 export default function DataConnectorInfoBox({
   dataConnector,
   headerTag = "h2",
   visibilityWarning,
+  internalId,
 }: DataConnectorInfoBoxProps) {
   // Get useful DC info
   const scope = useMemo(
@@ -296,6 +298,8 @@ export default function DataConnectorInfoBox({
         </InfoEntry>
 
         <DataConnectorAdditionalFields dataConnector={dataConnector} />
+
+        {internalId}
       </CardBody>
       {expired && (
         <DataConnectorRefreshExpiredModal

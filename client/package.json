@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "4.29.0",
+  "version": "4.30.0",
   "private": true,
   "scripts": {
     "start": "NODE_OPTIONS='--import ./instrument.server.mjs' react-router dev --port 3000",
@@ -53,7 +53,8 @@
     "update-api:searchV2": "node scripts/update_api_spec.js searchV2",
     "update-api:sessionLaunchersV2": "node scripts/update_api_spec.js sessionLaunchersV2",
     "update-api:sessionsV2": "node scripts/update_api_spec.js sessionsV2",
-    "update-api:users": "node scripts/update_api_spec.js users"
+    "update-api:users": "node scripts/update_api_spec.js users",
+    "test:docs-links": "vitest src/utils/constants/docs.test.ts:6"
   },
   "type": "module",
   "dependencies": {
@@ -85,9 +86,8 @@
     "mermaid": "^11.16.1",
     "morgan": "^1.11.0",
     "prom-client": "^15.1.3",
-    "query-string": "^6.14.1",
+    "query-string": "^9.5.0",
     "react": "^19.2.8",
-    "react-autosuggest": "^10.1.0",
     "react-bootstrap-icons": "^1.11.6",
     "react-cookie-consent": "^10.0.1",
     "react-dom": "^19.2.8",
@@ -128,7 +128,6 @@
     "@types/morgan": "^1.9.10",
     "@types/node": "^20.11.7",
     "@types/react": "^18.2.38",
-    "@types/react-autosuggest": "^10.1.10",
     "@types/react-dom": "^18.2.17",
     "@types/react-helmet": "^6.1.11",
     "@types/react-test-renderer": "^19.1.0",

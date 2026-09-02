@@ -1001,6 +1001,13 @@
   },
   "components": {
     "schemas": {
+      "ProjectSlug": {
+        "type": "string",
+        "description": "The slug used to identify a project",
+        "minLength": 3,
+        "example": "user/my-project",
+        "pattern": "^[a-zA-Z0-9]+([_.\\-/][a-zA-Z0-9]+)*[_.\\-/]?[a-zA-Z0-9]$"
+      },
       "DataConnectorsList": {
         "description": "A list of data connectors",
         "type": "array",

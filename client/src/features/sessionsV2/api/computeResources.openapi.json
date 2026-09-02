@@ -1803,6 +1803,47 @@
         "tags": ["users"]
       }
     },
+    "/groups/{group_slug}/resource_pools": {
+      "get": {
+        "summary": "Get all resource pools that the group has access to",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "group_slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource pools that the group has access to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourcePoolsWithIdFiltered"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The group does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["groups"]
+      }
+    },
     "/version": {
       "get": {
         "summary": "Get the version of the service",
@@ -2019,6 +2060,9 @@
           },
           "quota_enforced": {
             "$ref": "#/components/schemas/QuotaEnforced"
+          },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
           }
         }
       },
@@ -2060,6 +2104,9 @@
               }
             ],
             "default": false
+          },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
           }
         },
         "required": [
@@ -2154,6 +2201,9 @@
               }
             ],
             "default": false
+          },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
           }
         },
         "required": [
@@ -3163,6 +3213,23 @@
           }
         },
         "required": ["kind", "api_url", "system_name"]
+      },
+      "RemoteClassConfigurationFirecrest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "system_name": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestSystemName"
+          },
+          "partition": {
+            "$ref": "#/components/schemas/RemoteConfigurationFirecrestPartition"
+          },
+          "forward_resource_values": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, Amalthea forwards the resource class CPU, memory, and GPU values to FirecREST. When false (the default), the HPC grid selects the resources; the class values are still used for display and quota matching.\n"
+          }
+        }
       },
       "RemoteConfigurationFirecrestProviderId": {
         "type": "string",

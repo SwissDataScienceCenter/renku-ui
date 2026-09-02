@@ -21,6 +21,7 @@ import { InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
+import { Clipboard } from "~/components/clipboard/Clipboard";
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { RELATIVE_ROUTES } from "~/routing/routes.constants";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
@@ -32,19 +33,26 @@ export default function UserShow() {
   const { kind, user } = ctx;
   const username = kind === "user" ? user?.username : null;
 
+  if (!username) {
+    return null;
+  }
+
   const information = (
     <div className={cx("d-flex", "flex-column")}>
       <div className="mb-0">
         <JournalAlbum className={cx("bi", "me-2")} />
         <span>Identifier:</span>
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          <span className="text-truncate">{username}</span>
+          <Clipboard
+            className={cx("border-0", "btn", "p-0", "shadow-none")}
+            clipboardText={username}
+          />
+        </div>
       </div>
-      <div className={cx("ms-4", "mb-0")}>@{username}</div>
     </div>
   );
 
-  if (!username) {
-    return null;
-  }
   return (
     <Row className="g-4">
       <Col xs={12} md={8} xl={9}>

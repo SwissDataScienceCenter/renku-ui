@@ -20,9 +20,11 @@ import cx from "classnames";
 import { Clock, InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { Card, CardBody, CardHeader } from "reactstrap";
 
+import { Clipboard } from "~/components/clipboard/Clipboard";
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { TimeCaption } from "../../../components/TimeCaption";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
+import GroupV2ResourcePoolDisplay from "./GroupV2ResourcePoolDisplay";
 
 interface GroupInformationProps {
   output?: "plain" | "card";
@@ -34,20 +36,31 @@ export default function GroupInformation({
   if (!ctx || ctx.kind !== "group") return null;
   const { namespace, kind, group } = ctx;
 
-  const information = kind === "group" && (
+  const information = kind === "group" && namespace && (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
       <GroupInformationBox
         icon={<JournalAlbum className="bi" />}
         title="Identifier:"
       >
-        <p className="mb-0">@{namespace}</p>
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          <span className="text-truncate">{namespace}</span>
+          <Clipboard
+            className={cx("border-0", "btn", "p-0", "shadow-none")}
+            clipboardText={namespace}
+          />
+        </div>
       </GroupInformationBox>
       <GroupInformationBox icon={<Clock className="bi" />} title="Created:">
         <p className="mb-0">
           <TimeCaption datetime={group?.creation_date} className={cx("fs-6")} />
         </p>
       </GroupInformationBox>
-      {namespace && <GroupV2MemberListDisplay group={namespace} />}
+      {namespace && (
+        <>
+          <GroupV2ResourcePoolDisplay group={namespace} />
+          <GroupV2MemberListDisplay group={namespace} />
+        </>
+      )}
     </div>
   );
   return output === "plain" ? (
@@ -77,14 +90,16 @@ interface GroupInformationBoxProps {
   children: React.ReactNode;
   icon: React.ReactNode;
   title: React.ReactNode;
+  dataCy?: string;
 }
 export function GroupInformationBox({
   children,
   icon,
   title,
+  dataCy,
 }: GroupInformationBoxProps) {
   return (
-    <div>
+    <div data-cy={dataCy || "group-info-box"}>
       <p className={cx("align-items-center", "d-flex", "gap-2", "mb-0")}>
         {icon}
         {title}

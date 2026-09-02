@@ -28,6 +28,7 @@ import {
   Database,
   ExclamationTriangleFill,
   FileCode,
+  InfoCircle,
   Link45deg,
   Pencil,
   PlayCircle,
@@ -53,8 +54,10 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert } from "~/components/Alert";
+import InternalIdField from "~/components/InternalIdField";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { TimeCaption } from "../../../components/TimeCaption";
@@ -71,7 +74,6 @@ import { ModifyResourcesLauncherModal } from "../components/SessionModals/Modify
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
 import { SessionRowResourceRequests } from "../components/SessionsList";
 import {
-  SessionBadge,
   SessionStatusV2Badge,
   SessionStatusV2Description,
   SessionStatusV2Title,
@@ -182,13 +184,11 @@ function SessionCardNotRunning({
         </div>
       }
       contentLabel={
-        <div className="my-auto">
-          <SessionBadge className={cx("border-dark-subtle", "bg-light")}>
-            <CircleFill className={cx("me-1", "bi", "text-light-emphasis")} />
-            <span className="text-dark-emphasis" data-cy="session-status">
-              Not Running
-            </span>
-          </SessionBadge>
+        <div data-cy="session-status" className="my-auto">
+          <RenkuBadge className="fw-normal" color="light" pill>
+            <CircleFill className="me-1" />
+            Not Running
+          </RenkuBadge>
         </div>
       }
       contentSession={
@@ -671,47 +671,66 @@ export function SessionView({
           <SessionViewSessionSecrets />
 
           {launcher && (
-            <Card>
-              <CardHeader
-                className={cx(
-                  "align-items-center",
-                  "d-flex",
-                  "justify-content-between",
-                )}
-              >
-                <h3 className={cx("mb-0", "me-2")}>
-                  <Braces className={cx("me-1", "bi")} />
-                  Environment Variables
-                </h3>
-                <PermissionsGuard
-                  disabled={null}
-                  enabled={
-                    <>
-                      <Button
-                        color="outline-primary"
-                        id="modify-env-variables-button"
-                        onClick={toggleEnvVariables}
-                        size="sm"
-                        tabIndex={0}
-                      >
-                        <Pencil className="bi" />
-                      </Button>
-                      <UncontrolledTooltip target="modify-env-variables-button">
-                        Modify environment variables
-                      </UncontrolledTooltip>
-                    </>
-                  }
-                  requestedPermission="write"
-                  userPermissions={permissions}
-                />
-              </CardHeader>
-              <CardBody>
-                <p className="mb-2">
-                  Environment variables pass information into the session.
-                </p>
-                <EnvVariablesCard launcher={launcher} />
-              </CardBody>
-            </Card>
+            <>
+              <Card>
+                <CardHeader
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <h3 className={cx("mb-0", "me-2")}>
+                    <Braces className={cx("me-1", "bi")} />
+                    Environment Variables
+                  </h3>
+                  <PermissionsGuard
+                    disabled={null}
+                    enabled={
+                      <>
+                        <Button
+                          color="outline-primary"
+                          id="modify-env-variables-button"
+                          onClick={toggleEnvVariables}
+                          size="sm"
+                          tabIndex={0}
+                        >
+                          <Pencil className="bi" />
+                        </Button>
+                        <UncontrolledTooltip target="modify-env-variables-button">
+                          Modify environment variables
+                        </UncontrolledTooltip>
+                      </>
+                    }
+                    requestedPermission="write"
+                    userPermissions={permissions}
+                  />
+                </CardHeader>
+                <CardBody>
+                  <p className="mb-2">
+                    Environment variables pass information into the session.
+                  </p>
+                  <EnvVariablesCard launcher={launcher} />
+                </CardBody>
+              </Card>
+              <Card>
+                <CardHeader
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <h3 className={cx("mb-0", "me-2")}>
+                    <InfoCircle className={cx("me-1", "bi")} />
+                    Info
+                  </h3>
+                </CardHeader>
+                <CardBody>
+                  <InternalIdField id={launcher.id} />
+                </CardBody>
+              </Card>
+            </>
           )}
         </div>
       </OffcanvasBody>

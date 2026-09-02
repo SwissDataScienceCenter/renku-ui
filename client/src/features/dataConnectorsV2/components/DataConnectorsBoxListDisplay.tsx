@@ -352,19 +352,17 @@ interface DataConnectorNotVisibleToAllUsersBadgeProps {
 
 function DataConnectorNotVisibleToAllUsersBadge({
   className,
-  warning,
 }: DataConnectorNotVisibleToAllUsersBadgeProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
     <>
-      <div ref={ref}>
+      <span ref={ref}>
         <RenkuBadge className={cx(className)} color="warning" pill>
-          {warning ?? "Visibility warning"}
+          Visibility warning
         </RenkuBadge>
-      </div>
-
-      <UncontrolledTooltip target={ref}>
+      </span>
+      <UncontrolledTooltip target={ref} placement="bottom">
         {DATA_CONNECTORS_VISIBILITY_WARNING}
       </UncontrolledTooltip>
     </>
