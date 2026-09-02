@@ -446,37 +446,36 @@ function AppActionButton({
   onClick,
   tooltip,
 }: AppActionButtonProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
+      if (disabled) {
+        event.preventDefault();
+        return;
+      }
       onClick?.();
     },
-    [onClick],
+    [disabled, onClick],
   );
 
   return (
     <>
-      <div
-        className="d-inline-block"
-        onClick={(event) => event.stopPropagation()}
-        ref={wrapperRef}
+      <Button
+        innerRef={buttonRef}
+        aria-disabled={disabled || undefined}
+        className={cx("text-nowrap", disabled && "opacity-75")}
+        color={color}
+        data-cy={dataCy}
+        onClick={handleClick}
+        size="sm"
+        type="button"
       >
-        <Button
-          className="text-nowrap"
-          color={color}
-          data-cy={dataCy}
-          disabled={disabled}
-          onClick={handleClick}
-          size="sm"
-          type="button"
-        >
-          {icon}
-          {label}
-        </Button>
-      </div>
+        {icon}
+        {label}
+      </Button>
       {tooltip ? (
-        <UncontrolledTooltip placement="top" target={wrapperRef}>
+        <UncontrolledTooltip placement="top" target={buttonRef}>
           {tooltip}
         </UncontrolledTooltip>
       ) : null}
