@@ -83,13 +83,13 @@ export function CancelBuildDropdownItem({ launcher }: BuildActionsProps) {
 
   return (
     <>
-      <DropdownItem
+      <MenuButtonItem
         data-cy="session-view-menu-cancel-build"
         onClick={onCancelBuild}
       >
         <XOctagon className={cx("bi", "me-1")} />
         Cancel build
-      </DropdownItem>
+      </MenuButtonItem>
       <BuildActionFailedModal
         error={patchResult.error}
         reset={patchResult.reset}
