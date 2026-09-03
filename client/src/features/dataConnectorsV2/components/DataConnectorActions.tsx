@@ -17,8 +17,10 @@
  */
 
 import cx from "classnames";
+import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  ArrowClockwise,
   Check2,
   CloudArrowUp,
   Lock,
@@ -41,6 +43,7 @@ import {
 } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
+import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
@@ -68,6 +71,7 @@ import {
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
 import { getDataConnectorScope } from "./dataConnector.utils";
 import DataConnectorCredentialsModal from "./DataConnectorCredentialsModal";
+import DataConnectorRefreshExpiredModal from "./DataConnectorRefreshExpiredModal";
 
 interface DataConnectorRemoveModalProps {
   dataConnector?: DataConnectorRead | null;
@@ -414,6 +418,7 @@ function DataConnectorActionsInner({
   const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
   const [isFinalizationDepositOpen, setFinalizationDepositOpen] =
     useState(false);
+  const [isRefreshExpiredOpen, setRefreshExpiredOpen] = useState(false);
 
   // Actions
   const toggleCredentials = useCallback(() => {
@@ -441,6 +446,9 @@ function DataConnectorActionsInner({
   }, []);
   const toggleFinalizationDepositOpen = useCallback(() => {
     setFinalizationDepositOpen((open) => !open);
+  }, []);
+  const toggleRefreshExpired = useCallback(() => {
+    setRefreshExpiredOpen((open) => !open);
   }, []);
 
   // Data
@@ -472,6 +480,11 @@ function DataConnectorActionsInner({
     if (!deposits.data || deposits.data.deposits.length === 0) return undefined;
     return deposits.data.deposits[0];
   }, [deposits.data]);
+
+  const expiresAt = dataConnector.expires_at
+    ? ensureDateTime(dataConnector.expires_at)
+    : undefined;
+  const expired = expiresAt ? expiresAt < DateTime.now() : false;
 
   // List of actionable items
   const actions = [
@@ -533,6 +546,20 @@ function DataConnectorActionsInner({
                     </>
                   ),
                 },
+        ]
+      : []),
+    ...(expiresAt && expired
+      ? [
+          {
+            key: "data-connector-refresh-expired",
+            onClick: toggleRefreshExpired,
+            content: (
+              <>
+                <ArrowClockwise className="me-1" />
+                Refresh
+              </>
+            ),
+          },
         ]
       : []),
     ...(requiresCredentials
@@ -663,6 +690,14 @@ function DataConnectorActionsInner({
           projectNamespace={namespace!}
           projectSlug={slug!}
           toggleModal={toggleUnlink}
+        />
+      )}
+      {expiresAt && (
+        <DataConnectorRefreshExpiredModal
+          dataConnector={dataConnector}
+          isOpen={isRefreshExpiredOpen}
+          setOpen={setRefreshExpiredOpen}
+          toggleModal={toggleRefreshExpired}
         />
       )}
     </>
