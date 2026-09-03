@@ -17,6 +17,7 @@
  */
 
 import cx from "classnames";
+import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowClockwise,
@@ -42,6 +43,7 @@ import {
 } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
+import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
@@ -480,9 +482,9 @@ function DataConnectorActionsInner({
   }, [deposits.data]);
 
   const expiresAt = dataConnector.expires_at
-    ? new Date(dataConnector.expires_at)
+    ? ensureDateTime(dataConnector.expires_at)
     : undefined;
-  const expired = expiresAt ? expiresAt < new Date() : false;
+  const expired = expiresAt ? expiresAt < DateTime.now() : false;
 
   // List of actionable items
   const actions = [

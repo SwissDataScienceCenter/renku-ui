@@ -1,6 +1,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { capitalize } from "lodash-es";
+import { DateTime } from "luxon";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ArrowClockwise,
@@ -33,6 +34,7 @@ import { useGetNamespacesByNamespaceSlugQuery } from "~/features/projectsV2/api/
 import EntityPill from "~/features/searchV2/components/EntityPill";
 import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import { DataConnectorRead } from "../api/data-connectors.api";
 import {
   getDataConnectorScope,
@@ -94,7 +96,7 @@ export default function DataConnectorInfoBox({
   }, [dataConnector, scope]);
 
   const expired = dataConnector.expires_at
-    ? new Date(dataConnector.expires_at) < new Date()
+    ? ensureDateTime(dataConnector.expires_at) < DateTime.now()
     : false;
 
   const [isRefreshExpiredOpen, setRefreshExpiredOpen] = useState(false);
@@ -270,9 +272,7 @@ export default function DataConnectorInfoBox({
 
         {dataConnector.expires_at && (
           <InfoEntry
-            title={
-              <ExpiresAtTitle expiresAt={new Date(dataConnector.expires_at)} />
-            }
+            title={<ExpiresAtTitle expiresAt={dataConnector.expires_at} />}
             dataCy="expires-at"
           >
             <TimeCaption
@@ -353,10 +353,11 @@ function MountPointHead() {
 }
 
 interface ExpiresAtTitleProps {
-  expiresAt: Date;
+  expiresAt: string;
 }
-function ExpiresAtTitle({ expiresAt }: ExpiresAtTitleProps) {
-  const expired = expiresAt < new Date();
+function ExpiresAtTitle({ expiresAt: expiresAt_ }: ExpiresAtTitleProps) {
+  const expiresAt = ensureDateTime(expiresAt_);
+  const expired = expiresAt < DateTime.now();
   const ref = useRef(null);
   return (
     <>

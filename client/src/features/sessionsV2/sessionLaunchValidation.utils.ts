@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+import { DateTime } from "luxon";
+
+import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import { shouldInterrupt } from "../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { GetRepositoriesApiResponse } from "../repositories/api/repositories.api";
@@ -105,7 +108,7 @@ export function isDataConnectorExpired(
   const { dataConnector } = config;
   return (
     !!dataConnector.expires_at &&
-    new Date(dataConnector.expires_at) < new Date()
+    ensureDateTime(dataConnector.expires_at) < DateTime.now()
   );
 }
 

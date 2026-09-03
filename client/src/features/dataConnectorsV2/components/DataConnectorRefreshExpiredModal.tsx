@@ -1,5 +1,6 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { DateTime } from "luxon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowClockwise, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -9,6 +10,7 @@ import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
 import { TimeCaption } from "~/components/TimeCaption";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import { DataConnectorRead } from "../api/data-connectors.api";
 import {
   dataConnectorsApi,
@@ -71,7 +73,7 @@ export default function DataConnectorRefreshExpiredModal({
     if (!hasRequestedRefresh || isFetching || !refreshedDataConnector) return;
 
     const stillExpired = refreshedDataConnector.expires_at
-      ? new Date(refreshedDataConnector.expires_at) < new Date()
+      ? ensureDateTime(refreshedDataConnector.expires_at) < DateTime.now()
       : false;
     if (!stillExpired) {
       setOpen(false);

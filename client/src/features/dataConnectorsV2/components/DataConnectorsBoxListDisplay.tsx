@@ -18,6 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { DateTime } from "luxon";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   CircleFill,
@@ -39,6 +40,7 @@ import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
+import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import {
@@ -251,7 +253,7 @@ export default function DataConnectorBoxListDisplay({
                   )}
                   {dataConnector.expires_at && (
                     <DataConnectorExpiredWarningBadge
-                      expiresAt={new Date(dataConnector.expires_at)}
+                      expiresAt={dataConnector.expires_at}
                     />
                   )}
                 </div>
@@ -370,13 +372,14 @@ function DataConnectorNotVisibleToAllUsersBadge({
 }
 
 interface DataConnectorExpiredWarningBadgeProps {
-  expiresAt: Date;
+  expiresAt: DateTime | Date | string;
 }
 function DataConnectorExpiredWarningBadge({
-  expiresAt,
+  expiresAt: expiresAt_,
 }: DataConnectorExpiredWarningBadgeProps) {
+  const expiresAt = ensureDateTime(expiresAt_);
   const ref = useRef<HTMLDivElement>(null);
-  const expired = expiresAt < new Date();
+  const expired = expiresAt < DateTime.now();
 
   if (!expired) return null;
 
