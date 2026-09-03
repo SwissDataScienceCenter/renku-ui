@@ -360,9 +360,9 @@ function ExpiresAtTitle({ expiresAt }: ExpiresAtTitleProps) {
   const ref = useRef(null);
   return (
     <>
-      <span>{expired ? "Expired" : "Expires"}</span>
+      {expired ? "Expired" : "Expires"}
       <span ref={ref}>
-        <InfoCircle className="ms-1" />
+        <InfoCircle className="ms-1" tabIndex={0} />
       </span>
       <UncontrolledTooltip target={ref} placement="bottom">
         {expired
