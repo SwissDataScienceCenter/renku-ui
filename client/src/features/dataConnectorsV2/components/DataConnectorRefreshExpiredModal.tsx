@@ -16,7 +16,7 @@ import {
   dataConnectorsApi,
   useGetDataConnectorsByDataConnectorIdQuery,
 } from "../api/data-connectors.enhanced-api";
-import { parseDoi } from "./dataConnector.utils";
+import { doiToUrl, parseDoi } from "./dataConnector.utils";
 
 interface DataConnectorRefreshExpiredModalProps {
   dataConnector: DataConnectorRead | null;
@@ -45,7 +45,7 @@ export default function DataConnectorRefreshExpiredModal({
     }
     return null;
   }, [dataConnector]);
-  const fullLink = `https://doi.org/${doiReference}`;
+  const fullLink = doiReference ? doiToUrl(doiReference) : null;
 
   const {
     data: refreshedDataConnector,
@@ -95,12 +95,14 @@ export default function DataConnectorRefreshExpiredModal({
               The data connector <strong>{dataConnector?.name}</strong> has
               expired and needs to be refreshed.
             </p>
-            <p>
-              Please click on the Refresh button after following the instruction
-              at this link:
-              <br />
-              <ExternalLink href={fullLink}>{fullLink}</ExternalLink>
-            </p>
+            {fullLink && (
+              <p>
+                Please click on the Refresh button after following the
+                instruction at this link:
+                <br />
+                <ExternalLink href={fullLink}>{fullLink}</ExternalLink>
+              </p>
+            )}
             <InfoAlert timeout={0}>
               <p className="mb-2">
                 You might need permission on the{" "}

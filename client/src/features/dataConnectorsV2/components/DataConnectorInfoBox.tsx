@@ -37,6 +37,7 @@ import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import { DataConnectorRead } from "../api/data-connectors.api";
 import {
+  doiToUrl,
   getDataConnectorScope,
   parseDoi,
   useGetDataConnectorSource,
@@ -246,13 +247,19 @@ export default function DataConnectorInfoBox({
             </InfoEntry>
             <InfoEntry title="DOI">
               <div className={cx("align-items-center", "d-flex", "gap-2")}>
-                <ExternalLink href={`https://doi.org/${doiReference}`}>
-                  {doiReference}
-                </ExternalLink>
-                <Clipboard
-                  className={cx("border-0", "btn", "p-0", "shadow-none")}
-                  clipboardText={doiReference ?? ""}
-                />
+                {doiReference == "asddsa" ? (
+                  <>
+                    <ExternalLink href={doiToUrl(doiReference)}>
+                      {doiReference}
+                    </ExternalLink>
+                    <Clipboard
+                      className={cx("border-0", "btn", "p-0", "shadow-none")}
+                      clipboardText={doiReference ?? ""}
+                    />
+                  </>
+                ) : (
+                  <p className="mb-0">N/A</p>
+                )}
               </div>
             </InfoEntry>
           </>
