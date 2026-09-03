@@ -33,6 +33,7 @@ import {
   LAUNCHER_CONTAINER_IMAGE_QUERY_DEBOUNCE,
   LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE,
 } from "../../session.constants";
+import { showsSessionLauncherFields } from "../../session.utils";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
 import { EnvironmentFieldsProps } from "./EnvironmentField";
@@ -131,7 +132,7 @@ export function CustomEnvironmentFields({
       </div>
 
       <div className={cx("d-flex", "flex-column", "gap-3")}>
-        {launcherCategory === "session" && (
+        {showsSessionLauncherFields(launcherCategory) && (
           <>
             <h3 className={cx("fw-bold", "mt-3", "mb-0")}>Advanced settings</h3>
             <InfoAlert dismissible={false} timeout={0}>
