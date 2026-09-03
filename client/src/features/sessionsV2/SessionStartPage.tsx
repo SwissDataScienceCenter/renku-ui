@@ -794,26 +794,24 @@ function StartSessionExpiredDataConnectorsModal({
   ];
 
   return (
-    <div>
-      <div
-        className={cx(
-          progressBoxStyles.progressBoxSmall,
-          progressBoxStyles.progressBoxSmallSteps,
-        )}
-      >
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Launching session ${launcher.name}`}
-          status={steps}
-        />
-        <SessionExpiredDataConnectorsModal
-          isOpen={showModal}
-          project={project}
-          dataConnectors={startSessionOptionsV2.dataConnectors ?? []}
-        />
-      </div>
+    <div
+      className={cx(
+        progressBoxStyles.progressBoxSmall,
+        progressBoxStyles.progressBoxSmallSteps,
+      )}
+    >
+      <ProgressStepsIndicator
+        description="Preparing to start session"
+        type={ProgressType.Determinate}
+        style={ProgressStyle.Light}
+        title={`Launching session ${launcher.name}`}
+        status={steps}
+      />
+      <SessionExpiredDataConnectorsModal
+        isOpen={showModal}
+        project={project}
+        dataConnectors={startSessionOptionsV2.dataConnectors ?? []}
+      />
     </div>
   );
 }
