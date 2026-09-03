@@ -31,19 +31,15 @@ import {
   XLg,
   XOctagon,
 } from "react-bootstrap-icons";
-import {
-  Button,
-  Col,
-  DropdownItem,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Col, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
-import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
+import {
+  MenuButton,
+  MenuButtonItem,
+} from "../../../components/buttons/MenuButton";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ExternalLink } from "../../../components/LegacyExternalLinks";
 import { Loader } from "../../../components/Loader";
@@ -368,20 +364,20 @@ export function BuildActions({ launcher }: BuildActionsProps) {
 
   const buttonGroup =
     builds && builds.length > 0 ? (
-      <ButtonWithMenuV2
+      <MenuButton
         color="outline-primary"
         default={defaultAction}
+        label={`More actions for ${launcher.name}`}
         preventPropagation
-        size="sm"
       >
-        <DropdownItem
+        <MenuButtonItem
           data-cy="session-view-menu-show-last-build-logs"
           onClick={toggleLogs}
         >
           <FileEarmarkText className={cx("bi", "me-1")} />
           View logs
-        </DropdownItem>
-      </ButtonWithMenuV2>
+        </MenuButtonItem>
+      </MenuButton>
     ) : (
       defaultAction
     );

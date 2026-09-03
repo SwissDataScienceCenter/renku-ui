@@ -25,16 +25,12 @@ import {
   Trash,
 } from "react-bootstrap-icons";
 import { generatePath } from "react-router";
-import {
-  Badge,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  DropdownItem,
-} from "reactstrap";
+import { Badge, Button, Card, CardBody, CardHeader } from "reactstrap";
 
-import { ButtonWithMenuV2 } from "../../components/buttons/Button";
+import {
+  MenuButton,
+  MenuButtonItem,
+} from "../../components/buttons/MenuButton";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
@@ -211,38 +207,38 @@ export function SessionV2Actions({
           disabled={null}
           enabled={
             <>
-              <ButtonWithMenuV2
+              <MenuButton
                 color="outline-primary"
                 dataCy="session-launcher-menu-dropdown"
                 default={defaultAction}
+                label={`More actions for ${launcher.name}`}
                 preventPropagation
-                size="sm"
               >
-                <DropdownItem
+                <MenuButtonItem
                   data-cy="session-view-menu-update-environment"
                   onClick={toggleUpdateEnvironment}
                 >
                   <LauncherEnvironmentIcon launcher={launcher} />
                   Edit environment
-                </DropdownItem>
+                </MenuButtonItem>
                 {toggleLogsHistory && (
-                  <DropdownItem
+                  <MenuButtonItem
                     data-cy="session-view-menu-logs-history"
                     onClick={toggleLogsHistory}
                   >
                     <ClockHistory className={cx("bi", "me-1")} />
                     View logs history
-                  </DropdownItem>
+                  </MenuButtonItem>
                 )}
-                <DropdownItem divider />
-                <DropdownItem
+                <MenuButtonItem divider />
+                <MenuButtonItem
                   data-cy="session-view-menu-delete"
                   onClick={toggleDelete}
                 >
                   <Trash className={cx("bi", "me-1")} />
                   Delete launcher
-                </DropdownItem>
-              </ButtonWithMenuV2>
+                </MenuButtonItem>
+              </MenuButton>
             </>
           }
           requestedPermission="write"

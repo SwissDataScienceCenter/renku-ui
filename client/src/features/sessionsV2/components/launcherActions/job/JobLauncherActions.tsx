@@ -19,7 +19,7 @@
 import { Fragment, useMemo } from "react";
 import { ButtonGroup } from "reactstrap";
 
-import { ButtonWithMenuV2 } from "~/components/buttons/Button";
+import { MenuButton } from "~/components/buttons/MenuButton";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import { isTruthy } from "~/features/sessionsV2/session.utils";
 import useLauncherEnvironmentReadiness from "~/features/sessionsV2/useLauncherEnvironmentReadiness.hook";
@@ -145,14 +145,14 @@ export default function JobLauncherActions({
   }
 
   return (
-    <ButtonWithMenuV2
+    <MenuButton
       color="primary"
       default={defaultAction}
       preventPropagation
-      size="sm"
       dataCy="job-button-with-menu-dropdown"
+      label={`More actions for ${launcher.name}`}
     >
       {menuItems}
-    </ButtonWithMenuV2>
+    </MenuButton>
   );
 }

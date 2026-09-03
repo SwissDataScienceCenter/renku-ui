@@ -27,8 +27,10 @@ import {
   PlayCircle,
   Trash,
 } from "react-bootstrap-icons";
-import { Card, CardBody, Col, DropdownItem, Row } from "reactstrap";
+import { Card, CardBody, Col, Row } from "reactstrap";
 
+import { MenuButtonItem } from "~/components/buttons/MenuButton";
+import useClickableHostHandlers from "~/components/buttons/useClickableHostHandlers.hook";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import JobCard from "~/features/sessionsV2/SessionList/JobCard";
 import { Loader } from "../../../components/Loader";
@@ -157,6 +159,8 @@ export default function SessionLauncherCard({
     );
   }, [launcher?.resource_class_id, resourcePools]);
 
+  const hostHandlers = useClickableHostHandlers(toggleSessionView);
+
   return (
     <Card
       className={cx(
@@ -171,7 +175,7 @@ export default function SessionLauncherCard({
       <CardBody className={cx("p-0")}>
         <div
           className={cx(hasSession && "border-bottom", "p-3")}
-          onClick={toggleSessionView}
+          onClick={hostHandlers.onClick}
           aria-label={
             toggleSessionView
               ? "View session details for this launcher"
@@ -388,7 +392,7 @@ function LauncherDropdownActions({
         enabled={
           <>
             {toggleUpdateEnvironment && (
-              <DropdownItem
+              <MenuButtonItem
                 data-cy="session-launcher-menu-edit-env"
                 onClick={toggleUpdateEnvironment}
               >
@@ -397,54 +401,54 @@ function LauncherDropdownActions({
                   launcher={launcher}
                 />
                 Edit environment
-              </DropdownItem>
+              </MenuButtonItem>
             )}
             {toggleUpdate && (
-              <DropdownItem
+              <MenuButtonItem
                 data-cy="session-launcher-menu-edit"
                 onClick={toggleUpdate}
               >
                 <Pencil className={cx("bi", "me-1")} />
                 Edit launcher
-              </DropdownItem>
+              </MenuButtonItem>
             )}
             {toggleEnvVariables && (
-              <DropdownItem
+              <MenuButtonItem
                 data-cy="session-launcher-menu-edit-env"
                 onClick={toggleEnvVariables}
               >
                 <Braces className={cx("bi", "me-1")} />
                 Edit environment variables
-              </DropdownItem>
+              </MenuButtonItem>
             )}
             {toggleShareLink && launcherCategory === "session" && (
-              <DropdownItem
+              <MenuButtonItem
                 data-cy="session-launcher-menu-share-link"
                 onClick={toggleShareLink}
               >
                 <Link45deg className={cx("bi", "me-1")} />
                 Share session launch link
-              </DropdownItem>
+              </MenuButtonItem>
             )}
             {toggleLogsHistory && (
-              <DropdownItem
+              <MenuButtonItem
                 data-cy="session-launcher-menu-logs-history"
                 onClick={toggleLogsHistory}
               >
                 <ClockHistory className={cx("bi", "me-1")} />
                 View logs history
-              </DropdownItem>
+              </MenuButtonItem>
             )}
             {toggleDelete && (
               <>
-                <DropdownItem divider />
-                <DropdownItem
+                <MenuButtonItem divider />
+                <MenuButtonItem
                   data-cy="session-launcher-menu-delete"
                   onClick={toggleDelete}
                 >
                   <Trash className={cx("bi", "me-1")} />
                   Delete launcher
-                </DropdownItem>
+                </MenuButtonItem>
               </>
             )}
           </>
