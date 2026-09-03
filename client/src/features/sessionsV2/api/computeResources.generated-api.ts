@@ -359,6 +359,14 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.integerIds,
       }),
     }),
+    getGroupsByGroupSlugResourcePools: build.query<
+      GetGroupsByGroupSlugResourcePoolsApiResponse,
+      GetGroupsByGroupSlugResourcePoolsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/groups/${queryArg.groupSlug}/resource_pools`,
+      }),
+    }),
     getVersion: build.query<GetVersionApiResponse, GetVersionApiArg>({
       query: () => ({ url: `/version` }),
     }),
@@ -613,6 +621,11 @@ export type PutUsersByUserIdResourcePoolsApiArg = {
   userId: string;
   /** List of resource pool IDs */
   integerIds: IntegerIds;
+};
+export type GetGroupsByGroupSlugResourcePoolsApiResponse =
+  /** status 200 The resource pools that the group has access to */ ResourcePoolsWithIdFiltered;
+export type GetGroupsByGroupSlugResourcePoolsApiArg = {
+  groupSlug: string;
 };
 export type GetVersionApiResponse = /** status 200 The error */ Version;
 export type GetVersionApiArg = void;
@@ -1001,5 +1014,6 @@ export const {
   useGetUsersByUserIdResourcePoolsQuery,
   usePostUsersByUserIdResourcePoolsMutation,
   usePutUsersByUserIdResourcePoolsMutation,
+  useGetGroupsByGroupSlugResourcePoolsQuery,
   useGetVersionQuery,
 } = injectedRtkApi;

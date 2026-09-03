@@ -62,6 +62,12 @@ interface UserNamespaceV2Args extends SimpleFixture {
   username?: string;
 }
 
+interface ListGroupV2ResourcePoolsFixture extends SimpleFixture {
+  groupSlug?: string;
+  empty?: boolean;
+  allowed?: boolean;
+}
+
 function generateGroups(numberOfGroups: number, start: number) {
   const groups = [];
   for (let i = 0; i < numberOfGroups; ++i) {
@@ -359,6 +365,27 @@ export function NamespaceV2<T extends FixturesConstructor>(Parent: T) {
       } = args ?? {};
       const response = { fixture };
       cy.intercept("PATCH", `/api/data/groups/${groupSlug}`, response).as(name);
+      return this;
+    }
+
+    listGroupV2ResourcePools(args?: ListGroupV2ResourcePoolsFixture) {
+      const {
+        fixture = "groupV2/list-groupV2-resource-pools.json",
+        name = "listGroupV2ResourcePools",
+        groupSlug = "test-2-group-v2",
+        empty = false,
+        allowed = true,
+      } = args ?? {};
+      cy.fixture(fixture).then((content) => {
+        const response = allowed
+          ? { body: empty ? [] : content }
+          : { statusCode: 404 };
+        cy.intercept(
+          "GET",
+          `/api/data/groups/${groupSlug}/resource_pools`,
+          response,
+        ).as(name);
+      });
       return this;
     }
   };
