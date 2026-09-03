@@ -89,6 +89,8 @@ export const CONFIG_JSON = {
   CULLING_THRESHOLDS: safeJsonToObject(process.env.CULLING_THRESHOLDS),
   PERSISTED_LOGS_ENABLED: process.env.PERSISTED_LOGS_ENABLED,
   PERSISTED_LOGS_TTL_SECONDS: process.env.PERSISTED_LOGS_TTL_SECONDS,
+  APPS_ENABLED: process.env.APPS_ENABLED,
+  APP_LOBBY: safeJsonToObject(process.env.APP_LOBBY),
 };
 
 export const SAMPLE_PRIVACY_CONTENT = `# Privacy statement
