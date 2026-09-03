@@ -36,7 +36,10 @@ import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../session.constants";
-import { getLauncherCategoryDefinition } from "../../session.utils";
+import {
+  getLauncherCategoryDefinition,
+  showsSessionLauncherFields,
+} from "../../session.utils";
 import type { LauncherCategory } from "../../sessionsV2.types";
 import { SessionLauncherForm } from "../../sessionsV2.types";
 import SessionClassSelector from "../SessionClassSelector";
@@ -90,7 +93,7 @@ export function LauncherDetailsFields({
               className={cx(error && "is-invalid")}
               id="addSessionLauncherName"
               placeholder={
-                launcherCategory === "session"
+                showsSessionLauncherFields(launcherCategory)
                   ? `${categoryDefinition.text.display} name`
                   : ""
               }

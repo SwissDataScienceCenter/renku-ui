@@ -31,6 +31,7 @@ import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import {
+  sessionLaunchersV2Api,
   useGetEnvironmentsByEnvironmentIdBuildsQuery as useGetBuildsQuery,
   usePatchBuildsByBuildIdMutation as usePatchBuildMutation,
   usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
@@ -56,10 +57,57 @@ export function RebuildLauncherDropdownItem({ launcher }: BuildActionsProps) {
   );
 }
 
+export function CancelBuildDropdownItem({ launcher }: BuildActionsProps) {
+  const isBuildEnvironment =
+    launcher.environment.environment_image_source === "build";
+
+  const { data: builds } = useGetBuildsQuery(
+    isBuildEnvironment ? { environmentId: launcher.environment.id } : skipToken,
+  );
+  const inProgressBuild = useMemo(
+    () => builds?.find(({ status }) => status === "in_progress"),
+    [builds],
+  );
+
+  const [patchBuild, patchResult] = usePatchBuildMutation();
+  const onCancelBuild = useCallback(() => {
+    if (inProgressBuild != null) {
+      patchBuild({
+        buildId: inProgressBuild.id,
+        buildPatch: { status: "cancelled" },
+      });
+    }
+  }, [inProgressBuild, patchBuild]);
+
+  if (!isBuildEnvironment || inProgressBuild == null) return null;
+
+  return (
+    <>
+      <DropdownItem
+        data-cy="session-view-menu-cancel-build"
+        onClick={onCancelBuild}
+      >
+        <XOctagon className={cx("bi", "me-1")} />
+        Cancel build
+      </DropdownItem>
+      <BuildActionFailedModal
+        error={patchResult.error}
+        reset={patchResult.reset}
+        title="Error: could not cancel image build"
+      />
+    </>
+  );
+}
+
+interface BuildLauncherButtonsProps extends BuildActionsProps {
+  showCancelBuild?: boolean;
+}
+
 export default function BuildLauncherButtons({
   launcher,
   isMainButton = true,
-}: BuildActionsProps) {
+  showCancelBuild = true,
+}: BuildLauncherButtonsProps) {
   const { project_id: projectId } = launcher;
   const permissions = useProjectPermissions({ projectId });
 
@@ -78,6 +126,11 @@ export default function BuildLauncherButtons({
     [builds],
   );
   const hasInProgressBuild = !!inProgressBuild;
+
+  sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
+    hasInProgressBuild ? { environmentId: launcher.environment.id } : skipToken,
+    { pollingInterval: 1_000 },
+  );
 
   const [postBuild, postResult] = usePostBuildMutation();
   const triggerBuild = useCallback(() => {
@@ -110,16 +163,18 @@ export default function BuildLauncherButtons({
         <FileEarmarkText className={cx("bi", "me-1")} />
         View logs
       </Button>
-      <Button
-        className={cx("text-nowrap", "rounded-end-0")}
-        color={"outline-primary"}
-        data-cy="session-view-menu-cancel-build"
-        onClick={onCancelBuild}
-        size="sm"
-      >
-        <XOctagon className={cx("bi", "me-1")} />
-        Cancel build
-      </Button>
+      {showCancelBuild && (
+        <Button
+          className={cx("text-nowrap", "rounded-end-0")}
+          color={"outline-primary"}
+          data-cy="session-view-menu-cancel-build"
+          onClick={onCancelBuild}
+          size="sm"
+        >
+          <XOctagon className={cx("bi", "me-1")} />
+          Cancel build
+        </Button>
+      )}
     </>
   ) : (
     <>

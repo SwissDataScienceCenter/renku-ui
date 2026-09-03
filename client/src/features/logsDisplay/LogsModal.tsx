@@ -75,7 +75,9 @@ interface LogsModalModalProps {
   sessionState?: SessionV2["status"]["state"];
   title: ReactNode;
   toggle: () => void;
-  defaultTab?: string;
+  defaultTab?: string | ((tab: string) => boolean);
+  emptyMessage?: ReactNode;
+  tabLabel?: (tab: string) => string;
 }
 
 export default function LogsModal({
@@ -88,6 +90,8 @@ export default function LogsModal({
   title,
   toggle,
   defaultTab,
+  emptyMessage,
+  tabLabel,
 }: LogsModalModalProps) {
   const { data, error, isLoading, isFetching, refetch } = query;
 
@@ -123,7 +127,9 @@ export default function LogsModal({
           isLoading={isLoading}
           refetch={refetch}
           defaultTab={defaultTab}
+          emptyMessage={emptyMessage}
           sessionState={sessionState}
+          tabLabel={tabLabel}
         />
       </ModalBody>
       <ModalFooter>
@@ -140,7 +146,10 @@ export default function LogsModal({
 }
 
 type LogsModalBodyProps = LogsQuery &
-  Pick<LogsModalModalProps, "defaultTab" | "sessionState">;
+  Pick<
+    LogsModalModalProps,
+    "defaultTab" | "emptyMessage" | "sessionState" | "tabLabel"
+  >;
 
 export function LogsModalBody({
   data,
@@ -149,7 +158,9 @@ export function LogsModalBody({
   isLoading,
   refetch,
   defaultTab,
+  emptyMessage,
   sessionState,
+  tabLabel,
 }: LogsModalBodyProps) {
   if (isLoading) {
     return <Loader />;
@@ -177,16 +188,26 @@ export function LogsModalBody({
   }
 
   if (Object.keys(data).length < 1) {
-    return <NoLogsAvailable refetch={refetch} sessionState={sessionState} />;
+    return (
+      <NoLogsAvailable
+        refetch={refetch}
+        emptyMessage={emptyMessage}
+        sessionState={sessionState}
+      />
+    );
   }
 
-  return <TabbedLogs data={data} defaultTab={defaultTab} />;
+  return <TabbedLogs data={data} defaultTab={defaultTab} tabLabel={tabLabel} />;
 }
 
 type NoLogsAvailableProps = Pick<LogsQuery, "refetch"> &
-  Pick<LogsModalModalProps, "sessionState">;
+  Pick<LogsModalModalProps, "emptyMessage" | "sessionState">;
 
-function NoLogsAvailable({ refetch, sessionState }: NoLogsAvailableProps) {
+function NoLogsAvailable({
+  refetch,
+  emptyMessage,
+  sessionState,
+}: NoLogsAvailableProps) {
   if (sessionState === "succeeded" || sessionState === "failed") {
     return (
       <p data-cy="no-logs-message">
@@ -196,7 +217,9 @@ function NoLogsAvailable({ refetch, sessionState }: NoLogsAvailableProps) {
   }
   return (
     <>
-      <p data-cy="no-logs-message">No logs available for this pod yet.</p>
+      <p data-cy="no-logs-message">
+        {emptyMessage ?? "No logs available for this pod yet."}
+      </p>
       <p>
         You can try to{" "}
         <Button
@@ -215,20 +238,22 @@ function NoLogsAvailable({ refetch, sessionState }: NoLogsAvailableProps) {
 
 type TabbedLogsProps = {
   data: Exclude<LogsQuery["data"], undefined>;
-} & Pick<LogsModalModalProps, "defaultTab">;
+} & Pick<LogsModalModalProps, "defaultTab" | "tabLabel">;
 
-function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
+function TabbedLogs({ data, defaultTab, tabLabel }: TabbedLogsProps) {
   const sortedLogs = useMemo(() => {
+    const isDefaultTab =
+      typeof defaultTab === "function"
+        ? defaultTab
+        : (tab: string) => tab === defaultTab;
     const result: LogTab[] = [];
     const keys = Object.keys(data);
-    for (const key of keys) {
-      if (key === defaultTab) {
-        result.push({ tab: key, content: data[key] ?? "" });
-        break;
-      }
+    const defaultKey = keys.find(isDefaultTab);
+    if (defaultKey != null) {
+      result.push({ tab: defaultKey, content: data[defaultKey] ?? "" });
     }
     for (const key of keys) {
-      if (key !== defaultTab) {
+      if (key !== defaultKey) {
         result.push({ tab: key, content: data[key] ?? "" });
       }
     }
@@ -271,7 +296,7 @@ function TabbedLogs({ data, defaultTab }: TabbedLogsProps) {
                 setActiveTab(tab);
               }}
             >
-              {startCase(tab)}
+              {tabLabel ? tabLabel(tab) : startCase(tab)}
             </NavLink>
           </NavItem>
         ))}

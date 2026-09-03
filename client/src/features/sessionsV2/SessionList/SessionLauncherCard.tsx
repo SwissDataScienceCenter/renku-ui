@@ -100,6 +100,7 @@ export default function SessionLauncherCard({
   } = useLauncherEnvironmentReadiness({ launcher });
 
   const hasSession = !!sessions?.length;
+
   const sessionType = sessions?.at(0)?.session_type ?? "interactive";
   // Orphan sessions have no launcher; get category from the session itself
   const launcherCategory = sessionLauncherKindToCategory(
