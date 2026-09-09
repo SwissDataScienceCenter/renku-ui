@@ -247,14 +247,14 @@ export default function DataConnectorInfoBox({
             </InfoEntry>
             <InfoEntry title="DOI">
               <div className={cx("align-items-center", "d-flex", "gap-2")}>
-                {doiReference == "asddsa" ? (
+                {doiReference ? (
                   <>
                     <ExternalLink href={doiToUrl(doiReference)}>
                       {doiReference}
                     </ExternalLink>
                     <Clipboard
                       className={cx("border-0", "btn", "p-0", "shadow-none")}
-                      clipboardText={doiReference ?? ""}
+                      clipboardText={doiReference}
                     />
                   </>
                 ) : (
