@@ -58,6 +58,7 @@ export default function ConnectedServiceFormContent({
                 <option value="gitlab">GitLab</option>
                 <option value="google">Google</option>
                 <option value="zenodo">Zenodo</option>
+                <option value="scicat">SciCat</option>
               </Input>
             </>
           )}
