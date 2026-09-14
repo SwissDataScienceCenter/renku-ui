@@ -134,6 +134,43 @@ describe("Navigate to project", () => {
     cy.contains("test 2 v2-project").should("be.visible");
   });
 
+  it("shows the project breadcrumb", () => {
+    fixtures.readUserV2Namespace();
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@readUserV2Namespace");
+    cy.getDataCy("entity-breadcrumb").should("be.visible");
+    cy.getDataCy("entity-breadcrumb")
+      .contains("a", "user1")
+      .should("have.attr", "href", "/u/user1-uuid");
+    cy.getDataCy("entity-breadcrumb").should(
+      "contain.text",
+      "test-2-v2-project",
+    );
+    cy.getDataCy("entity-breadcrumb")
+      .contains("button", "Copy to clipboard")
+      .should("exist");
+  });
+
+  it("links to the group page in the breadcrumb of a group-owned project", () => {
+    fixtures
+      .readProjectV2({
+        name: "readGroupProjectV2",
+        namespace: "test-2-group-v2",
+      })
+      .readGroupV2Namespace();
+    cy.visit("/p/test-2-group-v2/test-2-v2-project");
+    cy.wait("@readGroupProjectV2");
+    cy.wait("@readGroupV2Namespace");
+    cy.getDataCy("entity-breadcrumb")
+      .contains("a", "test 2 group-v2")
+      .should("have.attr", "href", "/g/test-2-group-v2");
+    cy.getDataCy("entity-breadcrumb").should(
+      "contain.text",
+      "test-2-v2-project",
+    );
+  });
+
   it("shows projects by project id", () => {
     fixtures.readProjectV2ById();
     cy.visit("/p/THEPROJECTULID26CHARACTERS");
