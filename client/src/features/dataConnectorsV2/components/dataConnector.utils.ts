@@ -212,26 +212,24 @@ export function getDataConnectorScope(namespace?: string): DataConnectorScope {
 
 export function useGetDataConnectorSource(
   dataConnector: DataConnector | undefined,
-) {
+): { isLoading: boolean; source: string } {
   const scope = useMemo(
     () => getDataConnectorScope(dataConnector?.namespace),
     [dataConnector?.namespace],
   );
+  const doi = getDataConnectorDoi(dataConnector);
 
-  const { currentData: resolverResponse, isSuccess } = useGetHandlesByDoiQuery(
-    scope === "global" &&
-      typeof dataConnector?.storage.configuration["doi"] === "string"
-      ? { doi: parseDoi(dataConnector.storage.configuration["doi"]), index: 1 }
-      : skipToken,
-  );
+  const {
+    currentData: resolverResponse,
+    isLoading: isLoadingHandle,
+    isSuccess,
+    isUninitialized,
+  } = useGetHandlesByDoiQuery(doi ? { doi, index: 1 } : skipToken);
   const source = useMemo(() => {
     if (dataConnector?.publisher_name != null) {
       return dataConnector.publisher_name;
     }
-    if (
-      scope !== "global" ||
-      typeof dataConnector?.storage.configuration["doi"] !== "string"
-    ) {
+    if (scope !== "global" || doi == null) {
       return dataConnector?.namespace || "unknown";
     }
 
@@ -240,7 +238,7 @@ export function useGetDataConnectorSource(
       resolverResponse == null ||
       resolverResponse.responseCode !== 1
     ) {
-      return dataConnector.storage.configuration["doi"];
+      return doi;
     }
 
     const value = resolverResponse.values?.find(
@@ -251,7 +249,7 @@ export function useGetDataConnectorSource(
         typeof data.value === "string",
     );
     if (!value) {
-      return dataConnector.storage.configuration["doi"];
+      return doi;
     }
 
     const doiURL = `${value?.data?.value}`;
@@ -259,18 +257,25 @@ export function useGetDataConnectorSource(
       const parsed = new URL(doiURL);
       return parsed.hostname;
     } catch {
-      return dataConnector.storage.configuration["doi"];
+      return doi;
     }
   }, [
     dataConnector?.namespace,
-    dataConnector?.storage.configuration,
     dataConnector?.publisher_name,
+    doi,
     isSuccess,
     resolverResponse,
     scope,
   ]);
 
-  return source;
+  // The handle query is skipped unless there is a DOI to resolve, and its
+  // result is ignored when the connector already declares a publisher.
+  const isLoading =
+    dataConnector?.publisher_name == null &&
+    doi != null &&
+    (isLoadingHandle || isUninitialized);
+
+  return { isLoading, source };
 }
 
 /** Parse the input string as a DOI
@@ -299,6 +304,29 @@ export function parseDoi(doi: string): string {
 // Build the resolver URL for a DOI reference, e.g. "10.1000/182" -> "https://doi.org/10.1000/182"
 export function doiToUrl(doi: string): string {
   return `https://doi.org/${doi}`;
+}
+
+export function getDataConnectorDoi(
+  dataConnector:
+    | Pick<DataConnector, "doi" | "namespace" | "storage">
+    | undefined,
+): string | undefined {
+  if (dataConnector == null) return undefined;
+  if (getDataConnectorScope(dataConnector.namespace) !== "global")
+    return undefined;
+  const configDoi = dataConnector.storage.configuration["doi"];
+  if (typeof configDoi === "string" && configDoi) return parseDoi(configDoi);
+  if (dataConnector.doi) return parseDoi(dataConnector.doi);
+  return undefined;
+}
+
+export function getDataConnectorIdentifier(dataConnector: {
+  namespace?: string;
+  slug: string;
+}): string {
+  return getDataConnectorScope(dataConnector.namespace) === "global"
+    ? dataConnector.slug
+    : `${dataConnector.namespace}/${dataConnector.slug}`;
 }
 
 // Tries to catch all the valid doi cases -- it returns the string directly, but we could consider reusing parseDoi to extract the initial string

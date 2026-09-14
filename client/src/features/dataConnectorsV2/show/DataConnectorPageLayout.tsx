@@ -4,6 +4,7 @@ import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import ContainerWrap from "~/components/container/ContainerWrap";
+import EntityBreadcrumb from "~/components/entityBreadcrumb/EntityBreadcrumb";
 import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
 import PageNav, { PageNavOptions } from "~/components/PageNav";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
@@ -47,11 +48,8 @@ export default function DataConnectorPageLayout({
       <Row className="my-3">
         <Col xs={12}>
           <Row>
-            <Col className={cx("d-block", "d-md-none")} xs={12}>
-              <span className="text-muted">Data connector</span>
-            </Col>
             <Col className="mb-3">
-              <DataConnectorHeader name={dataConnector.name} />
+              <DataConnectorHeader dataConnector={dataConnector} />
             </Col>
             <Col className={cx("d-md-block", "d-none")} md="auto">
               <EntityWatermark type="dataConnector" />
@@ -70,12 +68,16 @@ export default function DataConnectorPageLayout({
 }
 
 interface DataConnectorHeaderProps {
-  name: string;
+  dataConnector: DataConnectorRead;
 }
-function DataConnectorHeader({ name }: DataConnectorHeaderProps) {
+function DataConnectorHeader({ dataConnector }: DataConnectorHeaderProps) {
   return (
-    <h1 className={cx("mb-0", "text-break")} data-cy="data-connector-name">
-      {name}
-    </h1>
+    <div className={cx("d-flex", "flex-column", "gap-2")}>
+      <EntityBreadcrumb dataConnector={dataConnector} />
+      <div className={cx("d-md-none", "text-muted")}>Data connector</div>
+      <h1 className={cx("mb-0", "text-break")} data-cy="data-connector-name">
+        {dataConnector.name}
+      </h1>
+    </div>
   );
 }
