@@ -41,20 +41,27 @@ interface SessionExpiredDataConnectorsModalProps {
   isOpen: boolean;
   project: Project;
   dataConnectors: SessionStartDataConnectorConfiguration[];
+  onCancel?: () => void;
+  onSkip?: () => void;
+  continueLabel?: string;
 }
 export default function SessionExpiredDataConnectorsModal({
   isOpen,
   project,
   dataConnectors,
+  onCancel: onCancelProp,
+  onSkip: onSkipProp,
+  continueLabel = "Launch anyway",
 }: SessionExpiredDataConnectorsModalProps) {
   const navigate = useNavigate();
-  const onCancel = useCallback(() => {
+  const defaultOnCancel = useCallback(() => {
     const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
       namespace: project.namespace,
       slug: project.slug,
     });
     navigate(url);
   }, [navigate, project.namespace, project.slug]);
+  const onCancel = onCancelProp ?? defaultOnCancel;
 
   const expiredDataConnectors = useMemo(
     () => dataConnectors.filter(isDataConnectorExpired),
@@ -62,7 +69,7 @@ export default function SessionExpiredDataConnectorsModal({
   );
 
   const dispatch = useAppDispatch();
-  const onSkip = useCallback(() => {
+  const defaultOnSkip = useCallback(() => {
     const updatedDataConnectors = dataConnectors.map((config) =>
       isDataConnectorExpired(config)
         ? { ...config, active: false, skip: true }
@@ -77,6 +84,7 @@ export default function SessionExpiredDataConnectorsModal({
       startSessionOptionsV2Slice.actions.setDataConnectorsExpirationReady(true),
     );
   }, [dispatch, dataConnectors]);
+  const onSkip = onSkipProp ?? defaultOnSkip;
 
   return (
     <ScrollableModal
@@ -121,7 +129,7 @@ export default function SessionExpiredDataConnectorsModal({
           onClick={onSkip}
         >
           <SkipForward className={cx("bi", "me-1")} />
-          Launch anyway
+          {continueLabel}
         </Button>
       </ModalFooter>
     </ScrollableModal>
