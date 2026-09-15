@@ -31,7 +31,6 @@ import { matchPath, useLocation, useNavigate } from "react-router";
 import {
   Button,
   Col,
-  DropdownItem,
   Input,
   Modal,
   ModalBody,
@@ -41,7 +40,10 @@ import {
 } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
+import {
+  MenuButton,
+  MenuButtonItem,
+} from "../../../components/buttons/MenuButton";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
@@ -594,7 +596,7 @@ function DataConnectorActionsInner({
         {actions[0].content}
       </Button>
     ) : (
-      <ButtonWithMenuV2
+      <MenuButton
         color="outline-primary"
         dataCy="data-connector-menu-dropdown"
         default={
@@ -607,14 +609,14 @@ function DataConnectorActionsInner({
             {actions[0].content}
           </Button>
         }
-        size="sm"
+        label={`More actions for ${dataConnector.name}`}
       >
         {actions.slice(1).map(({ key, onClick, content }) => (
-          <DropdownItem key={key} data-cy={key} onClick={onClick}>
+          <MenuButtonItem key={key} data-cy={key} onClick={onClick}>
             {content}
-          </DropdownItem>
+          </MenuButtonItem>
         ))}
-      </ButtonWithMenuV2>
+      </MenuButton>
     );
 
   return (

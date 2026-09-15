@@ -33,14 +33,9 @@ import {
   Power,
   StopCircle,
 } from "react-bootstrap-icons";
-import {
-  Button,
-  ButtonGroup,
-  DropdownItem,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
 
-import { ButtonWithMenuV2 } from "~/components/buttons/Button";
+import { MenuButton, MenuButtonItem } from "~/components/buttons/MenuButton";
 import { Loader } from "~/components/Loader";
 import useRenkuToast from "~/components/toast/useRenkuToast";
 import AppLogsModal from "~/features/logsDisplay/AppLogsModal";
@@ -233,14 +228,14 @@ export default function AppLauncherActions({
 
   const menuItems = [
     write && app && !transition && (
-      <DropdownItem
+      <MenuButtonItem
         key="delete-app"
         data-cy="app-menu-delete"
         onClick={toggleDelete}
       >
         <StopCircle className={cx("bi", "me-1")} />
         Stop app
-      </DropdownItem>
+      </MenuButtonItem>
     ),
     displayBuildActions && !applyDefaultBuildActions && (
       <RebuildLauncherDropdownItem key="rebuild-launcher" launcher={launcher} />
@@ -249,24 +244,24 @@ export default function AppLauncherActions({
       <CancelBuildDropdownItem key="cancel-build" launcher={launcher} />
     ),
     write && app && (
-      <DropdownItem
+      <MenuButtonItem
         key="app-logs"
         data-cy="app-menu-view-logs"
         onClick={toggleLogs}
       >
         <FileEarmarkText className={cx("bi", "me-1")} />
         View logs
-      </DropdownItem>
+      </MenuButtonItem>
     ),
     isLive && (
-      <DropdownItem
+      <MenuButtonItem
         key="copy-share-link"
         data-cy="app-menu-copy-share-link"
         onClick={onCopyShareLink}
       >
         <Link45deg className={cx("bi", "me-1")} />
         Copy share link
-      </DropdownItem>
+      </MenuButtonItem>
     ),
     write && otherActions && (
       <Fragment key="other-actions">{otherActions}</Fragment>
@@ -369,15 +364,14 @@ export default function AppLauncherActions({
   ) : !hasMenuItems ? (
     defaultAction
   ) : (
-    <ButtonWithMenuV2
+    <MenuButton
       color="primary"
       default={defaultAction}
       preventPropagation
-      size="sm"
       dataCy="app-button-with-menu-dropdown"
     >
       {menuItems}
-    </ButtonWithMenuV2>
+    </MenuButton>
   );
 
   return (

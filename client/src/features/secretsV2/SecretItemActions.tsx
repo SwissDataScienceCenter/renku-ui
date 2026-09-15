@@ -22,7 +22,6 @@ import { Pencil, Save, Trash, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Button,
-  DropdownItem,
   Form,
   Modal,
   ModalBody,
@@ -31,9 +30,9 @@ import {
 } from "reactstrap";
 
 import {
-  ButtonWithMenu,
-  ButtonWithMenuV2,
-} from "../../components/buttons/Button";
+  MenuButton,
+  MenuButtonItem,
+} from "../../components/buttons/MenuButton";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
 import {
@@ -42,19 +41,14 @@ import {
   usePatchUserSecretMutation,
   type SecretWithId,
 } from "../usersV2/api/users.api";
-import FilenameField from "./fields/FilenameField";
 import NameField from "./fields/NameField";
 import ReplaceSecretValueModal from "./ReplaceSecretValueModal";
 
 interface SecretItemActionsProps {
-  isV2?: boolean;
   secret: SecretWithId;
 }
 
-export default function SecretItemActions({
-  isV2,
-  secret,
-}: SecretItemActionsProps) {
+export default function SecretItemActions({ secret }: SecretItemActionsProps) {
   const { data: user } = useGetUserQueryState();
 
   const [isReplaceOpen, setIsReplaceOpen] = useState(false);
@@ -75,46 +69,38 @@ export default function SecretItemActions({
   if (!user?.isLoggedIn) {
     return null;
   }
-
-  const ButtonWithMenuTag = isV2 ? ButtonWithMenuV2 : ButtonWithMenu;
-  const buttonColor = isV2 ? "outline-primary" : "rk-green";
+  const defaultAction = (
+    <Button color={"outline-primary"} onClick={toggleReplace} size="sm">
+      <Save className={cx("bi", "me-1")} />
+      Replace
+    </Button>
+  );
 
   return (
     <>
       <div data-cy="user-secret-actions">
-        <ButtonWithMenuTag
-          color={buttonColor as any} // eslint-disable-line @typescript-eslint/no-explicit-any
-          default={
-            <Button
-              color={isV2 ? "outline-primary" : "outline-rk-green"}
-              onClick={toggleReplace}
-              size="sm"
-            >
-              <Save className={cx("bi", "me-1")} />
-              Replace
-            </Button>
-          }
-          size="sm"
+        <MenuButton
+          color="outline-primary"
+          default={defaultAction}
+          label={`More actions for ${secret.name}`}
         >
-          <DropdownItem onClick={toggleEdit}>
+          <MenuButtonItem onClick={toggleEdit}>
             <Pencil className={cx("bi", "me-1")} />
             Edit
-          </DropdownItem>
-          <DropdownItem onClick={toggleDelete}>
+          </MenuButtonItem>
+          <MenuButtonItem onClick={toggleDelete}>
             <Trash className={cx("bi", "me-1")} />
             Delete
-          </DropdownItem>
-        </ButtonWithMenuTag>
+          </MenuButtonItem>
+        </MenuButton>
       </div>
       <ReplaceSecretValueModal
         isOpen={isReplaceOpen}
-        isV2={isV2}
         secret={secret}
         toggle={toggleReplace}
       />
       <EditSecretModal
         isOpen={isEditOpen}
-        isV2={isV2}
         secret={secret}
         toggle={toggleEdit}
       />
@@ -129,17 +115,11 @@ export default function SecretItemActions({
 
 interface EditSecretModalProps {
   isOpen: boolean;
-  isV2?: boolean;
   secret: SecretWithId;
   toggle: () => void;
 }
 
-function EditSecretModal({
-  isOpen,
-  isV2,
-  secret,
-  toggle,
-}: EditSecretModalProps) {
+function EditSecretModal({ isOpen, secret, toggle }: EditSecretModalProps) {
   const { id: secretId } = secret;
 
   const [patchUserSecret, result] = usePatchUserSecretMutation();
@@ -162,11 +142,10 @@ function EditSecretModal({
         secretId,
         secretPatch: {
           name: data.name,
-          ...(!isV2 ? { default_filename: data.filename } : {}),
         },
       });
     },
-    [isV2, patchUserSecret, secretId],
+    [patchUserSecret, secretId],
   );
   const onSubmit = useMemo(
     () => handleSubmit(submitHandler),
@@ -195,11 +174,7 @@ function EditSecretModal({
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <Form
-        className={cx(!isV2 && "form-rk-green")}
-        noValidate
-        onSubmit={onSubmit}
-      >
+      <Form noValidate onSubmit={onSubmit}>
         <ModalHeader tag="h2" toggle={toggle}>
           <Pencil className={cx("bi", "me-1")} />
           Edit user secret
@@ -210,25 +185,14 @@ function EditSecretModal({
           )}
 
           <NameField control={control} errors={errors} name="name" />
-          {!isV2 && (
-            <FilenameField
-              control={control}
-              errors={errors}
-              name="filename"
-              rules={{ required: "Please provide a filename" }}
-            />
-          )}
         </ModalBody>
         <ModalFooter>
-          <Button
-            color={isV2 ? "outline-primary" : "outline-rk-green"}
-            onClick={toggle}
-          >
+          <Button color="outline-primary" onClick={toggle}>
             <XLg className={cx("bi", "me-1")} />
             Close
           </Button>
           <Button
-            color={isV2 ? "primary" : "rk-green"}
+            color="primary"
             disabled={!isDirty || result.isLoading}
             type="submit"
           >

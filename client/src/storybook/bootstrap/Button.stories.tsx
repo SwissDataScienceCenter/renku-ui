@@ -2,9 +2,12 @@ import { Meta, StoryObj } from "@storybook/react-vite";
 import cx from "classnames";
 import React from "react";
 import { Pencil, PencilSquare, PlusLg, Trash } from "react-bootstrap-icons";
-import { Button, ButtonGroup, DropdownItem } from "reactstrap";
+import { Button, ButtonGroup } from "reactstrap";
 
-import { ButtonWithMenuV2 } from "../../components/buttons/Button";
+import {
+  MenuButton,
+  MenuButtonItem,
+} from "../../components/buttons/MenuButton";
 
 export default {
   args: {
@@ -105,7 +108,7 @@ export const ButtonWithDropdown_: Story = {
   },
   render: () => (
     <>
-      <ButtonWithMenuV2
+      <MenuButton
         color="outline-primary"
         default={
           <Button
@@ -119,13 +122,12 @@ export const ButtonWithDropdown_: Story = {
           </Button>
         }
         preventPropagation
-        size="sm"
       >
-        <DropdownItem onClick={() => {}}>
+        <MenuButtonItem onClick={() => {}}>
           <Trash className={cx("bi", "me-1")} />
           Remove
-        </DropdownItem>
-      </ButtonWithMenuV2>
+        </MenuButtonItem>
+      </MenuButton>
     </>
   ),
 };

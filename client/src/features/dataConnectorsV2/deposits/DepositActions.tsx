@@ -10,7 +10,6 @@ import {
 } from "react-bootstrap-icons";
 import {
   Button,
-  DropdownItem,
   Input,
   Modal,
   ModalBody,
@@ -18,7 +17,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-import { ButtonWithMenuV2 } from "~/components/buttons/Button";
+import { MenuButton, MenuButtonItem } from "~/components/buttons/MenuButton";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import LogsModal from "~/features/logsDisplay/LogsModal";
@@ -142,18 +141,18 @@ export default function DepositActions({
 
   return (
     <>
-      <ButtonWithMenuV2
+      <MenuButton
         color="outline-primary"
         dataCy="deposit-actions-dropdown"
         default={defaultButton}
-        size="sm"
+        label={`More actions for ${deposit.name}`}
       >
         {actions.slice(1).map(({ key, onClick, content }) => (
-          <DropdownItem key={key} data-cy={key} onClick={onClick}>
+          <MenuButtonItem key={key} data-cy={key} onClick={onClick}>
             {content}
-          </DropdownItem>
+          </MenuButtonItem>
         ))}
-      </ButtonWithMenuV2>
+      </MenuButton>
 
       <DepositEditModal
         deposit={deposit}
