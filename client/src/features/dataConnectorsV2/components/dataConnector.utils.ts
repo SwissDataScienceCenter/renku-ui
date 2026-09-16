@@ -296,6 +296,11 @@ export function parseDoi(doi: string): string {
   return doi;
 }
 
+// Build the resolver URL for a DOI reference, e.g. "10.1000/182" -> "https://doi.org/10.1000/182"
+export function doiToUrl(doi: string): string {
+  return `https://doi.org/${doi}`;
+}
+
 // Tries to catch all the valid doi cases -- it returns the string directly, but we could consider reusing parseDoi to extract the initial string
 export function normalizeAsDoi(input: string): string {
   const doiConverted = doiFromUrl(input);
