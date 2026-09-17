@@ -58,6 +58,7 @@ export const ABSOLUTE_ROUTES = {
       root: "/integrations",
       complete: "/integrations/complete",
     },
+    keys: "/keys",
     projects: {
       show: {
         root: "/p/:namespace/:slug",
@@ -128,6 +129,7 @@ export const RELATIVE_ROUTES = {
       root: "integrations",
       complete: "complete",
     },
+    keys: "keys",
     projects: {
       root: "p/*",
       show: {
