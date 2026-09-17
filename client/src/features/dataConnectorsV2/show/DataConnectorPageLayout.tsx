@@ -4,8 +4,8 @@ import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import ContainerWrap from "~/components/container/ContainerWrap";
+import EntityIcon from "~/components/entityIcon/EntityIcon";
 import EntityBreadcrumb from "~/components/entityBreadcrumb/EntityBreadcrumb";
-import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
 import PageNav, { PageNavOptions } from "~/components/PageNav";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
@@ -46,15 +46,8 @@ export default function DataConnectorPageLayout({
       <GroupNew />
 
       <Row className="my-3">
-        <Col xs={12}>
-          <Row>
-            <Col className={cx("mb-3", "min-w-0")}>
-              <DataConnectorHeader dataConnector={dataConnector} />
-            </Col>
-            <Col className={cx("d-md-block", "d-none")} md="auto">
-              <EntityWatermark type="dataConnector" />
-            </Col>
-          </Row>
+        <Col className={cx("mb-3", "min-w-0")}>
+          <DataConnectorHeader dataConnector={dataConnector} />
         </Col>
         <Col xs={12} className="mb-3">
           <PageNav options={options} />
@@ -72,12 +65,22 @@ interface DataConnectorHeaderProps {
 }
 function DataConnectorHeader({ dataConnector }: DataConnectorHeaderProps) {
   return (
-    <div className={cx("d-flex", "flex-column", "gap-2", "min-w-0")}>
+    <div className={cx("d-flex", "flex-column", "gap-3", "min-w-0")}>
       <EntityBreadcrumb dataConnector={dataConnector} />
-      <div className={cx("d-md-none", "text-muted")}>Data connector</div>
-      <h1 className={cx("mb-0", "text-break")} data-cy="data-connector-name">
-        {dataConnector.name}
-      </h1>
+      <header
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "flex-md-row",
+          "flex-nowrap",
+          "gap-3",
+        )}
+      >
+        <EntityIcon type="dataConnector" />
+        <h1 className={cx("mb-0", "text-break")} data-cy="data-connector-name">
+          {dataConnector.name}
+        </h1>
+      </header>
     </div>
   );
 }
