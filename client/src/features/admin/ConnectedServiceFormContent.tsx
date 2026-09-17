@@ -58,6 +58,7 @@ export default function ConnectedServiceFormContent({
                 <option value="gitlab">GitLab</option>
                 <option value="google">Google</option>
                 <option value="zenodo">Zenodo</option>
+                <option value="scicat">SciCat</option>
               </Input>
             </>
           )}
@@ -249,7 +250,7 @@ export default function ConnectedServiceFormContent({
         </div>
       </div>
 
-      {watchKind === "generic_oidc" && (
+      {["generic_oidc", "scicat"].includes(watchKind) && (
         <div className="mb-3">
           <Label className="form-label" for="addConnectedServiceOidcIssuerUrl">
             OpenID Connect Issuer URL (optional, for OIDC integrations)

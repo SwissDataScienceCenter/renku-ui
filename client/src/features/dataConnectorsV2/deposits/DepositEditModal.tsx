@@ -219,13 +219,19 @@ export default function DepositEditModal({
             </div>
 
             <div>
-              <Label for="path">Target Provider</Label>
+              <Label for="provider">Target Provider</Label>
               <Input
                 disabled
                 id="provider"
-                type="text"
+                type="select"
                 value={deposit?.provider ?? ""}
-              />
+              >
+                {PROVIDER_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </Input>
               <FormText>
                 The target platform where the files will be exported. If you
                 need to change it, please delete this export and create a new
