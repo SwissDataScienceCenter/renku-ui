@@ -87,7 +87,7 @@ export default function SessionIframe({
           id="session-iframe"
           ref={ref}
           referrerPolicy="origin"
-          sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
+          sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
           src={secureUrl}
           title="session iframe"
         />
