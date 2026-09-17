@@ -48,6 +48,7 @@ import useAppsEnabled from "../sessionsV2/apps/useAppsEnabled.hook";
 import LazyAppLobbyPage from "../sessionsV2/LazyAppLobbyPage";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
+import LazySshKeysPage from "../sshKeys/LazySshKeysPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
 
 function BetaV2Redirect() {
@@ -156,6 +157,14 @@ export default function RootV2() {
             element={
               <ContainerWrap>
                 <LazySecretsV2 />
+              </ContainerWrap>
+            }
+          />
+          <Route
+            path={RELATIVE_ROUTES.v2.keys}
+            element={
+              <ContainerWrap>
+                <LazySshKeysPage />
               </ContainerWrap>
             }
           />
