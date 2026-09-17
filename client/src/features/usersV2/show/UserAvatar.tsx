@@ -120,7 +120,6 @@ export default function UserAvatar({
         "align-items-center",
         "d-flex",
         "flex-shrink-0",
-        "justify-content-center",
         "rounded-circle",
         "text-center",
         "fw-medium",
