@@ -112,36 +112,49 @@ export default function UserAvatar({
   }, [group, namespaceSlug, user]);
   const initialsUpper = useMemo(() => initials.toUpperCase(), [initials]);
 
-  const randomPastelColor = generatePastelColor(namespaceSlug ?? "");
+  const avatarColors = generateAvatarColors(namespaceSlug ?? "");
 
   return (
     <div
       className={cx(
         "align-content-center",
-        "border",
         "flex-shrink-0",
         "rounded-circle",
         "text-center",
-        "text-black",
+        "fw-medium",
         styles.avatar,
         size === "lg" && styles.large,
         size === "md" && styles.medium,
         className,
       )}
-      style={{ backgroundColor: randomPastelColor }}
+      style={{
+        backgroundColor: avatarColors.background,
+        color: avatarColors.text,
+      }}
     >
       {initialsUpper}
     </div>
   );
 }
 
-function generatePastelColor(input: string) {
+const BACKGROUND_SATURATION = 70;
+const BACKGROUND_LIGHTNESS = 94;
+const TEXT_SATURATION = 65;
+const TEXT_LIGHTNESS = 25;
+
+function generateAvatarColors(input: string) {
   const hash = hashStringToNumber(input);
-  const hue = hash % 360; // Map hash to a hue value (0-359)
-  const saturation = 70; // Pastel saturation
-  const lightness = 97; // Pastel lightness
+  const hue = hash % 360;
+  return {
+    background: hsl(hue, BACKGROUND_SATURATION, BACKGROUND_LIGHTNESS),
+    text: hsl(hue, TEXT_SATURATION, TEXT_LIGHTNESS),
+  };
+}
+
+function hsl(hue: number, saturation: number, lightness: number) {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
+
 function hashStringToNumber(str: string) {
   return str.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
 }
