@@ -80,6 +80,37 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getUserSshKeys: build.query<
+      GetUserSshKeysApiResponse,
+      GetUserSshKeysApiArg
+    >({
+      query: () => ({ url: `/user/ssh_keys` }),
+    }),
+    postUserSshKeys: build.mutation<
+      PostUserSshKeysApiResponse,
+      PostUserSshKeysApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/user/ssh_keys`,
+        method: "POST",
+        body: queryArg.sshKeyPost,
+      }),
+    }),
+    getUserSshKeysByKeyId: build.query<
+      GetUserSshKeysByKeyIdApiResponse,
+      GetUserSshKeysByKeyIdApiArg
+    >({
+      query: (queryArg) => ({ url: `/user/ssh_keys/${queryArg.keyId}` }),
+    }),
+    deleteUserSshKeysByKeyId: build.mutation<
+      DeleteUserSshKeysByKeyIdApiResponse,
+      DeleteUserSshKeysByKeyIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/user/ssh_keys/${queryArg.keyId}`,
+        method: "DELETE",
+      }),
+    }),
     getError: build.query<GetErrorApiResponse, GetErrorApiArg>({
       query: () => ({ url: `/error` }),
     }),
@@ -189,6 +220,23 @@ export type DeleteUserSecretsBySecretIdApiResponse = unknown;
 export type DeleteUserSecretsBySecretIdApiArg = {
   secretId: Ulid;
 };
+export type GetUserSshKeysApiResponse =
+  /** status 200 The user's SSH public keys */ SshKeysList;
+export type GetUserSshKeysApiArg = void;
+export type PostUserSshKeysApiResponse =
+  /** status 201 SSH public key successfully registered */ SshKey;
+export type PostUserSshKeysApiArg = {
+  sshKeyPost: SshKeyPost;
+};
+export type GetUserSshKeysByKeyIdApiResponse =
+  /** status 200 The SSH public key */ SshKey;
+export type GetUserSshKeysByKeyIdApiArg = {
+  keyId: Ulid;
+};
+export type DeleteUserSshKeysByKeyIdApiResponse = unknown;
+export type DeleteUserSshKeysByKeyIdApiArg = {
+  keyId: Ulid;
+};
 export type GetErrorApiResponse = unknown;
 export type GetErrorApiArg = void;
 export type GetVersionApiResponse = /** status 200 The error */ Version;
@@ -281,6 +329,19 @@ export type SecretPatch = {
   expiration_timestamp?: ExpirationTimestamp;
   default_filename?: SecretDefaultFilename;
 };
+export type SshKey = {
+  id: Ulid;
+  public_key: string;
+  key_type: string;
+  fingerprint: string;
+  name?: string | null;
+  created_at: string;
+};
+export type SshKeysList = SshKey[];
+export type SshKeyPost = {
+  public_key: string;
+  name?: string | null;
+};
 export type Version = {
   version: string;
 };
@@ -309,6 +370,10 @@ export const {
   useGetUserSecretsBySecretIdQuery,
   usePatchUserSecretsBySecretIdMutation,
   useDeleteUserSecretsBySecretIdMutation,
+  useGetUserSshKeysQuery,
+  usePostUserSshKeysMutation,
+  useGetUserSshKeysByKeyIdQuery,
+  useDeleteUserSshKeysByKeyIdMutation,
   useGetErrorQuery,
   useGetVersionQuery,
   useGetUserPreferencesQuery,
