@@ -517,6 +517,12 @@ export type DataConnector = {
   publisher_name?: string;
   /** The URL for the publisher of the dataset. */
   publisher_url?: string;
+  /** If set to a value, it indicates the date until the data is available.
+    When the data connector expires, users have to take action and trigger a workflow
+    on the external data connector provider in order to get the data back.
+    If it is unset, it indicates that the data never expires.
+     */
+  expires_at?: CreationDate;
 };
 export type DataConnectorRead = {
   id: Ulid;
@@ -535,6 +541,12 @@ export type DataConnectorRead = {
   publisher_name?: string;
   /** The URL for the publisher of the dataset. */
   publisher_url?: string;
+  /** If set to a value, it indicates the date until the data is available.
+    When the data connector expires, users have to take action and trigger a workflow
+    on the external data connector provider in order to get the data back.
+    If it is unset, it indicates that the data never expires.
+     */
+  expires_at?: CreationDate;
 };
 export type DataConnectorsList = DataConnector[];
 export type DataConnectorsListRead = DataConnectorRead[];
