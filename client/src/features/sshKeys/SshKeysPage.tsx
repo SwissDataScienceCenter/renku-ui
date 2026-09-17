@@ -16,18 +16,47 @@
  * limitations under the License.
  */
 
-import { FiletypeKey } from "react-bootstrap-icons"; // eslint-disable-line spellcheck/spell-checker
-import { Col, Row } from "reactstrap";
+import cx from "classnames";
+import { useCallback, useState } from "react";
+import { FiletypeKey, PlusLg } from "react-bootstrap-icons"; // eslint-disable-line spellcheck/spell-checker
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  ListGroup,
+  Row,
+} from "reactstrap";
 
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import LoginAlert from "~/components/loginAlert/LoginAlert";
-import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
+import {
+  useGetUserQueryState,
+  useGetUserSshKeysQuery,
+} from "~/features/usersV2/api/users.api";
+import AddSshKeyModal from "./AddSshKeyModal";
+import SshKeyItem from "./SshKeyItem";
 
 export default function SshKeysPage() {
-  const { data: user, isLoading } = useGetUserQueryState();
+  const {
+    data: user,
+    isLoading: isLoadingUser,
+    error: userError,
+  } = useGetUserQueryState();
+  const { isLoading: isLoadingSshKeys, error: sshKeysError } =
+    useGetUserSshKeysQuery();
 
-  if (isLoading) {
+  if (isLoadingUser || isLoadingSshKeys) {
     return <Loader />;
+  }
+  if (userError) {
+    return <RtkOrDataServicesError error={userError} dismissible={false} />;
+  }
+  if (sshKeysError) {
+    return <RtkOrDataServicesError error={sshKeysError} dismissible={false} />;
   }
 
   return (
@@ -44,7 +73,7 @@ export default function SshKeysPage() {
       {user?.isLoggedIn && (
         <Row>
           <Col>
-            <p>TODO</p>
+            <SshKeysList />
           </Col>
         </Row>
       )}
@@ -53,6 +82,7 @@ export default function SshKeysPage() {
 }
 
 function SshPageInfo() {
+  // INFO: We handle loading and error on the ancestor component
   const { data: user } = useGetUserQueryState();
 
   if (!user?.isLoggedIn) {
@@ -66,4 +96,53 @@ function SshPageInfo() {
   }
 
   return <p>Here you can manage your SSH keys.</p>;
+}
+
+function SshKeysList() {
+  // INFO: We handle loading and error on the ancestor component
+  const { data: sshKeys } = useGetUserSshKeysQuery();
+
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const toggleAdd = useCallback(() => setIsAddOpen((isOpen) => !isOpen), []);
+
+  const content = !sshKeys ? (
+    <p>Unexpected error while loading SSH keys.</p>
+  ) : sshKeys.length === 0 ? (
+    <p className={cx("mb-0", "text-muted")}>
+      You have no SSH keys yet.{" "}
+      <Button color="primary" onClick={toggleAdd} size="sm">
+        Add your first SSH key
+      </Button>
+    </p>
+  ) : (
+    <ListGroup flush>
+      {sshKeys.map((sshKey) => (
+        <SshKeyItem key={sshKey.id} sshKey={sshKey} />
+      ))}
+    </ListGroup>
+  );
+
+  return (
+    <>
+      <Card data-cy="ssh-keys-list">
+        <CardHeader className={cx("d-flex", "gap-2")}>
+          <h2 className={cx("mb-0", "my-auto")}>My SSH keys</h2>
+          {sshKeys && <Badge className="my-auto">{sshKeys.length}</Badge>}
+          <Button
+            aria-label="Add an SSH key"
+            className={cx("ms-auto", "my-auto")}
+            color="outline-primary"
+            data-cy="add-ssh-key-button"
+            onClick={toggleAdd}
+            size="sm"
+            type="button"
+          >
+            <PlusLg />
+          </Button>
+        </CardHeader>
+        <CardBody>{content}</CardBody>
+      </Card>
+      <AddSshKeyModal isOpen={isAddOpen} toggle={toggleAdd} />
+    </>
+  );
 }
