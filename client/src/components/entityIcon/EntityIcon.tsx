@@ -108,7 +108,7 @@ export default function EntityIcon(props: EntityIconProps) {
   );
 }
 
-function GlyphBadge({ type }: { type: GlyphEntityIconType }) {
+export function GlyphBadge({ type }: { type: GlyphEntityIconType }) {
   const Glyph = ENTITY_ICON_GLYPHS[type];
 
   return (
@@ -122,6 +122,26 @@ function GlyphBadge({ type }: { type: GlyphEntityIconType }) {
       )}
     >
       <Glyph aria-hidden="true" className={cx("bi", styles.glyph)} />
+    </span>
+  );
+}
+
+export function GlyphGroupIcon() {
+  const Glyph = People;
+
+  return (
+    <span
+      className={cx(
+        "align-items-center",
+        "d-inline-flex",
+        "flex-shrink-0",
+        "justify-content-center",
+        "border",
+        "rounded-circle",
+        "p-2",
+      )}
+    >
+      <Glyph aria-hidden="true" className={cx("bi", styles.groupIcon)} />
     </span>
   );
 }
