@@ -120,7 +120,6 @@ export default function UserAvatar({
         "align-items-center",
         "d-flex",
         "flex-shrink-0",
-        "justify-content-center",
         "rounded-circle",
         "text-center",
         "fw-medium",
@@ -183,12 +182,11 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
       <div
         ref={ref}
         className={cx(
-          "align-items-center",
+          "align-content-center",
           "border",
-          "d-flex",
           "flex-shrink-0",
-          "justify-content-center",
           "rounded-circle",
+          "text-center",
           "text-black",
           styles.avatar,
         )}
