@@ -45,6 +45,7 @@ import {
 import {
   getLauncherCategoryDefinition,
   prioritizeSelectedEnvironment,
+  showsSessionLauncherFields,
 } from "../../session.utils";
 import { LauncherCategory, SessionLauncherForm } from "../../sessionsV2.types";
 import { AdvancedSettingsFields } from "./AdvancedSettingsFields";
@@ -222,7 +223,7 @@ export default function EditLauncherFormContent({
       </div>
 
       <div className={cx("d-flex", "flex-column", "gap-3")}>
-        {launcherCategory === "session" && (
+        {showsSessionLauncherFields(launcherCategory) && (
           <>
             <h4 className={cx("fw-bold", "mt-3", "mb-0")}>Advanced settings</h4>
             <InfoAlert dismissible={false} timeout={0}>

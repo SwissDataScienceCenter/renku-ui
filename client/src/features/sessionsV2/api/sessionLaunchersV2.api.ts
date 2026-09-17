@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { appsApi } from "./apps.api";
 import {
   sessionLaunchersV2GeneratedApi,
   type EnvironmentIdOnlyPatch,
@@ -83,6 +84,10 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
     },
     deleteSessionLaunchersByLauncherId: {
       invalidatesTags: ["Launcher"],
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        await queryFulfilled.catch(() => undefined);
+        dispatch(appsApi.endpoints.invalidateApps.initiate());
+      },
     },
     getProjectsByProjectIdSessionLaunchers: {
       providesTags: (result) =>

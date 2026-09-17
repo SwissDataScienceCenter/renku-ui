@@ -35,7 +35,10 @@ import {
 
 import { SuccessAlert } from "~/components/Alert";
 import { Loader } from "~/components/Loader";
-import { getLauncherCategoryDefinition } from "~/features/sessionsV2/session.utils";
+import {
+  getLauncherCategoryDefinition,
+  getLauncherChangeEffectMessage,
+} from "~/features/sessionsV2/session.utils";
 import { LauncherCategory } from "~/features/sessionsV2/sessionsV2.types";
 import {
   useGetResourcePoolsQuery,
@@ -139,6 +142,19 @@ export function ModifyResourcesLauncherModal({
   const watchCurrentDiskStorage = watch("diskStorage");
   const categoryDefinition = getLauncherCategoryDefinition(launcherCategory);
 
+  const changeEffect = (
+    <p>
+      {getLauncherChangeEffectMessage(launcherCategory)}
+      {launcherCategory === "session" && (
+        <span>
+          {" "}
+          If you wish to modify a currently running session, pause it and select
+          ‘Modify session’ in the session options.
+        </span>
+      )}
+    </p>
+  );
+
   const selector = isLoadingResources ? (
     <FetchingResourcePools />
   ) : !resourcePools || resourcePools.length == 0 || isErrorResources ? (
@@ -194,28 +210,14 @@ export function ModifyResourcesLauncherModal({
             <h3 className={cx("fs-6", "fw-bold")}>
               Default resource class updated
             </h3>
-            <p className="mb-0">
+            <p className="mb-0" data-cy="launcher-change-effect">
               The {categoryDefinition.text.inline} launcher’s default resource
-              class has been changed. This change will apply the next time you{" "}
-              {categoryDefinition.text.action} a new session.
+              class has been changed.{" "}
+              {getLauncherChangeEffectMessage(launcherCategory)}
             </p>
           </SuccessAlert>
         )}
-        <p>
-          These changes will apply the{" "}
-          <strong>
-            next time you {categoryDefinition.text.action} a new{" "}
-            {categoryDefinition.text.inline}
-          </strong>
-          .
-          {launcherCategory === "session" && (
-            <span>
-              {" "}
-              If you wish to modify a currently running session, pause it and
-              select ‘Modify session’ in the session options.
-            </span>
-          )}
-        </p>
+        {!result.isSuccess && changeEffect}
         <div className="field-group">{selector}</div>
         {watchCurrentSessionClass && (
           <div className={cx("field-group", "mt-3")}>

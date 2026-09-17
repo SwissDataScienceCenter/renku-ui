@@ -76,5 +76,10 @@
     "anonymous": { "idle": 43200, "hibernation": 0 }
   },
   "PERSISTED_LOGS_ENABLED": true,
-  "PERSISTED_LOGS_TTL_SECONDS": 86400
+  "PERSISTED_LOGS_TTL_SECONDS": 86400,
+  "APP_LOBBY": {
+    "maxAttempts": 7,
+    "probeTimeoutMs": 45000,
+    "retryDelayMs": 2000
+  }
 }

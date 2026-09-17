@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { DEFAULT_APP_LOBBY_CONFIG } from "~/features/sessionsV2/apps/appLobby.utils";
 import { Docs } from "../constants/Docs";
 import type { AppParams } from "./appParams.types";
 
@@ -91,4 +92,6 @@ export const DEFAULT_APP_PARAMS: AppParams = {
   CULLING_THRESHOLDS: DEFAULT_CULLING_THRESHOLDS,
   PERSISTED_LOGS_ENABLED: false,
   PERSISTED_LOGS_TTL_SECONDS: 86400,
+  APPS_ENABLED: false,
+  APP_LOBBY: DEFAULT_APP_LOBBY_CONFIG,
 };

@@ -19,6 +19,10 @@
 import { clamp } from "lodash-es";
 
 import type { HomepageParams } from "../../features/landing/anonymousHome.types";
+import {
+  APP_LOBBY_CONFIG_BOUNDS,
+  type AppLobbyConfig,
+} from "../../features/sessionsV2/apps/appLobby.utils";
 import { DEFAULT_APP_PARAMS } from "./appParams.constants";
 import type {
   AppParams,
@@ -78,6 +82,7 @@ export function validatedAppParams(params: unknown): AppParams {
     params_,
     "PERSISTED_LOGS_ENABLED",
   );
+  const APPS_ENABLED = validateBoolean(params_, "APPS_ENABLED");
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -97,6 +102,7 @@ export function validatedAppParams(params: unknown): AppParams {
   const UPLOAD_THRESHOLD = validateUploadThreshold(params_);
   const SESSION_CLASS_EMAIL_US = validateSessionClassEmailUs(params_);
   const CULLING_THRESHOLDS = validateCullingThresholds(params_);
+  const APP_LOBBY = validateAppLobby(params_);
 
   return {
     ANONYMOUS_SESSIONS,
@@ -128,6 +134,8 @@ export function validatedAppParams(params: unknown): AppParams {
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
     PERSISTED_LOGS_ENABLED,
     PERSISTED_LOGS_TTL_SECONDS,
+    APPS_ENABLED,
+    APP_LOBBY,
   };
 }
 
@@ -178,10 +186,16 @@ function validateInteger(
   key: keyof AppParamsNumbers,
   options?: ValidateIntegerOptions,
 ): number {
+  return coerceInteger(params[key], DEFAULT_APP_PARAMS[key], options);
+}
+
+function coerceInteger(
+  value: unknown,
+  fallback: number,
+  options?: ValidateIntegerOptions,
+): number {
   const min = options?.min ?? Number.MIN_SAFE_INTEGER;
   const max = options?.max ?? Number.MAX_SAFE_INTEGER;
-
-  const value = params[key];
 
   // adjust integer param value
   if (typeof value === "string") {
@@ -191,10 +205,43 @@ function validateInteger(
     }
   }
 
-  if (typeof value !== "number") {
-    return DEFAULT_APP_PARAMS[key];
+  if (typeof value !== "number" || !isFinite(value)) {
+    return fallback;
   }
-  return clamp(value, min, max);
+  return clamp(Math.trunc(value), min, max);
+}
+
+function validateAppLobby(params: RawAppParams): AppLobbyConfig {
+  const defaults = DEFAULT_APP_PARAMS["APP_LOBBY"];
+
+  const value = params["APP_LOBBY"];
+  if (typeof value !== "object" || value == null) {
+    return defaults;
+  }
+
+  const rawParams = value as {
+    maxAttempts: unknown;
+    probeTimeoutMs: unknown;
+    retryDelayMs: unknown;
+  };
+
+  return {
+    maxAttempts: coerceInteger(
+      rawParams.maxAttempts,
+      defaults.maxAttempts,
+      APP_LOBBY_CONFIG_BOUNDS.maxAttempts,
+    ),
+    probeTimeoutMs: coerceInteger(
+      rawParams.probeTimeoutMs,
+      defaults.probeTimeoutMs,
+      APP_LOBBY_CONFIG_BOUNDS.probeTimeoutMs,
+    ),
+    retryDelayMs: coerceInteger(
+      rawParams.retryDelayMs,
+      defaults.retryDelayMs,
+      APP_LOBBY_CONFIG_BOUNDS.retryDelayMs,
+    ),
+  };
 }
 
 function validateHomepage(params: RawAppParams): HomepageParams {

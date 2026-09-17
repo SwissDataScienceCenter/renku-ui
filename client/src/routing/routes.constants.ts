@@ -62,6 +62,10 @@ export const ABSOLUTE_ROUTES = {
       show: {
         root: "/p/:namespace/:slug",
         settings: "/p/:namespace/:slug/settings",
+        apps: {
+          root: "/p/:namespace/:slug/apps",
+          show: "/p/:namespace/:slug/apps/:launcherId",
+        },
         sessions: {
           root: "/p/:namespace/:slug/sessions",
           show: "/p/:namespace/:slug/sessions/show/:session",
@@ -129,6 +133,10 @@ export const RELATIVE_ROUTES = {
       show: {
         root: ":namespace/:slug/*",
         settings: "settings",
+        apps: {
+          root: "apps/*",
+          show: ":launcherId",
+        },
         sessions: {
           root: "sessions/*",
           show: "show/:session",

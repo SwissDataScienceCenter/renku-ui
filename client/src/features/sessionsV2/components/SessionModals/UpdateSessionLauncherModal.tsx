@@ -35,6 +35,7 @@ import {
   getFormattedEnvironmentValuesForEdit,
   getLauncherCategory,
   getLauncherCategoryDefinition,
+  getLauncherChangeEffectMessage,
   getLauncherDefaultValues,
 } from "../../session.utils";
 import { LauncherCategory, SessionLauncherForm } from "../../sessionsV2.types";
@@ -177,16 +178,12 @@ interface ConfirmationUpdateProps {
   launcherCategory: LauncherCategory;
 }
 const ConfirmationUpdate = ({ launcherCategory }: ConfirmationUpdateProps) => {
-  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   return (
     <div data-cy="session-launcher-update-success">
       <SuccessAlert dismissible={false} timeout={0}>
         <p className="fw-bold">Launcher environment updated successfully!</p>
-        <p className="mb-0">
-          The changes will take effect the next time you{" "}
-          {launcherCategory === "session" ? "launch a session" : "run a job"}{" "}
-          with this launcher. Current {launcherDefinition.text.inline}s will not
-          be affected.
+        <p className="mb-0" data-cy="launcher-change-effect">
+          {getLauncherChangeEffectMessage(launcherCategory)}
         </p>
       </SuccessAlert>
     </div>

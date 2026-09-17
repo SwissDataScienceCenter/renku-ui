@@ -3,6 +3,13 @@
     background-color: rgba(var(--bs-primary-rgb)) !important;
     color: #fff !important;
   }
+  &.LauncherOptionCardDisabled {
+    cursor: not-allowed;
+    &:hover {
+      background-color: var(--bs-secondary-bg) !important;
+      color: var(--bs-secondary-color) !important;
+    }
+  }
   img {
     width: 112px;
     height: auto;

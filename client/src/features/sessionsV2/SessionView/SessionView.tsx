@@ -53,12 +53,14 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { ErrorAlert } from "~/components/Alert";
+import { ErrorAlert, InfoAlert } from "~/components/Alert";
 import InternalIdField from "~/components/InternalIdField";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
+import type { DataConnectorRead } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
+import { partitionDataConnectorsForApp } from "~/features/sessionsV2/apps/appDataConnectors.utils";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
@@ -68,6 +70,7 @@ import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/Se
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import AppRuntimeCard from "../apps/AppRuntimeCard";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
@@ -287,7 +290,18 @@ export function SessionView({
     useGetDataConnectorsListByDataConnectorIdsQuery(
       dataConnectorIds ? { dataConnectorIds } : skipToken,
     );
-  const dataConnectors = Object.values(dataConnectorsMap ?? {});
+
+  const dataConnectors = useMemo(
+    () => Object.values(dataConnectorsMap ?? {}),
+    [dataConnectorsMap],
+  );
+
+  const isApp = launcherCategory === "app";
+  const { mounted: appDataConnectors, skipped: skippedDataConnectors } =
+    useMemo(
+      () => partitionDataConnectorsForApp(dataConnectors),
+      [dataConnectors],
+    );
 
   const {
     resourceClass: launcherResourceClass,
@@ -363,67 +377,19 @@ export function SessionView({
 
           {description && <p className="m-0">{description}</p>}
 
-          <Card>
-            <CardHeader>
-              {launcherCategory === "session" ? (
-                <h3>
-                  <PlayCircle aria-hidden="true" className="me-1" />
-                  Launched {launcherDefinition?.text.display}
-                </h3>
-              ) : (
-                <div
-                  className={cx(
-                    "d-flex",
-                    "justify-content-between",
-                    "align-items-center",
-                  )}
-                >
+          {isApp && <AppContentsNotice />}
+
+          {launcher != null && isApp ? (
+            <AppRuntimeCard launcher={launcher} project={project} />
+          ) : (
+            <Card>
+              <CardHeader>
+                {launcherCategory === "session" ? (
                   <h3>
-                    <Send className="me-1" aria-hidden="true" />
-                    Your submitted jobs
+                    <PlayCircle aria-hidden="true" className="me-1" />
+                    Launched {launcherDefinition?.text.display}
                   </h3>
-                  {launcher &&
-                    launcherCategory === "job" &&
-                    totalSession > 0 && (
-                      <LauncherActions
-                        placement="launcher-side-panel"
-                        hasSession={totalSession > 0}
-                        launcher={launcher}
-                        project={project}
-                      />
-                    )}
-                </div>
-              )}
-            </CardHeader>
-            <CardBody
-              className={cx(
-                launcherCategory === "job" &&
-                  totalSession > 0 && ["pb-0", "px-0"],
-              )}
-            >
-              {totalSession > 0 ? (
-                <>
-                  {launcherCategory === "session" &&
-                    sessions &&
-                    Object.entries(sessions).map(([key, session]) => (
-                      <div key={key}>
-                        <SessionStatusV2Title
-                          session={session}
-                          launcher={launcher}
-                        />
-                        <SessionCard session={session} project={project} />
-                      </div>
-                    ))}
-                  {launcherCategory === "job" && sessions && (
-                    <JobList
-                      sessions={sessions}
-                      project={project}
-                      openJobSubmissionId={openJobSubmissionId}
-                    />
-                  )}
-                </>
-              ) : (
-                <div>
+                ) : (
                   <div
                     className={cx(
                       "d-flex",
@@ -431,30 +397,84 @@ export function SessionView({
                       "align-items-center",
                     )}
                   >
-                    <p className="mb-2">
-                      No {launcherDefinition?.text.inline} is running from this
-                      launcher.
-                    </p>
-                    {launcher && launcherCategory === "job" && (
-                      <LauncherActions
-                        placement="launcher-side-panel"
-                        launcher={launcher}
+                    <h3>
+                      <Send className="me-1" aria-hidden="true" />
+                      Your submitted jobs
+                    </h3>
+                    {launcher &&
+                      launcherCategory === "job" &&
+                      totalSession > 0 && (
+                        <LauncherActions
+                          placement="launcher-side-panel"
+                          hasSession={totalSession > 0}
+                          launcher={launcher}
+                          project={project}
+                        />
+                      )}
+                  </div>
+                )}
+              </CardHeader>
+              <CardBody
+                className={cx(
+                  launcherCategory === "job" &&
+                    totalSession > 0 && ["pb-0", "px-0"],
+                )}
+              >
+                {totalSession > 0 ? (
+                  <>
+                    {launcherCategory === "session" &&
+                      sessions &&
+                      Object.entries(sessions).map(([key, session]) => (
+                        <div key={key}>
+                          <SessionStatusV2Title
+                            session={session}
+                            launcher={launcher}
+                          />
+                          <SessionCard session={session} project={project} />
+                        </div>
+                      ))}
+                    {launcherCategory === "job" && sessions && (
+                      <JobList
+                        sessions={sessions}
                         project={project}
+                        openJobSubmissionId={openJobSubmissionId}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <div>
+                    <div
+                      className={cx(
+                        "d-flex",
+                        "justify-content-between",
+                        "align-items-center",
+                      )}
+                    >
+                      <p className="mb-2">
+                        No {launcherDefinition?.text.inline} is running from
+                        this launcher.
+                      </p>
+                      {launcher && launcherCategory === "job" && (
+                        <LauncherActions
+                          placement="launcher-side-panel"
+                          launcher={launcher}
+                          project={project}
+                        />
+                      )}
+                    </div>
+
+                    {launcher && launcherCategory === "session" && (
+                      <SessionCardNotRunning
+                        hasSession={totalSession > 0}
+                        project={project}
+                        launcher={launcher}
                       />
                     )}
                   </div>
-
-                  {launcher && launcherCategory === "session" && (
-                    <SessionCardNotRunning
-                      hasSession={totalSession > 0}
-                      project={project}
-                      launcher={launcher}
-                    />
-                  )}
-                </div>
-              )}
-            </CardBody>
-          </Card>
+                )}
+              </CardBody>
+            </Card>
+          )}
 
           {launcher && (
             <>
@@ -610,65 +630,53 @@ export function SessionView({
             </Card>
           )}
 
-          <Card>
-            <CardHeader className={cx("align-items-center", "d-flex")}>
-              <h3 className={cx("mb-0", "me-2")}>
-                <Database className={cx("me-1", "bi")} />
-                Data Connectors
-              </h3>
-              <Badge>{dataConnectors?.length || 0}</Badge>
-            </CardHeader>
-            <CardBody>
-              {dataConnectors && dataConnectors.length > 0 ? (
-                <ListGroup flush>
-                  {dataConnectors.map((storage, index) => (
-                    <ListGroupItem key={`storage-${index}`}>
-                      <div>Name: {storage.name}</div>
-                      <div>Type: {storage.storage.storage_type}</div>
-                    </ListGroupItem>
-                  ))}
-                </ListGroup>
-              ) : (
-                <p className={cx("mb-0", "fst-italic")}>
-                  No data connectors included
-                </p>
-              )}
-            </CardBody>
-          </Card>
+          <DataConnectorsCard
+            dataConnectors={isApp ? appDataConnectors : dataConnectors}
+            skippedCount={isApp ? skippedDataConnectors.length : 0}
+          />
 
-          <Card>
-            <CardHeader className={cx("align-items-center", "d-flex")}>
-              <h3
-                className={cx("align-items-center", "d-flex", "mb-0", "me-2")}
-              >
-                <FileCode className="me-1" />
-                Code Repositories
-              </h3>
-              {project?.repositories?.length != null && (
-                <Badge>{project?.repositories?.length}</Badge>
-              )}
-            </CardHeader>
-            <CardBody>
-              {project.repositories && project.repositories.length > 0 ? (
-                <ListGroup flush>
-                  {project.repositories.map((repositoryUrl, index) => (
-                    <RepositoryItem
-                      key={`storage-${index}`}
-                      project={project}
-                      readonly={true}
-                      url={repositoryUrl}
-                    />
-                  ))}
-                </ListGroup>
-              ) : (
-                <p className={cx("mb-0", "fst-italic")}>
-                  No repositories included
-                </p>
-              )}
-            </CardBody>
-          </Card>
+          {!isApp && (
+            <>
+              <Card>
+                <CardHeader className={cx("align-items-center", "d-flex")}>
+                  <h3
+                    className={cx(
+                      "align-items-center",
+                      "d-flex",
+                      "mb-0",
+                      "me-2",
+                    )}
+                  >
+                    <FileCode className="me-1" />
+                    Code Repositories
+                  </h3>
+                  {project?.repositories?.length != null && (
+                    <Badge>{project?.repositories?.length}</Badge>
+                  )}
+                </CardHeader>
+                <CardBody>
+                  {project.repositories && project.repositories.length > 0 ? (
+                    <ListGroup flush>
+                      {project.repositories.map((repositoryUrl, index) => (
+                        <RepositoryItem
+                          key={`storage-${index}`}
+                          project={project}
+                          readonly={true}
+                          url={repositoryUrl}
+                        />
+                      ))}
+                    </ListGroup>
+                  ) : (
+                    <p className={cx("mb-0", "fst-italic")}>
+                      No repositories included
+                    </p>
+                  )}
+                </CardBody>
+              </Card>
 
-          <SessionViewSessionSecrets />
+              <SessionViewSessionSecrets />
+            </>
+          )}
 
           {launcher && (
             <>
@@ -708,7 +716,8 @@ export function SessionView({
                 </CardHeader>
                 <CardBody>
                   <p className="mb-2">
-                    Environment variables pass information into the session.
+                    Environment variables pass information into the{" "}
+                    {launcherCategory === "app" ? "app" : "session"}.
                   </p>
                   <EnvVariablesCard launcher={launcher} />
                 </CardBody>
@@ -735,6 +744,77 @@ export function SessionView({
         </div>
       </OffcanvasBody>
     </Offcanvas>
+  );
+}
+
+interface DataConnectorsCardProps {
+  dataConnectors: DataConnectorRead[];
+  skippedCount: number;
+}
+
+function DataConnectorsCard({
+  dataConnectors,
+  skippedCount,
+}: DataConnectorsCardProps) {
+  const skippedLabel = `${skippedCount} data connector${
+    skippedCount === 1 ? "" : "s"
+  } not mounted`;
+
+  return (
+    <Card>
+      <CardHeader className={cx("align-items-center", "d-flex")}>
+        <h3 className={cx("mb-0", "me-2")}>
+          <Database className={cx("me-1", "bi")} />
+          Data Connectors
+        </h3>
+        <Badge>{dataConnectors.length}</Badge>
+      </CardHeader>
+      <CardBody>
+        {dataConnectors.length > 0 ? (
+          <ListGroup flush>
+            {dataConnectors.map((storage, index) => (
+              <ListGroupItem key={`storage-${index}`}>
+                <div>Name: {storage.name}</div>
+                <div>Type: {storage.storage.storage_type}</div>
+              </ListGroupItem>
+            ))}
+          </ListGroup>
+        ) : (
+          <p
+            className={cx("mb-0", "fst-italic")}
+            data-cy={
+              skippedCount > 0 ? "app-data-connectors-skipped" : undefined
+            }
+          >
+            {skippedCount > 0 ? skippedLabel : "No data connectors included"}
+          </p>
+        )}
+        {skippedCount > 0 && dataConnectors.length > 0 && (
+          <p
+            className={cx("mb-0", "mt-2", "small", "text-body-secondary")}
+            data-cy="app-data-connectors-skipped"
+          >
+            {skippedLabel}
+          </p>
+        )}
+      </CardBody>
+    </Card>
+  );
+}
+
+function AppContentsNotice() {
+  return (
+    <InfoAlert
+      className="mb-0"
+      data-cy="app-contents-notice"
+      dismissible={false}
+      timeout={0}
+    >
+      <p className="mb-0">
+        Code repositories and session secrets are not mounted. Only public,
+        credential-free data connectors are mounted.
+      </p>
+    </InfoAlert>
   );
 }
 

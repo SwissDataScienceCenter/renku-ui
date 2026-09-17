@@ -17,6 +17,7 @@
  */
 
 import { HomepageParams } from "~/features/landing/anonymousHome.types";
+import type { AppLobbyConfig } from "~/features/sessionsV2/apps/appLobby.utils";
 
 export interface AppParams {
   ANONYMOUS_SESSIONS: boolean;
@@ -48,6 +49,8 @@ export interface AppParams {
   CONTACT_EMAIL: string;
   PERSISTED_LOGS_ENABLED: boolean;
   PERSISTED_LOGS_TTL_SECONDS: number;
+  APPS_ENABLED: boolean;
+  APP_LOBBY: AppLobbyConfig;
 }
 
 export type AppParamsStrings = {

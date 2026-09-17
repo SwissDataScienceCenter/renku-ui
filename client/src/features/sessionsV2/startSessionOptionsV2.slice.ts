@@ -28,6 +28,7 @@ import {
 
 const initialState: StartSessionOptionsV2 = {
   dataConnectors: undefined,
+  dataConnectorsExpirationReady: false,
   defaultUrl: "",
   environmentVariables: [],
   imageReady: false,
@@ -66,6 +67,12 @@ const startSessionOptionsV2Slice = createSlice({
       action: PayloadAction<{ index: number }>,
     ) => {
       state.environmentVariables.splice(action.payload.index, 1);
+    },
+    setDataConnectorsExpirationReady: (
+      state,
+      action: PayloadAction<boolean>,
+    ) => {
+      state.dataConnectorsExpirationReady = action.payload;
     },
     setDataConnectorsOverrides: (
       state,

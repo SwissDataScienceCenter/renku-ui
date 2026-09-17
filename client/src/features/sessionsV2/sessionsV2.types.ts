@@ -19,10 +19,7 @@
 import { CSSProperties, ReactNode } from "react";
 import { Icon } from "react-bootstrap-icons";
 
-import {
-  SessionType,
-  SubmissionId,
-} from "~/features/sessionsV2/api/sessionsV2.generated-api";
+import { SubmissionId } from "~/features/sessionsV2/api/sessionsV2.generated-api";
 import type {
   ResourceClassWithId,
   ResourceClassWithIdFiltered,
@@ -44,14 +41,15 @@ export interface SvgIconProps {
   style?: CSSProperties;
 }
 
-export type LauncherCategory = "session" | "job";
+export type LauncherCategory = "session" | "job" | "app";
 
-/** Shared API discriminator for `launcher_type` and `session_type`. */
-export type SessionLauncherKind = LauncherType & SessionType;
+/** Keyed on the wider `launcher_type`, since apps produce no `session_type`. */
+export type SessionLauncherKind = LauncherType;
 
 export const SESSION_LAUNCHER_KIND = {
   INTERACTIVE: "interactive",
   NON_INTERACTIVE: "non-interactive",
+  APP: "app",
 } as const satisfies Record<string, SessionLauncherKind>;
 
 export type LauncherApiType = SessionLauncherKind;

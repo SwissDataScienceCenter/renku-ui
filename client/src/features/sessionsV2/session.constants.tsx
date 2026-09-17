@@ -16,7 +16,7 @@
  * limitations under the License
  */
 
-import { Gear, PlayCircle } from "react-bootstrap-icons";
+import { CircleSquare, Gear, PlayCircle } from "react-bootstrap-icons";
 
 import { NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED } from "~/utils/constants/NewDocs";
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
@@ -171,7 +171,8 @@ export const BUILDER_FRONTENDS = [
     value: "none",
     label: "Custom / No Frontend",
     description:
-      "Renku does not add a frontend. For a custom frontend, define an entrypoint in a Procfile.",
+      "Renku does not add a frontend. Define an entrypoint in a Procfile with a " +
+      "“web” process, and make it listen on $RENKU_SESSION_PORT.",
     /* eslint-enable spellcheck/spell-checker */
   },
 ] as readonly BuilderSelectorOption[];
@@ -239,7 +240,7 @@ export const SUBMISSION_ID_VALIDATION_MESSAGE = {
     "Must start with a lowercase letter, and use letters, numbers, or hyphens (min 4 characters, no spaces).",
 };
 
-export const LAUNCHER_OPTIONS: LauncherCategory[] = ["session", "job"];
+export const LAUNCHER_OPTIONS: LauncherCategory[] = ["session", "job", "app"];
 
 export const LAUNCHER_BY_CATEGORY: Record<
   LauncherCategory,
@@ -294,6 +295,31 @@ export const LAUNCHER_BY_CATEGORY: Record<
     },
     icon: Gear,
     description: "Submit a job that runs in the background.",
+    allowedEnvironmentSelects: ["custom + build", "custom + image"],
+  },
+  app: {
+    apiType: SESSION_LAUNCHER_KIND.APP,
+    text: {
+      display: "App",
+      inline: "app",
+      action: "start",
+      state: {
+        running: "Live",
+        starting: "Starting",
+        hibernated: "Stopped",
+        hibernatedAndDelete: "App will be deleted in",
+        failed: "Error",
+        stopping: "Stopping",
+        succeeded: "Live",
+      },
+      delete: {
+        title: "Delete app",
+        action: "Deleting app",
+        button: "Yes, delete app",
+      },
+    },
+    icon: CircleSquare,
+    description: "Create and share a dashboard or app",
     allowedEnvironmentSelects: ["custom + build", "custom + image"],
   },
 };
