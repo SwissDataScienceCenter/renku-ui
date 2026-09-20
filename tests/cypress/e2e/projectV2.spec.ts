@@ -165,8 +165,9 @@ describe("Navigate to project", () => {
       "contain.text",
       "Project 2 description",
     );
-    cy.getDataCy("project-info-card").contains("public");
-    cy.getDataCy("project-info-card").contains("user1-uuid");
+    cy.getDataCy("project-info").should("contain.text", "Public");
+    cy.getDataCy("project-identifier").should("contain.text", "user1-uuid");
+    cy.getDataCy("project-namespace-link").should("be.visible");
     cy.getDataCy("project-documentation-text").should("be.visible");
     cy.getDataCy("project-documentation-text")
       .contains(
@@ -691,7 +692,8 @@ describe("Project templates and copies", () => {
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
 
-    cy.getDataCy("info-copy-project-button").click();
+    cy.getDataCy("project-actions-menu").click();
+    cy.getDataCy("project-copy-project-menu-item").click();
     cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
       "be.visible",
     );
@@ -717,7 +719,8 @@ describe("Project templates and copies", () => {
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
 
-    cy.getDataCy("info-copy-project-button").click();
+    cy.getDataCy("project-actions-menu").click();
+    cy.getDataCy("project-copy-project-menu-item").click();
     cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
       "be.visible",
     );
@@ -745,7 +748,8 @@ describe("Project templates and copies", () => {
       .listProjectV2Copies({ count: 0, writeable: true });
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.getDataCy("info-copy-project-button").click();
+    cy.getDataCy("project-actions-menu").click();
+    cy.getDataCy("project-copy-project-menu-item").click();
     cy.contains("Make a copy of user1-uuid/test-2-v2-project").should(
       "be.visible",
     );
