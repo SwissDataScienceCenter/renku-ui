@@ -19,9 +19,17 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
-import { ShieldLock } from "react-bootstrap-icons";
+import { Pencil, ShieldLock } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
-import { Badge, Card, CardBody, CardHeader, ListGroup } from "reactstrap";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  ListGroup,
+  UncontrolledTooltip,
+} from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { useProject } from "~/routes/projects/root";
@@ -29,6 +37,7 @@ import { InfoAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
+import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type {
   SessionSecret,
   SessionSecretSlot,
@@ -37,17 +46,31 @@ import {
   useGetProjectsByProjectIdSessionSecretSlotsQuery,
   useGetProjectsByProjectIdSessionSecretsQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
+import type { SessionLauncher } from "../../../sessionsV2/api/sessionLaunchersV2.api";
+import CustomizeSessionSecretsModal from "../../../sessionsV2/SessionView/CustomizeSessionSecretsModal";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import { SESSION_SECRETS_CARD_ID } from "./sessionSecrets.constants";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
 import SessionSecretSlotItem from "./SessionSecretSlotItem";
 
-export default function SessionViewSessionSecrets() {
+interface SessionViewSessionSecretsProps {
+  isEditOpen?: boolean;
+  launcher?: SessionLauncher;
+  toggleEdit?: () => void;
+}
+
+export default function SessionViewSessionSecrets({
+  isEditOpen = false,
+  launcher,
+  toggleEdit,
+}: SessionViewSessionSecretsProps) {
   const { data: user } = useGetUserQueryState();
   const isUserLoggedIn = !!user?.isLoggedIn;
 
   const { project } = useProject();
   const { id: projectId, secrets_mount_directory: secretsMountDirectory } =
     project;
+  const permissions = useProjectPermissions({ projectId });
   const {
     data: sessionSecretSlots,
     isLoading: isLoadingSessionSecretSlots,
@@ -84,37 +107,81 @@ export default function SessionViewSessionSecrets() {
   );
 
   return (
-    <Card>
-      <CardHeader className={cx("align-items-center", "d-flex")}>
-        <h3 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
-          <ShieldLock className="me-1" />
-          Session Secrets
-        </h3>
-        {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
-      </CardHeader>
-
-      <CardBody>
-        {!isUserLoggedIn &&
-          sessionSecretSlots &&
-          sessionSecretSlots.length > 0 && (
-            <InfoAlert className="mb-2" dismissible={false} timeout={0}>
-              <p className="mb-0">
-                As an anonymous user, you cannot use session secrets.
-              </p>
-            </InfoAlert>
+    <>
+      <Card>
+        <CardHeader
+          className={cx(
+            "align-items-center",
+            "d-flex",
+            "justify-content-between",
           )}
+        >
+          <div className={cx("align-items-center", "d-flex")}>
+            <h3 className={cx("align-items-center", "d-flex", "mb-0", "me-2")}>
+              <ShieldLock className="me-1" />
+              Session Secrets
+            </h3>
+            {sessionSecretSlots && <Badge>{sessionSecretSlots.length}</Badge>}
+          </div>
+          {toggleEdit && (
+            <PermissionsGuard
+              disabled={null}
+              enabled={
+                <>
+                  <Button
+                    aria-label="Customize session secrets"
+                    color="outline-primary"
+                    data-cy="session-view-modify-session-secrets-button"
+                    id="modify-session-secrets-button"
+                    onClick={toggleEdit}
+                    size="sm"
+                    tabIndex={0}
+                  >
+                    <Pencil className="bi" />
+                  </Button>
+                  <UncontrolledTooltip target="modify-session-secrets-button">
+                    Customize session secrets
+                  </UncontrolledTooltip>
+                </>
+              }
+              requestedPermission="write"
+              userPermissions={permissions}
+            />
+          )}
+        </CardHeader>
 
-        <p className="mb-2">
-          To modify session secrets, go to{" "}
-          <Link to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}>
-            the project&apos;s settings
-          </Link>
-          .
-        </p>
+        <CardBody>
+          {!isUserLoggedIn &&
+            sessionSecretSlots &&
+            sessionSecretSlots.length > 0 && (
+              <InfoAlert className="mb-2" dismissible={false} timeout={0}>
+                <p className="mb-0">
+                  As an anonymous user, you cannot use session secrets.
+                </p>
+              </InfoAlert>
+            )}
 
-        {content}
-      </CardBody>
-    </Card>
+          <p className="mb-2">
+            To add or change secret values, go to{" "}
+            <Link to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}>
+              the project&apos;s settings
+            </Link>
+            .
+          </p>
+
+          {content}
+        </CardBody>
+      </Card>
+      {launcher && toggleEdit && (
+        <CustomizeSessionSecretsModal
+          isOpen={isEditOpen}
+          launcher={launcher}
+          secretsMountDirectory={secretsMountDirectory}
+          sessionSecretSlots={sessionSecretSlots ?? []}
+          toggle={toggleEdit}
+        />
+      )}
+    </>
   );
 }
 
