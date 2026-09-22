@@ -56,6 +56,62 @@ const injectedRtkApi = api.injectEndpoints({
     getError: build.query<GetErrorApiResponse, GetErrorApiArg>({
       query: () => ({ url: `/error` }),
     }),
+    getResourceFlavours: build.query<
+      GetResourceFlavoursApiResponse,
+      GetResourceFlavoursApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavours`,
+        params: {
+          resource_flavour_params: queryArg.resourceFlavourParams,
+        },
+      }),
+    }),
+    postResourceFlavours: build.mutation<
+      PostResourceFlavoursApiResponse,
+      PostResourceFlavoursApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavours`,
+        method: "POST",
+        body: queryArg.resourceFlavour,
+      }),
+    }),
+    getResourceFlavoursByResourceFlavourId: build.query<
+      GetResourceFlavoursByResourceFlavourIdApiResponse,
+      GetResourceFlavoursByResourceFlavourIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavours/${queryArg.resourceFlavourId}`,
+      }),
+    }),
+    patchResourceFlavoursByResourceFlavourId: build.mutation<
+      PatchResourceFlavoursByResourceFlavourIdApiResponse,
+      PatchResourceFlavoursByResourceFlavourIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavours/${queryArg.resourceFlavourId}`,
+        method: "PATCH",
+        body: queryArg.resourceFlavourPatch,
+      }),
+    }),
+    deleteResourceFlavoursByResourceFlavourId: build.mutation<
+      DeleteResourceFlavoursByResourceFlavourIdApiResponse,
+      DeleteResourceFlavoursByResourceFlavourIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavours/${queryArg.resourceFlavourId}`,
+        method: "DELETE",
+      }),
+    }),
+    getResourceFlavoursByResourceFlavourIdResourceClasses: build.query<
+      GetResourceFlavoursByResourceFlavourIdResourceClassesApiResponse,
+      GetResourceFlavoursByResourceFlavourIdResourceClassesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavours/${queryArg.resourceFlavourId}/resource_classes`,
+      }),
+    }),
     getResourcePools: build.query<
       GetResourcePoolsApiResponse,
       GetResourcePoolsApiArg
@@ -132,7 +188,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/resource_pools/${queryArg.resourcePoolId}/classes`,
         method: "POST",
-        body: queryArg.resourceClass,
+        body: queryArg.resourceClassCreate,
       }),
     }),
     getResourcePoolsByResourcePoolIdClassesAndClassId: build.query<
@@ -150,7 +206,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/resource_pools/${queryArg.resourcePoolId}/classes/${queryArg.classId}`,
         method: "PUT",
-        body: queryArg.resourceClass,
+        body: queryArg.resourceClassCreate,
       }),
     }),
     patchResourcePoolsByResourcePoolIdClassesAndClassId: build.mutation<
@@ -172,6 +228,16 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    deleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavour:
+      build.mutation<
+        DeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourApiResponse,
+        DeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/resource_pools/${queryArg.resourcePoolId}/classes/${queryArg.classId}/resource_flavour`,
+          method: "DELETE",
+        }),
+      }),
     getResourcePoolsByResourcePoolIdClassesAndClassIdTolerations: build.query<
       GetResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsApiResponse,
       GetResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsApiArg
@@ -410,6 +476,39 @@ export type DeleteClustersByClusterIdApiArg = {
 };
 export type GetErrorApiResponse = unknown;
 export type GetErrorApiArg = void;
+export type GetResourceFlavoursApiResponse =
+  /** status 200 The list of resource flavours */ ResourceFlavoursWithId;
+export type GetResourceFlavoursApiArg = {
+  /** Filter for resource flavours based on the provided name as a prefix. Omitting this parameter returns all flavours. */
+  resourceFlavourParams?: {
+    name?: Name;
+  };
+};
+export type PostResourceFlavoursApiResponse =
+  /** status 201 The resource flavour was created */ ResourceFlavourWithId;
+export type PostResourceFlavoursApiArg = {
+  resourceFlavour: ResourceFlavour;
+};
+export type GetResourceFlavoursByResourceFlavourIdApiResponse =
+  /** status 200 The resource flavour that was requested */ ResourceFlavourWithId;
+export type GetResourceFlavoursByResourceFlavourIdApiArg = {
+  resourceFlavourId: Ulid;
+};
+export type PatchResourceFlavoursByResourceFlavourIdApiResponse =
+  /** status 200 The updated resource flavour */ ResourceFlavourWithId;
+export type PatchResourceFlavoursByResourceFlavourIdApiArg = {
+  resourceFlavourId: Ulid;
+  resourceFlavourPatch: ResourceFlavourPatch;
+};
+export type DeleteResourceFlavoursByResourceFlavourIdApiResponse = unknown;
+export type DeleteResourceFlavoursByResourceFlavourIdApiArg = {
+  resourceFlavourId: Ulid;
+};
+export type GetResourceFlavoursByResourceFlavourIdResourceClassesApiResponse =
+  /** status 200 The resource classes linked to the resource flavour */ LinkedResourceClassesList;
+export type GetResourceFlavoursByResourceFlavourIdResourceClassesApiArg = {
+  resourceFlavourId: Ulid;
+};
 export type GetResourcePoolsApiResponse =
   /** status 200 The resource pool definitions */ ResourcePoolsWithIdFiltered;
 export type GetResourcePoolsApiArg = {
@@ -460,7 +559,7 @@ export type PostResourcePoolsByResourcePoolIdClassesApiResponse =
   /** status 201 Created a class in the resource pool */ ResourceClassWithId;
 export type PostResourcePoolsByResourcePoolIdClassesApiArg = {
   resourcePoolId: number;
-  resourceClass: ResourceClass;
+  resourceClassCreate: ResourceClassCreate;
 };
 export type GetResourcePoolsByResourcePoolIdClassesAndClassIdApiResponse =
   /** status 200 The resource class that was requested */ ResourceClassWithId;
@@ -473,7 +572,7 @@ export type PutResourcePoolsByResourcePoolIdClassesAndClassIdApiResponse =
 export type PutResourcePoolsByResourcePoolIdClassesAndClassIdApiArg = {
   resourcePoolId: number;
   classId: string;
-  resourceClass: ResourceClass;
+  resourceClassCreate: ResourceClassCreate;
 };
 export type PatchResourcePoolsByResourcePoolIdClassesAndClassIdApiResponse =
   /** status 200 Updated the classes in the resource pool */ ResourceClassWithId;
@@ -488,6 +587,13 @@ export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdApiArg = {
   resourcePoolId: number;
   classId: string;
 };
+export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourApiResponse =
+  unknown;
+export type DeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourApiArg =
+  {
+    resourcePoolId: number;
+    classId: string;
+  };
 export type GetResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsApiResponse =
   /** status 200 All the tolerations for a resource class */ K8SLabelList;
 export type GetResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsApiArg =
@@ -653,6 +759,7 @@ export type RemoteClassConfigurationFirecrest = {
    */
   forward_resource_values?: boolean;
 };
+export type ResourceFlavourId = string;
 export type ResourceClassWithId = {
   name: Name;
   default: DefaultFlag;
@@ -666,6 +773,7 @@ export type ResourceClassWithId = {
   id: IntegerId;
   quota_enforced?: QuotaEnforced;
   remote?: RemoteClassConfigurationFirecrest;
+  resource_flavour_id?: ResourceFlavourId;
 };
 export type ErrorResponse = {
   error: {
@@ -733,6 +841,43 @@ export type ClusterPatch = {
   service_account_name?: K8SResourceNamePatch;
   session_ingress_use_default_cluster_tls_cert?: boolean;
 };
+export type ResourceFlavourDescription = string;
+export type ResourceFlavourWithId = {
+  id: Ulid;
+  name: Name;
+  description?: ResourceFlavourDescription;
+  cpu: Cpu;
+  memory: Memory;
+  gpu: Gpu;
+  max_storage: Storage;
+  default_storage: Storage;
+};
+export type ResourceFlavoursWithId = ResourceFlavourWithId[];
+export type ResourceFlavour = {
+  name: Name;
+  description?: ResourceFlavourDescription;
+  cpu: Cpu;
+  memory: Memory;
+  gpu: Gpu;
+  max_storage: Storage;
+  default_storage: Storage;
+};
+export type ResourceFlavourPatch = {
+  name?: Name;
+  description?: ResourceFlavourDescription;
+  cpu?: Cpu;
+  memory?: Memory;
+  gpu?: Gpu;
+  max_storage?: Storage;
+  default_storage?: Storage;
+};
+export type LinkedResourceClass = {
+  id: IntegerId;
+  name: Name;
+  resource_pool_id?: IntegerId;
+  resource_pool_name?: Name;
+};
+export type LinkedResourceClassesList = LinkedResourceClass[];
 export type QuotaWithId = {
   cpu: Cpu;
   memory: Memory;
@@ -816,6 +961,15 @@ export type QuotaWithOptionalId = {
   gpu: Gpu;
   id?: Name;
 };
+export type ResourceClassFromFlavour = {
+  name: Name;
+  default: DefaultFlag;
+  resource_flavour_id: ResourceFlavourId;
+  tolerations?: K8SLabelList;
+  node_affinities?: NodeAffinityList;
+  quota_enforced?: QuotaEnforced;
+  remote?: RemoteClassConfigurationFirecrest;
+};
 export type ResourceClass = {
   name: Name;
   default: DefaultFlag;
@@ -829,7 +983,7 @@ export type ResourceClass = {
   quota_enforced?: QuotaEnforced;
   remote?: RemoteClassConfigurationFirecrest;
 };
-export type ResourceClasses = ResourceClass[];
+export type ResourceClasses = (ResourceClassFromFlavour | ResourceClass)[];
 export type ResourcePool = {
   quota?: QuotaWithOptionalId;
   classes: ResourceClasses;
@@ -877,6 +1031,7 @@ export type ResourceClassProperties = {
   node_affinities?: NodeAffinityList;
   quota_enforced?: QuotaEnforced;
   remote?: RemoteClassConfigurationFirecrest;
+  resource_flavour_id?: ResourceFlavourId;
 };
 export type ResourceClassPatchWithId = ResourceClassProperties & {
   id: IntegerId;
@@ -916,6 +1071,7 @@ export type ResourcePoolPatch = {
   cpu_limit_factor?: CpuLimitFactor | RemoveCpuLimitFactor;
 };
 export type ResourceClassesWithIdResponse = ResourceClassWithId[];
+export type ResourceClassCreate = ResourceClassFromFlavour | ResourceClass;
 export type ResourceClassPatch = ResourceClassProperties;
 export type NodeAffinityListResponse = NodeAffinity[];
 export type UserId = string;
@@ -982,6 +1138,12 @@ export const {
   usePatchClustersByClusterIdMutation,
   useDeleteClustersByClusterIdMutation,
   useGetErrorQuery,
+  useGetResourceFlavoursQuery,
+  usePostResourceFlavoursMutation,
+  useGetResourceFlavoursByResourceFlavourIdQuery,
+  usePatchResourceFlavoursByResourceFlavourIdMutation,
+  useDeleteResourceFlavoursByResourceFlavourIdMutation,
+  useGetResourceFlavoursByResourceFlavourIdResourceClassesQuery,
   useGetResourcePoolsQuery,
   usePostResourcePoolsMutation,
   useGetResourcePoolsByResourcePoolIdQuery,
@@ -994,6 +1156,7 @@ export const {
   usePutResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
+  useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourMutation,
   useGetResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsQuery,
   useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdTolerationsMutation,
   useGetResourcePoolsByResourcePoolIdClassesAndClassIdNodeAffinitiesQuery,
