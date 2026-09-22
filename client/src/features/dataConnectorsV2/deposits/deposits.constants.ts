@@ -6,6 +6,7 @@ export const POLL_TIME_ACTIVE_DEPOSITS = 5_000;
 export const PROVIDER_OPTIONS: ProviderOption[] = [
   { value: "zenodo", label: "Zenodo", integration: "zenodo" },
   { value: "envidat", label: "EnviDat", integration: undefined },
+  // eslint-disable-next-line spellcheck/spell-checker
   { value: "scicat", label: "SciCat", integration: "scicat" },
 ];
 
