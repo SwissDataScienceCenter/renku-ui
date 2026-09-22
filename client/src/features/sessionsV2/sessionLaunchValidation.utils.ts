@@ -23,6 +23,8 @@ import { shouldInterrupt } from "../ProjectPageV2/ProjectPageContent/CodeReposit
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { GetRepositoriesApiResponse } from "../repositories/api/repositories.api";
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
+import type { SshKey } from "../usersV2/api/users.api";
+import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import type { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
 
 export function doesCloudStorageNeedCredentials(
@@ -116,4 +118,19 @@ export function dataConnectorsHaveExpired(
   configs: SessionStartDataConnectorConfiguration[] | undefined,
 ): boolean {
   return configs?.some(isDataConnectorExpired) ?? false;
+}
+
+export function sshKeyNeedsAttention(
+  launcher: SessionLauncher,
+  sshKeys: SshKey[] | undefined,
+): boolean {
+  if (
+    !("build_parameters" in launcher.environment) ||
+    // ! TODO - FIX use ssh once available
+    // ! DO NOT MERGE UNTIL CHANGED TO `!== "ssh"`
+    launcher.environment.build_parameters?.frontend_variant !== "ttyd" // eslint-disable-line spellcheck/spell-checker
+  ) {
+    return false;
+  }
+  return !sshKeys || sshKeys.length === 0;
 }
