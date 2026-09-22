@@ -12,6 +12,7 @@ import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { DataConnectorRead } from "../api/data-connectors.api";
 
+
 interface DataConnectorPageLayoutProps {
   dataConnector: DataConnectorRead;
   children?: ReactNode;
