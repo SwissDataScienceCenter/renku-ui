@@ -744,7 +744,8 @@
           },
           "size": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "minimum": 1
           },
           "mount_path": {
             "type": "string"
