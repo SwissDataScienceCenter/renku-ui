@@ -60,6 +60,7 @@ export default function AddSshKeyModal({
     reset,
   } = useForm<AddSshKeyForm>({
     defaultValues: { name: "", publicKey: "" },
+    mode: "onChange",
   });
 
   const submitHandler = useCallback(
@@ -161,9 +162,14 @@ export default function AddSshKeyModal({
               )}
               rules={{
                 required: "Please provide a public key",
-                pattern: {
-                  value: /^(ssh|ecdsa|sk)-\S+\s+\S+/,
-                  message: "This does not look like a valid SSH public key",
+                validate: (value) => {
+                  if (/PRIVATE KEY/.test(value)) {
+                    return "This looks like a private key, never share it with anyone! Only paste the public key, usually the content of a .pub file.";
+                  }
+                  if (!/^(ssh|ecdsa|sk)-\S+\s+\S+/.test(value.trim())) {
+                    return "This does not look like an SSH public key. Paste the full public key on a single line.";
+                  }
+                  return true;
                 },
               }}
             />
