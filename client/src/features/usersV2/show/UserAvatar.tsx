@@ -181,11 +181,12 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
       <div
         ref={ref}
         className={cx(
-          "align-content-center",
+          "align-items-center",
           "border",
+          "d-flex",
           "flex-shrink-0",
+          "justify-content-center",
           "rounded-circle",
-          "text-center",
           "text-black",
           styles.avatar,
         )}
