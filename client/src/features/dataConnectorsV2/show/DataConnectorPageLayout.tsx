@@ -5,7 +5,7 @@ import { Col, Row } from "reactstrap";
 
 import ContainerWrap from "~/components/container/ContainerWrap";
 import EntityBreadcrumb from "~/components/entityBreadcrumb/EntityBreadcrumb";
-import EntityIcon from "~/components/entityIcon/EntityIcon;
+import EntityIcon from "~/components/entityIcon/EntityIcon";
 import PageNav, { PageNavOptions } from "~/components/PageNav";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
