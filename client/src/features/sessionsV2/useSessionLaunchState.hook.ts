@@ -46,6 +46,7 @@ export default function useSessionLauncherState({
 
   const {
     dataConnectorConfigs: initialDataConnectorConfigs,
+    hasExpiredDataConnectors,
     hasWritePermission,
     isFetchingOrLoadingDataConnectors: isFetchingOrLoadingStorages,
     isFetchingRepositories,
@@ -142,6 +143,17 @@ export default function useSessionLauncherState({
     isFetchingOrLoadingStorages,
     isReadyDataConnectorConfigs,
   ]);
+
+  // Check for expired data connectors -- it should block only if any connector has expired
+  useEffect(() => {
+    if (!isFetchingOrLoadingStorages && !hasExpiredDataConnectors) {
+      dispatch(
+        startSessionOptionsV2Slice.actions.setDataConnectorsExpirationReady(
+          true,
+        ),
+      );
+    }
+  }, [dispatch, hasExpiredDataConnectors, isFetchingOrLoadingStorages]);
 
   // check session image availability -- it should block only for external images
   useEffect(() => {
