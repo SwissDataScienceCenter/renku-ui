@@ -363,6 +363,68 @@ describe("Data connector page", () => {
     fixtures.projects().landingUserProjects().readProjectV2();
   });
 
+  it("shows a two-level breadcrumb for a user-owned data connector", () => {
+    fixtures.getDataConnectorByNamespaceAndSlug({
+      fixture: "dataConnector/data-connector-user1-example-no-credentials.json",
+      namespace: username,
+      slug: dataConnectorSlug,
+    });
+    cy.visit(`/d/${username}/${dataConnectorSlug}`);
+    cy.wait("@getDataConnectorByNamespaceAndSlug");
+    cy.wait("@readUserV2Namespace");
+    cy.getDataCy("entity-breadcrumb").should("be.visible");
+    cy.getDataCy("entity-breadcrumb")
+      .contains("a", "user1")
+      .should("have.attr", "href", "/u/user1-uuid");
+    cy.getDataCy("entity-breadcrumb").should("contain.text", dataConnectorSlug);
+    cy.getDataCy("entity-breadcrumb").find("a").should("have.length", 1);
+    cy.getDataCy("entity-breadcrumb")
+      .contains("button", "Copy to clipboard")
+      .should("exist");
+  });
+
+  it("shows a three-level breadcrumb for a project-owned data connector", () => {
+    const projectSlug = "test-2-v2-project";
+    fixtures.getDataConnectorByNamespaceAndSlug({
+      fixture: "dataConnector/data-connector-project-owned.json",
+      namespace: username,
+      project: projectSlug,
+      slug: dataConnectorSlug,
+    });
+    cy.visit(`/d/${username}/${projectSlug}/${dataConnectorSlug}`);
+    cy.wait([
+      "@getDataConnectorByNamespaceAndSlug",
+      "@readUserV2Namespace",
+      "@readProjectV2",
+    ]);
+    cy.getDataCy("entity-breadcrumb").should("be.visible");
+    cy.getDataCy("entity-breadcrumb")
+      .contains("a", "user1")
+      .should("have.attr", "href", "/u/user1-uuid");
+    cy.getDataCy("entity-breadcrumb")
+      .contains("a", "test 2 v2-project")
+      .should("have.attr", "href", `/p/${username}/${projectSlug}`);
+    cy.getDataCy("entity-breadcrumb").should("contain.text", dataConnectorSlug);
+    cy.getDataCy("entity-breadcrumb").find("a").should("have.length", 2);
+    cy.getDataCy("entity-breadcrumb")
+      .contains("button", "Copy to clipboard")
+      .should("exist");
+  });
+
+  it("shows the resolved source and DOI link for a global data connector", () => {
+    const globalSlug = "doi-10.7910-dvn-dxh6fk";
+    fixtures.getDataConnectorByGlobalSlug({ slug: globalSlug }).getDoiHandle();
+    cy.visit(`/d/${globalSlug}`);
+    cy.wait("@getDataConnectorByGlobalSlug");
+    cy.wait("@getDoiHandle");
+    cy.getDataCy("entity-breadcrumb").should("be.visible");
+    cy.getDataCy("entity-breadcrumb")
+      .contains("a", "dataverse.harvard.edu")
+      .should("have.attr", "href", "https://doi.org/10.7910/DVN/DXH6FK");
+    cy.getDataCy("entity-breadcrumb").should("contain.text", globalSlug);
+    cy.getDataCy("entity-breadcrumb").find("a").should("have.length", 1);
+  });
+
   it("Create a data connector from the user page and interact with it", () => {
     cy.visit(`/u/${username}`);
 

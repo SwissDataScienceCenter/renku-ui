@@ -1,0 +1,37 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.link {
+  text-decoration: underline;
+
+  @include media-breakpoint-up(md) {
+    text-decoration: none;
+  }
+}
+
+.link:hover,
+.link:focus-visible {
+  color: var(--bs-link-hover-color) !important;
+  text-decoration: underline;
+}
+
+.nav {
+  overflow-x: hidden;
+
+  @include media-breakpoint-up(md) {
+    overflow-x: auto;
+  }
+}
+
+.previousPath {
+  max-width: 80%;
+  min-width: 0;
+
+  a {
+    min-width: 0;
+    max-width: 100%;
+  }
+}

@@ -19,9 +19,9 @@
 import cx from "classnames";
 import { generatePath, Link } from "react-router";
 
+import { GlyphGroupIcon } from "~/components/entityIcon/EntityIcon.tsx";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
-import UserAvatar from "../../usersV2/show/UserAvatar";
 import { GroupResponse } from "../api/namespace.api";
 
 interface GroupShortHandDisplayProps {
@@ -42,7 +42,7 @@ export default function GroupShortHandDisplay({
       data-cy="group-item"
     >
       <div className={cx("d-flex", "gap-2")}>
-        <UserAvatar namespace={group.slug} size="md" />
+        <GlyphGroupIcon />
         <div
           className={cx(
             "d-flex",

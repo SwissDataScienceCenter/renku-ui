@@ -33,6 +33,7 @@ import React, {
   useState,
 } from "react";
 import { CheckLg } from "react-bootstrap-icons";
+import { UncontrolledTooltip } from "reactstrap";
 
 import BootstrapCopyIcon from "../icons/BootstrapCopyIcon";
 
@@ -42,16 +43,19 @@ interface ClipboardProps {
   className?: string;
   clipboardText: string;
   children?: ReactNode;
+  tooltip?: ReactNode;
 }
 
 export const Clipboard = ({
   className: className_,
   clipboardText,
   children,
+  tooltip,
 }: ClipboardProps) => {
   const [copied, setCopied] = useState(false);
 
   const currentTimeoutRef = useRef<number | null>(null);
+  const ref = useRef<HTMLButtonElement>(null);
 
   const onSuccess = useCallback(() => {
     currentTimeoutRef.current = window.setTimeout(() => {
@@ -87,25 +91,31 @@ export const Clipboard = ({
     : Fragment;
 
   return (
-    <button
-      className={className}
-      onClick={onCopyToClipboard}
-      role="button"
-      type="button"
-    >
-      {/* // TODO: fix react-hooks/static-components */}
-      {/* eslint-disable-next-line react-hooks/static-components */}
-      <Wrap>
-        {copied ? (
-          <CheckLg className="bi" />
-        ) : (
-          <BootstrapCopyIcon className="bi" />
-        )}
-        <span className="visually-hidden">
-          Copy to clipboard{children && ": "}
-        </span>
-        {children}
-      </Wrap>
-    </button>
+    <>
+      <button
+        className={className}
+        onClick={onCopyToClipboard}
+        role="button"
+        type="button"
+        ref={ref}
+      >
+        {/* // TODO: fix react-hooks/static-components */}
+        {/* eslint-disable-next-line react-hooks/static-components */}
+        <Wrap>
+          {copied ? (
+            <CheckLg className="bi" />
+          ) : (
+            <BootstrapCopyIcon className="bi" />
+          )}
+          <span className="visually-hidden">
+            Copy to clipboard{children && ": "}
+          </span>
+          {children}
+        </Wrap>
+      </button>
+      {tooltip && (
+        <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
+      )}
+    </>
   );
 };
