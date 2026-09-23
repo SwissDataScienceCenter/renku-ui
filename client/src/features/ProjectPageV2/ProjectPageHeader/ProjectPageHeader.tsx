@@ -20,17 +20,21 @@ import cx from "classnames";
 import { useMemo } from "react";
 import { Bookmarks, Globe2, Lock } from "react-bootstrap-icons";
 import { generatePath, useLocation } from "react-router";
+
 import EntityBreadcrumb from "~/components/entityBreadcrumb/EntityBreadcrumb";
 import EntityIcon from "~/components/entityIcon/EntityIcon";
-
-import EntityIcon from "~/components/entityIcon/EntityIcon.tsx";
-import KeywordBadge from "~/components/keywords/KeywordBadge.tsx";
-import KeywordContainer from "~/components/keywords/KeywordContainer.tsx";
-import { TimeCaption } from "~/components/TimeCaption.tsx";
-import { useGetProjectsByProjectIdMembersQuery } from "~/features/projectsV2/api/projectV2.enhanced-api.ts";
-import { ABSOLUTE_ROUTES } from "~/routing/routes.constants.ts";
+import KeywordBadge from "~/components/keywords/KeywordBadge";
+import KeywordContainer from "~/components/keywords/KeywordContainer";
+import { TimeCaption } from "~/components/TimeCaption";
+import CopyProjectButton from "~/features/ProjectPageV2/ProjectPageContent/ProjectInformation/CopyProjectButton";
+import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
+import { useGetProjectsByProjectIdMembersQuery } from "~/features/projectsV2/api/projectV2.enhanced-api";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { ProjectInformationMembers } from "../ProjectPageContent/ProjectInformation/ProjectInformation";
+import {
+  ProjectCopyTemplate,
+  ProjectInformationMembers,
+} from "../ProjectPageContent/ProjectInformation/ProjectInformation";
 import ProjectAutostartRedirectBanner from "./ProjectAutostartRedirectBanner";
 import ProjectCopyBanner from "./ProjectCopyBanner";
 import ProjectTemplateInfoBanner from "./ProjectTemplateInfoBanner";
@@ -57,7 +61,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
   const membersUrl = `${settingsUrl}#members`;
 
   // keywords
-  const hasKeywords = project.keywords?.length ?? 0 > 0;
+  const hasKeywords = !!project.keywords?.length;
   const keywordsSorted = useMemo(() => {
     if (!project.keywords) return [];
     return project.keywords
@@ -65,8 +69,9 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
       .sort((a, b) => a.localeCompare(b));
   }, [project.keywords]);
 
+  const permissions = useProjectPermissions({ projectId: project.id });
   return (
-    <div className={cx("d-flex", "flex-column", "gap-2")}>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
       <EntityBreadcrumb project={project} />
       <header
         className={cx(
@@ -78,15 +83,32 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
         )}
       >
         <EntityIcon type="project" />
-        <div className={cx("d-flex", "flex-column", "justify-content-evenly")}>
-          <h1 className={cx("mb-0", "text-break")} data-cy="project-name">
-            {project.name}
-          </h1>
+        <div
+          className={cx(
+            "d-flex",
+            "flex-column",
+            "justify-content-evenly",
+            "w-100",
+          )}
+        >
+          <div className={cx("d-flex", "flex-row", "justify-content-between")}>
+            <h1 className={cx("mb-0", "text-break")} data-cy="project-name">
+              {project.name}
+            </h1>
+            <div className="flex-shrink-0">
+              <CopyProjectButton
+                userPermissions={permissions}
+                project={project}
+              />
+            </div>
+          </div>
           <div
             className={cx(
               "d-flex",
               "flex-row",
               "align-items-center",
+              "flex-wrap",
+              "small",
               styles.dotSeparated,
             )}
           >
@@ -110,7 +132,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
             <TimeCaption
               datetime={project.creation_date}
               prefix="Created"
-              className={cx("fs-6")}
+              className={cx("small")}
             />
             {hasKeywords && (
               <div
@@ -140,7 +162,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
         </div>
       </header>
       {project.description && (
-        <p className="mb-0" data-cy="project-description">
+        <p className={cx("mb-0")} data-cy="project-description">
           {project.description}
         </p>
       )}
@@ -150,6 +172,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
           <ProjectCopyBanner project={project} />
         </>
       )}
+      <ProjectCopyTemplate project={project} />
       {isAutostartRedirect && (
         <ProjectAutostartRedirectBanner project={project} />
       )}

@@ -40,7 +40,7 @@ export default function ProjectPageLayout({
       <ProjectV2New />
       <GroupNew />
 
-      <Row className="my-3">
+      <Row>
         <Col xs={12} className="mb-3">
           <ProjectPageHeader project={project} />
         </Col>

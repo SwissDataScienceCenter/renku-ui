@@ -17,7 +17,7 @@
  */
 
 import { useCallback, useRef, useState } from "react";
-import { Button, UncontrolledTooltip } from "reactstrap";
+import { Button } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import BootstrapCopyIcon from "../../../../components/icons/BootstrapCopyIcon";
@@ -49,7 +49,7 @@ export default function CopyProjectButton({
         innerRef={ref}
       >
         <BootstrapCopyIcon className="bi" />
-        <span className="visually-hidden">Copy project</span>
+        <span className="ms-1">Copy project</span>
       </Button>
       <ProjectCopyModal
         currentUser={currentUser}
@@ -57,7 +57,6 @@ export default function CopyProjectButton({
         project={project}
         toggle={toggleCopyModal}
       />
-      <UncontrolledTooltip target={ref}>Copy project</UncontrolledTooltip>
     </>
   );
 }

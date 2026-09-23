@@ -46,11 +46,11 @@ const LINK_CLASS_NAME = cx(
   "align-items-center",
   "d-inline-flex",
   "min-w-0",
-  "text-muted",
+  "text-primary",
 );
 
 const BREADCRUMB_STYLE = {
-  ["--bs-breadcrumb-divider"]: "'/'",
+  ["--bs-breadcrumb-divider"]: "'›'",
 } as CSSProperties;
 
 function BreadcrumbIcon({
@@ -132,6 +132,7 @@ function AncestorBreadcrumbLevel({
         "align-items-center",
         "breadcrumb-item",
         "d-flex",
+        "text-primary",
         isPreviousPath ? styles.previousPath : ["flex-shrink-0", "text-nowrap"],
       )}
     >
@@ -179,7 +180,7 @@ function CurrentBreadcrumbLevel({
         "d-flex",
         "flex-nowrap",
         "min-w-0",
-        "text-navy",
+        "text-muted",
       )}
     >
       <BreadcrumbIcon type={level.type} isPreviousPath={false} />
@@ -187,8 +188,17 @@ function CurrentBreadcrumbLevel({
         {level.label}
       </span>
       <Clipboard
-        className={cx("border-0", "btn", "flex-shrink-0", "p-0", "shadow-none")}
+        className={cx(
+          "border-0",
+          "btn",
+          "flex-shrink-0",
+          "p-0",
+          "shadow-none",
+          "text-muted",
+          "ms-2",
+        )}
         clipboardText={clipboardText}
+        tooltip="Copy identifier to clipboard"
       />
     </li>
   );

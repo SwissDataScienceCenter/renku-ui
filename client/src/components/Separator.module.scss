@@ -1,6 +1,7 @@
 .dotSeparated > *:not(:first-child)::before {
-  content: "·";
+  content: "|";
   margin-inline-end: 1rem;
   margin-inline-start: 1rem;
   color: var(--bs-secondary-color);
+  font-size: 12px;
 }

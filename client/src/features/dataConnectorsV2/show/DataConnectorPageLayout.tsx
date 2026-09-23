@@ -12,7 +12,6 @@ import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { DataConnectorRead } from "../api/data-connectors.api";
 
-
 interface DataConnectorPageLayoutProps {
   dataConnector: DataConnectorRead;
   children?: ReactNode;
@@ -46,7 +45,7 @@ export default function DataConnectorPageLayout({
       <ProjectV2New />
       <GroupNew />
 
-      <Row className="my-3">
+      <Row>
         <Col xs={12} className="mb-3">
           <DataConnectorHeader dataConnector={dataConnector} />
         </Col>
@@ -65,22 +64,23 @@ interface DataConnectorHeaderProps {
   dataConnector: DataConnectorRead;
 }
 function DataConnectorHeader({ dataConnector }: DataConnectorHeaderProps) {
-  return (<>
-    <EntityBreadcrumb dataConnector={dataConnector} />
-    <header
-      className={cx(
-        "d-flex",
-        "flex-column",
-        "flex-md-row",
-        "flex-nowrap",
-        "gap-2",
-      )}
-    >
-      <EntityIcon type="dataConnector" />
-      <h1 className={cx("mb-0", "text-break")} data-cy="data-connector-name">
-        {dataConnector.name}
-      </h1>
-    </header>
-    </>
+  return (
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      <EntityBreadcrumb dataConnector={dataConnector} />
+      <header
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "flex-md-row",
+          "flex-nowrap",
+          "gap-2",
+        )}
+      >
+        <EntityIcon type="dataConnector" />
+        <h1 className={cx("mb-0", "text-break")} data-cy="data-connector-name">
+          {dataConnector.name}
+        </h1>
+      </header>
+    </div>
   );
 }

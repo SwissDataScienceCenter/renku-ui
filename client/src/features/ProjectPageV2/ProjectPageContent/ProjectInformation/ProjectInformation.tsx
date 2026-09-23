@@ -57,7 +57,11 @@ import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 
 const MAX_MEMBERS_DISPLAYED = 2;
 
-function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
+export function ProjectCopyTemplateInformationBox({
+  project,
+}: {
+  project: Project;
+}) {
   const { data: templateProject, isLoading: isLoadingTemplateInformation } =
     useGetProjectsByProjectIdQuery(
       project.template_id
@@ -104,6 +108,55 @@ function ProjectCopyTemplateInformationBox({ project }: { project: Project }) {
         </div>
       </div>
     </ProjectInformationBox>
+  );
+}
+
+export function ProjectCopyTemplate({ project }: { project: Project }) {
+  const { data: templateProject, isLoading: isLoadingTemplateInformation } =
+    useGetProjectsByProjectIdQuery(
+      project.template_id
+        ? {
+            projectId: project.template_id,
+          }
+        : skipToken,
+    );
+  const { data: templateProjectNamespace } =
+    useGetNamespacesByNamespaceSlugQuery(
+      templateProject
+        ? {
+            namespaceSlug: templateProject.namespace,
+          }
+        : skipToken,
+    );
+
+  if (!project.template_id) return null;
+  if (isLoadingTemplateInformation) return <Loader />;
+  if (!templateProject || !templateProjectNamespace) {
+    // The user does not have access to this project
+    return null;
+  }
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+    namespace: templateProject.namespace,
+    slug: templateProject.slug,
+  });
+  return (
+    <div className={cx("d-flex", "flex-row", "gap-1", "align-items-center")}>
+      <span className="text-muted">Copied from: </span>
+      <Link
+        color="outline-secondary"
+        className={cx(
+          "d-flex",
+          "align-items-center",
+          "text-muted",
+          "fw-semibold",
+        )}
+        data-cy="copy-project-template-link"
+        to={projectUrl}
+      >
+        {templateProjectNamespace.name ?? templateProjectNamespace.slug} /{" "}
+        {templateProject.name}
+      </Link>
+    </div>
   );
 }
 
@@ -271,7 +324,9 @@ function ProjectInformationMember({
         className={cx(
           "d-flex",
           "flex-row",
-          "text-decoration-none",
+          "link-underline",
+          "link-underline-opacity-0",
+          "link-underline-opacity-100-hover",
           "gap-1",
           "align-items-center",
         )}
