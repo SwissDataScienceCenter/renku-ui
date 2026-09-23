@@ -1,0 +1,84 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.entityIcon {
+  --entity-icon-size: 86px;
+  --entity-icon-avatar-font-size: 40px;
+  --entity-icon-card-body-height: 68px;
+  --entity-icon-glyph-size: 42px;
+  --entity-icon-overlap: -18px;
+  --entity-icon-fill: var(--bs-secondary);
+}
+
+.groupIcon {
+  background-color: var(--bs-white);
+  color: var(--bs-secondary);
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.layout {
+  background-color: var(--entity-icon-fill);
+}
+
+@include media-breakpoint-up(md) {
+  .layout {
+    background-color: transparent;
+  }
+
+  .entityBadge {
+    background-color: var(--entity-icon-fill);
+    color: var(--bs-white);
+  }
+
+  .glyph {
+    font-size: var(--entity-icon-glyph-size);
+  }
+
+  .label {
+    color: var(--entity-icon-fill);
+  }
+
+  .card {
+    background-color: var(--bs-white);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    overflow: hidden;
+    width: var(--entity-icon-size);
+
+    .entityBadge {
+      height: var(--entity-icon-card-body-height);
+      width: 100%;
+    }
+
+    .label {
+      text-align: center;
+      width: 100%;
+    }
+  }
+
+  .circle {
+    .entityBadge {
+      background-color: var(--bs-white);
+      border: var(--bs-border-width) solid var(--bs-border-color);
+      border-radius: 50%;
+      color: var(--entity-icon-fill);
+      height: var(--entity-icon-size);
+      width: var(--entity-icon-size);
+    }
+
+    .label {
+      background-color: var(--entity-icon-fill);
+      color: var(--bs-white);
+      border: var(--bs-border-width) solid var(--bs-border-color);
+      margin-top: var(--entity-icon-overlap);
+    }
+
+    .userAvatar {
+      --size: var(--entity-icon-size);
+      --font-size: var(--entity-icon-avatar-font-size);
+    }
+  }
+}

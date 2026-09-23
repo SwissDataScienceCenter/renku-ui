@@ -61,6 +61,8 @@ import {
   selectSearchApiQuery,
 } from "../searchV2.slice";
 
+import styles from "./SearchFilters.module.scss";
+
 export default function SearchFilters() {
   const state = useAppSelector(({ searchV2 }) => searchV2);
   const apiQuery = useAppSelector(selectSearchApiQuery);
@@ -310,7 +312,7 @@ function SearchFilter({
       </UncontrolledAccordion>
       <ListGroup flush className={cx("d-none", "d-sm-block")}>
         <ListGroupItem
-          className={cx("border-bottom", "px-0", "pt-0")}
+          className={cx("border-bottom", "px-0", "pt-0", styles.listGroupItem)}
           data-cy="search-group-filter-content"
         >
           <h4 className="fw-semibold">{filter.label}</h4>

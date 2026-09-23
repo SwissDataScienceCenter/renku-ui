@@ -38,8 +38,9 @@ import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import { DataConnectorRead } from "../api/data-connectors.api";
 import {
   doiToUrl,
+  getDataConnectorDoi,
+  getDataConnectorIdentifier,
   getDataConnectorScope,
-  parseDoi,
   useGetDataConnectorSource,
 } from "../components/dataConnector.utils";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
@@ -63,13 +64,11 @@ export default function DataConnectorInfoBox({
     [dataConnector.namespace],
   );
   const identifier = useMemo(
-    () =>
-      scope === "global"
-        ? `${dataConnector.slug}`
-        : `${dataConnector.namespace}/${dataConnector.slug}`,
-    [dataConnector.namespace, dataConnector.slug, scope],
+    () => getDataConnectorIdentifier(dataConnector),
+    [dataConnector],
   );
-  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
+  const { source: dataConnectorSource } =
+    useGetDataConnectorSource(dataConnector);
 
   const sortedKeywords = useMemo(() => {
     if (!dataConnector.keywords) return [];
@@ -78,23 +77,10 @@ export default function DataConnectorInfoBox({
       .sort((a, b) => a.localeCompare(b));
   }, [dataConnector.keywords]);
 
-  // Global only
-  const doiReference = useMemo(() => {
-    if (!dataConnector) return null;
-    const doi =
-      scope === "global" &&
-      dataConnector.storage.configuration["doi"] &&
-      typeof dataConnector.storage.configuration["doi"] === "string"
-        ? parseDoi(dataConnector.storage.configuration["doi"])
-        : null;
-    if (doi) {
-      return doi;
-    }
-    if (dataConnector.doi) {
-      return parseDoi(dataConnector.doi);
-    }
-    return null;
-  }, [dataConnector, scope]);
+  const doiReference = useMemo(
+    () => getDataConnectorDoi(dataConnector),
+    [dataConnector],
+  );
 
   const expired = dataConnector.expires_at
     ? ensureDateTime(dataConnector.expires_at) < DateTime.now()
