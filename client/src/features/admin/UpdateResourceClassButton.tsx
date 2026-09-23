@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CheckLg, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import {
@@ -81,6 +81,28 @@ export default function UpdateResourceClassButton({
   );
 }
 
+function toFormValues(resourceClass: ResourceClassWithId): ResourceClassForm {
+  return {
+    cpu: resourceClass.cpu,
+    default: resourceClass.default,
+    default_storage: resourceClass.default_storage,
+    gpu: resourceClass.gpu,
+    max_storage: resourceClass.max_storage,
+    memory: resourceClass.memory,
+    name: resourceClass.name,
+    remote: {
+      systemName: resourceClass.remote?.system_name ?? "",
+      partition: resourceClass.remote?.partition ?? "",
+      forwardResourceValues:
+        resourceClass.remote?.forward_resource_values ?? false,
+    },
+    tolerations: (resourceClass.tolerations ?? []).map((label) => ({ label })),
+    node_affinities: resourceClass.node_affinities ?? [],
+    resource_flavour_id:
+      resourceClass.resource_flavour_id ?? NO_RESOURCE_FLAVOUR,
+  };
+}
+
 interface UpdateResourceClassModalProps {
   isOpen: boolean;
   resourceClass: ResourceClassWithId;
@@ -103,6 +125,8 @@ function UpdateResourceClassModal({
     usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation();
   const [unlinkResourceFlavour, unlinkResult] =
     useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourMutation();
+  const { reset: resetUpdate } = result;
+  const { reset: resetUnlink } = unlinkResult;
 
   const {
     control,
@@ -110,27 +134,7 @@ function UpdateResourceClassModal({
     handleSubmit,
     reset,
   } = useForm<ResourceClassForm>({
-    defaultValues: {
-      cpu: resourceClass.cpu,
-      default: resourceClass.default,
-      default_storage: resourceClass.default_storage,
-      gpu: resourceClass.gpu,
-      max_storage: resourceClass.max_storage,
-      memory: resourceClass.memory,
-      name: resourceClass.name,
-      remote: {
-        systemName: resourceClass.remote?.system_name ?? "",
-        partition: resourceClass.remote?.partition ?? "",
-        forwardResourceValues:
-          resourceClass.remote?.forward_resource_values ?? false,
-      },
-      tolerations: (resourceClass.tolerations ?? []).map((label) => ({
-        label,
-      })),
-      node_affinities: resourceClass.node_affinities ?? [],
-      resource_flavour_id:
-        resourceClass.resource_flavour_id ?? NO_RESOURCE_FLAVOUR,
-    },
+    defaultValues: toFormValues(resourceClass),
   });
   const selectedFlavourId = useWatch({ control, name: "resource_flavour_id" });
   const {
@@ -195,6 +199,8 @@ function UpdateResourceClassModal({
     ],
   );
 
+  const isSaving = result.isLoading || unlinkResult.isLoading;
+
   const onAddTolerationLabel = useCallback(() => {
     tolerationsAppend({ label: "" });
   }, [tolerationsAppend]);
@@ -210,29 +216,18 @@ function UpdateResourceClassModal({
     }
   }, [reset, result.isSuccess, toggle]);
 
+  const resourceClassRef = useRef(resourceClass);
   useEffect(() => {
-    reset({
-      cpu: resourceClass.cpu,
-      default: resourceClass.default,
-      default_storage: resourceClass.default_storage,
-      gpu: resourceClass.gpu,
-      max_storage: resourceClass.max_storage,
-      memory: resourceClass.memory,
-      name: resourceClass.name,
-      remote: {
-        systemName: resourceClass.remote?.system_name ?? "",
-        partition: resourceClass.remote?.partition ?? "",
-        forwardResourceValues:
-          resourceClass.remote?.forward_resource_values ?? false,
-      },
-      tolerations: (resourceClass.tolerations ?? []).map((label) => ({
-        label,
-      })),
-      node_affinities: resourceClass.node_affinities ?? [],
-      resource_flavour_id:
-        resourceClass.resource_flavour_id ?? NO_RESOURCE_FLAVOUR,
-    });
-  }, [reset, resourceClass]);
+    resourceClassRef.current = resourceClass;
+  }, [resourceClass]);
+
+  useEffect(() => {
+    if (isOpen) {
+      reset(toFormValues(resourceClassRef.current));
+      resetUpdate();
+      resetUnlink();
+    }
+  }, [isOpen, reset, resetUnlink, resetUpdate]);
 
   return (
     <ScrollableModal
@@ -558,11 +553,11 @@ function UpdateResourceClassModal({
         </Button>
         <Button
           color="primary"
-          disabled={result.isLoading || !isDirty}
+          disabled={isSaving || !isDirty}
           onClick={handleSubmit(onSubmit)}
           type="submit"
         >
-          {result.isLoading ? (
+          {isSaving ? (
             <Loader className="me-1" inline size={16} />
           ) : (
             <CheckLg className={cx("bi", "me-1")} />
