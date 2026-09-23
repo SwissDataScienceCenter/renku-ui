@@ -19,7 +19,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useMemo } from "react";
-import { Pencil, ShieldLock } from "react-bootstrap-icons";
+import { ShieldLock, UiChecksGrid } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
 import {
   Badge,
@@ -137,7 +137,7 @@ export default function SessionViewSessionSecrets({
                     size="sm"
                     tabIndex={0}
                   >
-                    <Pencil className="bi" />
+                    <UiChecksGrid className="bi" />
                   </Button>
                   <UncontrolledTooltip target="modify-session-secrets-button">
                     Customize session secrets

@@ -33,6 +33,7 @@ import {
   Pencil,
   PlayCircle,
   Send,
+  UiChecksGrid,
 } from "react-bootstrap-icons";
 import {
   AccordionBody,
@@ -692,7 +693,7 @@ export function SessionView({
                             size="sm"
                             tabIndex={0}
                           >
-                            <Pencil className="bi" />
+                            <UiChecksGrid className="bi" />
                           </Button>
                           <UncontrolledTooltip target="modify-code-repositories-button">
                             Customize code repositories
@@ -866,7 +867,7 @@ function DataConnectorsCard({
                   size="sm"
                   tabIndex={0}
                 >
-                  <Pencil className="bi" />
+                  <UiChecksGrid className="bi" />
                 </Button>
                 <UncontrolledTooltip target="modify-data-connectors-button">
                   Customize data connectors
