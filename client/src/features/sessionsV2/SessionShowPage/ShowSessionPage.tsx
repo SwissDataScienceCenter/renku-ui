@@ -76,6 +76,7 @@ import PauseWarningModal from "./PauseWarningModal";
 import SessionAlerts from "./SessionAlerts";
 import SessionIframe from "./SessionIframe";
 import SessionPaused from "./SessionPaused";
+import SessionSshInstructions from "./SessionSshInstructions";
 import SessionUnavailable from "./SessionUnavailable";
 import { StartSessionProgressBarV2 } from "./StartSessionProgressBar";
 
@@ -282,7 +283,12 @@ export default function ShowSessionPage() {
             toggleLogs={toggleLogsModal}
           />
         )}
-        <SessionIframe height={`${iframeHeight}px`} session={thisSession} />
+        {thisSession.status.state === "running" &&
+        thisSession.frontend_variant === "ssh" ? (
+          <SessionSshInstructions session={thisSession} />
+        ) : (
+          <SessionIframe height={`${iframeHeight}px`} session={thisSession} />
+        )}
       </>
     ) : (
       <StartSessionProgressBarV2 toggleLogs={toggleLogsModal} />
