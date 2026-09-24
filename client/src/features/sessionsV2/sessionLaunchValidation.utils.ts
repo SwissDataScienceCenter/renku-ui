@@ -126,9 +126,7 @@ export function sshKeyNeedsAttention(
 ): boolean {
   if (
     !("build_parameters" in launcher.environment) ||
-    // ! TODO - FIX use ssh once available
-    // ! DO NOT MERGE UNTIL CHANGED TO `!== "ssh"`
-    launcher.environment.build_parameters?.frontend_variant !== "ttyd" // eslint-disable-line spellcheck/spell-checker
+    launcher.environment.build_parameters?.frontend_variant !== "ssh"
   ) {
     return false;
   }
