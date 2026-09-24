@@ -70,6 +70,10 @@ export function validatedAppParams(params: unknown): AppParams {
     "PRIVACY_BANNER_ENABLED",
   );
   const TERMS_PAGES_ENABLED = validateBoolean(params_, "TERMS_PAGES_ENABLED");
+  const ENVIDAT_EXPORTS_ENABLED = validateBoolean(
+    params_,
+    "ENVIDAT_EXPORTS_ENABLED",
+  );
   const IMAGE_BUILDERS_ENABLED = validateBoolean(
     params_,
     "IMAGE_BUILDERS_ENABLED",
@@ -106,15 +110,20 @@ export function validatedAppParams(params: unknown): AppParams {
 
   return {
     ANONYMOUS_SESSIONS,
+    APP_LOBBY,
+    APPS_ENABLED,
     BASE_URL,
+    BUILD_PRIVATE_REPO_BUILDS_ENABLED,
     CONTACT_EMAIL,
     CULLING_THRESHOLDS,
+    ENVIDAT_EXPORTS_ENABLED,
     GATEWAY_URL,
     HOMEPAGE,
     IMAGE_BUILDERS_ENABLED,
-    BUILD_PRIVATE_REPO_BUILDS_ENABLED,
     KEYCLOAK_REALM,
     MAINTENANCE,
+    PERSISTED_LOGS_ENABLED,
+    PERSISTED_LOGS_TTL_SECONDS,
     PREVIEW_THRESHOLD,
     PRIVACY_BANNER_CONTENT,
     PRIVACY_BANNER_ENABLED,
@@ -132,10 +141,6 @@ export function validatedAppParams(params: unknown): AppParams {
     UISERVER_URL,
     UPLOAD_THRESHOLD,
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
-    PERSISTED_LOGS_ENABLED,
-    PERSISTED_LOGS_TTL_SECONDS,
-    APPS_ENABLED,
-    APP_LOBBY,
   };
 }
 
