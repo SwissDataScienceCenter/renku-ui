@@ -30,6 +30,7 @@ import { useGetRepositoriesQuery } from "../repositories/api/repositories.api";
 import {
   dataConnectorsNeedCredentials,
   doesCloudStorageNeedCredentials,
+  isDataConnectorExpired,
   repositoriesNeedAttention,
   secretsNeedAttention,
 } from "./sessionLaunchValidation.utils";
@@ -128,11 +129,19 @@ export default function useSessionLaunchPrerequisites({
 
   const needsCredentials = dataConnectorsNeedCredentials(dataConnectorConfigs);
 
+  const expiredDataConnectorConfigs = useMemo(
+    () => dataConnectorConfigs?.filter(isDataConnectorExpired) ?? [],
+    [dataConnectorConfigs],
+  );
+  const hasExpiredDataConnectors = expiredDataConnectorConfigs.length > 0;
+
   return {
     dataConnectorConfigs: dataConnectorConfigs as
       | SessionStartDataConnectorConfiguration[]
       | undefined,
     configsNeedingCredentials,
+    expiredDataConnectorConfigs,
+    hasExpiredDataConnectors,
     hasWritePermission,
     isFetchingOrLoadingDataConnectors,
     isFetchingRepositories,

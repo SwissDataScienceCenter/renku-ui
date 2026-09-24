@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "4.31.0",
+  "version": "4.32.0",
   "private": true,
   "scripts": {
     "start": "NODE_OPTIONS='--import ./instrument.server.mjs' react-router dev --port 3000",
@@ -156,7 +156,7 @@
     "vite": "^8.1.5",
     "vite-bundle-visualizer": "^1.2.1",
     "vite-env-only": "^3.0.3",
-    "vitest": "^4.1.0",
+    "vitest": "^4.1.11",
     "wait-on": "^9.0.10",
     "yaml": "^2.8.3"
   },
