@@ -19,7 +19,7 @@ import InternalIdField from "~/components/InternalIdField";
 import PermissionsGuard from "~/features/permissionsV2/PermissionsGuard";
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import { useGetDataConnectorsByDataConnectorIdDepositsQuery } from "../api/data-connectors.enhanced-api";
+import { dataConnectorsApi } from "../api/data-connectors.enhanced-api";
 import { getDataConnectorScope } from "../components/dataConnector.utils";
 import { DataConnectorRemoveDeleteModal } from "../components/DataConnectorActions";
 import DataConnectorCredentialsModal from "../components/DataConnectorCredentialsModal";
@@ -34,6 +34,7 @@ import DepositEditModal from "../deposits/DepositEditModal";
 import DepositFinalizationModal from "../deposits/DepositFinalizationModal";
 import {
   LAST_DEPOSIT_QUERY_PARAMS,
+  POLL_TIME_ACTIVE_DEPOSITS,
   POLL_TIME_INACTIVE_DEPOSITS,
 } from "../deposits/deposits.constants";
 import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.hook";
@@ -104,19 +105,37 @@ export default function DataConnectorSettings() {
     setDeleteDepositOpen((open) => !open);
   }, []);
 
-  const deposits = useGetDataConnectorsByDataConnectorIdDepositsQuery(
-    dataConnector?.id
-      ? {
-          dataConnectorId: dataConnector.id,
-          params: LAST_DEPOSIT_QUERY_PARAMS,
-        }
-      : skipToken,
-    { pollingInterval: POLL_TIME_INACTIVE_DEPOSITS },
+  // Deposits logic
+  const depositQueryArg = useMemo(
+    () =>
+      dataConnector?.id
+        ? {
+            dataConnectorId: dataConnector.id,
+            params: LAST_DEPOSIT_QUERY_PARAMS,
+          }
+        : skipToken,
+    [dataConnector],
   );
-  const lastDeposit = useMemo(() => {
-    if (!deposits.data || deposits.data.deposits.length === 0) return undefined;
-    return deposits.data.deposits[0];
-  }, [deposits.data]);
+  const { lastDeposit } =
+    dataConnectorsApi.endpoints.getDataConnectorsByDataConnectorIdDeposits.useQueryState(
+      depositQueryArg,
+      {
+        selectFromResult: ({ data }) => ({
+          lastDeposit:
+            data && data.deposits.length > 0 ? data.deposits[0] : undefined,
+        }),
+      },
+    );
+  const depositPollingInterval =
+    lastDeposit?.status === "in_progress"
+      ? POLL_TIME_ACTIVE_DEPOSITS
+      : POLL_TIME_INACTIVE_DEPOSITS;
+  dataConnectorsApi.endpoints.getDataConnectorsByDataConnectorIdDeposits.useQuerySubscription(
+    depositQueryArg,
+    {
+      pollingInterval: depositPollingInterval,
+    },
+  );
 
   if (scope === "global") {
     return (
