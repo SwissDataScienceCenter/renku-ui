@@ -132,6 +132,13 @@ export default function DepositEditModal({
     }
   }, [isOpen, reset, patchDepositResult, postJobResult]);
 
+  useEffect(() => {
+    reset({
+      name: deposit?.name ?? "",
+      path: deposit?.path ?? "",
+    });
+  }, [deposit, reset]);
+
   // Check user changes
   const watchNewName = useWatch({
     control,
@@ -247,11 +254,15 @@ export default function DepositEditModal({
                   />
                 </div>
               )}
-              {deposit?.provider === "envidat" && (
+              {deposit?.provider === "envidat" ? (
                 <div className="mt-1">
                   <EnviDatWarning />
                 </div>
-              )}
+              ) : // eslint-disable-next-line spellcheck/spell-checker
+              deposit?.provider === "scicat" &&
+                deposit?.status === "upload_complete" ? (
+                <SciCatWarning />
+              ) : null}
             </div>
           </FormGroup>
 
@@ -313,6 +324,16 @@ function EnviDatWarning() {
         </ExternalLink>
         . If you need, you can still delete this export and create a new one.
       </p>
+    </WarnAlert>
+  );
+}
+
+function SciCatWarning() {
+  return (
+    <WarnAlert dismissible={false} className={cx("mt-3", "mb-0")}>
+      Rerunning a successful export with the same parameters might fail. If you
+      need to rerun the export, you can also consider deleting this export and
+      creating a new one.
     </WarnAlert>
   );
 }
