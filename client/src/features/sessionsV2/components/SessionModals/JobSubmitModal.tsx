@@ -49,9 +49,13 @@ function JobSubmitModalOpen({
       <SubmitJobPrerequisiteModals
         configsNeedingCredentials={submitJobFlow.configsNeedingCredentials}
         dataConnectorConfigs={submitJobFlow.dataConnectorConfigs}
+        expiredDataConnectorConfigs={submitJobFlow.expiredDataConnectorConfigs}
         launcher={launcher}
         onCancel={submitJobFlow.cancelValidation}
         onDataConnectorsComplete={submitJobFlow.onDataConnectorsComplete}
+        onDataConnectorsExpiredContinue={
+          submitJobFlow.onDataConnectorsExpiredContinue
+        }
         onRepositoriesSkip={submitJobFlow.onRepositoriesSkip}
         onSaveCredentialsComplete={submitJobFlow.onSaveCredentialsComplete}
         onSecretsSkip={submitJobFlow.onSecretsSkip}
