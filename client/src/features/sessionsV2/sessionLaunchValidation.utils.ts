@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+import { DateTime } from "luxon";
+
+import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import { shouldInterrupt } from "../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { GetRepositoriesApiResponse } from "../repositories/api/repositories.api";
@@ -94,4 +97,23 @@ export function dataConnectorsShouldSaveCredentials(
   configs: SessionStartDataConnectorConfiguration[] | undefined,
 ): boolean {
   return configs?.some(shouldCloudStorageSaveCredentials) ?? false;
+}
+
+export function isDataConnectorExpired(
+  config: SessionStartDataConnectorConfiguration,
+): boolean {
+  if (!config.active || config.skip) {
+    return false;
+  }
+  const { dataConnector } = config;
+  return (
+    !!dataConnector.expires_at &&
+    ensureDateTime(dataConnector.expires_at) < DateTime.now()
+  );
+}
+
+export function dataConnectorsHaveExpired(
+  configs: SessionStartDataConnectorConfiguration[] | undefined,
+): boolean {
+  return configs?.some(isDataConnectorExpired) ?? false;
 }
