@@ -336,6 +336,129 @@
         "tags": ["secrets"]
       }
     },
+    "/user/ssh_keys": {
+      "get": {
+        "summary": "List all SSH public keys for the logged in user",
+        "responses": {
+          "200": {
+            "description": "The user's SSH public keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SSHKeysList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["ssh_keys"]
+      },
+      "post": {
+        "summary": "Register a new SSH public key for the logged in user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SSHKeyPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "SSH public key successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SSHKey"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "This SSH public key is already registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["ssh_keys"]
+      }
+    },
+    "/user/ssh_keys/{key_id}": {
+      "get": {
+        "summary": "Get a specific SSH public key",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The SSH public key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SSHKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The SSH public key does not exist or is not owned by the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["ssh_keys"]
+      },
+      "delete": {
+        "summary": "Delete a specific SSH public key",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The SSH public key was deleted or did not exist"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["ssh_keys"]
+      }
+    },
     "/error": {
       "get": {
         "summary": "Get a sample error response with status code 422",
@@ -826,6 +949,63 @@
           }
         },
         "required": ["project_slug"]
+      },
+      "SSHKey": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "public_key": {
+            "type": "string",
+            "example": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... user@host"
+          },
+          "key_type": {
+            "type": "string",
+            "example": "ssh-ed25519"
+          },
+          "fingerprint": {
+            "type": "string",
+            "example": "SHA256:abc..."
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "public_key",
+          "key_type",
+          "fingerprint",
+          "created_at"
+        ]
+      },
+      "SSHKeyPost": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "public_key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 256
+          }
+        },
+        "required": ["public_key"]
+      },
+      "SSHKeysList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SSHKey"
+        }
       },
       "ErrorResponse": {
         "type": "object",
