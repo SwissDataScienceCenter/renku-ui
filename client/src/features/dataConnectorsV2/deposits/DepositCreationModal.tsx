@@ -1,6 +1,6 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
 import { CloudArrowUp, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import {
@@ -24,9 +24,13 @@ import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { DataConnectorRead } from "../api/data-connectors.api";
 import { usePostDepositsMutation } from "../api/data-connectors.enhanced-api";
-import DepositIntegrationInfo from "./DepositIntegrationInfo";
+import DepositIntegrationInfo, {
+  DepositProviderUnavailableAlert,
+} from "./DepositIntegrationInfo";
 import { ENVIDAT_DASHBOARD_URL, PROVIDER_OPTIONS } from "./deposits.constants";
 import { CreateDepositionForm } from "./deposits.types";
 
@@ -90,6 +94,12 @@ export default function DepositCreationModal({
   const isLoading = isLoadingProviders || isLoadingConnections;
   const error = providersError || connectionsError;
 
+  // EnviDat exports are enabled/disabled by a param since there is no integration
+  const { params } = useContext(AppContext);
+  const envidatExportsEnabled =
+    params?.ENVIDAT_EXPORTS_ENABLED ??
+    DEFAULT_APP_PARAMS.ENVIDAT_EXPORTS_ENABLED;
+
   const onSubmit = useCallback(
     (data: CreateDepositionForm) => {
       postDeposit({
@@ -116,6 +126,11 @@ export default function DepositCreationModal({
       result.reset();
     }
   }, [isOpen, reset, result]);
+
+  // Disable start button when the target provider is not available
+  const disableStartButton =
+    (userSelectedProvider === "envidat" && !envidatExportsEnabled) ||
+    (userSelectedProvider !== "envidat" && !targetProvider);
 
   return (
     <Modal centered data-cy="deposit-creation-modal" isOpen={isOpen} size="lg">
@@ -233,7 +248,11 @@ export default function DepositCreationModal({
               )}
               {userSelectedProvider === "envidat" && (
                 <div className="mt-1">
-                  <EnviDatWarning />
+                  {envidatExportsEnabled ? (
+                    <EnviDatWarning />
+                  ) : (
+                    <DepositProviderUnavailableAlert />
+                  )}
                 </div>
               )}
             </div>
@@ -247,7 +266,7 @@ export default function DepositCreationModal({
           <Button
             color="primary"
             data-cy="create-deposit-modal-button"
-            disabled={result.isLoading}
+            disabled={result.isLoading || disableStartButton}
             type="submit"
           >
             {result.isLoading ? (
