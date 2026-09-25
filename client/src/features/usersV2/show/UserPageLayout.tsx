@@ -21,7 +21,7 @@ import { ReactNode } from "react";
 import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
-import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
+import EntityIcon from "~/components/entityIcon/EntityIcon.tsx";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
@@ -32,7 +32,6 @@ import {
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
-import UserAvatar from "./UserAvatar";
 
 interface UserPageLayoutProps {
   user: UserWithId;
@@ -62,18 +61,8 @@ export default function UserPageLayout({
       <GroupNew />
 
       <Row className="my-3">
-        <Col xs={12}>
-          <Row>
-            <Col className={cx("d-block", "d-md-none")} xs={12}>
-              <span className="text-muted">User</span>
-            </Col>
-            <Col className="mb-3">
-              <UserHeader name={name ?? ""} username={user.username} />
-            </Col>
-            <Col className={cx("d-md-block", "d-none")} md="auto">
-              <EntityWatermark type="user" />
-            </Col>
-          </Row>
+        <Col xs={12} className="mb-3">
+          <UserHeader name={name ?? ""} username={user.username} />
         </Col>
         <Col xs={12} className="mb-3">
           <PageNav options={options} />
@@ -94,8 +83,8 @@ function UserHeader({ name, username }: UserHeaderProps) {
   const { data: currentUser } = useGetUserQueryState();
 
   return (
-    <header className={cx("d-flex", "flex-nowrap", "flex-row", "gap-2")}>
-      <UserAvatar namespace={username} size="md" />
+    <header className={cx("d-flex", "flex-wrap", "gap-2")}>
+      <EntityIcon type="user" namespace={username} />
       <div className={cx("align-items-center", "d-flex", "gap-2")}>
         <h1 className={cx("mb-0", "text-break")} data-cy="user-name">
           {name}
