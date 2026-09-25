@@ -194,7 +194,8 @@ export type ProviderKind =
   | "github"
   | "gitlab"
   | "google"
-  | "zenodo";
+  | "zenodo"
+  | "scicat";
 export type ApplicationSlug = string;
 export type ClientId = string;
 export type ClientSecret = string;

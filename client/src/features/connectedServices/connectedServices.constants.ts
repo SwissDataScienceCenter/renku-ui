@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { ProviderKind } from "./api/connectedServices.generated-api";
+
 export const SEARCH_PARAM_PROVIDER = "targetProvider";
 export const SEARCH_PARAM_ACTION_REQUIRED = "actionRequired";
 export const SEARCH_PARAM_SOURCE = "source";
@@ -25,3 +27,17 @@ export const CHECK_STATUS_QUERY_PARAM = "check-status";
 
 export const OAUTH_CONNECT_POLLING_INTERVAL_MS = 1_000;
 export const OAUTH_CONNECT_POLLING_TIMEOUT_MS = 600_000;
+
+export const CONNECTED_SERVICES_OPTIONS: {
+  value: ProviderKind;
+  label: string;
+}[] = [
+  { value: "dropbox", label: "Dropbox" },
+  { value: "generic_oidc", label: "Generic OIDC" },
+  { value: "github", label: "GitHub" },
+  { value: "gitlab", label: "GitLab" },
+  { value: "google", label: "Google" },
+  { value: "zenodo", label: "Zenodo" },
+  // eslint-disable-next-line spellcheck/spell-checker
+  { value: "scicat", label: "SciCat" },
+];
