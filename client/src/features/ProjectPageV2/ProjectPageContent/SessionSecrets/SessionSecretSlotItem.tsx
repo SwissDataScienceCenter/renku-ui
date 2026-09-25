@@ -24,6 +24,7 @@ import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
 import SessionSecretActions from "./SessionSecretActions";
 import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
+import { getSecretSlotSessionPath } from "./sessionSecrets.utils";
 
 interface SessionSecretSlotItemProps {
   secretsMountDirectory: string;
@@ -38,10 +39,7 @@ export default function SessionSecretSlotItem({
 }: SessionSecretSlotItemProps) {
   const { filename, name, description } = secretSlot.secretSlot;
 
-  const mountDir = secretsMountDirectory.startsWith("/")
-    ? secretsMountDirectory
-    : `<work-dir>/${secretsMountDirectory}`;
-  const fullPath = `${mountDir}/${filename}`;
+  const fullPath = getSecretSlotSessionPath(secretsMountDirectory, filename);
 
   return (
     <ListGroupItem action={!noActions} data-cy="session-secret-slot-item">

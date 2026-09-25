@@ -33,6 +33,7 @@ import {
   Pencil,
   PlayCircle,
   Send,
+  UiChecksGrid,
 } from "react-bootstrap-icons";
 import {
   AccordionBody,
@@ -64,6 +65,7 @@ import { partitionDataConnectorsForApp } from "~/features/sessionsV2/apps/appDat
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
+import type { Permissions } from "../../permissionsV2/permissions.types";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
@@ -93,6 +95,8 @@ import {
 import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
 import { LauncherCategory, SessionV2 } from "../sessionsV2.types";
 import useResourceClassDetails from "../useResourceClassDetails.hook";
+import CustomizeCodeRepositoriesModal from "./CustomizeCodeRepositoriesModal";
+import CustomizeDataConnectorsModal from "./CustomizeDataConnectorsModal";
 import EnvironmentItem, {
   EnvironmentJSONArrayRowWithLabel,
 } from "./EnvironmentItem";
@@ -258,11 +262,23 @@ export function SessionView({
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
+  const [isCodeRepositoriesOpen, setIsCodeRepositoriesOpen] = useState(false);
+  const [isDataConnectorsOpen, setIsDataConnectorsOpen] = useState(false);
+  const [isSessionSecretsOpen, setIsSessionSecretsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsUpdateOpen((open) => !open);
   }, []);
   const toggleModifyResources = useCallback(() => {
     setModifyResourcesOpen((open) => !open);
+  }, []);
+  const toggleCodeRepositories = useCallback(() => {
+    setIsCodeRepositoriesOpen((open) => !open);
+  }, []);
+  const toggleDataConnectors = useCallback(() => {
+    setIsDataConnectorsOpen((open) => !open);
+  }, []);
+  const toggleSessionSecrets = useCallback(() => {
+    setIsSessionSecretsOpen((open) => !open);
   }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
   const environment = launcher?.environment;
@@ -633,25 +649,60 @@ export function SessionView({
           <DataConnectorsCard
             dataConnectors={isApp ? appDataConnectors : dataConnectors}
             skippedCount={isApp ? skippedDataConnectors.length : 0}
+            toggleEdit={launcher && !isApp ? toggleDataConnectors : undefined}
+            userPermissions={permissions}
           />
 
           {!isApp && (
             <>
               <Card>
-                <CardHeader className={cx("align-items-center", "d-flex")}>
-                  <h3
-                    className={cx(
-                      "align-items-center",
-                      "d-flex",
-                      "mb-0",
-                      "me-2",
+                <CardHeader
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <div className={cx("align-items-center", "d-flex")}>
+                    <h3
+                      className={cx(
+                        "align-items-center",
+                        "d-flex",
+                        "mb-0",
+                        "me-2",
+                      )}
+                    >
+                      <FileCode className="me-1" />
+                      Code Repositories
+                    </h3>
+                    {project?.repositories?.length != null && (
+                      <Badge>{project?.repositories?.length}</Badge>
                     )}
-                  >
-                    <FileCode className="me-1" />
-                    Code Repositories
-                  </h3>
-                  {project?.repositories?.length != null && (
-                    <Badge>{project?.repositories?.length}</Badge>
+                  </div>
+                  {launcher && (
+                    <PermissionsGuard
+                      disabled={null}
+                      enabled={
+                        <>
+                          <Button
+                            aria-label="Customize code repositories"
+                            color="outline-primary"
+                            data-cy="session-view-modify-code-repositories-button"
+                            id="modify-code-repositories-button"
+                            onClick={toggleCodeRepositories}
+                            size="sm"
+                            tabIndex={0}
+                          >
+                            <UiChecksGrid className="bi" />
+                          </Button>
+                          <UncontrolledTooltip target="modify-code-repositories-button">
+                            Customize code repositories
+                          </UncontrolledTooltip>
+                        </>
+                      }
+                      requestedPermission="write"
+                      userPermissions={permissions}
+                    />
                   )}
                 </CardHeader>
                 <CardBody>
@@ -674,7 +725,29 @@ export function SessionView({
                 </CardBody>
               </Card>
 
-              <SessionViewSessionSecrets />
+              <SessionViewSessionSecrets
+                isEditOpen={isSessionSecretsOpen}
+                launcher={launcher}
+                toggleEdit={launcher ? toggleSessionSecrets : undefined}
+              />
+            </>
+          )}
+
+          {launcher && !isApp && (
+            <>
+              <CustomizeCodeRepositoriesModal
+                isOpen={isCodeRepositoriesOpen}
+                launcher={launcher}
+                project={project}
+                toggle={toggleCodeRepositories}
+              />
+              <CustomizeDataConnectorsModal
+                dataConnectorLinks={dataConnectorLinks ?? []}
+                dataConnectorsMap={dataConnectorsMap ?? {}}
+                isOpen={isDataConnectorsOpen}
+                launcher={launcher}
+                toggle={toggleDataConnectors}
+              />
             </>
           )}
 
@@ -750,11 +823,15 @@ export function SessionView({
 interface DataConnectorsCardProps {
   dataConnectors: DataConnectorRead[];
   skippedCount: number;
+  toggleEdit?: () => void;
+  userPermissions: Permissions;
 }
 
 function DataConnectorsCard({
   dataConnectors,
   skippedCount,
+  toggleEdit,
+  userPermissions,
 }: DataConnectorsCardProps) {
   const skippedLabel = `${skippedCount} data connector${
     skippedCount === 1 ? "" : "s"
@@ -762,12 +839,45 @@ function DataConnectorsCard({
 
   return (
     <Card>
-      <CardHeader className={cx("align-items-center", "d-flex")}>
-        <h3 className={cx("mb-0", "me-2")}>
-          <Database className={cx("me-1", "bi")} />
-          Data Connectors
-        </h3>
-        <Badge>{dataConnectors.length}</Badge>
+      <CardHeader
+        className={cx(
+          "align-items-center",
+          "d-flex",
+          "justify-content-between",
+        )}
+      >
+        <div className={cx("align-items-center", "d-flex")}>
+          <h3 className={cx("mb-0", "me-2")}>
+            <Database className={cx("me-1", "bi")} />
+            Data Connectors
+          </h3>
+          <Badge>{dataConnectors.length}</Badge>
+        </div>
+        {toggleEdit && (
+          <PermissionsGuard
+            disabled={null}
+            enabled={
+              <>
+                <Button
+                  aria-label="Customize data connectors"
+                  color="outline-primary"
+                  data-cy="session-view-modify-data-connectors-button"
+                  id="modify-data-connectors-button"
+                  onClick={toggleEdit}
+                  size="sm"
+                  tabIndex={0}
+                >
+                  <UiChecksGrid className="bi" />
+                </Button>
+                <UncontrolledTooltip target="modify-data-connectors-button">
+                  Customize data connectors
+                </UncontrolledTooltip>
+              </>
+            }
+            requestedPermission="write"
+            userPermissions={userPermissions}
+          />
+        )}
       </CardHeader>
       <CardBody>
         {dataConnectors.length > 0 ? (
