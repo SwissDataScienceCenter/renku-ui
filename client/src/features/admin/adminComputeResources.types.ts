@@ -66,6 +66,17 @@ export interface ResourceClassForm {
   tolerations: ResourceClassFormToleration[];
   node_affinities: ResourceClassFormNodeAffinity[];
   remote: ResourceClassFormRemote;
+  resource_flavour_id: string;
+}
+
+export interface ResourceFlavourForm {
+  name: string;
+  description: string;
+  cpu: number;
+  memory: number;
+  gpu: number;
+  default_storage: number;
+  max_storage: number;
 }
 
 export interface ResourceClassFormToleration {

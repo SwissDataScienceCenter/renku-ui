@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import type { ResourceFlavourForm } from "./adminComputeResources.types";
+
 interface RemoteKindLike {
   kind: string | null;
 }
@@ -50,5 +52,32 @@ export function buildResourceClassRemote(
     system_name,
     partition,
     forward_resource_values: form.forwardResourceValues,
+  };
+}
+
+// The API takes an empty description as "clear it"; on create we omit it instead.
+export function buildResourceFlavourValues(data: ResourceFlavourForm) {
+  return {
+    name: data.name.trim(),
+    cpu: Number(data.cpu),
+    memory: Number(data.memory),
+    gpu: Number(data.gpu),
+    default_storage: Number(data.default_storage),
+    max_storage: Number(data.max_storage),
+  };
+}
+
+export function buildResourceFlavour(data: ResourceFlavourForm) {
+  const description = data.description.trim();
+  return {
+    ...buildResourceFlavourValues(data),
+    ...(description ? { description } : {}),
+  };
+}
+
+export function buildResourceFlavourPatch(data: ResourceFlavourForm) {
+  return {
+    ...buildResourceFlavourValues(data),
+    description: data.description.trim(),
   };
 }

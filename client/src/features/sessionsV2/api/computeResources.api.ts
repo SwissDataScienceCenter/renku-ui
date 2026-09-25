@@ -18,6 +18,8 @@
 
 import {
   computeResourcesGeneratedApi,
+  type GetResourceFlavoursApiArg,
+  type GetResourceFlavoursApiResponse,
   type GetResourcePoolsApiArg,
   type GetResourcePoolsApiResponse,
 } from "./computeResources.generated-api";
@@ -35,12 +37,26 @@ const withFixedEndpoints = computeResourcesGeneratedApi.injectEndpoints({
         params: resourcePoolsParams,
       }),
     }),
+    getResourceFlavours: build.query<
+      GetResourceFlavoursApiResponse,
+      GetResourceFlavoursApiArg
+    >({
+      query: ({ resourceFlavourParams }) => ({
+        url: "/resource_flavours",
+        params: resourceFlavourParams,
+      }),
+    }),
   }),
 });
 
 // Adds tag handling for cache management
 export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
-  addTagTypes: ["ResourceClass", "ResourcePool", "ResourcePoolMember"],
+  addTagTypes: [
+    "ResourceClass",
+    "ResourceFlavour",
+    "ResourcePool",
+    "ResourcePoolMember",
+  ],
   endpoints: {
     getResourcePools: {
       providesTags: (result) =>
@@ -78,18 +94,61 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
       invalidatesTags: (_result, _error, { resourcePoolId }) => [
         { id: resourcePoolId, type: "ResourcePool" },
         "ResourceClass",
+        "ResourceFlavour",
       ],
     },
     patchResourcePoolsByResourcePoolIdClassesAndClassId: {
       invalidatesTags: (_result, _error, { resourcePoolId }) => [
         { id: resourcePoolId, type: "ResourcePool" },
         "ResourceClass",
+        "ResourceFlavour",
       ],
     },
     deleteResourcePoolsByResourcePoolIdClassesAndClassId: {
       invalidatesTags: (_result, _error, { resourcePoolId }) => [
         { id: resourcePoolId, type: "ResourcePool" },
         "ResourceClass",
+        "ResourceFlavour",
+      ],
+    },
+    getResourceFlavours: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                id,
+                type: "ResourceFlavour" as const,
+              })),
+              "ResourceFlavour",
+            ]
+          : ["ResourceFlavour"],
+    },
+    getResourceFlavoursByResourceFlavourId: {
+      providesTags: (result) =>
+        result
+          ? [{ id: result.id, type: "ResourceFlavour" as const }]
+          : ["ResourceFlavour"],
+    },
+    getResourceFlavoursByResourceFlavourIdResourceClasses: {
+      providesTags: (_result, _error, { resourceFlavourId }) => [
+        { id: resourceFlavourId, type: "ResourceFlavour" as const },
+        "ResourceClass",
+      ],
+    },
+    postResourceFlavours: {
+      invalidatesTags: ["ResourceFlavour"],
+    },
+    patchResourceFlavoursByResourceFlavourId: {
+      invalidatesTags: ["ResourceFlavour", "ResourceClass", "ResourcePool"],
+    },
+    deleteResourceFlavoursByResourceFlavourId: {
+      invalidatesTags: ["ResourceFlavour", "ResourceClass", "ResourcePool"],
+    },
+    deleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavour: {
+      invalidatesTags: (_result, _error, { resourcePoolId }) => [
+        { id: resourcePoolId, type: "ResourcePool" as const },
+        "ResourceClass",
+        "ResourceFlavour",
       ],
     },
     getResourcePoolsByResourcePoolIdMembers: {
@@ -130,6 +189,15 @@ export const {
   usePostResourcePoolsByResourcePoolIdClassesMutation,
   usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
+
+  // "resource flavours" hooks
+  useGetResourceFlavoursQuery,
+  useGetResourceFlavoursByResourceFlavourIdQuery,
+  useGetResourceFlavoursByResourceFlavourIdResourceClassesQuery,
+  usePostResourceFlavoursMutation,
+  usePatchResourceFlavoursByResourceFlavourIdMutation,
+  useDeleteResourceFlavoursByResourceFlavourIdMutation,
+  useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourMutation,
 
   // "members" hooks
   useGetResourcePoolsByResourcePoolIdMembersQuery,

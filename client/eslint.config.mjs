@@ -101,6 +101,8 @@ const jsRules = {
         "favicon",
         "fetchable",
         "firecrest",
+        "flavour",
+        "flavours",
         "formgenerator",
         "fortran",
         "frameborder",

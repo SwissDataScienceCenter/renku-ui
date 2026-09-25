@@ -280,6 +280,230 @@
         }
       }
     },
+    "/resource_flavours": {
+      "get": {
+        "summary": "Get all resource flavours",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Filter for resource flavours based on the provided name as a prefix. Omitting this parameter returns all flavours.",
+            "name": "resource_flavour_params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "$ref": "#/components/schemas/Name"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of resource flavours",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceFlavoursWithId"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavours"]
+      },
+      "post": {
+        "summary": "Create a new resource flavour",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceFlavour"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The resource flavour was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceFlavourWithId"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavours"]
+      }
+    },
+    "/resource_flavours/{resource_flavour_id}": {
+      "get": {
+        "summary": "Get a specific resource flavour",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_flavour_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource flavour that was requested",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceFlavourWithId"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource flavour does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavours"]
+      },
+      "patch": {
+        "summary": "Partially update a resource flavour",
+        "description": "The new values take effect on every linked resource class when it is read. They are not\ncopied onto the linked classes.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_flavour_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceFlavourPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated resource flavour",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceFlavourWithId"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource flavour does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavours"]
+      },
+      "delete": {
+        "summary": "Remove a resource flavour",
+        "description": "Refused while any resource class is still linked to the flavour.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_flavour_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The resource flavour was removed or does not exist"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavours"]
+      }
+    },
+    "/resource_flavours/{resource_flavour_id}/resource_classes": {
+      "get": {
+        "summary": "Get the resource classes linked to a resource flavour",
+        "description": "Shows what an edit to the flavour will affect. A class is listed for as long as it is\nlinked, whether or not its own values still match the flavour.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_flavour_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource classes linked to the resource flavour",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedResourceClassesList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource flavour does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavours"]
+      }
+    },
     "/resource_pools": {
       "get": {
         "summary": "Get all resource pool definitions",
@@ -624,7 +848,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ResourceClass"
+                "$ref": "#/components/schemas/ResourceClassCreate"
               }
             }
           }
@@ -734,7 +958,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ResourceClass"
+                "$ref": "#/components/schemas/ResourceClassCreate"
               }
             }
           }
@@ -850,6 +1074,50 @@
         "responses": {
           "204": {
             "description": "The resource class was removed or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["classes"]
+      }
+    },
+    "/resource_pools/{resource_pool_id}/classes/{class_id}/resource_flavour": {
+      "delete": {
+        "summary": "Unlink a resource class from its resource flavour",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_pool_id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          {
+            "in": "path",
+            "name": "class_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The resource class is not linked to a resource flavour"
+          },
+          "404": {
+            "description": "The resource class or the resource pool does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "default": {
             "$ref": "#/components/responses/Error"
@@ -2027,6 +2295,158 @@
           "$ref": "#/components/schemas/ClusterWithId"
         }
       },
+      "ResourceFlavour": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "description": {
+            "$ref": "#/components/schemas/ResourceFlavourDescription"
+          },
+          "cpu": {
+            "$ref": "#/components/schemas/Cpu"
+          },
+          "memory": {
+            "$ref": "#/components/schemas/Memory"
+          },
+          "gpu": {
+            "$ref": "#/components/schemas/Gpu"
+          },
+          "max_storage": {
+            "$ref": "#/components/schemas/Storage"
+          },
+          "default_storage": {
+            "$ref": "#/components/schemas/Storage"
+          }
+        },
+        "required": [
+          "name",
+          "cpu",
+          "memory",
+          "gpu",
+          "max_storage",
+          "default_storage"
+        ],
+        "example": {
+          "name": "small",
+          "description": "Fits a standard node with room for the daemonset",
+          "cpu": 1.5,
+          "memory": 2,
+          "gpu": 0,
+          "max_storage": 100,
+          "default_storage": 10
+        }
+      },
+      "ResourceFlavourWithId": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "description": {
+            "$ref": "#/components/schemas/ResourceFlavourDescription"
+          },
+          "cpu": {
+            "$ref": "#/components/schemas/Cpu"
+          },
+          "memory": {
+            "$ref": "#/components/schemas/Memory"
+          },
+          "gpu": {
+            "$ref": "#/components/schemas/Gpu"
+          },
+          "max_storage": {
+            "$ref": "#/components/schemas/Storage"
+          },
+          "default_storage": {
+            "$ref": "#/components/schemas/Storage"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "cpu",
+          "memory",
+          "gpu",
+          "max_storage",
+          "default_storage"
+        ]
+      },
+      "ResourceFlavourPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "description": {
+            "$ref": "#/components/schemas/ResourceFlavourDescription"
+          },
+          "cpu": {
+            "$ref": "#/components/schemas/Cpu"
+          },
+          "memory": {
+            "$ref": "#/components/schemas/Memory"
+          },
+          "gpu": {
+            "$ref": "#/components/schemas/Gpu"
+          },
+          "max_storage": {
+            "$ref": "#/components/schemas/Storage"
+          },
+          "default_storage": {
+            "$ref": "#/components/schemas/Storage"
+          }
+        },
+        "example": {
+          "cpu": 2
+        }
+      },
+      "ResourceFlavoursWithId": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ResourceFlavourWithId"
+        },
+        "uniqueItems": true
+      },
+      "LinkedResourceClass": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IntegerId"
+          },
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "resource_pool_id": {
+            "$ref": "#/components/schemas/IntegerId"
+          },
+          "resource_pool_name": {
+            "$ref": "#/components/schemas/Name"
+          }
+        },
+        "required": ["id", "name"],
+        "example": {
+          "id": 1,
+          "name": "small",
+          "resource_pool_id": 1,
+          "resource_pool_name": "default"
+        }
+      },
+      "LinkedResourceClassesList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/LinkedResourceClass"
+        },
+        "uniqueItems": true
+      },
       "ResourceClassProperties": {
         "type": "object",
         "additionalProperties": false,
@@ -2063,6 +2483,9 @@
           },
           "remote": {
             "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
+          },
+          "resource_flavour_id": {
+            "$ref": "#/components/schemas/ResourceFlavourId"
           }
         }
       },
@@ -2128,6 +2551,55 @@
           "default_storage": 10,
           "quota_enforced": false
         }
+      },
+      "ResourceClassFromFlavour": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "default": {
+            "$ref": "#/components/schemas/DefaultFlag"
+          },
+          "resource_flavour_id": {
+            "$ref": "#/components/schemas/ResourceFlavourId"
+          },
+          "tolerations": {
+            "$ref": "#/components/schemas/K8sLabelList"
+          },
+          "node_affinities": {
+            "$ref": "#/components/schemas/NodeAffinityList"
+          },
+          "quota_enforced": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuotaEnforced"
+              }
+            ],
+            "default": false
+          },
+          "remote": {
+            "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
+          }
+        },
+        "required": ["name", "default", "resource_flavour_id"],
+        "example": {
+          "name": "resource class",
+          "default": false,
+          "resource_flavour_id": "01AN4Z79ZS5DDZS0Z0FMND1D1D"
+        }
+      },
+      "ResourceClassCreate": {
+        "description": "A new resource class. Set `resource_flavour_id` to take cpu, memory, gpu and storage from\na resource flavour, or set those values directly. `name` is required either way.\n",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ResourceClassFromFlavour"
+          },
+          {
+            "$ref": "#/components/schemas/ResourceClass"
+          }
+        ]
       },
       "ResourceClassPatch": {
         "allOf": [
@@ -2204,6 +2676,9 @@
           },
           "remote": {
             "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
+          },
+          "resource_flavour_id": {
+            "$ref": "#/components/schemas/ResourceFlavourId"
           }
         },
         "required": [
@@ -2263,7 +2738,14 @@
       "ResourceClasses": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/ResourceClass"
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/ResourceClassFromFlavour"
+            },
+            {
+              "$ref": "#/components/schemas/ResourceClass"
+            }
+          ]
         }
       },
       "ResourceClassesWithId": {
@@ -3154,6 +3636,19 @@
         "description": "A name for a specific resource",
         "minLength": 5,
         "example": "the name of a resource"
+      },
+      "ResourceFlavourDescription": {
+        "type": "string",
+        "description": "Why a resource flavour is sized the way it is",
+        "maxLength": 500,
+        "example": "Fits a standard node with room for the daemonset"
+      },
+      "ResourceFlavourId": {
+        "description": "The resource flavour this resource class is linked to",
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
       },
       "ConfigName": {
         "type": "string",

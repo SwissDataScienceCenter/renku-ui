@@ -55,13 +55,13 @@ import {
   PROJECT_STORAGE_MIN_GB,
   PROJECT_STORAGE_STEP_GB,
 } from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants";
+import AdminSection from "./AdminSection";
 
 export default function ProjectStorageAllowSection() {
   const { data, error, isLoading } = useGetStorageAllowQuery({});
 
   return (
-    <section className="mt-4">
-      <h2>Project Storage Allow List</h2>
+    <AdminSection title="Project Storage Allow List">
       <AddProjectStorageAllowButton />
       {isLoading ? (
         <Loader />
@@ -91,7 +91,7 @@ export default function ProjectStorageAllowSection() {
           </ListGroup>
         </>
       ) : null}
-    </section>
+    </AdminSection>
   );
 }
 
