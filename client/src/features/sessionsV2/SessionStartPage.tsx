@@ -64,6 +64,7 @@ import {
 } from "./sessionLaunchValidation.utils";
 import SessionRepositoriesModal from "./SessionRepositoriesModal";
 import SessionSecretsModal from "./SessionSecretsModal";
+import SessionSshKeyRequiredModal from "./SessionSshKeyRequiredModal";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type {
   SessionStartDataConnectorConfiguration,
@@ -369,6 +370,7 @@ function StartSessionFromLauncher({
     isPendingResourceClass,
     setResourceClass,
     isFetchingSessionSecrets,
+    isFetchingSshKeys,
     sessionSecretSlotsWithSecrets,
     isLoadingSessionImage,
     sessionImage,
@@ -394,12 +396,14 @@ function StartSessionFromLauncher({
     !isFetchingOrLoadingStorages &&
     !isFetchingRepositories &&
     !isFetchingSessionSecrets &&
+    !isFetchingSshKeys &&
     !isLoadingSessionImage;
 
   const fetchingApi =
     isFetchingOrLoadingStorages ||
     isFetchingRepositories ||
     isFetchingSessionSecrets ||
+    isFetchingSshKeys ||
     isLoadingSessionImage;
 
   // set favicon during session launch
@@ -438,6 +442,7 @@ function StartSessionFromLauncher({
       startSessionOptionsV2.dataConnectorsExpirationReady &&
       startSessionOptionsV2.imageReady &&
       startSessionOptionsV2.repositoriesReady &&
+      startSessionOptionsV2.sshKeysReady &&
       startSessionOptionsV2.userSecretsReady &&
       !sessionStarted
     ) {
@@ -452,6 +457,7 @@ function StartSessionFromLauncher({
     startSessionOptionsV2.dataConnectorsExpirationReady,
     startSessionOptionsV2.imageReady,
     startSessionOptionsV2.repositoriesReady,
+    startSessionOptionsV2.sshKeysReady,
     startSessionOptionsV2.userSecretsReady,
   ]);
 
@@ -523,6 +529,10 @@ function StartSessionFromLauncher({
         sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
       />
     );
+  }
+
+  if (!fetchingApi && !startSessionOptionsV2.sshKeysReady) {
+    return <StartSessionSshKeyModal launcher={launcher} project={project} />;
   }
 
   // Handle all data fetched and credentials needed
@@ -766,6 +776,48 @@ function StartSessionRepositoriesModal({
         />
         <SessionRepositoriesModal isOpen={showModal} project={project} />
       </div>
+    </div>
+  );
+}
+
+function StartSessionSshKeyModal({
+  launcher,
+  project,
+}: StartSessionFromLauncherProps) {
+  const startSessionOptionsV2 = useAppSelector(
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
+  );
+
+  const showModal = !startSessionOptionsV2.sshKeysReady;
+
+  const steps = [
+    {
+      id: 0,
+      status: StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  return (
+    <div
+      className={cx(
+        progressBoxStyles.progressBoxSmall,
+        progressBoxStyles.progressBoxSmallSteps,
+      )}
+    >
+      <ProgressStepsIndicator
+        description="Preparing to start session"
+        type={ProgressType.Determinate}
+        style={ProgressStyle.Light}
+        title={`Launching session ${launcher.name}`}
+        status={steps}
+      />
+      <SessionSshKeyRequiredModal isOpen={showModal} project={project} />
     </div>
   );
 }

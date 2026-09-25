@@ -154,6 +154,12 @@ export const BUILDER_FRONTENDS = [
     /* eslint-enable spellcheck/spell-checker */
   },
   {
+    value: "ssh",
+    label: "SSH",
+    description:
+      "Access the session via SSH. Currently does not support an additional frontend.",
+  },
+  {
     value: "rstudio",
     label: "RStudio",
     description: "Web-based integrated development environment for R.",
@@ -179,8 +185,8 @@ export const BUILDER_FRONTENDS = [
 
 /* eslint-disable spellcheck/spell-checker */
 export const BUILDER_FRONTEND_COMBINATIONS: Record<string, string[]> = {
-  python: ["vscodium", "jupyterlab", "ttyd", "infer", "none"],
-  r: ["rstudio", "none"],
+  python: ["vscodium", "jupyterlab", "ttyd", "ssh", "infer", "none"],
+  r: ["rstudio", "ssh", "none"],
 };
 
 export const getCompatibleFrontends = (builderVariant: string) => {
