@@ -219,6 +219,7 @@ const jsRules = {
         "rstudio",
         "runai",
         "scala",
+        "scicat",
         "scrollable",
         "selectautosuggest",
         "semibold",

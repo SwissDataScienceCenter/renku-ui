@@ -38,6 +38,5 @@ export const CONNECTED_SERVICES_OPTIONS: {
   { value: "gitlab", label: "GitLab" },
   { value: "google", label: "Google" },
   { value: "zenodo", label: "Zenodo" },
-  // eslint-disable-next-line spellcheck/spell-checker
   { value: "scicat", label: "SciCat" },
 ];

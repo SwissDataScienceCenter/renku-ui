@@ -249,27 +249,30 @@ export default function ConnectedServiceFormContent({
         </div>
       </div>
 
-      <div className="mb-3">
-        <Label className="form-label" for="addConnectedServiceOidcIssuerUrl">
-          OpenID Connect Issuer URL (optional, for OIDC integrations)
-        </Label>
-        <Controller
-          control={control}
-          name="oidc_issuer_url"
-          render={({ field, fieldState: { error } }) => (
-            <Input
-              className={cx("form-control", error && "is-invalid")}
-              id="addConnectedServiceOidcIssuerUrl"
-              placeholder="OIDC Issuer URL"
-              type="text"
-              {...field}
-            />
-          )}
-        />
-        <div className="invalid-feedback">
-          Please provide a valid URL or leave it empty
+      {["generic_oidc", "scicat"].includes(watchKind) && (
+        <div className="mb-3">
+          <Label className="form-label" for="addConnectedServiceOidcIssuerUrl">
+            OpenID Connect Issuer URL (required only for OIDC and SciCat
+            integrations)
+          </Label>
+          <Controller
+            control={control}
+            name="oidc_issuer_url"
+            render={({ field, fieldState: { error } }) => (
+              <Input
+                className={cx("form-control", error && "is-invalid")}
+                id="addConnectedServiceOidcIssuerUrl"
+                placeholder="OIDC Issuer URL"
+                type="text"
+                {...field}
+              />
+            )}
+          />
+          <div className="invalid-feedback">
+            Please provide a valid URL or leave it empty
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
