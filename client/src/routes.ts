@@ -83,8 +83,26 @@ export default [
   ...prefix(RELATIVE_ROUTES.v2.sessions.root, [
     route(RELATIVE_ROUTES.v2.sessions.show, "routes/sessions/redirect.tsx"),
   ]),
-  // Admin page
-  route(RELATIVE_ROUTES.v2.admin, "routes/admin.tsx"),
+  // Admin pages
+  route(RELATIVE_ROUTES.v2.admin.root, "routes/admin/root.tsx", [
+    index("routes/admin/index.tsx"),
+    route(
+      RELATIVE_ROUTES.v2.admin.computeResources,
+      "routes/admin/computeResources.tsx",
+    ),
+    route(
+      RELATIVE_ROUTES.v2.admin.integrations,
+      "routes/admin/integrations.tsx",
+    ),
+    route(
+      RELATIVE_ROUTES.v2.admin.sessionEnvironments,
+      "routes/admin/sessionEnvironments.tsx",
+    ),
+    route(
+      RELATIVE_ROUTES.v2.admin.projectStorage,
+      "routes/admin/projectStorage.tsx",
+    ),
+  ]),
   // SSH keys page
   route(RELATIVE_ROUTES.v2.ssh_keys, "routes/sshKeys.tsx"),
   // Legacy projects (may redirect)

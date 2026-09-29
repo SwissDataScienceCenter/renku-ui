@@ -18,8 +18,8 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, PencilSquare, XLg } from "react-bootstrap-icons";
-import { useForm } from "react-hook-form";
+import { PlusLg, XLg } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   Form,
@@ -33,20 +33,11 @@ import {
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../components/Loader";
-import {
-  Provider,
-  ProviderKind,
-  usePatchOauth2ProvidersByProviderIdMutation,
-} from "../connectedServices/api/connectedServices.api";
-import { ProviderForm } from "../connectedServices/api/connectedServices.types";
-import ConnectedServiceFormContent from "./ConnectedServiceFormContent";
+import { usePostOauth2ProvidersMutation } from "../connectedServices/api/connectedServices.api";
+import type { ProviderForm } from "../connectedServices/api/connectedServices.types";
+import ConnectedServiceFormContent from "./IntegrationsFormContent";
 
-interface UpdateConnectedServiceButtonProps {
-  provider: Provider;
-}
-export default function UpdateConnectedServiceButton({
-  provider,
-}: UpdateConnectedServiceButtonProps) {
+export default function AddConnectedServiceButton() {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -54,41 +45,29 @@ export default function UpdateConnectedServiceButton({
 
   return (
     <>
-      <Button color="outline-primary" onClick={toggle}>
-        <PencilSquare className={cx("bi", "me-1")} />
-        Edit
+      <Button color="primary" onClick={toggle}>
+        <PlusLg className={cx("bi", "me-1")} />
+        Add Integration
       </Button>
-      <UpdateConnectedServiceModal
-        provider={provider}
-        isOpen={isOpen}
-        toggle={toggle}
-      />
+      <AddConnectedServiceModal isOpen={isOpen} toggle={toggle} />
     </>
   );
 }
 
-interface UpdateConnectedServiceModalProps {
-  provider: Provider;
+interface AddConnectedServiceModalProps {
   isOpen: boolean;
   toggle: () => void;
 }
-
-function UpdateConnectedServiceModal({
-  provider,
+function AddConnectedServiceModal({
   isOpen,
   toggle,
-}: UpdateConnectedServiceModalProps) {
-  const [updateProvider, result] =
-    usePatchOauth2ProvidersByProviderIdMutation();
+}: AddConnectedServiceModalProps) {
+  const [createProvider, result] = usePostOauth2ProvidersMutation();
 
-  const {
-    control,
-    formState: { isDirty },
-    handleSubmit,
-    reset,
-  } = useForm<ProviderForm>({
+  const { control, handleSubmit, reset } = useForm<ProviderForm>({
     defaultValues: {
-      kind: undefined,
+      id: "",
+      kind: "gitlab",
       app_slug: "",
       client_id: "",
       client_secret: "",
@@ -102,26 +81,27 @@ function UpdateConnectedServiceModal({
   });
   const onSubmit = useCallback(
     (data: ProviderForm) => {
-      const oidc_issuer_url = ["generic_oidc", "scicat"].includes(data.kind)
-        ? data.oidc_issuer_url
-        : "";
-      updateProvider({
-        providerId: provider.id,
-        providerPatch: {
+      const oidc_issuer_url =
+        ["generic_oidc", "scicat"].includes(data.kind) && data.oidc_issuer_url
+          ? data.oidc_issuer_url
+          : undefined;
+      createProvider({
+        providerPost: {
+          id: data.id,
           kind: data.kind,
           app_slug: data.app_slug,
           client_id: data.client_id,
           client_secret: data.client_secret,
           display_name: data.display_name,
-          scope: data.scope,
+          scope: data.scope ?? "",
           url: data.url,
           use_pkce: data.use_pkce,
-          image_registry_url: data.image_registry_url,
+          image_registry_url: data.image_registry_url || undefined,
           oidc_issuer_url: oidc_issuer_url,
         },
       });
     },
-    [provider.id, updateProvider],
+    [createProvider],
   );
 
   useEffect(() => {
@@ -129,32 +109,14 @@ function UpdateConnectedServiceModal({
       return;
     }
     toggle();
-    reset();
-  }, [result.isSuccess, reset, toggle]);
+  }, [result.isSuccess, toggle]);
 
   useEffect(() => {
     if (!isOpen) {
+      reset();
       result.reset();
     }
-  }, [isOpen, result]);
-
-  useEffect(() => {
-    reset({
-      kind: provider.kind as ProviderKind | undefined,
-      app_slug: provider.app_slug,
-      client_id: provider.client_id,
-      display_name: provider.display_name,
-      scope: provider.scope,
-      url: provider.url,
-      use_pkce: provider.use_pkce,
-      image_registry_url: provider.image_registry_url ?? "",
-      oidc_issuer_url: provider.oidc_issuer_url ?? "",
-      ...(provider.client_secret &&
-        provider.client_secret !== "redacted" && {
-          client_secret: provider.client_secret,
-        }),
-    });
-  }, [provider, reset]);
+  }, [isOpen, reset, result]);
 
   return (
     <ScrollableModal
@@ -171,7 +133,7 @@ function UpdateConnectedServiceModal({
         onSubmit={handleSubmit(onSubmit)}
       >
         <ModalHeader tag="h2" toggle={toggle}>
-          Update intergation
+          Add integration
         </ModalHeader>
         <ModalBody>
           {result.error && <RtkOrDataServicesError error={result.error} />}
@@ -180,13 +142,19 @@ function UpdateConnectedServiceModal({
             <Label className="form-label" for="addConnectedServiceId">
               Id
             </Label>
-            <Input
-              className={cx("form-control")}
-              disabled={true}
-              id="addConnectedServiceId"
-              placeholder="Provider id"
-              type="text"
-              value={provider.id}
+            <Controller
+              control={control}
+              name="id"
+              render={({ field, fieldState: { error } }) => (
+                <Input
+                  className={cx("form-control", error && "is-invalid")}
+                  id="addConnectedServiceId"
+                  placeholder="Provider id"
+                  type="text"
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
             />
           </div>
 
@@ -197,17 +165,13 @@ function UpdateConnectedServiceModal({
             <XLg className={cx("bi", "me-1")} />
             Cancel
           </Button>
-          <Button
-            color="primary"
-            disabled={result.isLoading || !isDirty}
-            type="submit"
-          >
+          <Button color="primary" disabled={result.isLoading} type="submit">
             {result.isLoading ? (
               <Loader className="me-1" inline size={16} />
             ) : (
-              <CheckLg className={cx("bi", "me-1")} />
+              <PlusLg className={cx("bi", "me-1")} />
             )}
-            Update integration
+            Add integration
           </Button>
         </ModalFooter>
       </Form>

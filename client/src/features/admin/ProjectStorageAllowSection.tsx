@@ -18,7 +18,14 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, Pencil, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
+import {
+  Archive,
+  CheckLg,
+  Pencil,
+  PlusLg,
+  TrashFill,
+  XLg,
+} from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -60,8 +67,16 @@ export default function ProjectStorageAllowSection() {
   const { data, error, isLoading } = useGetStorageAllowQuery({});
 
   return (
-    <section className="mt-4">
-      <h2>Project Storage Allow List</h2>
+    <section>
+      <h2 className="mb-3">
+        <Archive className="me-1" />
+        Project Storage
+      </h2>
+      <p>
+        Only projects listed here are allowed to use local storage on the
+        platform.
+      </p>
+
       <AddProjectStorageAllowButton />
       {isLoading ? (
         <Loader />
