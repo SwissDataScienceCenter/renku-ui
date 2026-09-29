@@ -67,6 +67,11 @@ describe("admin page", () => {
     cy.visit("/admin");
 
     cy.get("h1").contains("Admin Panel").should("be.visible");
+    cy.get("h2").contains("Incidents and Maintenance").should("be.visible");
+
+    cy.getDataCy("admin-compute-resources-link").click();
+    cy.location("pathname").should("eq", "/admin/compute-resources");
+    cy.get("h2").contains("Compute Resources").should("be.visible");
   });
 
   it("should show the link to the admin page", () => {
@@ -99,7 +104,7 @@ describe("admin page", () => {
     cy.visit("/");
     cy.wait("@getUser");
 
-    cy.visit("/admin");
+    cy.visit("/admin/compute-resources");
 
     cy.get("h1").contains("Admin Panel").should("be.visible");
 
@@ -215,7 +220,7 @@ describe("admin page", () => {
     cy.visit("/");
     cy.wait("@getUser");
 
-    cy.visit("/admin");
+    cy.visit("/admin/compute-resources");
 
     cy.get("h1").contains("Admin Panel").should("be.visible");
 
@@ -247,7 +252,7 @@ describe("admin page", () => {
     cy.visit("/");
     cy.wait("@getUser");
 
-    cy.visit("/admin");
+    cy.visit("/admin/compute-resources");
 
     cy.get("h1").contains("Admin Panel").should("be.visible");
 
@@ -285,7 +290,7 @@ describe("admin page", () => {
     cy.visit("/");
     cy.wait("@getUser");
 
-    cy.visit("/admin");
+    cy.visit("/admin/compute-resources");
 
     // check public resource pool
     cy.get(".card")
@@ -326,7 +331,7 @@ describe("admin page", () => {
     cy.visit("/");
     cy.wait("@getUser");
 
-    cy.visit("/admin");
+    cy.visit("/admin/compute-resources");
 
     // open the Special GPU pool and the Add Member modal
     cy.get(".card")
