@@ -22,6 +22,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import {
   BoxArrowUpRight,
   CheckCircleFill,
+  WrenchAdjustableCircle,
   XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
@@ -30,21 +31,17 @@ import { Link } from "react-router";
 import {
   Alert,
   Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Collapse,
   Form,
-  Label,
+  Input,
   Nav,
   NavItem,
   TabContent,
   TabPane,
 } from "reactstrap";
 
+import ExternalLink from "~/components/ExternalLink";
 import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
-import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
 import { Links } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
@@ -62,22 +59,20 @@ export default function IncidentsAndMaintenanceSection() {
 
   return (
     <section>
-      <h2>Incidents And Maintenance</h2>
-
-      <p>
-        <Link
-          to={Links.RENKU_2_ADMIN_HOW_TO_GUIDE_INCIDENTS}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          Renku documentation about incidents and maintenance
-          <BoxArrowUpRight className={cx("bi", "ms-1")} />
-        </Link>
-      </p>
+      <h2 className="mb-3">
+        <WrenchAdjustableCircle className="me-1" />
+        Incidents and Maintenance
+      </h2>
 
       <StatusPageCheck statusPageId={statusPageId} />
 
       <IncidentBannerSection />
+
+      <p>
+        <ExternalLink href={Links.RENKU_2_ADMIN_HOW_TO_GUIDE_INCIDENTS}>
+          Renku documentation about incidents and maintenance
+        </ExternalLink>
+      </p>
     </section>
   );
 }
@@ -166,6 +161,15 @@ function IncidentBannerSection() {
   });
   // eslint-disable-next-line react-hooks/incompatible-library
   const incidentBanner = watch("incidentBanner");
+  const { ref: incidentBannerRef, ...incidentBannerField } =
+    register("incidentBanner");
+
+  //? The platform config may not be loaded yet when the form is initialized
+  useEffect(() => {
+    if (platformConfig != null) {
+      reset({ incidentBanner: platformConfig.incident_banner });
+    }
+  }, [platformConfig, reset]);
 
   const onSubmit = useCallback(
     (data: IncidentBannerForm) => {
@@ -190,9 +194,6 @@ function IncidentBannerSection() {
     }
   }, [reset, result.data?.incident_banner, result.isSuccess]);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const onToggleOpen = useCallback(() => setIsOpen((open) => !open), []);
-
   const [tab, setTab] = useState<"write-tab" | "preview-tab">("write-tab");
   const onClickWrite = useCallback(() => setTab("write-tab"), []);
   const onClickPreview = useCallback(() => setTab("preview-tab"), []);
@@ -216,109 +217,85 @@ function IncidentBannerSection() {
   }
 
   return (
-    <Card className="mb-3">
-      <CardHeader
-        className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
-        tag="h5"
-      >
-        <button
-          className={cx(
-            "d-flex",
-            "gap-3",
-            "align-items-center",
-            "w-100",
-            "p-3",
-            "bg-transparent",
-            "border-0",
-            "fw-bold",
-          )}
-          onClick={onToggleOpen}
-          type="button"
-        >
-          Incident banner
-          <div className="ms-auto">
-            <ChevronFlippedIcon flipped={isOpen} />
-          </div>
-        </button>
-      </CardHeader>
-      <Collapse isOpen={isOpen}>
-        <CardBody className="pt-0">
-          <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
-            <div className={cx("d-flex", "flex-column", "gap-1", "mb-1")}>
-              <Label for="admin-incident-banner-content">Incident banner</Label>
-              <Nav tabs>
-                <NavItem>
-                  <button
-                    className={cx("nav-link", tab === "write-tab" && "active")}
-                    onClick={onClickWrite}
-                    type="button"
-                  >
-                    Write
-                  </button>
-                </NavItem>
-                <NavItem>
-                  <button
-                    className={cx(
-                      "nav-link",
-                      tab === "preview-tab" && "active",
-                    )}
-                    onClick={onClickPreview}
-                    type="button"
-                  >
-                    Preview
-                  </button>
-                </NavItem>
-              </Nav>
-              <TabContent activeTab={tab}>
-                <TabPane tabId="write-tab">
-                  <textarea
-                    {...register("incidentBanner")}
-                    id="admin-incident-banner-content"
-                    className={cx("form-control", "border-0", "bg-body")}
-                  />
-                </TabPane>
-                <TabPane tabId="preview-tab">
-                  {incidentBanner ? (
-                    <Alert
-                      color="danger"
-                      className={cx(
-                        "container-xxl",
-                        "renku-container",
-                        "border-0",
-                        "rounded-0",
-                      )}
-                      fade={false}
-                    >
-                      <h3>Ongoing incident</h3>
-                      <LazyMarkdown>{incidentBanner}</LazyMarkdown>
-                    </Alert>
-                  ) : (
-                    <p className="fst-italic">No content</p>
+    <>
+      <h3>Incident banner</h3>
+      <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
+        <div className={cx("d-flex", "flex-column", "gap-1", "mb-1")}>
+          <Nav tabs>
+            <NavItem>
+              <button
+                className={cx("nav-link", tab === "write-tab" && "active")}
+                onClick={onClickWrite}
+                type="button"
+              >
+                Write
+              </button>
+            </NavItem>
+            <NavItem>
+              <button
+                className={cx("nav-link", tab === "preview-tab" && "active")}
+                onClick={onClickPreview}
+                type="button"
+              >
+                Preview
+              </button>
+            </NavItem>
+          </Nav>
+          <TabContent activeTab={tab}>
+            <TabPane tabId="write-tab">
+              <Input
+                id="admin-incident-banner-content"
+                type="textarea"
+                innerRef={incidentBannerRef}
+                {...incidentBannerField}
+              />
+            </TabPane>
+            <TabPane tabId="preview-tab">
+              {incidentBanner ? (
+                <Alert
+                  color="danger"
+                  className={cx(
+                    "container-xxl",
+                    "renku-container",
+                    "border-0",
+                    "rounded-0",
                   )}
-                </TabPane>
-              </TabContent>
-            </div>
-            <div>
-              <Button type="submit" disabled={result.isLoading || !isDirty}>
-                Update incident banner
-              </Button>
-              {platformConfig.incident_banner && (
-                <Button
-                  className="ms-2"
-                  color="outline-danger"
-                  disabled={result.isLoading}
-                  onClick={onClearIncidentBanner}
+                  fade={false}
                 >
-                  <XLg className={cx("bi", "me-1")} />
-                  Clear incident banner
-                </Button>
+                  <h3>Ongoing incident</h3>
+                  <LazyMarkdown>{incidentBanner}</LazyMarkdown>
+                </Alert>
+              ) : (
+                <p className="fst-italic">
+                  No content; no incident banner will be shown.
+                </p>
               )}
-            </div>
-            {result.error && <RtkOrDataServicesError error={error} />}
-          </Form>
-        </CardBody>
-      </Collapse>
-    </Card>
+            </TabPane>
+          </TabContent>
+        </div>
+        <div>
+          <Button
+            color="primary"
+            type="submit"
+            disabled={result.isLoading || !isDirty}
+          >
+            Update incident banner
+          </Button>
+          {platformConfig.incident_banner && (
+            <Button
+              className="ms-2"
+              color="outline-primary"
+              disabled={result.isLoading}
+              onClick={onClearIncidentBanner}
+            >
+              <XLg className={cx("bi", "me-1")} />
+              Clear incident banner
+            </Button>
+          )}
+        </div>
+        {result.error && <RtkOrDataServicesError error={error} />}
+      </Form>
+    </>
   );
 }
 
