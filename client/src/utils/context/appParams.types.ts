@@ -21,14 +21,20 @@ import type { AppLobbyConfig } from "~/features/sessionsV2/apps/appLobby.utils";
 
 export interface AppParams {
   ANONYMOUS_SESSIONS: boolean;
+  APP_LOBBY: AppLobbyConfig;
+  APPS_ENABLED: boolean;
   BASE_URL: string;
+  BUILD_PRIVATE_REPO_BUILDS_ENABLED: boolean;
+  CONTACT_EMAIL: string;
+  CULLING_THRESHOLDS: CullingThresholdsParams;
+  ENVIDAT_EXPORTS_ENABLED: boolean;
   GATEWAY_URL: string;
   HOMEPAGE: HomepageParams;
   IMAGE_BUILDERS_ENABLED: boolean;
-  BUILD_PRIVATE_REPO_BUILDS_ENABLED: boolean;
-  CULLING_THRESHOLDS: CullingThresholdsParams;
   KEYCLOAK_REALM: string;
   MAINTENANCE: string;
+  PERSISTED_LOGS_ENABLED: boolean;
+  PERSISTED_LOGS_TTL_SECONDS: number;
   PREVIEW_THRESHOLD: PreviewThresholdParams;
   PRIVACY_BANNER_CONTENT: string;
   PRIVACY_BANNER_ENABLED: boolean;
@@ -46,11 +52,6 @@ export interface AppParams {
   UISERVER_URL: string;
   UPLOAD_THRESHOLD: UploadThresholdParams;
   USER_PREFERENCES_MAX_PINNED_PROJECTS: number;
-  CONTACT_EMAIL: string;
-  PERSISTED_LOGS_ENABLED: boolean;
-  PERSISTED_LOGS_TTL_SECONDS: number;
-  APPS_ENABLED: boolean;
-  APP_LOBBY: AppLobbyConfig;
 }
 
 export type AppParamsStrings = {
