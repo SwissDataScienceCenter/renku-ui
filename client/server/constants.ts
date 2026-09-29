@@ -91,6 +91,7 @@ export const CONFIG_JSON = {
   PERSISTED_LOGS_TTL_SECONDS: process.env.PERSISTED_LOGS_TTL_SECONDS,
   APPS_ENABLED: process.env.APPS_ENABLED,
   APP_LOBBY: safeJsonToObject(process.env.APP_LOBBY),
+  ENVIDAT_EXPORTS_ENABLED: process.env.ENVIDAT_EXPORTS_ENABLED,
 };
 
 export const SAMPLE_PRIVACY_CONTENT = `# Privacy statement
