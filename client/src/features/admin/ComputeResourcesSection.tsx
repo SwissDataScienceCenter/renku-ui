@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import {
   CheckLg,
+  Cpu,
   FolderFill,
   PeopleFill,
   PersonFill,
@@ -65,34 +66,20 @@ import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
-import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
-import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
-import ProjectStorageAllowSection from "./ProjectStorageAllowSection";
-import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import UpdateResourcePoolRemoteButton from "./UpdateResourcePoolRemoteButton";
 import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
 
-export default function AdminPage() {
-  return (
-    <>
-      <h1 className="mb-3">Admin Panel</h1>
-      <IncidentsAndMaintenanceSection />
-      <ComputeResourcesSection />
-      <ConnectedServicesSection />
-      <SessionEnvironmentsSection />
-      <ProjectStorageAllowSection />
-    </>
-  );
-}
-
-function ComputeResourcesSection() {
+export default function ComputeResourcesSection() {
   return (
     <section>
-      <h2>Compute Resources</h2>
+      <h2 className="mb-3">
+        <Cpu className="me-1" />
+        Compute Resources
+      </h2>
       <AdminComputeResourcesOverview />
     </section>
   );
