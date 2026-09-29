@@ -59,7 +59,10 @@ import InternalIdField from "~/components/InternalIdField";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
-import type { DataConnectorRead } from "~/features/dataConnectorsV2/api/data-connectors.api";
+import type {
+  DataConnectorRead,
+  DataConnectorToProjectLink,
+} from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { partitionDataConnectorsForApp } from "~/features/sessionsV2/apps/appDataConnectors.utils";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
@@ -71,7 +74,11 @@ import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepos
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import {
+  useGetSessionLaunchersByLauncherIdDataConnectorsQuery,
+  type SessionLauncher,
+  type SessionLauncherDataConnector,
+} from "../api/sessionLaunchersV2.api";
 import AppRuntimeCard from "../apps/AppRuntimeCard";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
@@ -101,6 +108,10 @@ import EnvironmentItem, {
   EnvironmentJSONArrayRowWithLabel,
 } from "./EnvironmentItem";
 import EnvVariablesCard from "./EnvVariablesCard";
+import {
+  getDataConnectorAccessPolicyLabel,
+  resolveDataConnectorAccessPolicy,
+} from "./launcherResources.constants";
 
 import styles from "./SessionView.module.scss";
 
@@ -306,6 +317,13 @@ export function SessionView({
     useGetDataConnectorsListByDataConnectorIdsQuery(
       dataConnectorIds ? { dataConnectorIds } : skipToken,
     );
+  const launcherDataConnectorsQuery =
+    useGetSessionLaunchersByLauncherIdDataConnectorsQuery(
+      launcher ? { launcherId: launcher.id } : skipToken,
+    );
+  const savedDataConnectorPolicies = launcherDataConnectorsQuery.isSuccess
+    ? launcherDataConnectorsQuery.data
+    : undefined;
 
   const dataConnectors = useMemo(
     () => Object.values(dataConnectorsMap ?? {}),
@@ -647,7 +665,9 @@ export function SessionView({
           )}
 
           <DataConnectorsCard
+            dataConnectorLinks={dataConnectorLinks ?? []}
             dataConnectors={isApp ? appDataConnectors : dataConnectors}
+            savedPolicies={savedDataConnectorPolicies}
             skippedCount={isApp ? skippedDataConnectors.length : 0}
             toggleEdit={launcher && !isApp ? toggleDataConnectors : undefined}
             userPermissions={permissions}
@@ -746,6 +766,12 @@ export function SessionView({
                 dataConnectorsMap={dataConnectorsMap ?? {}}
                 isOpen={isDataConnectorsOpen}
                 launcher={launcher}
+                policiesError={
+                  launcherDataConnectorsQuery.isError
+                    ? launcherDataConnectorsQuery.error
+                    : undefined
+                }
+                savedPolicies={savedDataConnectorPolicies}
                 toggle={toggleDataConnectors}
               />
             </>
@@ -820,15 +846,39 @@ export function SessionView({
   );
 }
 
+function accessPolicyLabel(
+  connector: DataConnectorRead,
+  links: DataConnectorToProjectLink[],
+  savedPolicies: SessionLauncherDataConnector[] | undefined,
+): string | null {
+  if (savedPolicies == null) {
+    return null;
+  }
+  const link = links.find((item) => item.data_connector_id === connector.id);
+  if (link == null) {
+    return null;
+  }
+  const savedPolicy = savedPolicies.find(
+    (entry) => entry.data_connector_link_id === link.id,
+  )?.policy;
+  return getDataConnectorAccessPolicyLabel(
+    resolveDataConnectorAccessPolicy(connector.storage.readonly, savedPolicy),
+  );
+}
+
 interface DataConnectorsCardProps {
+  dataConnectorLinks: DataConnectorToProjectLink[];
   dataConnectors: DataConnectorRead[];
+  savedPolicies?: SessionLauncherDataConnector[];
   skippedCount: number;
   toggleEdit?: () => void;
   userPermissions: Permissions;
 }
 
 function DataConnectorsCard({
+  dataConnectorLinks,
   dataConnectors,
+  savedPolicies,
   skippedCount,
   toggleEdit,
   userPermissions,
@@ -884,8 +934,24 @@ function DataConnectorsCard({
           <ListGroup flush>
             {dataConnectors.map((storage, index) => (
               <ListGroupItem key={`storage-${index}`}>
-                <div>Name: {storage.name}</div>
-                <div>Type: {storage.storage.storage_type}</div>
+                <div
+                  className={cx(
+                    "d-flex",
+                    "flex-row",
+                    "fw-bold",
+                    "justify-content-between",
+                  )}
+                >
+                  <div>{storage.name}</div>
+                  <div data-cy="access-policy">
+                    {accessPolicyLabel(
+                      storage,
+                      dataConnectorLinks,
+                      savedPolicies,
+                    )}
+                  </div>
+                </div>
+                <div>{storage.storage.storage_type}</div>
               </ListGroupItem>
             ))}
           </ListGroup>

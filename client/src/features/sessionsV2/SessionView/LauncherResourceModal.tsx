@@ -40,7 +40,9 @@ interface LauncherResourceModalProps {
   isDirty: boolean;
   isOpen: boolean;
   isSaving?: boolean;
+  isSuccess?: boolean;
   onSave: () => void;
+  successContent?: ReactNode;
   title: string;
   toggle: () => void;
 }
@@ -53,7 +55,9 @@ export default function LauncherResourceModal({
   isDirty,
   isOpen,
   isSaving = false,
+  isSuccess = false,
   onSave,
+  successContent,
   title,
   toggle,
 }: LauncherResourceModalProps) {
@@ -72,8 +76,14 @@ export default function LauncherResourceModal({
         {title}
       </ModalHeader>
       <ModalBody>
-        <p className="mb-3">{description}</p>
-        {children}
+        {isSuccess ? (
+          successContent
+        ) : (
+          <>
+            <p className="mb-3">{description}</p>
+            {children}
+          </>
+        )}
       </ModalBody>
       <ModalFooter>
         <Button
@@ -82,18 +92,20 @@ export default function LauncherResourceModal({
           onClick={toggle}
         >
           <XLg className={cx("bi", "me-1")} />
-          Cancel
+          {isSuccess ? "Close" : "Cancel"}
         </Button>
-        <Button
-          color="primary"
-          data-cy="save-configuration-button"
-          disabled={isSaving || !isDirty}
-          onClick={onSave}
-          type="button"
-        >
-          <CheckLg className={cx("bi", "me-1")} />
-          Save configuration
-        </Button>
+        {!isSuccess && (
+          <Button
+            color="primary"
+            data-cy="save-configuration-button"
+            disabled={isSaving || !isDirty}
+            onClick={onSave}
+            type="button"
+          >
+            <CheckLg className={cx("bi", "me-1")} />
+            Save configuration
+          </Button>
+        )}
       </ModalFooter>
     </ScrollableModal>
   );

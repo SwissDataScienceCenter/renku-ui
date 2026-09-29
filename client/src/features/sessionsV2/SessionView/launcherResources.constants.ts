@@ -53,10 +53,46 @@ export const DEFAULT_REPOSITORY_ACCESS_POLICY: RepositoryAccessPolicyName =
 
 export const DEFAULT_SECRET_ACCESS_POLICY: SecretAccessPolicyName = "readOnly";
 
+export function resolveSecretAccessPolicy(
+  savedPolicy: SecretAccessPolicyName | undefined,
+): SecretAccessPolicyName {
+  return savedPolicy ?? DEFAULT_SECRET_ACCESS_POLICY;
+}
+
+export function getSecretAccessPolicyLabel(
+  policy: SecretAccessPolicyName,
+): string {
+  return (
+    SECRET_ACCESS_OPTIONS.find((option) => option.value === policy)?.label ??
+    policy
+  );
+}
+
 export function getDefaultDataConnectorAccessPolicy(
   isStorageReadOnly: boolean,
 ): DataConnectorAccessPolicyName {
   return isStorageReadOnly ? "readOnly" : "readWrite";
+}
+
+export function resolveDataConnectorAccessPolicy(
+  isStorageReadOnly: boolean,
+  savedPolicy: DataConnectorAccessPolicyName | undefined,
+): DataConnectorAccessPolicyName {
+  const policy =
+    savedPolicy ?? getDefaultDataConnectorAccessPolicy(isStorageReadOnly);
+  if (isStorageReadOnly && policy === "readWrite") {
+    return "readOnly";
+  }
+  return policy;
+}
+
+export function getDataConnectorAccessPolicyLabel(
+  policy: DataConnectorAccessPolicyName,
+): string {
+  return (
+    DATA_CONNECTOR_ACCESS_OPTIONS.find((option) => option.value === policy)
+      ?.label ?? policy
+  );
 }
 
 export const GIT_REFERENCE_PATTERN = /^refs\/(heads|tags)\/.+$/;

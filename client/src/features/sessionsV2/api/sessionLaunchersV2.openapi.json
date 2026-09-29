@@ -396,8 +396,8 @@
         },
         "tags": ["session_launchers"]
       },
-      "patch": {
-        "summary": "Patch a session launchers' repository parameters",
+      "put": {
+        "summary": "Update a list of session launchers' repository parameters",
         "requestBody": {
           "required": true,
           "content": {
@@ -476,8 +476,8 @@
         },
         "tags": ["session_launchers"]
       },
-      "patch": {
-        "summary": "Patch a session launchers' data connector parameters",
+      "put": {
+        "summary": "Update a list of session launchers' data connector parameters",
         "requestBody": {
           "required": true,
           "content": {
@@ -556,8 +556,8 @@
         },
         "tags": ["session_launchers"]
       },
-      "patch": {
-        "summary": "Patch a session launchers' secret parameters",
+      "put": {
+        "summary": "Update a list of session launchers' secret parameters",
         "requestBody": {
           "required": true,
           "content": {
@@ -1173,7 +1173,7 @@
         "enum": ["excluded", "readOnly", "readWrite"]
       },
       "DataConnectorKey": {
-        "description": "Surrogate key identifying a data connector to a project relationship",
+        "description": "Key identifying a data connector to a project relationship",
         "type": "object",
         "properties": {
           "data_connector_link_id": {
@@ -1222,8 +1222,8 @@
         "type": "string",
         "enum": ["excluded", "readOnly", "readWrite"]
       },
-      "ProjectRepositorySurrogateKey": {
-        "description": "Surrogate key identifying a repository within a project\n",
+      "ProjectRepositoryId": {
+        "description": "The ID of the git repository\n",
         "type": "object",
         "properties": {
           "repository_id": {
@@ -1233,8 +1233,8 @@
         },
         "required": ["repository_id"]
       },
-      "RepositoryNaturalKey": {
-        "description": "Natural key identifying a repository from its url",
+      "RepositoryUrl": {
+        "description": "The http git clone url for the repository",
         "type": "object",
         "properties": {
           "url": {
@@ -1244,21 +1244,21 @@
         "required": ["url"]
       },
       "RepositoryCompositeKey": {
-        "description": "Repository surrogate and natural key pair\n",
+        "description": "Repository Id and URL pair\n",
         "allOf": [
           {
-            "$ref": "#/components/schemas/ProjectRepositorySurrogateKey"
+            "$ref": "#/components/schemas/ProjectRepositoryId"
           },
           {
-            "$ref": "#/components/schemas/RepositoryNaturalKey"
+            "$ref": "#/components/schemas/RepositoryUrl"
           }
         ]
       },
       "GitReference": {
-        "description": "A git references",
+        "description": "A git branch",
         "type": "string",
-        "pattern": "^refs/(heads|tags)/.*$",
-        "example": "refs/heads/main"
+        "minLength": 1,
+        "example": "main"
       },
       "GitReferenceList": {
         "description": "List of git references",
@@ -1270,7 +1270,7 @@
         "uniqueItems": true
       },
       "RepositoryAccessPolicy": {
-        "description": "Repository access policy config",
+        "description": "Repository access policy config.\nWe do not return the references when the repository is writable.\n",
         "type": "object",
         "properties": {
           "policy": {
@@ -1280,7 +1280,7 @@
             "$ref": "#/components/schemas/GitReferenceList"
           }
         },
-        "required": ["policy", "writable_references"]
+        "required": ["policy"]
       },
       "SessionLauncherRepositoryList": {
         "description": "A list of repository access policy paremeters of a Renku 2.0 session\n",
@@ -1311,7 +1311,7 @@
         "description": "Patch git repository properties of a Renku 2.0 session\n",
         "allOf": [
           {
-            "$ref": "#/components/schemas/ProjectRepositorySurrogateKey"
+            "$ref": "#/components/schemas/ProjectRepositoryId"
           },
           {
             "$ref": "#/components/schemas/RepositoryAccessPolicy"
@@ -1319,7 +1319,7 @@
         ]
       },
       "SecretSlotKey": {
-        "description": "Surrogate key identifying a secret slot within the project",
+        "description": "Key identifying a secret slot within the project",
         "type": "object",
         "properties": {
           "secret_slot_id": {

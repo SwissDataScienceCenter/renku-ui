@@ -27,12 +27,14 @@ import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
 import { getSecretSlotSessionPath } from "./sessionSecrets.utils";
 
 interface SessionSecretSlotItemProps {
+  accessPolicy?: string | null;
   secretsMountDirectory: string;
   secretSlot: SessionSecretSlotWithSecret;
   noActions?: boolean;
 }
 
 export default function SessionSecretSlotItem({
+  accessPolicy,
   secretsMountDirectory,
   secretSlot,
   noActions,
@@ -68,6 +70,11 @@ export default function SessionSecretSlotItem({
                 <Lock className="me-1" />
                 Secret not provided
               </RenkuBadge>
+            )}
+            {accessPolicy !== undefined && (
+              <div className="ms-auto" data-cy="access-policy">
+                {accessPolicy}
+              </div>
             )}
           </div>
           {description && <p className="mb-0">{description}</p>}

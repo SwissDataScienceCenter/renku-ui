@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import type { SerializedError } from "@reduxjs/toolkit";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect, useMemo } from "react";
 import { Database } from "react-bootstrap-icons";
@@ -31,9 +33,12 @@ import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
 } from "~/features/dataConnectorsV2/api/data-connectors.api";
-import type {
-  DataConnectorAccessPolicyName,
-  SessionLauncher,
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
+import {
+  usePutSessionLaunchersByLauncherIdDataConnectorsMutation as useUpdateLauncherDataConnectorsMutation,
+  type DataConnectorAccessPolicyName,
+  type SessionLauncher,
+  type SessionLauncherDataConnector,
 } from "../api/sessionLaunchersV2.api";
 import LauncherResourceModal, {
   AccessPolicySelect,
@@ -41,7 +46,7 @@ import LauncherResourceModal, {
 } from "./LauncherResourceModal";
 import {
   DATA_CONNECTOR_ACCESS_OPTIONS,
-  getDefaultDataConnectorAccessPolicy,
+  resolveDataConnectorAccessPolicy,
 } from "./launcherResources.constants";
 
 const READ_WRITE_DISABLED: readonly DataConnectorAccessPolicyName[] = [
@@ -63,6 +68,7 @@ interface DataConnectorsForm {
 function getDefaultValues(
   links: DataConnectorToProjectLink[],
   dataConnectorsMap: Record<string, DataConnectorRead>,
+  savedPolicies: SessionLauncherDataConnector[] | undefined,
 ): DataConnectorsForm {
   return {
     dataConnectors: links.flatMap((link) => {
@@ -71,12 +77,18 @@ function getDefaultValues(
         return [];
       }
       const isStorageReadOnly = dataConnector.storage.readonly;
+      const savedPolicy = savedPolicies?.find(
+        (entry) => entry.data_connector_link_id === link.id,
+      )?.policy;
       return [
         {
           isStorageReadOnly,
           linkId: link.id,
           name: dataConnector.name,
-          policy: getDefaultDataConnectorAccessPolicy(isStorageReadOnly),
+          policy: resolveDataConnectorAccessPolicy(
+            isStorageReadOnly,
+            savedPolicy,
+          ),
           slug: dataConnector.slug,
         },
       ];
@@ -123,11 +135,6 @@ function DataConnectorAccessRow({
             );
           }}
         />
-        {isStorageReadOnly && (
-          <small className="text-body-secondary">
-            This data connector is read-only.
-          </small>
-        )}
       </td>
     </tr>
   );
@@ -138,6 +145,8 @@ interface CustomizeDataConnectorsModalProps {
   dataConnectorsMap: Record<string, DataConnectorRead>;
   isOpen: boolean;
   launcher: SessionLauncher;
+  policiesError?: FetchBaseQueryError | SerializedError;
+  savedPolicies?: SessionLauncherDataConnector[];
   toggle: () => void;
 }
 
@@ -146,11 +155,16 @@ export default function CustomizeDataConnectorsModal({
   dataConnectorsMap,
   isOpen,
   launcher,
+  policiesError,
+  savedPolicies,
   toggle,
 }: CustomizeDataConnectorsModalProps) {
+  const [updateLauncherDataConnectors, updateResult] =
+    useUpdateLauncherDataConnectorsMutation();
   const defaultValues = useMemo(
-    () => getDefaultValues(dataConnectorLinks, dataConnectorsMap),
-    [dataConnectorLinks, dataConnectorsMap],
+    () =>
+      getDefaultValues(dataConnectorLinks, dataConnectorsMap, savedPolicies),
+    [dataConnectorLinks, dataConnectorsMap, savedPolicies],
   );
 
   const {
@@ -160,7 +174,32 @@ export default function CustomizeDataConnectorsModal({
     reset,
   } = useForm<DataConnectorsForm>({ defaultValues });
   const { fields } = useFieldArray({ control, name: "dataConnectors" });
-  const onSave = handleSubmit(() => {});
+  const onSave = handleSubmit(async (form) => {
+    if (savedPolicies == null) {
+      console.log("we need previous polices to update them");
+      return;
+    }
+    try {
+      await updateLauncherDataConnectors({
+        launcherId: launcher.id,
+        sessionLauncherDataConnectorPatchList: form.dataConnectors.map(
+          (row) => ({
+            data_connector_link_id: row.linkId,
+            policy: row.policy,
+          }),
+        ),
+      }).unwrap();
+      toggle();
+    } catch {
+      return;
+    }
+  });
+
+  useEffect(() => {
+    if (!isOpen) {
+      updateResult.reset();
+    }
+  }, [isOpen, updateResult]);
 
   useEffect(() => {
     reset(defaultValues);
@@ -171,19 +210,26 @@ export default function CustomizeDataConnectorsModal({
       dataCy="customize-data-connectors-modal"
       description="Limit access to data connectors in this launcher."
       icon={<Database className={cx("bi", "me-1")} />}
-      isDirty={isDirty}
+      isDirty={isDirty && savedPolicies != null}
       isOpen={isOpen}
+      isSaving={updateResult.isLoading}
       onSave={onSave}
       title={`Customize Data Connectors in ${launcher.name}`}
       toggle={toggle}
     >
+      {policiesError != null && (
+        <RtkOrDataServicesError error={policiesError} />
+      )}
+      {updateResult.error != null && (
+        <RtkOrDataServicesError error={updateResult.error} />
+      )}
       {fields.length < 1 ? (
         <p className={cx("fst-italic", "mb-0")}>No data connectors included</p>
       ) : (
         <Form noValidate onSubmit={onSave}>
           <LauncherResourceTable
             dataCy="launcher-data-connectors-table"
-            headers={["Data connector name", "Slug", "Access"]}
+            headers={["Data connector name", "Owner", "Access"]}
           >
             {fields.map((field, index) => (
               <DataConnectorAccessRow

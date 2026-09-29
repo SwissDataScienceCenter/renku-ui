@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import type { SerializedError } from "@reduxjs/toolkit";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect, useMemo } from "react";
 import { ShieldLock } from "react-bootstrap-icons";
@@ -28,17 +30,26 @@ import {
 import { Form } from "reactstrap";
 
 import { getSecretSlotSessionPath } from "~/features/ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.utils";
+import { SuccessAlert } from "../../../components/Alert";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import type { SessionSecretSlot } from "../../projectsV2/api/projectV2.api";
-import type {
-  SecretAccessPolicyName,
-  SessionLauncher,
+import {
+  usePutSessionLaunchersByLauncherIdSecretsMutation as useUpdateLauncherSecretsMutation,
+  type SecretAccessPolicyName,
+  type SessionLauncher,
+  type SessionLauncherSecret,
 } from "../api/sessionLaunchersV2.api";
+import {
+  getLauncherCategory,
+  getLauncherCategoryDefinition,
+  getLauncherChangeEffectMessage,
+} from "../session.utils";
 import LauncherResourceModal, {
   AccessPolicySelect,
   LauncherResourceTable,
 } from "./LauncherResourceModal";
 import {
-  DEFAULT_SECRET_ACCESS_POLICY,
+  resolveSecretAccessPolicy,
   SECRET_ACCESS_OPTIONS,
 } from "./launcherResources.constants";
 
@@ -55,14 +66,20 @@ interface SessionSecretsForm {
 
 function getDefaultValues(
   sessionSecretSlots: SessionSecretSlot[],
+  savedPolicies: SessionLauncherSecret[] | undefined,
 ): SessionSecretsForm {
   return {
-    secrets: sessionSecretSlots.map((secretSlot) => ({
-      filename: secretSlot.filename,
-      name: secretSlot.name,
-      policy: DEFAULT_SECRET_ACCESS_POLICY,
-      secretSlotId: secretSlot.id,
-    })),
+    secrets: sessionSecretSlots.map((secretSlot) => {
+      const savedPolicy = savedPolicies?.find(
+        (entry) => entry.secret_slot_id === secretSlot.id,
+      )?.policy;
+      return {
+        filename: secretSlot.filename,
+        name: secretSlot.name,
+        policy: resolveSecretAccessPolicy(savedPolicy),
+        secretSlotId: secretSlot.id,
+      };
+    }),
   };
 }
 
@@ -111,9 +128,32 @@ function SessionSecretRow({
   );
 }
 
+function SecretPolicyUpdateConfirmation({
+  launcher,
+}: {
+  launcher: SessionLauncher;
+}) {
+  const launcherCategory = getLauncherCategory(launcher);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
+  return (
+    <div data-cy="session-launcher-update-success">
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p className="fw-bold">
+          {launcherDefinition.text.display} launcher updated successfully!
+        </p>
+        <p className="mb-0" data-cy="launcher-change-effect">
+          {getLauncherChangeEffectMessage(launcherCategory)}
+        </p>
+      </SuccessAlert>
+    </div>
+  );
+}
+
 interface CustomizeSessionSecretsModalProps {
   isOpen: boolean;
   launcher: SessionLauncher;
+  policiesError?: FetchBaseQueryError | SerializedError;
+  savedPolicies?: SessionLauncherSecret[];
   secretsMountDirectory: string;
   sessionSecretSlots: SessionSecretSlot[];
   toggle: () => void;
@@ -122,13 +162,17 @@ interface CustomizeSessionSecretsModalProps {
 export default function CustomizeSessionSecretsModal({
   isOpen,
   launcher,
+  policiesError,
+  savedPolicies,
   secretsMountDirectory,
   sessionSecretSlots,
   toggle,
 }: CustomizeSessionSecretsModalProps) {
+  const [updateLauncherSecrets, updateResult] =
+    useUpdateLauncherSecretsMutation();
   const defaultValues = useMemo(
-    () => getDefaultValues(sessionSecretSlots),
-    [sessionSecretSlots],
+    () => getDefaultValues(sessionSecretSlots, savedPolicies),
+    [savedPolicies, sessionSecretSlots],
   );
 
   const {
@@ -138,7 +182,28 @@ export default function CustomizeSessionSecretsModal({
     reset,
   } = useForm<SessionSecretsForm>({ defaultValues });
   const { fields } = useFieldArray({ control, name: "secrets" });
-  const onSave = handleSubmit(() => {});
+  const onSave = handleSubmit(async (form) => {
+    if (savedPolicies == null) {
+      return;
+    }
+    try {
+      await updateLauncherSecrets({
+        launcherId: launcher.id,
+        sessionLauncherSecretPatchList: form.secrets.map((row) => ({
+          secret_slot_id: row.secretSlotId,
+          policy: row.policy,
+        })),
+      }).unwrap();
+    } catch {
+      return;
+    }
+  });
+
+  useEffect(() => {
+    if (!isOpen) {
+      updateResult.reset();
+    }
+  }, [isOpen, updateResult]);
 
   useEffect(() => {
     reset(defaultValues);
@@ -149,12 +214,21 @@ export default function CustomizeSessionSecretsModal({
       dataCy="customize-session-secrets-modal"
       description="Limit access to session secrets in this launcher."
       icon={<ShieldLock className={cx("bi", "me-1")} />}
-      isDirty={isDirty}
+      isDirty={isDirty && savedPolicies != null}
       isOpen={isOpen}
+      isSaving={updateResult.isLoading}
+      isSuccess={updateResult.isSuccess}
       onSave={onSave}
+      successContent={<SecretPolicyUpdateConfirmation launcher={launcher} />}
       title={`Customize Session Secrets in ${launcher.name}`}
       toggle={toggle}
     >
+      {policiesError != null && (
+        <RtkOrDataServicesError error={policiesError} />
+      )}
+      {updateResult.error != null && (
+        <RtkOrDataServicesError error={updateResult.error} />
+      )}
       {fields.length < 1 ? (
         <p className={cx("fst-italic", "mb-0")}>No session secrets included</p>
       ) : (

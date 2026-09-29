@@ -46,8 +46,16 @@ import {
   useGetProjectsByProjectIdSessionSecretSlotsQuery,
   useGetProjectsByProjectIdSessionSecretsQuery,
 } from "../../../projectsV2/api/projectV2.enhanced-api";
-import type { SessionLauncher } from "../../../sessionsV2/api/sessionLaunchersV2.api";
+import {
+  useGetSessionLaunchersByLauncherIdSecretsQuery,
+  type SessionLauncher,
+  type SessionLauncherSecret,
+} from "../../../sessionsV2/api/sessionLaunchersV2.api";
 import CustomizeSessionSecretsModal from "../../../sessionsV2/SessionView/CustomizeSessionSecretsModal";
+import {
+  getSecretAccessPolicyLabel,
+  resolveSecretAccessPolicy,
+} from "../../../sessionsV2/SessionView/launcherResources.constants";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import { SESSION_SECRETS_CARD_ID } from "./sessionSecrets.constants";
 import { getSessionSecretSlotsWithSecrets } from "./sessionSecrets.utils";
@@ -85,6 +93,12 @@ export default function SessionViewSessionSecrets({
   );
   const isLoading = isLoadingSessionSecretSlots || isLoadingSessionSecrets;
   const error = sessionSecretSlotsError ?? sessionSecretsError;
+  const launcherSecretsQuery = useGetSessionLaunchersByLauncherIdSecretsQuery(
+    launcher ? { launcherId: launcher.id } : skipToken,
+  );
+  const savedSecretPolicies = launcherSecretsQuery.isSuccess
+    ? launcherSecretsQuery.data
+    : undefined;
 
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
     namespace: project.namespace,
@@ -100,6 +114,9 @@ export default function SessionViewSessionSecrets({
     </>
   ) : (
     <SessionViewSessionSecretsContent
+      savedPolicies={
+        launcher == null ? undefined : (savedSecretPolicies ?? null)
+      }
       secretsMountDirectory={secretsMountDirectory}
       sessionSecretSlots={sessionSecretSlots}
       sessionSecrets={sessionSecrets ?? []}
@@ -176,6 +193,12 @@ export default function SessionViewSessionSecrets({
         <CustomizeSessionSecretsModal
           isOpen={isEditOpen}
           launcher={launcher}
+          policiesError={
+            launcherSecretsQuery.isError
+              ? launcherSecretsQuery.error
+              : undefined
+          }
+          savedPolicies={savedSecretPolicies}
           secretsMountDirectory={secretsMountDirectory}
           sessionSecretSlots={sessionSecretSlots ?? []}
           toggle={toggleEdit}
@@ -185,13 +208,31 @@ export default function SessionViewSessionSecrets({
   );
 }
 
+function accessPolicyLabel(
+  slotId: string,
+  savedPolicies: SessionLauncherSecret[] | null | undefined,
+): string | null | undefined {
+  if (savedPolicies === undefined) {
+    return undefined;
+  }
+  if (savedPolicies === null) {
+    return null;
+  }
+  const savedPolicy = savedPolicies.find(
+    (entry) => entry.secret_slot_id === slotId,
+  )?.policy;
+  return getSecretAccessPolicyLabel(resolveSecretAccessPolicy(savedPolicy));
+}
+
 interface SessionViewSessionSecretsContentProps {
+  savedPolicies?: SessionLauncherSecret[] | null;
   secretsMountDirectory: string;
   sessionSecretSlots: SessionSecretSlot[];
   sessionSecrets: SessionSecret[];
 }
 
 function SessionViewSessionSecretsContent({
+  savedPolicies,
   secretsMountDirectory,
   sessionSecretSlots,
   sessionSecrets,
@@ -211,6 +252,10 @@ function SessionViewSessionSecretsContent({
       {sessionSecretSlotsWithSecrets.map((secretSlot) => (
         <SessionSecretSlotItem
           key={secretSlot.secretSlot.id}
+          accessPolicy={accessPolicyLabel(
+            secretSlot.secretSlot.id,
+            savedPolicies,
+          )}
           secretsMountDirectory={secretsMountDirectory}
           secretSlot={secretSlot}
           noActions
