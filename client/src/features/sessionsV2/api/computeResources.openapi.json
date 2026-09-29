@@ -1828,7 +1828,7 @@
             }
           },
           "404": {
-            "description": "The group does not exist",
+            "description": "The group does not exist or the user does not have access to the group",
             "content": {
               "application/json": {
                 "schema": {
