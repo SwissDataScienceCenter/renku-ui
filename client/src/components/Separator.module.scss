@@ -9,7 +9,7 @@
   content: "|";
   margin-inline-end: 1rem;
   margin-inline-start: 1rem;
-  color: var(--bs-secondary-color);
+  color: var(--#{$prefix}secondary-color);
   font-size: 12px;
 
   @include media-breakpoint-down(md) {

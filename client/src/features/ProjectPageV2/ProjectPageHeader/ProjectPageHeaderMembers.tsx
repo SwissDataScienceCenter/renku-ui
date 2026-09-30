@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,19 +17,18 @@
  */
 
 import cx from "classnames";
-import { useRef } from "react";
 import { generatePath, Link } from "react-router";
-import { UncontrolledTooltip } from "reactstrap";
 
-import UserAvatar from "~/features/usersV2/show/UserAvatar";
-import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import type {
+import {
+  getMemberNameToDisplay,
+  toSortedMembers,
+} from "~/features/ProjectPageV2/utils/roleUtils";
+import {
   ProjectMemberListResponse,
   ProjectMemberResponse,
-} from "../../../projectsV2/api/projectV2.api";
-import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
-
-import styles from "~/features/usersV2/show/UserAvatar.module.scss";
+} from "~/features/projectsV2/api/projectV2.api";
+import UserAvatar, { OverflowBadge } from "~/features/usersV2/show/UserAvatar";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 
 const MAX_MEMBERS_DISPLAYED = 2;
 
@@ -72,11 +71,10 @@ interface ProjectInformationMembersProps {
   members: ProjectMemberListResponse | undefined;
   membersUrl: string;
 }
-export function ProjectInformationMembers({
+export function ProjectPageHeaderMembers({
   members,
   membersUrl,
 }: ProjectInformationMembersProps) {
-  const ref = useRef(null);
   if (members == null) return null;
   const sortedMembers = toSortedMembers(members);
   const hiddenCount = members.length - MAX_MEMBERS_DISPLAYED;
@@ -86,31 +84,12 @@ export function ProjectInformationMembers({
         <ProjectInformationMember key={index} member={member} />
       ))}
       {members.length > MAX_MEMBERS_DISPLAYED && (
-        <>
-          <span ref={ref}>
-            <Link to={membersUrl} className="text-decoration-none">
-              <div
-                className={cx(
-                  "align-items-center",
-                  "border",
-                  "d-flex",
-                  "flex-shrink-0",
-                  "justify-content-center",
-                  "rounded-circle",
-                  "text-black",
-                  "small",
-                  styles.avatar,
-                )}
-                data-cy="member-list-overflow"
-              >
-                +{hiddenCount}
-              </div>
-            </Link>
-          </span>
-          <UncontrolledTooltip target={ref}>
-            View all project members
-          </UncontrolledTooltip>
-        </>
+        <Link to={membersUrl} className="text-decoration-none">
+          <OverflowBadge
+            count={hiddenCount}
+            tooltip="View all project members"
+          />
+        </Link>
       )}
     </>
   );
