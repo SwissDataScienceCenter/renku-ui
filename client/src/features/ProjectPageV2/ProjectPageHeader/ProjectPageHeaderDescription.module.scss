@@ -1,0 +1,49 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+
+.description {
+  --description-line-height: 1.5em;
+
+  flex: 1 1 auto;
+  line-height: var(--description-line-height);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+
+  &::before {
+    content: "";
+    float: right;
+    height: 100%;
+    margin-bottom: calc(-1 * var(--description-line-height));
+  }
+}
+
+.descriptionClamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.descriptionToggle {
+  background: none;
+  border: 0;
+  clear: both;
+  color: var(--#{$prefix}link-color);
+  cursor: pointer;
+  float: right;
+  line-height: inherit;
+  margin-inline-start: 0.25rem;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    border-radius: 2px;
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}

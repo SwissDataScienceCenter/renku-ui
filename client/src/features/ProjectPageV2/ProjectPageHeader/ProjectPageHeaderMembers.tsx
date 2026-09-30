@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -21,13 +21,16 @@ import { useRef } from "react";
 import { generatePath, Link } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
-import UserAvatar from "~/features/usersV2/show/UserAvatar";
-import { ABSOLUTE_ROUTES } from "../../../../routing/routes.constants";
-import type {
+import {
+  getMemberNameToDisplay,
+  toSortedMembers,
+} from "~/features/ProjectPageV2/utils/roleUtils";
+import {
   ProjectMemberListResponse,
   ProjectMemberResponse,
-} from "../../../projectsV2/api/projectV2.api";
-import { getMemberNameToDisplay, toSortedMembers } from "../../utils/roleUtils";
+} from "~/features/projectsV2/api/projectV2.api";
+import UserAvatar from "~/features/usersV2/show/UserAvatar";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 
 import styles from "~/features/usersV2/show/UserAvatar.module.scss";
 
@@ -72,7 +75,7 @@ interface ProjectInformationMembersProps {
   members: ProjectMemberListResponse | undefined;
   membersUrl: string;
 }
-export function ProjectInformationMembers({
+export function ProjectPageHeaderMembers({
   members,
   membersUrl,
 }: ProjectInformationMembersProps) {
