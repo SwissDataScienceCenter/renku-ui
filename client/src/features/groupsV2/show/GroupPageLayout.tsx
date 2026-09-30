@@ -25,11 +25,9 @@ import { Clipboard } from "~/components/clipboard/Clipboard";
 import EntityIcon from "~/components/entityIcon/EntityIcon";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import ContainerWrap from "../../../components/container/ContainerWrap";
-import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { GroupResponse } from "../../projectsV2/api/namespace.api";
-import UserAvatar from "../../usersV2/show/UserAvatar";
 import GroupNew from "../new/GroupNew";
 
 interface GroupPageLayoutProps {
@@ -59,18 +57,8 @@ export default function GroupPageLayout({
       <GroupNew />
 
       <Row className="my-3">
-        <Col xs={12}>
-          <Row>
-            <Col className={cx("d-block", "d-md-none")} xs={12}>
-              <span className="text-muted">Group</span>
-            </Col>
-            <Col className="mb-3">
-              <GroupHeader group={group} slug={group.slug} />
-            </Col>
-            <Col className={cx("d-md-block", "d-none")} md="auto">
-              <EntityWatermark type="group" />
-            </Col>
-          </Row>
+        <Col xs={12} className="mb-3">
+          <GroupHeader group={group} />
         </Col>
         <Col xs={12} className="mb-3">
           <PageNav options={options} />

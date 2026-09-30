@@ -33,7 +33,6 @@ import {
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
-import UserAvatar from "./UserAvatar";
 
 interface UserPageLayoutProps {
   user: UserWithId;
