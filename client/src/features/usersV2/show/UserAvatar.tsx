@@ -120,6 +120,7 @@ export default function UserAvatar({
         "align-items-center",
         "d-flex",
         "flex-shrink-0",
+        "justify-content-center",
         "rounded-circle",
         "text-center",
         "fw-medium",
@@ -168,13 +169,10 @@ function truncateTooltipText(text: string) {
 
 interface OverflowBadgeProps {
   count: number;
-  hiddenMembers: {
-    first_name?: string;
-    last_name?: string;
-  }[];
+  tooltip: string;
 }
 
-export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
+export function OverflowBadge({ count, tooltip }: OverflowBadgeProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -188,6 +186,7 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
           "rounded-circle",
           "text-center",
           "text-black",
+          "bg-secondary-subtle",
           styles.avatar,
         )}
         data-cy="member-list-overflow"
@@ -195,11 +194,7 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
         +{count}
       </div>
       <UncontrolledTooltip target={ref}>
-        {truncateTooltipText(
-          hiddenMembers
-            .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
-            .join(", "),
-        )}
+        {truncateTooltipText(tooltip)}
       </UncontrolledTooltip>
     </>
   );
