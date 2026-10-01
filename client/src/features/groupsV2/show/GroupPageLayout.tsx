@@ -85,33 +85,15 @@ function GroupHeader({ group }: { group: GroupResponse }) {
           "min-w-0",
         )}
       >
-        <EntityIcon className="flex-shrink-0" type="group" />
-        <div
-          className={cx(
-            "d-flex",
-            "flex-column",
-            "justify-content-evenly",
-            "min-w-0",
-          )}
-        >
+        <EntityIcon  className="flex-shrink-0" type="group" />
+        <div className={cx("d-flex", "flex-column", "justify-content-evenly", "min-w-0")}>
           <h1 className={cx("mb-0", "text-break")} data-cy="group-name">
             {group.name ?? "Unknown group"}
           </h1>
-          <div
-            className={cx("align-items-center", "d-flex", "gap-2", "min-w-0")}
-            data-cy="group-identifier"
-          >
-            <span className={cx("min-w-0", "text-truncate")} title={namespace}>
-              {namespace}
-            </span>
+          <div className={cx("align-items-center", "d-flex", "gap-2", "min-w-0")}>
+            <span className={cx("min-w-0", "text-truncate")}>{namespace}</span>
             <Clipboard
-              className={cx(
-                "border-0",
-                "btn",
-                "flex-shrink-0",
-                "p-0",
-                "shadow-none",
-              )}
+              className={cx("border-0", "btn", "flex-shrink-0", "p-0", "shadow-none")}
               clipboardText={namespace}
             />
           </div>
