@@ -48,7 +48,7 @@ export default function DataConnectorPageLayout({
       <Row className="my-3">
         <Col xs={12}>
           <Row>
-            <Col className="mb-3">
+            <Col className={cx("mb-3", "min-w-0")}>
               <DataConnectorHeader dataConnector={dataConnector} />
             </Col>
             <Col className={cx("d-md-block", "d-none")} md="auto">
@@ -72,7 +72,7 @@ interface DataConnectorHeaderProps {
 }
 function DataConnectorHeader({ dataConnector }: DataConnectorHeaderProps) {
   return (
-    <div className={cx("d-flex", "flex-column", "gap-2")}>
+    <div className={cx("d-flex", "flex-column", "gap-2", "min-w-0")}>
       <EntityBreadcrumb dataConnector={dataConnector} />
       <div className={cx("d-md-none", "text-muted")}>Data connector</div>
       <h1 className={cx("mb-0", "text-break")} data-cy="data-connector-name">

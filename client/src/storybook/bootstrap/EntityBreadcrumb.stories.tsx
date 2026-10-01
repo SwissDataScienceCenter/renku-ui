@@ -89,7 +89,8 @@ export const LongNames: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Long project and connector names truncate on small screens.",
+        story:
+          "Long names stay beside each other and shorten only when the row runs out of room. On narrow screens, ancestors older than the parent are replaced by ... and the icon stays visible.",
       },
     },
   },

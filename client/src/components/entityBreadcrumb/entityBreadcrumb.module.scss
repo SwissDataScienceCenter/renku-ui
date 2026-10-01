@@ -5,6 +5,11 @@
 @import "~bootstrap/scss/mixins";
 
 .link {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
   text-decoration: underline;
 
   @include media-breakpoint-up(md) {
@@ -20,18 +25,41 @@
 
 .nav {
   overflow-x: hidden;
+}
 
-  @include media-breakpoint-up(md) {
-    overflow-x: auto;
+.level {
+  flex: 0 1 auto;
+  min-width: 0;
+
+  &::before {
+    flex-shrink: 0;
   }
 }
 
-.previousPath {
-  max-width: 80%;
-  min-width: 0;
+.collapsed {
+  @include media-breakpoint-down(md) {
+    flex: 0 0 auto;
+  }
+}
 
-  a {
-    min-width: 0;
-    max-width: 100%;
+.label {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fullLabel {
+  @include media-breakpoint-down(md) {
+    display: none;
+  }
+}
+
+.ellipsis {
+  flex-shrink: 0;
+
+  @include media-breakpoint-up(md) {
+    display: none;
   }
 }

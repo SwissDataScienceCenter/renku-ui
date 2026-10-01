@@ -45,7 +45,7 @@ export default function ProjectPageLayout({
       <Row className="my-3">
         <Col xs={12}>
           <Row>
-            <Col className="mb-3">
+            <Col className={cx("mb-3", "min-w-0")}>
               <ProjectPageHeader project={project} />
             </Col>
             <Col className={cx("d-md-block", "d-none")} md="auto">

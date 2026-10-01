@@ -35,7 +35,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
     new URLSearchParams(search).get("autostartRedirect") === "true";
 
   return (
-    <div className={cx("d-flex", "flex-column", "gap-2")}>
+    <div className={cx("d-flex", "flex-column", "gap-2", "min-w-0")}>
       <EntityBreadcrumb project={project} />
       <div className={cx("d-md-none", "text-muted")}>Project</div>
       <header>

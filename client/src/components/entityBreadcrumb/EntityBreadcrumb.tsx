@@ -40,31 +40,15 @@ import {
 
 import styles from "./entityBreadcrumb.module.scss";
 
-const LINK_CLASS_NAME = cx(
-  styles.link,
-  "align-items-center",
-  "d-inline-flex",
-  "min-w-0",
-  "text-primary",
-);
+const LINK_CLASS_NAME = cx(styles.link, "text-primary");
 
 const BREADCRUMB_STYLE = {
   ["--bs-breadcrumb-divider"]: "'›'",
 } as CSSProperties;
 
-function BreadcrumbIcon({
-  type,
-  isPreviousPath,
-}: {
-  type?: BreadcrumbEntityType;
-  isPreviousPath: boolean;
-}) {
+function BreadcrumbIcon({ type }: { type?: BreadcrumbEntityType }) {
   if (type == null) return null;
-  const className = cx(
-    "me-1",
-    "flex-shrink-0",
-    !isPreviousPath && ["d-none", "d-md-inline"],
-  );
+  const className = cx("flex-shrink-0", "me-1");
   switch (type) {
     case "group":
       return <People className={className} />;
@@ -113,6 +97,30 @@ function AncestorLink({
   );
 }
 
+function BreadcrumbLabel({
+  collapseToEllipsis,
+  label,
+}: {
+  collapseToEllipsis: boolean;
+  label: string;
+}) {
+  return (
+    <>
+      <span
+        className={cx(styles.label, collapseToEllipsis && styles.fullLabel)}
+        title={label}
+      >
+        {label}
+      </span>
+      {collapseToEllipsis && (
+        <span aria-hidden="true" className={styles.ellipsis} title={label}>
+          ...
+        </span>
+      )}
+    </>
+  );
+}
+
 function AncestorBreadcrumbLevel({
   isPreviousPath,
   level,
@@ -120,43 +128,24 @@ function AncestorBreadcrumbLevel({
   isPreviousPath: boolean;
   level: BreadcrumbLevel;
 }) {
-  const visibilityClass = isPreviousPath
-    ? ["min-w-0", "text-truncate"]
-    : ["d-none", "d-md-inline"];
-  const ellipsisClass = isPreviousPath ? "d-none" : ["d-inline", "d-md-none"];
-
   return (
     <li
       className={cx(
         "align-items-center",
         "breadcrumb-item",
         "d-flex",
+        "flex-nowrap",
         "text-primary",
-        isPreviousPath ? styles.previousPath : ["flex-shrink-0", "text-nowrap"],
+        styles.level,
+        !isPreviousPath && styles.collapsed,
       )}
     >
       <AncestorLink isPreviousPath={isPreviousPath} level={level}>
-        <BreadcrumbIcon type={level.type} isPreviousPath={isPreviousPath} />
-        {level.to ? (
-          <>
-            <span
-              className={cx(visibilityClass)}
-              title={isPreviousPath ? level.label : undefined}
-            >
-              {level.label}
-            </span>
-            <span aria-hidden="true" className={cx(ellipsisClass)}>
-              ...
-            </span>
-          </>
-        ) : (
-          <span
-            className={cx(isPreviousPath && ["min-w-0", "text-truncate"])}
-            title={isPreviousPath ? level.label : undefined}
-          >
-            {level.label}
-          </span>
-        )}
+        <BreadcrumbIcon type={level.type} />
+        <BreadcrumbLabel
+          collapseToEllipsis={!isPreviousPath}
+          label={level.label}
+        />
       </AncestorLink>
     </li>
   );
@@ -172,12 +161,12 @@ function CurrentBreadcrumbLevel({ level }: { level: BreadcrumbLevel }) {
         "breadcrumb-item",
         "d-flex",
         "flex-nowrap",
-        "min-w-0",
         "text-muted",
+        styles.level,
       )}
     >
-      <BreadcrumbIcon type={level.type} isPreviousPath={false} />
-      <span className={cx("min-w-0", "text-truncate", "me-1")}>
+      <BreadcrumbIcon type={level.type} />
+      <span className={cx(styles.label, "me-1")} title={level.label}>
         {level.label}
       </span>
     </li>
