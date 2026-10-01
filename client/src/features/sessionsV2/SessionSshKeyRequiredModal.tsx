@@ -96,7 +96,7 @@ export default function SessionSshKeyRequiredModal({
           color="primary"
           data-cy="session-ssh-key-required-setup"
           tag={Link}
-          to={ABSOLUTE_ROUTES.v2.keys}
+          to={ABSOLUTE_ROUTES.v2.ssh_keys}
         >
           <FiletypeKey className="me-1" />
           Set up an SSH key
