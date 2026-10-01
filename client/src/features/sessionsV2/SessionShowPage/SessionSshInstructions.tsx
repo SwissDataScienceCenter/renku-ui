@@ -19,6 +19,7 @@
 import { Terminal } from "react-bootstrap-icons";
 import { Link } from "react-router";
 
+import { InfoAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { ensureHTTPS } from "../session.utils";
@@ -54,10 +55,16 @@ export default function SessionSshInstructions({
       <div className="mb-3">
         <CommandCopy command={sshCommand} noMargin />
       </div>
-      <p>
-        If you need to change your SSH key, you can do so in your{" "}
-        <Link to={ABSOLUTE_ROUTES.v2.ssh_keys}>SSH keys page</Link>.
-      </p>
+      <InfoAlert timeout={0} dismissible={false}>
+        <p className="mb-2">
+          If you need to change your SSH key, you can do so in your{" "}
+          <Link to={ABSOLUTE_ROUTES.v2.ssh_keys}>SSH keys page</Link>.
+        </p>
+        <p className="mb-0">
+          You will need to restart your session after any change to your SSH
+          key.
+        </p>
+      </InfoAlert>
     </div>
   );
 }
