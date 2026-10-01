@@ -56,7 +56,7 @@ export default function SessionSshInstructions({
       </div>
       <p>
         If you need to change your SSH key, you can do so in your{" "}
-        <Link to={ABSOLUTE_ROUTES.v2.keys}>SSH keys page</Link>.
+        <Link to={ABSOLUTE_ROUTES.v2.ssh_keys}>SSH keys page</Link>.
       </p>
     </div>
   );
