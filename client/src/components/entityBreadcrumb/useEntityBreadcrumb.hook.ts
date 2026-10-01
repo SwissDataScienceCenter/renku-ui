@@ -20,6 +20,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 
 import type { DataConnectorRead } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
+  doiToUrl,
   getDataConnectorDoi,
   getDataConnectorIdentifier,
   getDataConnectorScope,
@@ -103,7 +104,7 @@ export function useEntityBreadcrumb(props: EntityBreadcrumbProps): {
   const namespaceKind = namespaceQuery.data?.namespace_kind;
   const namespaceName = namespaceQuery.data?.name;
   const projectName = ownerProjectQuery.data?.name;
-  const sourceUrl = doi ? `https://doi.org/${doi}` : undefined;
+  const sourceUrl = doi ? doiToUrl(doi) : undefined;
 
   let levels: BreadcrumbLevel[] = [];
   if (isReady && project) {

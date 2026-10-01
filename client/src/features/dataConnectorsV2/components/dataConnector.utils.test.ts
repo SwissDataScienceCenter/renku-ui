@@ -79,6 +79,17 @@ describe("getDataConnectorDoi()", () => {
     ).toBe("10.1000/182");
   });
 
+  it("falls back to the connector DOI when the configuration DOI does not parse", () => {
+    expect(
+      getDataConnectorDoi(
+        doiSource({
+          doi: "doi:10.1000/182",
+          configuration: { doi: "https://doi.org/" },
+        }),
+      ),
+    ).toBe("10.1000/182");
+  });
+
   it("returns undefined for namespace- and project-owned connectors", () => {
     expect(
       getDataConnectorDoi(

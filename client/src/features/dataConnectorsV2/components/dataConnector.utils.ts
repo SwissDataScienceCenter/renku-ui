@@ -213,10 +213,6 @@ export function getDataConnectorScope(namespace?: string): DataConnectorScope {
 export function useGetDataConnectorSource(
   dataConnector: DataConnector | undefined,
 ): { isLoading: boolean; source: string } {
-  const scope = useMemo(
-    () => getDataConnectorScope(dataConnector?.namespace),
-    [dataConnector?.namespace],
-  );
   const doi = getDataConnectorDoi(dataConnector);
 
   const {
@@ -229,7 +225,7 @@ export function useGetDataConnectorSource(
     if (dataConnector?.publisher_name != null) {
       return dataConnector.publisher_name;
     }
-    if (scope !== "global" || doi == null) {
+    if (doi == null) {
       return dataConnector?.namespace || "unknown";
     }
 
@@ -265,7 +261,6 @@ export function useGetDataConnectorSource(
     doi,
     isSuccess,
     resolverResponse,
-    scope,
   ]);
 
   // The handle query is skipped unless there is a DOI to resolve, and its
@@ -315,7 +310,11 @@ export function getDataConnectorDoi(
   if (getDataConnectorScope(dataConnector.namespace) !== "global")
     return undefined;
   const configDoi = dataConnector.storage.configuration["doi"];
-  if (typeof configDoi === "string" && configDoi) return parseDoi(configDoi);
+  const parsedConfigDoi =
+    typeof configDoi === "string" && configDoi
+      ? parseDoi(configDoi)
+      : undefined;
+  if (parsedConfigDoi) return parsedConfigDoi;
   if (dataConnector.doi) return parseDoi(dataConnector.doi);
   return undefined;
 }
