@@ -21,6 +21,7 @@ import { ReactNode } from "react";
 import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import { Clipboard } from "~/components/clipboard/Clipboard";
 import EntityIcon from "~/components/entityIcon/EntityIcon";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
@@ -83,17 +84,26 @@ function UserHeader({ name, username }: UserHeaderProps) {
   const { data: currentUser } = useGetUserQueryState();
 
   return (
-    <header className={cx("d-flex", "flex-wrap", "gap-2")}>
+    <header className={cx("d-flex", "flex-column", "flex-md-row", "gap-3")}>
       <EntityIcon type="user" namespace={username} />
-      <div className={cx("align-items-center", "d-flex", "gap-2")}>
-        <h1 className={cx("mb-0", "text-break")} data-cy="user-name">
-          {name}
-        </h1>
-        {currentUser?.isLoggedIn && currentUser.username === username && (
-          <RenkuBadge pill color="info">
-            It&apos;s you!
-          </RenkuBadge>
-        )}
+      <div className={cx("d-flex", "flex-column", "justify-content-evenly")}>
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          <h1 className={cx("mb-0", "text-break")} data-cy="user-name">
+            {name}
+          </h1>
+          {currentUser?.isLoggedIn && currentUser.username === username && (
+            <RenkuBadge pill color="info">
+              It&apos;s you!
+            </RenkuBadge>
+          )}
+        </div>
+        <div className={cx("d-flex", "flex-row", "gap-2")}>
+          <span className="text-truncate">{username}</span>
+          <Clipboard
+            className={cx("border-0", "btn", "p-0", "shadow-none")}
+            clipboardText={username}
+          />
+        </div>
       </div>
     </header>
   );

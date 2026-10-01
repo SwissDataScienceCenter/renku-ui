@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { InfoCircle, JournalAlbum } from "react-bootstrap-icons";
 import { Link } from "react-router";
-import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import { Col, Row } from "reactstrap";
 
-import { Clipboard } from "~/components/clipboard/Clipboard";
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { RELATIVE_ROUTES } from "~/routing/routes.constants";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
@@ -37,27 +34,11 @@ export default function UserShow() {
     return null;
   }
 
-  const information = (
-    <div className={cx("d-flex", "flex-column")}>
-      <div className="mb-0">
-        <JournalAlbum className={cx("bi", "me-2")} />
-        <span>Identifier:</span>
-        <div className={cx("align-items-center", "d-flex", "gap-2")}>
-          <span className="text-truncate">{username}</span>
-          <Clipboard
-            className={cx("border-0", "btn", "p-0", "shadow-none")}
-            clipboardText={username}
-          />
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <Row className="g-4">
-      <Col xs={12} md={8} xl={9}>
+      <Col xs={12}>
         <Row className="g-4">
-          <Col xs={12}>
+          <Col xs={12} md={6}>
             <ProjectV2ListDisplay
               namespace={username}
               pageParam="projects_page"
@@ -73,7 +54,7 @@ export default function UserShow() {
               </Link>
             </ProjectV2ListDisplay>
           </Col>
-          <Col className="order-3" xs={12}>
+          <Col className="order-3" xs={12} md={6}>
             <DataConnectorsBox
               namespace={username}
               namespaceKind="user"
@@ -92,25 +73,6 @@ export default function UserShow() {
             </DataConnectorsBox>
           </Col>
         </Row>
-      </Col>
-      <Col xs={12} md={4} xl={3}>
-        <Card data-cy="user-info-card">
-          <CardHeader>
-            <div
-              className={cx(
-                "align-items-center",
-                "d-flex",
-                "justify-content-between",
-              )}
-            >
-              <h2 className="m-0">
-                <InfoCircle className={cx("me-1", "bi")} />
-                Info
-              </h2>
-            </div>
-          </CardHeader>
-          <CardBody>{information}</CardBody>
-        </Card>
       </Col>
     </Row>
   );

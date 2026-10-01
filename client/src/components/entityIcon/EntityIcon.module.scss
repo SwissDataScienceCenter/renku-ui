@@ -6,16 +6,18 @@
 
 .entityIcon {
   --entity-icon-size: 86px;
-  --entity-icon-avatar-font-size: 40px;
+  --entity-icon-avatar-size: 75px;
+  --entity-icon-avatar-font-size: 36px;
   --entity-icon-card-body-height: 68px;
   --entity-icon-glyph-size: 42px;
   --entity-icon-overlap: -18px;
-  --entity-icon-fill: var(--bs-secondary);
+  --entity-icon-fill: var(--#{$prefix}secondary);
+  --entity-circle-label-font-size: 12px;
 }
 
 .groupIcon {
-  background-color: var(--bs-white);
-  color: var(--bs-secondary);
+  background-color: var(--#{$prefix}white);
+  color: var(--#{$prefix}secondary);
   font-size: 24px;
   font-weight: bold;
 }
@@ -31,7 +33,7 @@
 
   .entityBadge {
     background-color: var(--entity-icon-fill);
-    color: var(--bs-white);
+    color: var(--#{$prefix}white);
   }
 
   .glyph {
@@ -43,8 +45,8 @@
   }
 
   .card {
-    background-color: var(--bs-white);
-    border: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--#{$prefix}white);
+    border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
     overflow: hidden;
     width: var(--entity-icon-size);
 
@@ -61,23 +63,24 @@
 
   .circle {
     .entityBadge {
-      background-color: var(--bs-white);
-      border: var(--bs-border-width) solid var(--bs-border-color);
+      background-color: var(--#{$prefix}white);
+      border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
       border-radius: 50%;
       color: var(--entity-icon-fill);
-      height: var(--entity-icon-size);
-      width: var(--entity-icon-size);
+      height: var(--entity-icon-avatar-size);
+      width: var(--entity-icon-avatar-size);
     }
 
     .label {
       background-color: var(--entity-icon-fill);
-      color: var(--bs-white);
-      border: var(--bs-border-width) solid var(--bs-border-color);
+      color: var(--#{$prefix}white);
+      border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
       margin-top: var(--entity-icon-overlap);
+      font-size: var(--entity-circle-label-font-size);
     }
 
     .userAvatar {
-      --size: var(--entity-icon-size);
+      --size: var(--entity-icon-avatar-size);
       --font-size: var(--entity-icon-avatar-font-size);
     }
   }

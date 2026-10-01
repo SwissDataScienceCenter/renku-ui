@@ -21,6 +21,7 @@ import { ReactNode } from "react";
 import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import { Clipboard } from "~/components/clipboard/Clipboard";
 import EntityIcon from "~/components/entityIcon/EntityIcon";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import ContainerWrap from "../../../components/container/ContainerWrap";
@@ -71,6 +72,7 @@ export default function GroupPageLayout({
 }
 
 function GroupHeader({ group }: { group: GroupResponse }) {
+  const { slug: namespace } = group;
   return (
     <>
       <header
@@ -83,9 +85,18 @@ function GroupHeader({ group }: { group: GroupResponse }) {
         )}
       >
         <EntityIcon type="group" />
-        <h1 className={cx("mb-0", "text-break")} data-cy="group-name">
-          {group.name ?? "Unknown group"}
-        </h1>
+        <div className={cx("d-flex", "flex-column", "justify-content-evenly")}>
+          <h1 className={cx("mb-0", "text-break")} data-cy="group-name">
+            {group.name ?? "Unknown group"}
+          </h1>
+          <div className={cx("align-items-center", "d-flex", "gap-2")}>
+            <span className="text-truncate">{namespace}</span>
+            <Clipboard
+              className={cx("border-0", "btn", "p-0", "shadow-none")}
+              clipboardText={namespace}
+            />
+          </div>
+        </div>
       </header>
       {group.description && (
         <div className="mt-2">

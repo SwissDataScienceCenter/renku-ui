@@ -118,7 +118,6 @@ export default function UserAvatar({
     <div
       className={cx(
         "align-items-center",
-        "border",
         "d-flex",
         "flex-shrink-0",
         "justify-content-center",
