@@ -161,7 +161,7 @@ export default function RootV2() {
             }
           />
           <Route
-            path={RELATIVE_ROUTES.v2.keys}
+            path={RELATIVE_ROUTES.v2.ssh_keys}
             element={
               <ContainerWrap>
                 <LazySshKeysPage />

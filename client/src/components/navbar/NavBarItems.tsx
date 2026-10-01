@@ -99,7 +99,7 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
           Integrations
         </DropdownItemTag>
 
-        <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.keys}>
+        <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.ssh_keys}>
           SSH keys
         </DropdownItemTag>
 
