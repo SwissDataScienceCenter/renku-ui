@@ -55,7 +55,7 @@ export default function SshKeysPage() {
   if (userError) {
     return <RtkOrDataServicesError error={userError} dismissible={false} />;
   }
-  if (sshKeysError) {
+  if (sshKeysError && user?.isLoggedIn) {
     return <RtkOrDataServicesError error={sshKeysError} dismissible={false} />;
   }
 
