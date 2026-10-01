@@ -46,17 +46,12 @@ export default function SshKeysPage() {
     isLoading: isLoadingUser,
     error: userError,
   } = useGetUserQueryState();
-  const { isLoading: isLoadingSshKeys, error: sshKeysError } =
-    useGetUserSshKeysQuery();
 
-  if (isLoadingUser || isLoadingSshKeys) {
+  if (isLoadingUser) {
     return <Loader />;
   }
   if (userError) {
     return <RtkOrDataServicesError error={userError} dismissible={false} />;
-  }
-  if (sshKeysError && user?.isLoggedIn) {
-    return <RtkOrDataServicesError error={sshKeysError} dismissible={false} />;
   }
 
   return (
@@ -99,11 +94,17 @@ function SshPageInfo() {
 }
 
 function SshKeysList() {
-  // INFO: We handle loading and error on the ancestor component
-  const { data: sshKeys } = useGetUserSshKeysQuery();
+  const { data: sshKeys, isLoading, error } = useGetUserSshKeysQuery();
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const toggleAdd = useCallback(() => setIsAddOpen((isOpen) => !isOpen), []);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+  if (error) {
+    return <RtkOrDataServicesError error={error} dismissible={false} />;
+  }
 
   const content = !sshKeys ? (
     <p>Unexpected error while loading SSH keys.</p>
