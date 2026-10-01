@@ -81,6 +81,8 @@ export default [
   ]),
   // Admin page
   route(RELATIVE_ROUTES.v2.admin, "routes/admin.tsx"),
+  // SSH keys page
+  route(RELATIVE_ROUTES.v2.ssh_keys, "routes/sshKeys.tsx"),
   // Legacy projects (may redirect)
   route(RELATIVE_ROUTES.projects.splat, "routes/legacy/projects.tsx"),
   // Legacy datasets
