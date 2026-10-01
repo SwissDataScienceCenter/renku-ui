@@ -30,6 +30,7 @@ import {
   Row,
 } from "reactstrap";
 
+import { ErrorAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import LoginAlert from "~/components/loginAlert/LoginAlert";
@@ -39,6 +40,7 @@ import {
 } from "~/features/usersV2/api/users.api";
 import AddSshKeyModal from "./AddSshKeyModal";
 import SshKeyItem from "./SshKeyItem";
+import useSshEnabled from "./useSshEnabled.hook";
 
 export default function SshKeysPage() {
   const {
@@ -47,12 +49,17 @@ export default function SshKeysPage() {
     error: userError,
   } = useGetUserQueryState();
 
-  if (isLoadingUser) {
-    return <Loader />;
-  }
-  if (userError) {
-    return <RtkOrDataServicesError error={userError} dismissible={false} />;
-  }
+  const sshEnabled = useSshEnabled();
+
+  const content = !sshEnabled ? (
+    <SshDisabledInfo className="mt-2" />
+  ) : isLoadingUser ? (
+    <Loader />
+  ) : userError ? (
+    <RtkOrDataServicesError error={userError} dismissible={false} />
+  ) : (
+    <SshPageInfo />
+  );
 
   return (
     <>
@@ -62,10 +69,12 @@ export default function SshKeysPage() {
             <FiletypeKey className="me-1" />
             SSH keys
           </h1>
-          <SshPageInfo />
         </Col>
       </Row>
-      {user?.isLoggedIn && (
+      <Row>
+        <Col>{content}</Col>
+      </Row>
+      {sshEnabled && user?.isLoggedIn && (
         <Row>
           <Col>
             <SshKeysList />
@@ -91,6 +100,22 @@ function SshPageInfo() {
   }
 
   return <p>Here you can manage your SSH keys.</p>;
+}
+
+interface SshKeysListProps {
+  className?: string;
+}
+function SshDisabledInfo({ className }: SshKeysListProps) {
+  return (
+    <ErrorAlert className={cx(className)} dismissible={false}>
+      <h3>Feature unavailable</h3>
+      <p className="mb-0">
+        Accessing sessions via SSH is not currently supported by this instance
+        of RenkuLab. You can try contacting an administrator for more
+        information.
+      </p>
+    </ErrorAlert>
+  );
 }
 
 function SshKeysList() {
