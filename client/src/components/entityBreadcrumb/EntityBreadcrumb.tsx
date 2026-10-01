@@ -40,7 +40,14 @@ import {
 
 import styles from "./entityBreadcrumb.module.scss";
 
-const LINK_CLASS_NAME = cx(styles.link, "text-primary");
+const LINK_CLASS_NAME = cx(
+  styles.link,
+  "align-items-center",
+  "d-flex",
+  "min-w-0",
+  "mw-100",
+  "text-primary",
+);
 
 const BREADCRUMB_STYLE = {
   ["--bs-breadcrumb-divider"]: "'›'",
@@ -107,13 +114,21 @@ function BreadcrumbLabel({
   return (
     <>
       <span
-        className={cx(styles.label, collapseToEllipsis && styles.fullLabel)}
+        className={cx(
+          "min-w-0",
+          "text-truncate",
+          collapseToEllipsis ? ["d-md-block", "d-none"] : "d-block",
+        )}
         title={label}
       >
         {label}
       </span>
       {collapseToEllipsis && (
-        <span aria-hidden="true" className={styles.ellipsis} title={label}>
+        <span
+          aria-hidden="true"
+          className={cx("d-md-none", "flex-shrink-0")}
+          title={label}
+        >
           ...
         </span>
       )}
@@ -135,9 +150,10 @@ function AncestorBreadcrumbLevel({
         "breadcrumb-item",
         "d-flex",
         "flex-nowrap",
+        "min-w-0",
         "text-primary",
         styles.level,
-        !isPreviousPath && styles.collapsed,
+        !isPreviousPath && ["flex-md-shrink-1", "flex-shrink-0"],
       )}
     >
       <AncestorLink isPreviousPath={isPreviousPath} level={level}>
@@ -161,12 +177,16 @@ function CurrentBreadcrumbLevel({ level }: { level: BreadcrumbLevel }) {
         "breadcrumb-item",
         "d-flex",
         "flex-nowrap",
+        "min-w-0",
         "text-muted",
         styles.level,
       )}
     >
       <BreadcrumbIcon type={level.type} />
-      <span className={cx(styles.label, "me-1")} title={level.label}>
+      <span
+        className={cx("d-block", "me-1", "min-w-0", "text-truncate")}
+        title={level.label}
+      >
         {level.label}
       </span>
     </li>
@@ -219,7 +239,7 @@ export function EntityBreadcrumbView({
     <nav
       aria-busy={!isReady}
       aria-label="breadcrumb"
-      className={cx(styles.nav, "min-w-0", "w-100")}
+      className={cx("min-w-0", "overflow-x-hidden", "w-100")}
       data-cy="entity-breadcrumb"
       style={BREADCRUMB_STYLE}
     >
