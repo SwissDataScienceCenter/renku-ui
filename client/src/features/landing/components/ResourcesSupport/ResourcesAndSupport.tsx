@@ -29,7 +29,7 @@ import styles from "./Resources.module.scss";
 
 export function ResourcesAndSupport() {
   return (
-    <Container className={cx("bg-white", "py-5")}>
+    <Container className="py-5">
       <h2 className={cx("fs-1", "fw-bold", "mb-4", "text-center")}>
         Resources and support
       </h2>

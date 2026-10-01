@@ -34,7 +34,7 @@ export default function WhoWeAre() {
   const renkuContactEmail =
     params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
   return (
-    <div className="bg-light">
+    <div className="bg-white">
       <div className={cx("container", "py-5")}>
         <h2 className={cx("fs-1", "mb-4", "text-center")}>
           Built for data scientists, by data scientists.

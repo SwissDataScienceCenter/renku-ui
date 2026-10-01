@@ -27,7 +27,7 @@ export default function IndexPage() {
   }
 
   return (
-    <div className={cx("w-100", "bg-white")}>
+    <div className="w-100">
       <LazyAnonymousHome />
     </div>
   );
