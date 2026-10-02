@@ -24,6 +24,7 @@ import {
   PeopleFill,
   PersonFill,
   PersonFillX,
+  Tags,
   TrashFill,
   XLg,
 } from "react-bootstrap-icons";
@@ -52,9 +53,11 @@ import UpdateResourcePoolUsageLimitsButton from "../resourceUsage/UpdateResource
 import {
   useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation,
   useDeleteResourcePoolsByResourcePoolIdMutation,
+  useGetResourceFlavoursQuery,
   useGetResourcePoolsByResourcePoolIdMembersQuery,
   useGetResourcePoolsQuery,
   type PoolMemberResponse,
+  type RemoteConfiguration,
   type ResourceClassWithId,
   type ResourcePoolWithId,
   type ResourcePoolWithIdFiltered,
@@ -65,10 +68,12 @@ import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
+import AdminSection from "./AdminSection";
 import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
 import ProjectStorageAllowSection from "./ProjectStorageAllowSection";
+import ResourceFlavoursSection from "./ResourceFlavoursSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
@@ -91,10 +96,9 @@ export default function AdminPage() {
 
 function ComputeResourcesSection() {
   return (
-    <section>
-      <h2>Compute Resources</h2>
+    <AdminSection title="Compute Resources">
       <AdminComputeResourcesOverview />
-    </section>
+    </AdminSection>
   );
 }
 function AdminComputeResourcesOverview() {
@@ -127,10 +131,14 @@ function AdminComputeResourcesOverview() {
     );
   }
 
-  if (error || !rawUsers || !resourcePools) {
+  if (error) {
+    return <RtkOrDataServicesError dismissible={false} error={error} />;
+  }
+
+  if (!rawUsers || !resourcePools) {
     return (
-      <ErrorAlert>
-        <pre>{JSON.stringify(error, null, 2)}</pre>
+      <ErrorAlert dismissible={false}>
+        <h3>Could not load the compute resources.</h3>
       </ErrorAlert>
     );
   }
@@ -144,6 +152,8 @@ function AdminComputeResourcesOverview() {
       </div>
 
       <ResourcePoolsList />
+
+      <ResourceFlavoursSection />
     </div>
   );
 }
@@ -165,6 +175,24 @@ function ResourcePoolsList() {
         <ResourcePoolItem key={pool.id} resourcePool={pool} />
       ))}
     </div>
+  );
+}
+
+interface RemoteConfigurationSummaryProps {
+  remote: RemoteConfiguration;
+}
+
+function RemoteConfigurationSummary({
+  remote,
+}: RemoteConfigurationSummaryProps) {
+  return (
+    <span className={cx("d-inline-flex", "flex-wrap", "gap-3")}>
+      {Object.entries(remote).map(([key, value]) => (
+        <span key={key}>
+          {key.replace(/_/g, " ")}: <code>{`${value}`}</code>
+        </span>
+      ))}
+    </span>
   );
 }
 
@@ -198,7 +226,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
     <Card className="mt-2">
       <CardHeader
         className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
-        tag="h5"
+        tag="h4"
       >
         <button
           className={cx(
@@ -313,7 +341,8 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
                 )}
               >
                 <div className={cx("col", "col-sm-10")}>
-                  Remote configuration: <code>{JSON.stringify(remote)}</code>
+                  Remote configuration:{" "}
+                  <RemoteConfigurationSummary remote={remote} />
                 </div>
                 <div className={cx("col", "col-sm-2", "ms-auto", "text-end")}>
                   <UpdateResourcePoolRemoteButton resourcePool={resourcePool} />
@@ -437,6 +466,38 @@ function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
   );
 }
 
+interface ResourceClassFlavourNameProps {
+  resourceFlavourId: string | undefined;
+}
+
+function ResourceClassFlavourName({
+  resourceFlavourId,
+}: ResourceClassFlavourNameProps) {
+  const { data: resourceFlavours } = useGetResourceFlavoursQuery(
+    {},
+    { skip: resourceFlavourId == null },
+  );
+
+  if (resourceFlavourId == null) {
+    return (
+      <span className="text-muted">
+        <Tags className={cx("bi", "me-1")} />
+        no flavour
+      </span>
+    );
+  }
+
+  const resourceFlavour = resourceFlavours?.find(
+    ({ id }) => id === resourceFlavourId,
+  );
+  return (
+    <span title="Resource flavour">
+      <Tags className={cx("bi", "me-1")} />
+      {resourceFlavour?.name ?? resourceFlavourId}
+    </span>
+  );
+}
+
 interface ResourceClassItemProps {
   resourceClass: ResourceClassWithId;
   resourcePool: ResourcePoolWithId;
@@ -480,6 +541,11 @@ function ResourceClassItem({
         </div>
         <div className={cx(columnClasses)}>
           node affinities: {node_affinities?.length ?? 0}
+        </div>
+        <div className={cx(columnClasses)}>
+          <ResourceClassFlavourName
+            resourceFlavourId={resourceClass.resource_flavour_id}
+          />
         </div>
         {requiresIntegerCpu && (
           <>
@@ -776,7 +842,7 @@ function RemoveMemberFromResourcePoolModal({
   }, [result.isError, result.isSuccess, toggle]);
 
   return (
-    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalBody>
         <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
           Are you sure?
@@ -787,9 +853,9 @@ function RemoveMemberFromResourcePoolModal({
         </p>
       </ModalBody>
       <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+        <Button className="ms-2" color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
-          Cancel
+          Cancel, keep member
         </Button>
         <Button className="ms-2" color="danger" onClick={onRemove}>
           {result.isLoading ? (
