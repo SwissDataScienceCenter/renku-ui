@@ -142,6 +142,54 @@ describe("Navigate to project", () => {
     cy.location("pathname").should("contain", "/user1-uuid/test-2-v2-project");
   });
 
+  it("redirects stable links by project id", () => {
+    fixtures.readProjectV2ById();
+    cy.visit("/id/p/THEPROJECTULID26CHARACTERS/settings?tab=general");
+    cy.wait("@readProjectV2ById");
+    cy.location("pathname").should(
+      "eq",
+      "/p/user1-uuid/test-2-v2-project/settings",
+    );
+    cy.location("search").should("eq", "?tab=general");
+  });
+
+  it("shows not found for stable links to unknown projects", () => {
+    fixtures.readProjectV2ById({ statusCode: 404 });
+    cy.visit("/id/p/THEPROJECTULID26CHARACTERS/sessions/show/my-session");
+    cy.wait("@readProjectV2ById");
+    cy.contains("Project not found").should("be.visible");
+    cy.contains("THEPROJECTULID26CHARACTERS").should("be.visible");
+    cy.contains("You are not logged in").should("not.exist");
+    cy.contains("a", "Go to the projects list")
+      .should("have.attr", "href")
+      .and("contain", "/search")
+      .and("contain", "q=THEPROJECTULID26CHARACTERS");
+    cy.contains("a", "Go to the homepage").should("have.attr", "href", "/");
+  });
+
+  it("suggests logging in for stable links when anonymous", () => {
+    fixtures.userNone().readProjectV2ById({ statusCode: 404 });
+    cy.visit("/id/p/THEPROJECTULID26CHARACTERS/sessions/show/my-session");
+    cy.wait("@readProjectV2ById");
+    cy.contains("Project not found").should("be.visible");
+    cy.contains('[role="alert"]', "You are not logged in")
+      .should("be.visible")
+      .and("contain.text", "is not public")
+      .contains("a", "Log in")
+      .should("have.attr", "href")
+      .and("contain", "/auth/login")
+      .and("contain", encodeURIComponent("/id/p/THEPROJECTULID26CHARACTERS"));
+  });
+
+  it("shows not found for unsupported stable links", () => {
+    cy.visit("/id/d/SOMEULID");
+    cy.getDataCy("not-found-title").should("contain.text", "Page not found");
+    cy.getDataCy("not-found-description").should(
+      "contain.text",
+      "only supported for projects",
+    );
+  });
+
   it("shows projects by old URL", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");
