@@ -1,0 +1,5 @@
+// Page bg only. $body-bg / --bs-body-bg white so components stay white.
+// Must be imported after Bootstrap Reboot.
+body {
+  background-color: var(--bs-tertiary-bg);
+}

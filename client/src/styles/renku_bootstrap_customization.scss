@@ -9,6 +9,7 @@ $enable-rfs: false; // Disable responsive font sizes that causes
 // Variables: note we re-define colors and shadow variables before importing from Bootstrap
 $primary: #006e58;
 $body-color: #16192c;
+$body-tertiary-bg: #f4f6f8;
 $navy: #01192d;
 $info: #17a2b8;
 $success: #65a30d;
@@ -50,6 +51,7 @@ $input-box-shadow: transparent;
 
 // Adjust Offcanvas
 $offcanvas-horizontal-width: 500px;
+$offcanvas-bg-color: $body-tertiary-bg;
 
 // Adjust nav tabs
 $nav-tabs-link-active-bg: transparent;
