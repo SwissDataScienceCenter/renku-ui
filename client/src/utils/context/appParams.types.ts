@@ -44,6 +44,7 @@ export interface AppParams {
   SENTRY_SAMPLE_RATE: string; // TODO: convert to number type
   SENTRY_URL: string;
   SESSION_CLASS_EMAIL_US: SessionClassEmailUsParams;
+  SSH_ENABLED: boolean;
   STATUSPAGE_ID: string;
   TEMPLATES: TemplatesParams;
   TERMS_PAGES_ENABLED: boolean;

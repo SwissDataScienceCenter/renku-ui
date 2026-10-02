@@ -87,6 +87,7 @@ export function validatedAppParams(params: unknown): AppParams {
     "PERSISTED_LOGS_ENABLED",
   );
   const APPS_ENABLED = validateBoolean(params_, "APPS_ENABLED");
+  const SSH_ENABLED = validateBoolean(params_, "SSH_ENABLED");
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -133,6 +134,7 @@ export function validatedAppParams(params: unknown): AppParams {
     SENTRY_SAMPLE_RATE,
     SENTRY_URL,
     SESSION_CLASS_EMAIL_US,
+    SSH_ENABLED,
     STATUSPAGE_ID,
     TEMPLATES,
     TERMS_PAGES_ENABLED,
