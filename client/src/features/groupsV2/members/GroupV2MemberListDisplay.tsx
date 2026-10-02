@@ -19,64 +19,28 @@
 import cx from "classnames";
 import { capitalize } from "lodash-es";
 import { useMemo } from "react";
-import { People } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
-import { Badge } from "reactstrap";
 
-import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
-import { Loader } from "../../../components/Loader";
+import UserAvatar from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import { toSortedMembers } from "../../ProjectPageV2/utils/roleUtils";
 import type { ProjectMemberResponse } from "../../projectsV2/api/projectV2.api";
-import { useGetGroupsByGroupSlugMembersQuery } from "../../projectsV2/api/projectV2.enhanced-api";
-import { GroupInformationBox } from "../show/GroupV2Information";
 
 interface GroupV2MemberListDisplayProps {
-  group: string;
+  members: ProjectMemberResponse[];
 }
 
 export default function GroupV2MemberListDisplay({
-  group,
+  members,
 }: GroupV2MemberListDisplayProps) {
-  const {
-    data: members,
-    error,
-    isLoading,
-  } = useGetGroupsByGroupSlugMembersQuery({ groupSlug: group });
-
   const sortedMembers = useMemo(
     () => (members ? toSortedMembers(members) : null),
     [members],
   );
 
-  if (error || sortedMembers == null) {
-    return <RtkOrDataServicesError error={error} dismissible={false} />;
-  }
-
-  return (
-    <GroupInformationBox
-      icon={<People className="bi" />}
-      title={
-        <>
-          <span>Members</span>
-          <Badge>{sortedMembers.length ?? 0}</Badge>
-        </>
-      }
-    >
-      {!sortedMembers.length && <p>There are no members in this group.</p>}
-      {isLoading && (
-        <div className={cx("d-flex", "justify-content-center", "w-100")}>
-          <div className={cx("d-flex", "flex-column")}>
-            <Loader />
-            <div>Retrieving group members...</div>
-          </div>
-        </div>
-      )}
-      {sortedMembers?.map((member) => (
-        <GroupV2Member key={member.id} member={member} />
-      ))}
-    </GroupInformationBox>
-  );
+  return sortedMembers?.map((member) => (
+    <GroupV2Member key={member.id} member={member} />
+  ));
 }
 
 interface GroupV2MemberProps {
@@ -99,7 +63,7 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
   return (
     <>
       <Link
-        className={cx("mb-0")}
+        className={cx("mb-0", "text-decoration-none", "text-reset", "w-100")}
         to={generatePath(ABSOLUTE_ROUTES.v2.users.show.root, { username })}
       >
         <div className={cx("d-flex", "gap-2")}>
@@ -111,9 +75,11 @@ function GroupV2Member({ member }: GroupV2MemberProps) {
               "text-truncate",
             )}
           >
-            <p className={cx("m-0", "text-truncate")}>
+            <UserAvatar namespace={username} size="sm" />
+            <span className={cx("fs-6")}>{name}</span>
+            <span className={cx("text-truncate")}>
               {name ?? "Unknown user"} ({capitalize(role)})
-            </p>
+            </span>
           </div>
         </div>
       </Link>
