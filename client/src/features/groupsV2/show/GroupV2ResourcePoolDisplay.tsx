@@ -20,12 +20,8 @@ import cx from "classnames";
 import { Cpu } from "react-bootstrap-icons";
 import { Badge } from "reactstrap";
 
-import {
-  ResourcePoolWithIdFiltered,
-  useGetGroupsByGroupSlugResourcePoolsQuery,
-} from "~/features/sessionsV2/api/computeResources.generated-api";
+import { useGetGroupsByGroupSlugResourcePoolsQuery } from "~/features/sessionsV2/api/computeResources.generated-api";
 import { Loader } from "../../../components/Loader";
-import { GroupInformationBox } from "./GroupV2Information";
 
 interface GroupV2ResourcePoolDisplayProps {
   group: string;
@@ -46,44 +42,26 @@ export default function GroupV2ResourcePoolDisplay({
       </div>
     </div>
   ) : error || data ? (
-    <GroupInformationBox
-      dataCy="group-resource-pools"
-      icon={<Cpu className="bi" />}
-      title={
-        <>
-          <span>Resource Pools</span>
-          <Badge>{data?.length ?? 0}</Badge>
-        </>
-      }
-    >
+    <div data-cy="group-resource-pools">
+      <Cpu className="bi" />
+      <span className={cx("text-body-secondary", "small")}>Resource Pools</span>
+      <Badge>{data?.length ?? 0}</Badge>
       {error ? (
-        <p
-          className={cx("mb-0", "text-body-secondary")}
+        <span
+          className={cx("small")}
           data-cy="group-resource-pools-not-visible"
         >
           This group has no visible resource pools.
-        </p>
+        </span>
       ) : !data.length ? (
-        <p
-          className={cx("mb-0", "text-body-secondary")}
-          data-cy="group-resource-pools-empty"
-        >
+        <span className={cx("small")} data-cy="group-resource-pools-empty">
           There are no resource pools explicitly linked to this group.
-        </p>
+        </span>
       ) : (
-        <ul className={cx("ps-3", "mb-0")}>
-          {data.map((rp) => (
-            <GroupV2ResourcePool key={rp.id} rp={rp} />
-          ))}
-        </ul>
+        <span className={cx("small")}>
+          {data.map((rp) => rp.name).join(",")}
+        </span>
       )}
-    </GroupInformationBox>
+    </div>
   ) : null;
-}
-
-interface GroupV2ResourcePoolProps {
-  rp: ResourcePoolWithIdFiltered;
-}
-function GroupV2ResourcePool({ rp }: GroupV2ResourcePoolProps) {
-  return rp.name && <li>{rp.name}</li>;
 }
