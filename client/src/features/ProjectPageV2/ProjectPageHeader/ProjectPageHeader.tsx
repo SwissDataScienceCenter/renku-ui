@@ -44,7 +44,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
           "flex-column",
           "flex-md-row",
           "flex-nowrap",
-          "gap-2",
+          "gap-3",
         )}
       >
         <EntityIcon type="project" />

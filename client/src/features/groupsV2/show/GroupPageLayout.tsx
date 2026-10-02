@@ -81,7 +81,7 @@ function GroupHeader({ group }: { group: GroupResponse }) {
           "flex-column",
           "flex-md-row",
           "flex-nowrap",
-          "gap-2",
+          "gap-3",
         )}
       >
         <EntityIcon type="group" />
