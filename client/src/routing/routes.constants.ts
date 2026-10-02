@@ -30,6 +30,12 @@ export const ABSOLUTE_ROUTES = {
   v2: {
     index: "/",
     admin: "/admin",
+    byId: {
+      projects: {
+        root: "/id/p/:id",
+        splat: "/id/p/:id/*",
+      },
+    },
     dataConnectors: {
       root: "/d/:slug",
       show: {
@@ -102,6 +108,10 @@ export const RELATIVE_ROUTES = {
     index: "/",
     admin: "admin",
     betaRoot: "/v2/*",
+    byId: {
+      root: "id",
+      projects: "p/:id/*",
+    },
     dataConnectors: {
       root: "d",
       show: {
