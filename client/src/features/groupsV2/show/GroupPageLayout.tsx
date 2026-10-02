@@ -21,13 +21,13 @@ import { ReactNode } from "react";
 import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import { Clipboard } from "~/components/clipboard/Clipboard";
+import EntityIcon from "~/components/entityIcon/EntityIcon";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import ContainerWrap from "../../../components/container/ContainerWrap";
-import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { GroupResponse } from "../../projectsV2/api/namespace.api";
-import UserAvatar from "../../usersV2/show/UserAvatar";
 import GroupNew from "../new/GroupNew";
 
 interface GroupPageLayoutProps {
@@ -57,18 +57,8 @@ export default function GroupPageLayout({
       <GroupNew />
 
       <Row className="my-3">
-        <Col xs={12}>
-          <Row>
-            <Col className={cx("d-block", "d-md-none")} xs={12}>
-              <span className="text-muted">Group</span>
-            </Col>
-            <Col className="mb-3">
-              <GroupHeader group={group} slug={group.slug} />
-            </Col>
-            <Col className={cx("d-md-block", "d-none")} md="auto">
-              <EntityWatermark type="group" />
-            </Col>
-          </Row>
+        <Col xs={12} className="mb-3">
+          <GroupHeader group={group} />
         </Col>
         <Col xs={12} className="mb-3">
           <PageNav options={options} />
@@ -81,15 +71,31 @@ export default function GroupPageLayout({
   );
 }
 
-function GroupHeader({ group, slug }: { group: GroupResponse; slug: string }) {
+function GroupHeader({ group }: { group: GroupResponse }) {
+  const { slug: namespace } = group;
   return (
     <>
-      <header className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
-        <UserAvatar namespace={slug} size="md" />
-        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+      <header
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "flex-md-row",
+          "flex-nowrap",
+          "gap-3",
+        )}
+      >
+        <EntityIcon type="group" />
+        <div className={cx("d-flex", "flex-column", "justify-content-evenly")}>
           <h1 className={cx("mb-0", "text-break")} data-cy="group-name">
             {group.name ?? "Unknown group"}
           </h1>
+          <div className={cx("align-items-center", "d-flex", "gap-2")}>
+            <span className="text-truncate">{namespace}</span>
+            <Clipboard
+              className={cx("border-0", "btn", "p-0", "shadow-none")}
+              clipboardText={namespace}
+            />
+          </div>
         </div>
       </header>
       {group.description && (
