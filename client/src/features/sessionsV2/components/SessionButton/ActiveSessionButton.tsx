@@ -352,13 +352,14 @@ export default function ActiveSessionButton({
         Modify session resources
       </DropdownItem>
     );
-  const openInNewTabAction = (status === "starting" ||
-    status === "running") && (
-    <DropdownItem href={session.url} target="_blank">
-      <BoxArrowUpRight className={cx("bi", "me-1")} />
-      Open in new tab
-    </DropdownItem>
-  );
+  // SSH sessions have a dedicated page with instructions and, by default, have no frontend.
+  const openInNewTabAction = (status === "starting" || status === "running") &&
+    session.frontend_variant !== "ssh" && (
+      <DropdownItem href={session.url} target="_blank">
+        <BoxArrowUpRight className={cx("bi", "me-1")} />
+        Open in new tab
+      </DropdownItem>
+    );
   const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={toggleLogsModal}>
       <FileEarmarkText className={cx("bi", "me-1")} />
