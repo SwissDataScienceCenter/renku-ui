@@ -169,13 +169,10 @@ function truncateTooltipText(text: string) {
 
 interface OverflowBadgeProps {
   count: number;
-  hiddenMembers: {
-    first_name?: string;
-    last_name?: string;
-  }[];
+  tooltip: string;
 }
 
-export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
+export function OverflowBadge({ count, tooltip }: OverflowBadgeProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -183,13 +180,13 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
       <div
         ref={ref}
         className={cx(
-          "align-items-center",
+          "align-content-center",
           "border",
-          "d-flex",
           "flex-shrink-0",
-          "justify-content-center",
           "rounded-circle",
+          "text-center",
           "text-black",
+          "bg-secondary-subtle",
           styles.avatar,
         )}
         data-cy="member-list-overflow"
@@ -197,11 +194,7 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
         +{count}
       </div>
       <UncontrolledTooltip target={ref}>
-        {truncateTooltipText(
-          hiddenMembers
-            .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
-            .join(", "),
-        )}
+        {truncateTooltipText(tooltip)}
       </UncontrolledTooltip>
     </>
   );
