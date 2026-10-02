@@ -16,7 +16,6 @@
 }
 
 .groupIcon {
-  background-color: var(--#{$prefix}white);
   color: var(--#{$prefix}secondary);
   font-size: 24px;
   font-weight: bold;
@@ -45,7 +44,6 @@
   }
 
   .card {
-    background-color: var(--#{$prefix}white);
     border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
     overflow: hidden;
     width: var(--entity-icon-size);
@@ -63,7 +61,7 @@
 
   .circle {
     .entityBadge {
-      background-color: var(--#{$prefix}white);
+      background-color: transparent;
       border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
       border-radius: 50%;
       color: var(--entity-icon-fill);
