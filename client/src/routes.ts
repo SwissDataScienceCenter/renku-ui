@@ -79,6 +79,12 @@ export default [
     // Not found page for /d/*
     route("*", "routes/dataConnectors/catchall.tsx"),
   ]),
+  // Stable links by entity id (redirect to the canonical URL)
+  ...prefix(RELATIVE_ROUTES.v2.byId.root, [
+    route(RELATIVE_ROUTES.v2.byId.projects, "routes/id/projects.tsx"),
+    // Not found page for others /id/*
+    route("*", "routes/id/catchall.tsx"),
+  ]),
   // Admin page
   route(RELATIVE_ROUTES.v2.admin, "routes/admin.tsx"),
   // Legacy projects (may redirect)
