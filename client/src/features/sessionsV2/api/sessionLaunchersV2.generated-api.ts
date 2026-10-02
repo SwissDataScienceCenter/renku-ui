@@ -91,6 +91,60 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getSessionLaunchersByLauncherIdRepositories: build.query<
+      GetSessionLaunchersByLauncherIdRepositoriesApiResponse,
+      GetSessionLaunchersByLauncherIdRepositoriesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/session_launchers/${queryArg.launcherId}/repositories`,
+      }),
+    }),
+    putSessionLaunchersByLauncherIdRepositories: build.mutation<
+      PutSessionLaunchersByLauncherIdRepositoriesApiResponse,
+      PutSessionLaunchersByLauncherIdRepositoriesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/session_launchers/${queryArg.launcherId}/repositories`,
+        method: "PUT",
+        body: queryArg.sessionLauncherRepositoryPatchList,
+      }),
+    }),
+    getSessionLaunchersByLauncherIdDataConnectors: build.query<
+      GetSessionLaunchersByLauncherIdDataConnectorsApiResponse,
+      GetSessionLaunchersByLauncherIdDataConnectorsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/session_launchers/${queryArg.launcherId}/data_connectors`,
+      }),
+    }),
+    putSessionLaunchersByLauncherIdDataConnectors: build.mutation<
+      PutSessionLaunchersByLauncherIdDataConnectorsApiResponse,
+      PutSessionLaunchersByLauncherIdDataConnectorsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/session_launchers/${queryArg.launcherId}/data_connectors`,
+        method: "PUT",
+        body: queryArg.sessionLauncherDataConnectorPatchList,
+      }),
+    }),
+    getSessionLaunchersByLauncherIdSecrets: build.query<
+      GetSessionLaunchersByLauncherIdSecretsApiResponse,
+      GetSessionLaunchersByLauncherIdSecretsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/session_launchers/${queryArg.launcherId}/secrets`,
+      }),
+    }),
+    putSessionLaunchersByLauncherIdSecrets: build.mutation<
+      PutSessionLaunchersByLauncherIdSecretsApiResponse,
+      PutSessionLaunchersByLauncherIdSecretsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/session_launchers/${queryArg.launcherId}/secrets`,
+        method: "PUT",
+        body: queryArg.sessionLauncherSecretPatchList,
+      }),
+    }),
     getProjectsByProjectIdSessionLaunchers: build.query<
       GetProjectsByProjectIdSessionLaunchersApiResponse,
       GetProjectsByProjectIdSessionLaunchersApiArg
@@ -197,6 +251,39 @@ export type PatchSessionLaunchersByLauncherIdApiArg = {
 export type DeleteSessionLaunchersByLauncherIdApiResponse = unknown;
 export type DeleteSessionLaunchersByLauncherIdApiArg = {
   launcherId: Ulid;
+};
+export type GetSessionLaunchersByLauncherIdRepositoriesApiResponse =
+  /** status 200 List of repository parameters */ SessionLauncherRepositoryList;
+export type GetSessionLaunchersByLauncherIdRepositoriesApiArg = {
+  launcherId: Ulid;
+};
+export type PutSessionLaunchersByLauncherIdRepositoriesApiResponse =
+  /** status 200 The updated repository parameters */ SessionLauncherRepositoryList;
+export type PutSessionLaunchersByLauncherIdRepositoriesApiArg = {
+  launcherId: Ulid;
+  sessionLauncherRepositoryPatchList: SessionLauncherRepositoryPatchList;
+};
+export type GetSessionLaunchersByLauncherIdDataConnectorsApiResponse =
+  /** status 200 List of sessions launcher data connector parameters */ SessionLauncherDataConnectorList;
+export type GetSessionLaunchersByLauncherIdDataConnectorsApiArg = {
+  launcherId: Ulid;
+};
+export type PutSessionLaunchersByLauncherIdDataConnectorsApiResponse =
+  /** status 200 The updated data connector parameters */ SessionLauncherDataConnectorList;
+export type PutSessionLaunchersByLauncherIdDataConnectorsApiArg = {
+  launcherId: Ulid;
+  sessionLauncherDataConnectorPatchList: SessionLauncherDataConnectorPatchList;
+};
+export type GetSessionLaunchersByLauncherIdSecretsApiResponse =
+  /** status 200 A list of sessions launcher secrets */ SessionLauncherSecretList;
+export type GetSessionLaunchersByLauncherIdSecretsApiArg = {
+  launcherId: Ulid;
+};
+export type PutSessionLaunchersByLauncherIdSecretsApiResponse =
+  /** status 200 The updated sessions secret parameters */ SessionLauncherSecretList;
+export type PutSessionLaunchersByLauncherIdSecretsApiArg = {
+  launcherId: Ulid;
+  sessionLauncherSecretPatchList: SessionLauncherSecretPatchList;
 };
 export type GetProjectsByProjectIdSessionLaunchersApiResponse =
   /** status 200 List of sessions launchers */ SessionLaunchersList;
@@ -416,6 +503,52 @@ export type SessionLauncherPatch = {
   env_variables?: EnvVariables;
   environment?: EnvironmentPatchInLauncher | EnvironmentIdOnlyPatch;
 };
+export type ProjectRepositoryId = {
+  repository_id: number;
+};
+export type RepositoryUrl = {
+  url: Repository;
+};
+export type RepositoryCompositeKey = ProjectRepositoryId & RepositoryUrl;
+export type RepositoryAccessPolicyName = "excluded" | "readOnly" | "readWrite";
+export type GitReference = string;
+export type GitReferenceList = GitReference[] | null;
+export type RepositoryAccessPolicy = {
+  policy: RepositoryAccessPolicyName;
+  writable_references?: GitReferenceList;
+};
+export type SessionLauncherRepository = RepositoryCompositeKey &
+  RepositoryAccessPolicy;
+export type SessionLauncherRepositoryList = SessionLauncherRepository[];
+export type SessionLauncherRepositoryPatch = ProjectRepositoryId &
+  RepositoryAccessPolicy;
+export type SessionLauncherRepositoryPatchList =
+  SessionLauncherRepositoryPatch[];
+export type DataConnectorKey = {
+  data_connector_link_id: Ulid;
+};
+export type DataConnectorAccessPolicyName =
+  | "excluded"
+  | "readOnly"
+  | "readWrite";
+export type DataConnectorAccessPolicy = {
+  policy: DataConnectorAccessPolicyName;
+};
+export type SessionLauncherDataConnector = DataConnectorKey &
+  DataConnectorAccessPolicy;
+export type SessionLauncherDataConnectorList = SessionLauncherDataConnector[];
+export type SessionLauncherDataConnectorPatchList =
+  SessionLauncherDataConnector[];
+export type SecretSlotKey = {
+  secret_slot_id: Ulid;
+};
+export type SecretAccessPolicyName = "excluded" | "readOnly";
+export type SecretAccessPolicy = {
+  policy: SecretAccessPolicyName;
+};
+export type SessionLauncherSecret = SecretSlotKey & SecretAccessPolicy;
+export type SessionLauncherSecretList = SessionLauncherSecret[];
+export type SessionLauncherSecretPatchList = SessionLauncherSecret[];
 export type ErrorReason = string;
 export type BuildCommonPart = {
   id: Ulid;
@@ -456,6 +589,12 @@ export const {
   useGetSessionLaunchersByLauncherIdQuery,
   usePatchSessionLaunchersByLauncherIdMutation,
   useDeleteSessionLaunchersByLauncherIdMutation,
+  useGetSessionLaunchersByLauncherIdRepositoriesQuery,
+  usePutSessionLaunchersByLauncherIdRepositoriesMutation,
+  useGetSessionLaunchersByLauncherIdDataConnectorsQuery,
+  usePutSessionLaunchersByLauncherIdDataConnectorsMutation,
+  useGetSessionLaunchersByLauncherIdSecretsQuery,
+  usePutSessionLaunchersByLauncherIdSecretsMutation,
   useGetProjectsByProjectIdSessionLaunchersQuery,
   useGetBuildsByBuildIdQuery,
   usePatchBuildsByBuildIdMutation,

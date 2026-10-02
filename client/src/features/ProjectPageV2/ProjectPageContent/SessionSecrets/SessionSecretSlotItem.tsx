@@ -24,24 +24,24 @@ import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
 import SessionSecretActions from "./SessionSecretActions";
 import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
+import { getSecretSlotSessionPath } from "./sessionSecrets.utils";
 
 interface SessionSecretSlotItemProps {
+  accessPolicy?: string | null;
   secretsMountDirectory: string;
   secretSlot: SessionSecretSlotWithSecret;
   noActions?: boolean;
 }
 
 export default function SessionSecretSlotItem({
+  accessPolicy,
   secretsMountDirectory,
   secretSlot,
   noActions,
 }: SessionSecretSlotItemProps) {
   const { filename, name, description } = secretSlot.secretSlot;
 
-  const mountDir = secretsMountDirectory.startsWith("/")
-    ? secretsMountDirectory
-    : `<work-dir>/${secretsMountDirectory}`;
-  const fullPath = `${mountDir}/${filename}`;
+  const fullPath = getSecretSlotSessionPath(secretsMountDirectory, filename);
 
   return (
     <ListGroupItem action={!noActions} data-cy="session-secret-slot-item">
@@ -70,6 +70,11 @@ export default function SessionSecretSlotItem({
                 <Lock className="me-1" />
                 Secret not provided
               </RenkuBadge>
+            )}
+            {accessPolicy !== undefined && (
+              <div className="ms-auto" data-cy="access-policy">
+                {accessPolicy}
+              </div>
             )}
           </div>
           {description && <p className="mb-0">{description}</p>}
