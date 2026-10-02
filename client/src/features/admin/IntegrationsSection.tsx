@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useState } from "react";
+import { Plugin } from "react-bootstrap-icons";
 import {
   Card,
   CardBody,
@@ -37,14 +38,17 @@ import {
   ProviderList,
   useGetOauth2ProvidersQuery,
 } from "../connectedServices/api/connectedServices.api";
-import AddConnectedServiceButton from "./AddConnectedServiceButton";
-import DeleteConnectedServiceButton from "./DeleteConnectedServiceButton";
-import UpdateConnectedServiceButton from "./UpdateConnectedServiceButton";
+import AddConnectedServiceButton from "./AddIntegrationsButton";
+import DeleteConnectedServiceButton from "./DeleteIntegrationsButton";
+import UpdateConnectedServiceButton from "./UpdateIntegrationsButton";
 
 export default function ConnectedServicesSection() {
   return (
-    <section className="mt-4">
-      <h2>Integrations</h2>
+    <section>
+      <h2 className="mb-3">
+        <Plugin className="me-1" />
+        Integrations
+      </h2>
       <ConnectedServices />
     </section>
   );
@@ -78,7 +82,7 @@ interface ConnectedServicesListProps {
 }
 function ConnectedServicesList({ providers }: ConnectedServicesListProps) {
   if (!providers || providers.length === 0) {
-    return <p>No connected services</p>;
+    return <p>No integration set up yet.</p>;
   }
   return (
     <Container className="px-0" fluid>
