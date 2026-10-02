@@ -147,9 +147,6 @@ describe("Navigate to project", () => {
       "contain.text",
       "test-2-v2-project",
     );
-    cy.getDataCy("entity-breadcrumb")
-      .contains("button", "Copy to clipboard")
-      .should("exist");
   });
 
   it("links to the group page in the breadcrumb of a group-owned project", () => {

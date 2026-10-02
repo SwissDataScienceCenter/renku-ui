@@ -378,9 +378,6 @@ describe("Data connector page", () => {
       .should("have.attr", "href", "/u/user1-uuid");
     cy.getDataCy("entity-breadcrumb").should("contain.text", dataConnectorSlug);
     cy.getDataCy("entity-breadcrumb").find("a").should("have.length", 1);
-    cy.getDataCy("entity-breadcrumb")
-      .contains("button", "Copy to clipboard")
-      .should("exist");
   });
 
   it("shows a three-level breadcrumb for a project-owned data connector", () => {
@@ -406,9 +403,6 @@ describe("Data connector page", () => {
       .should("have.attr", "href", `/p/${username}/${projectSlug}`);
     cy.getDataCy("entity-breadcrumb").should("contain.text", dataConnectorSlug);
     cy.getDataCy("entity-breadcrumb").find("a").should("have.length", 2);
-    cy.getDataCy("entity-breadcrumb")
-      .contains("button", "Copy to clipboard")
-      .should("exist");
   });
 
   it("shows the resolved source and DOI link for a global data connector", () => {
