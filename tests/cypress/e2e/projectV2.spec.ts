@@ -153,13 +153,32 @@ describe("Navigate to project", () => {
     cy.location("search").should("eq", "?tab=general");
   });
 
-  // ! Temp -- remember to change this once handling 404 with custom message
   it("shows not found for stable links to unknown projects", () => {
     fixtures.readProjectV2ById({ statusCode: 404 });
     cy.visit("/id/p/THEPROJECTULID26CHARACTERS/sessions/show/my-session");
     cy.wait("@readProjectV2ById");
     cy.contains("Project not found").should("be.visible");
     cy.contains("THEPROJECTULID26CHARACTERS").should("be.visible");
+    cy.contains("You are not logged in").should("not.exist");
+    cy.contains("a", "Go to the projects list")
+      .should("have.attr", "href")
+      .and("contain", "/search")
+      .and("contain", "q=THEPROJECTULID26CHARACTERS");
+    cy.contains("a", "Go to the homepage").should("have.attr", "href", "/");
+  });
+
+  it("suggests logging in for stable links when anonymous", () => {
+    fixtures.userNone().readProjectV2ById({ statusCode: 404 });
+    cy.visit("/id/p/THEPROJECTULID26CHARACTERS/sessions/show/my-session");
+    cy.wait("@readProjectV2ById");
+    cy.contains("Project not found").should("be.visible");
+    cy.contains('[role="alert"]', "You are not logged in")
+      .should("be.visible")
+      .and("contain.text", "is not public")
+      .contains("a", "Log in")
+      .should("have.attr", "href")
+      .and("contain", "/auth/login")
+      .and("contain", encodeURIComponent("/id/p/THEPROJECTULID26CHARACTERS"));
   });
 
   it("shows not found for unsupported stable links", () => {
