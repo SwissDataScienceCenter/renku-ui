@@ -39,7 +39,7 @@ import {
   type SessionLauncherSecret,
 } from "../api/sessionLaunchersV2.api";
 import LauncherResourceModal, {
-  AccessPolicySelect,
+  AccessPolicyToggle,
   LauncherResourceTable,
   LauncherResourceUpdateConfirmation,
 } from "./LauncherResourceModal";
@@ -105,18 +105,17 @@ function SessionSecretRow({
         <Controller
           control={control}
           name={`secrets.${index}.policy`}
-          render={({ field }) => {
-            const { ref, ...fieldProps } = field;
-            return (
-              <AccessPolicySelect
-                ariaLabel={`Access for ${name}`}
-                data-cy={`launcher-session-secret-access_${index}`}
-                innerRef={ref}
-                options={SECRET_ACCESS_OPTIONS}
-                {...fieldProps}
-              />
-            );
-          }}
+          render={({ field }) => (
+            <AccessPolicyToggle
+              ariaLabel={`Access for ${name}`}
+              dataCy={`launcher-session-secret-access_${index}`}
+              name={field.name}
+              onBlur={field.onBlur}
+              onChange={field.onChange}
+              options={SECRET_ACCESS_OPTIONS}
+              value={field.value}
+            />
+          )}
         />
       </td>
     </tr>

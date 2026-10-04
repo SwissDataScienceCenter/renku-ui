@@ -17,11 +17,13 @@
  */
 
 import cx from "classnames";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import {
   Button,
+  ButtonGroup,
   Input,
+  Label,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -193,5 +195,54 @@ export function AccessPolicySelect<T extends string>({
         </option>
       ))}
     </Input>
+  );
+}
+
+interface AccessPolicyToggleProps<T extends string> {
+  ariaLabel: string;
+  dataCy: string;
+  name: string;
+  onBlur: InputProps["onBlur"];
+  onChange: InputProps["onChange"];
+  options: AccessPolicyOption<T>[];
+  value: T;
+}
+
+export function AccessPolicyToggle<T extends string>({
+  ariaLabel,
+  dataCy,
+  name,
+  onBlur,
+  onChange,
+  options,
+  value,
+}: AccessPolicyToggleProps<T>) {
+  return (
+    <ButtonGroup aria-label={ariaLabel} data-cy={dataCy} size="sm">
+      {options.map((option) => {
+        const id = `${dataCy}-${option.value}`;
+        return (
+          <Fragment key={option.value}>
+            <Input
+              checked={value === option.value}
+              className="btn-check"
+              id={id}
+              name={name}
+              onBlur={onBlur}
+              onChange={onChange}
+              type="radio"
+              value={option.value}
+            />
+            <Label
+              className={cx("btn", "btn-outline-primary", "mb-0")}
+              data-cy={id}
+              for={id}
+            >
+              {option.label}
+            </Label>
+          </Fragment>
+        );
+      })}
+    </ButtonGroup>
   );
 }

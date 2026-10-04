@@ -44,7 +44,7 @@ export const DATA_CONNECTOR_ACCESS_OPTIONS: AccessPolicyOption<DataConnectorAcce
 
 export const SECRET_ACCESS_OPTIONS: AccessPolicyOption<SecretAccessPolicyName>[] =
   [
-    { value: "included", label: "Included" },
+    { value: "included", label: "Include" },
     { value: "excluded", label: "Do not include" },
   ];
 
