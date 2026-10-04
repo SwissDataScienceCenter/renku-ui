@@ -76,8 +76,10 @@ import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissio
 import { Project } from "../../projectsV2/api/projectV2.api";
 import {
   useGetSessionLaunchersByLauncherIdDataConnectorsQuery,
+  useGetSessionLaunchersByLauncherIdRepositoriesQuery,
   type SessionLauncher,
   type SessionLauncherDataConnector,
+  type SessionLauncherRepository,
 } from "../api/sessionLaunchersV2.api";
 import AppRuntimeCard from "../apps/AppRuntimeCard";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
@@ -109,8 +111,11 @@ import EnvironmentItem, {
 } from "./EnvironmentItem";
 import EnvVariablesCard from "./EnvVariablesCard";
 import {
+  findSavedRepository,
   getDataConnectorAccessPolicyLabel,
+  getRepositoryAccessPolicyLabel,
   resolveDataConnectorAccessPolicy,
+  resolveRepositoryAccessPolicy,
 } from "./launcherResources.constants";
 
 import styles from "./SessionView.module.scss";
@@ -323,6 +328,15 @@ export function SessionView({
     );
   const savedDataConnectorPolicies = launcherDataConnectorsQuery.isSuccess
     ? launcherDataConnectorsQuery.data
+    : undefined;
+  const launcherRepositoriesQuery =
+    useGetSessionLaunchersByLauncherIdRepositoriesQuery(
+      launcher && launcherCategory !== "app"
+        ? { launcherId: launcher.id }
+        : skipToken,
+    );
+  const savedRepositoryPolicies = launcherRepositoriesQuery.isSuccess
+    ? launcherRepositoriesQuery.data
     : undefined;
 
   const dataConnectors = useMemo(
@@ -730,6 +744,11 @@ export function SessionView({
                     <ListGroup flush>
                       {project.repositories.map((repositoryUrl, index) => (
                         <RepositoryItem
+                          accessPolicy={repositoryAccessPolicyLabel(
+                            repositoryUrl,
+                            index,
+                            savedRepositoryPolicies,
+                          )}
                           key={`storage-${index}`}
                           project={project}
                           readonly={true}
@@ -758,7 +777,13 @@ export function SessionView({
               <CustomizeCodeRepositoriesModal
                 isOpen={isCodeRepositoriesOpen}
                 launcher={launcher}
+                policiesError={
+                  launcherRepositoriesQuery.isError
+                    ? launcherRepositoriesQuery.error
+                    : undefined
+                }
                 project={project}
+                savedPolicies={savedRepositoryPolicies}
                 toggle={toggleCodeRepositories}
               />
               <CustomizeDataConnectorsModal
@@ -843,6 +868,20 @@ export function SessionView({
         </div>
       </OffcanvasBody>
     </Offcanvas>
+  );
+}
+
+function repositoryAccessPolicyLabel(
+  url: string,
+  index: number,
+  savedPolicies: SessionLauncherRepository[] | undefined,
+): string | null {
+  if (savedPolicies == null) {
+    return null;
+  }
+  const savedPolicy = findSavedRepository(savedPolicies, url, index)?.policy;
+  return getRepositoryAccessPolicyLabel(
+    resolveRepositoryAccessPolicy(savedPolicy),
   );
 }
 

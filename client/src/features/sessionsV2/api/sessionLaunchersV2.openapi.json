@@ -396,7 +396,7 @@
         },
         "tags": ["session_launchers"]
       },
-      "put": {
+      "patch": {
         "summary": "Update a list of session launchers' repository parameters",
         "requestBody": {
           "required": true,
@@ -476,7 +476,7 @@
         },
         "tags": ["session_launchers"]
       },
-      "put": {
+      "patch": {
         "summary": "Update a list of session launchers' data connector parameters",
         "requestBody": {
           "required": true,
@@ -556,7 +556,7 @@
         },
         "tags": ["session_launchers"]
       },
-      "put": {
+      "patch": {
         "summary": "Update a list of session launchers' secret parameters",
         "requestBody": {
           "required": true,
@@ -1331,7 +1331,7 @@
       "SecretAccessPolicyName": {
         "description": "Secret access policy name",
         "type": "string",
-        "enum": ["excluded", "readOnly"]
+        "enum": ["excluded", "included"]
       },
       "SecretAccessPolicy": {
         "description": "Secret access policy config",

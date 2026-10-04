@@ -20,6 +20,7 @@ import type {
   DataConnectorAccessPolicyName,
   RepositoryAccessPolicyName,
   SecretAccessPolicyName,
+  SessionLauncherRepository,
 } from "../api/sessionLaunchersV2.api";
 
 export interface AccessPolicyOption<T extends string> {
@@ -43,15 +44,40 @@ export const DATA_CONNECTOR_ACCESS_OPTIONS: AccessPolicyOption<DataConnectorAcce
 
 export const SECRET_ACCESS_OPTIONS: AccessPolicyOption<SecretAccessPolicyName>[] =
   [
-    { value: "readOnly", label: "Read-Only" },
+    { value: "included", label: "Included" },
     { value: "excluded", label: "Do not include" },
   ];
 
-// Mirror current session behavior until launcher resource GET is available
 export const DEFAULT_REPOSITORY_ACCESS_POLICY: RepositoryAccessPolicyName =
   "readWrite";
 
-export const DEFAULT_SECRET_ACCESS_POLICY: SecretAccessPolicyName = "readOnly";
+export function findSavedRepository(
+  savedPolicies: SessionLauncherRepository[] | undefined,
+  url: string,
+  index: number,
+): SessionLauncherRepository | undefined {
+  return (
+    savedPolicies?.find((entry) => entry.url === url) ??
+    savedPolicies?.find((entry) => entry.repository_id === index)
+  );
+}
+
+export function resolveRepositoryAccessPolicy(
+  savedPolicy: RepositoryAccessPolicyName | undefined,
+): RepositoryAccessPolicyName {
+  return savedPolicy ?? DEFAULT_REPOSITORY_ACCESS_POLICY;
+}
+
+export function getRepositoryAccessPolicyLabel(
+  policy: RepositoryAccessPolicyName,
+): string {
+  return (
+    REPOSITORY_ACCESS_OPTIONS.find((option) => option.value === policy)
+      ?.label ?? policy
+  );
+}
+
+export const DEFAULT_SECRET_ACCESS_POLICY: SecretAccessPolicyName = "included";
 
 export function resolveSecretAccessPolicy(
   savedPolicy: SecretAccessPolicyName | undefined,

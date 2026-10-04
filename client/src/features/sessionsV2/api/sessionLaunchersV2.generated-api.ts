@@ -99,13 +99,13 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/session_launchers/${queryArg.launcherId}/repositories`,
       }),
     }),
-    putSessionLaunchersByLauncherIdRepositories: build.mutation<
-      PutSessionLaunchersByLauncherIdRepositoriesApiResponse,
-      PutSessionLaunchersByLauncherIdRepositoriesApiArg
+    patchSessionLaunchersByLauncherIdRepositories: build.mutation<
+      PatchSessionLaunchersByLauncherIdRepositoriesApiResponse,
+      PatchSessionLaunchersByLauncherIdRepositoriesApiArg
     >({
       query: (queryArg) => ({
         url: `/session_launchers/${queryArg.launcherId}/repositories`,
-        method: "PUT",
+        method: "PATCH",
         body: queryArg.sessionLauncherRepositoryPatchList,
       }),
     }),
@@ -117,13 +117,13 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/session_launchers/${queryArg.launcherId}/data_connectors`,
       }),
     }),
-    putSessionLaunchersByLauncherIdDataConnectors: build.mutation<
-      PutSessionLaunchersByLauncherIdDataConnectorsApiResponse,
-      PutSessionLaunchersByLauncherIdDataConnectorsApiArg
+    patchSessionLaunchersByLauncherIdDataConnectors: build.mutation<
+      PatchSessionLaunchersByLauncherIdDataConnectorsApiResponse,
+      PatchSessionLaunchersByLauncherIdDataConnectorsApiArg
     >({
       query: (queryArg) => ({
         url: `/session_launchers/${queryArg.launcherId}/data_connectors`,
-        method: "PUT",
+        method: "PATCH",
         body: queryArg.sessionLauncherDataConnectorPatchList,
       }),
     }),
@@ -135,13 +135,13 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/session_launchers/${queryArg.launcherId}/secrets`,
       }),
     }),
-    putSessionLaunchersByLauncherIdSecrets: build.mutation<
-      PutSessionLaunchersByLauncherIdSecretsApiResponse,
-      PutSessionLaunchersByLauncherIdSecretsApiArg
+    patchSessionLaunchersByLauncherIdSecrets: build.mutation<
+      PatchSessionLaunchersByLauncherIdSecretsApiResponse,
+      PatchSessionLaunchersByLauncherIdSecretsApiArg
     >({
       query: (queryArg) => ({
         url: `/session_launchers/${queryArg.launcherId}/secrets`,
-        method: "PUT",
+        method: "PATCH",
         body: queryArg.sessionLauncherSecretPatchList,
       }),
     }),
@@ -257,9 +257,9 @@ export type GetSessionLaunchersByLauncherIdRepositoriesApiResponse =
 export type GetSessionLaunchersByLauncherIdRepositoriesApiArg = {
   launcherId: Ulid;
 };
-export type PutSessionLaunchersByLauncherIdRepositoriesApiResponse =
+export type PatchSessionLaunchersByLauncherIdRepositoriesApiResponse =
   /** status 200 The updated repository parameters */ SessionLauncherRepositoryList;
-export type PutSessionLaunchersByLauncherIdRepositoriesApiArg = {
+export type PatchSessionLaunchersByLauncherIdRepositoriesApiArg = {
   launcherId: Ulid;
   sessionLauncherRepositoryPatchList: SessionLauncherRepositoryPatchList;
 };
@@ -268,9 +268,9 @@ export type GetSessionLaunchersByLauncherIdDataConnectorsApiResponse =
 export type GetSessionLaunchersByLauncherIdDataConnectorsApiArg = {
   launcherId: Ulid;
 };
-export type PutSessionLaunchersByLauncherIdDataConnectorsApiResponse =
+export type PatchSessionLaunchersByLauncherIdDataConnectorsApiResponse =
   /** status 200 The updated data connector parameters */ SessionLauncherDataConnectorList;
-export type PutSessionLaunchersByLauncherIdDataConnectorsApiArg = {
+export type PatchSessionLaunchersByLauncherIdDataConnectorsApiArg = {
   launcherId: Ulid;
   sessionLauncherDataConnectorPatchList: SessionLauncherDataConnectorPatchList;
 };
@@ -279,9 +279,9 @@ export type GetSessionLaunchersByLauncherIdSecretsApiResponse =
 export type GetSessionLaunchersByLauncherIdSecretsApiArg = {
   launcherId: Ulid;
 };
-export type PutSessionLaunchersByLauncherIdSecretsApiResponse =
+export type PatchSessionLaunchersByLauncherIdSecretsApiResponse =
   /** status 200 The updated sessions secret parameters */ SessionLauncherSecretList;
-export type PutSessionLaunchersByLauncherIdSecretsApiArg = {
+export type PatchSessionLaunchersByLauncherIdSecretsApiArg = {
   launcherId: Ulid;
   sessionLauncherSecretPatchList: SessionLauncherSecretPatchList;
 };
@@ -542,7 +542,7 @@ export type SessionLauncherDataConnectorPatchList =
 export type SecretSlotKey = {
   secret_slot_id: Ulid;
 };
-export type SecretAccessPolicyName = "excluded" | "readOnly";
+export type SecretAccessPolicyName = "excluded" | "included";
 export type SecretAccessPolicy = {
   policy: SecretAccessPolicyName;
 };
@@ -590,11 +590,11 @@ export const {
   usePatchSessionLaunchersByLauncherIdMutation,
   useDeleteSessionLaunchersByLauncherIdMutation,
   useGetSessionLaunchersByLauncherIdRepositoriesQuery,
-  usePutSessionLaunchersByLauncherIdRepositoriesMutation,
+  usePatchSessionLaunchersByLauncherIdRepositoriesMutation,
   useGetSessionLaunchersByLauncherIdDataConnectorsQuery,
-  usePutSessionLaunchersByLauncherIdDataConnectorsMutation,
+  usePatchSessionLaunchersByLauncherIdDataConnectorsMutation,
   useGetSessionLaunchersByLauncherIdSecretsQuery,
-  usePutSessionLaunchersByLauncherIdSecretsMutation,
+  usePatchSessionLaunchersByLauncherIdSecretsMutation,
   useGetProjectsByProjectIdSessionLaunchersQuery,
   useGetBuildsByBuildIdQuery,
   usePatchBuildsByBuildIdMutation,

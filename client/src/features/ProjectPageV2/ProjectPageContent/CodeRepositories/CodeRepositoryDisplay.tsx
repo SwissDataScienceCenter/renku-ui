@@ -408,11 +408,13 @@ function CodeRepositoryActions({
 }
 
 interface RepositoryItemProps {
+  accessPolicy?: string | null;
   project: Project;
   readonly?: boolean;
   url: string;
 }
 export function RepositoryItem({
+  accessPolicy,
   project,
   readonly = false,
   url,
@@ -458,6 +460,16 @@ export function RepositoryItem({
               />
             </div>
           </Col>
+          {accessPolicy != null && (
+            <Col
+              className={cx("fw-bold", "ms-auto")}
+              data-cy="repository-access-policy"
+              sm="auto"
+              xs={12}
+            >
+              {accessPolicy}
+            </Col>
+          )}
           {!readonly && (
             <>
               <Col xs={12} sm="auto" className="ms-auto">

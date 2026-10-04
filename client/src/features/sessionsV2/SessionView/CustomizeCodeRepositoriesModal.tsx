@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import type { SerializedError } from "@reduxjs/toolkit";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useEffect, useMemo } from "react";
 import { FileCode } from "react-bootstrap-icons";
@@ -30,19 +32,24 @@ import {
 import { Form, Input } from "reactstrap";
 
 import { getRepositoryName } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
+import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import type { Project } from "../../projectsV2/api/projectV2.api";
-import type {
-  RepositoryAccessPolicyName,
-  SessionLauncher,
+import {
+  usePatchSessionLaunchersByLauncherIdRepositoriesMutation as useUpdateLauncherRepositoriesMutation,
+  type RepositoryAccessPolicyName,
+  type SessionLauncher,
+  type SessionLauncherRepository,
 } from "../api/sessionLaunchersV2.api";
 import LauncherResourceModal, {
   AccessPolicySelect,
   LauncherResourceTable,
+  LauncherResourceUpdateConfirmation,
 } from "./LauncherResourceModal";
 import {
-  DEFAULT_REPOSITORY_ACCESS_POLICY,
+  findSavedRepository,
   GIT_REFERENCE_PATTERN,
   REPOSITORY_ACCESS_OPTIONS,
+  resolveRepositoryAccessPolicy,
 } from "./launcherResources.constants";
 
 interface CodeRepositoryAccessField {
@@ -56,14 +63,36 @@ interface CodeRepositoriesForm {
   repositories: CodeRepositoryAccessField[];
 }
 
-function getDefaultValues(repositories: string[]): CodeRepositoriesForm {
+function formatWritableReferences(
+  references: string[] | null | undefined,
+): string {
+  return references?.join(", ") ?? "";
+}
+
+function parseWritableReferences(value: string): string[] | null {
+  const references = value
+    .split(",")
+    .map((reference) => reference.trim())
+    .filter((reference) => reference.length > 0);
+  return references.length > 0 ? references : null;
+}
+
+function getDefaultValues(
+  repositories: string[],
+  savedPolicies: SessionLauncherRepository[] | undefined,
+): CodeRepositoriesForm {
   return {
-    repositories: repositories.map((url, index) => ({
-      policy: DEFAULT_REPOSITORY_ACCESS_POLICY,
-      repositoryId: index,
-      url,
-      writableReferences: "",
-    })),
+    repositories: repositories.map((url, index) => {
+      const saved = findSavedRepository(savedPolicies, url, index);
+      return {
+        policy: resolveRepositoryAccessPolicy(saved?.policy),
+        repositoryId: saved?.repository_id ?? index,
+        url,
+        writableReferences: formatWritableReferences(
+          saved?.writable_references,
+        ),
+      };
+    }),
   };
 }
 
@@ -172,19 +201,25 @@ function CodeRepositoryRow({
 interface CustomizeCodeRepositoriesModalProps {
   isOpen: boolean;
   launcher: SessionLauncher;
+  policiesError?: FetchBaseQueryError | SerializedError;
   project: Project;
+  savedPolicies?: SessionLauncherRepository[];
   toggle: () => void;
 }
 
 export default function CustomizeCodeRepositoriesModal({
   isOpen,
   launcher,
+  policiesError,
   project,
+  savedPolicies,
   toggle,
 }: CustomizeCodeRepositoriesModalProps) {
+  const [updateLauncherRepositories, updateResult] =
+    useUpdateLauncherRepositoriesMutation();
   const defaultValues = useMemo(
-    () => getDefaultValues(project.repositories ?? []),
-    [project.repositories],
+    () => getDefaultValues(project.repositories ?? [], savedPolicies),
+    [project.repositories, savedPolicies],
   );
 
   const {
@@ -198,7 +233,32 @@ export default function CustomizeCodeRepositoriesModal({
     mode: "onChange",
   });
   const { fields } = useFieldArray({ control, name: "repositories" });
-  const onSave = handleSubmit(() => {});
+  const onSave = handleSubmit(async (form) => {
+    if (savedPolicies == null) {
+      return;
+    }
+    try {
+      await updateLauncherRepositories({
+        launcherId: launcher.id,
+        sessionLauncherRepositoryPatchList: form.repositories.map((row) => ({
+          policy: row.policy,
+          repository_id: row.repositoryId,
+          writable_references:
+            row.policy === "readWrite"
+              ? parseWritableReferences(row.writableReferences)
+              : null,
+        })),
+      }).unwrap();
+    } catch {
+      return;
+    }
+  });
+
+  useEffect(() => {
+    if (!isOpen) {
+      updateResult.reset();
+    }
+  }, [isOpen, updateResult]);
 
   useEffect(() => {
     reset(defaultValues);
@@ -209,12 +269,23 @@ export default function CustomizeCodeRepositoriesModal({
       dataCy="customize-code-repositories-modal"
       description="Limit access to code repositories in this launcher."
       icon={<FileCode className={cx("bi", "me-1")} />}
-      isDirty={isDirty}
+      isDirty={isDirty && savedPolicies != null}
       isOpen={isOpen}
+      isSaving={updateResult.isLoading}
+      isSuccess={updateResult.isSuccess}
       onSave={onSave}
+      successContent={
+        <LauncherResourceUpdateConfirmation launcher={launcher} />
+      }
       title={`Customize Code Repositories in ${launcher.name}`}
       toggle={toggle}
     >
+      {policiesError != null && (
+        <RtkOrDataServicesError error={policiesError} />
+      )}
+      {updateResult.error != null && (
+        <RtkOrDataServicesError error={updateResult.error} />
+      )}
       {fields.length < 1 ? (
         <p className={cx("fst-italic", "mb-0")}>No repositories included</p>
       ) : (

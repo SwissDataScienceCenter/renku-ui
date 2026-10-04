@@ -35,7 +35,7 @@ import type {
 } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import {
-  usePutSessionLaunchersByLauncherIdDataConnectorsMutation as useUpdateLauncherDataConnectorsMutation,
+  usePatchSessionLaunchersByLauncherIdDataConnectorsMutation as useUpdateLauncherDataConnectorsMutation,
   type DataConnectorAccessPolicyName,
   type SessionLauncher,
   type SessionLauncherDataConnector,
@@ -43,6 +43,7 @@ import {
 import LauncherResourceModal, {
   AccessPolicySelect,
   LauncherResourceTable,
+  LauncherResourceUpdateConfirmation,
 } from "./LauncherResourceModal";
 import {
   DATA_CONNECTOR_ACCESS_OPTIONS,
@@ -176,7 +177,6 @@ export default function CustomizeDataConnectorsModal({
   const { fields } = useFieldArray({ control, name: "dataConnectors" });
   const onSave = handleSubmit(async (form) => {
     if (savedPolicies == null) {
-      console.log("we need previous polices to update them");
       return;
     }
     try {
@@ -189,7 +189,6 @@ export default function CustomizeDataConnectorsModal({
           }),
         ),
       }).unwrap();
-      toggle();
     } catch {
       return;
     }
@@ -213,7 +212,11 @@ export default function CustomizeDataConnectorsModal({
       isDirty={isDirty && savedPolicies != null}
       isOpen={isOpen}
       isSaving={updateResult.isLoading}
+      isSuccess={updateResult.isSuccess}
       onSave={onSave}
+      successContent={
+        <LauncherResourceUpdateConfirmation launcher={launcher} />
+      }
       title={`Customize Data Connectors in ${launcher.name}`}
       toggle={toggle}
     >

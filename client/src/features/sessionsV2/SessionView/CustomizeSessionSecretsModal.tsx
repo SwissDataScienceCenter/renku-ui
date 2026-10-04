@@ -30,23 +30,18 @@ import {
 import { Form } from "reactstrap";
 
 import { getSecretSlotSessionPath } from "~/features/ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.utils";
-import { SuccessAlert } from "../../../components/Alert";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import type { SessionSecretSlot } from "../../projectsV2/api/projectV2.api";
 import {
-  usePutSessionLaunchersByLauncherIdSecretsMutation as useUpdateLauncherSecretsMutation,
+  usePatchSessionLaunchersByLauncherIdSecretsMutation as useUpdateLauncherSecretsMutation,
   type SecretAccessPolicyName,
   type SessionLauncher,
   type SessionLauncherSecret,
 } from "../api/sessionLaunchersV2.api";
-import {
-  getLauncherCategory,
-  getLauncherCategoryDefinition,
-  getLauncherChangeEffectMessage,
-} from "../session.utils";
 import LauncherResourceModal, {
   AccessPolicySelect,
   LauncherResourceTable,
+  LauncherResourceUpdateConfirmation,
 } from "./LauncherResourceModal";
 import {
   resolveSecretAccessPolicy,
@@ -128,27 +123,6 @@ function SessionSecretRow({
   );
 }
 
-function SecretPolicyUpdateConfirmation({
-  launcher,
-}: {
-  launcher: SessionLauncher;
-}) {
-  const launcherCategory = getLauncherCategory(launcher);
-  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
-  return (
-    <div data-cy="session-launcher-update-success">
-      <SuccessAlert dismissible={false} timeout={0}>
-        <p className="fw-bold">
-          {launcherDefinition.text.display} launcher updated successfully!
-        </p>
-        <p className="mb-0" data-cy="launcher-change-effect">
-          {getLauncherChangeEffectMessage(launcherCategory)}
-        </p>
-      </SuccessAlert>
-    </div>
-  );
-}
-
 interface CustomizeSessionSecretsModalProps {
   isOpen: boolean;
   launcher: SessionLauncher;
@@ -219,7 +193,9 @@ export default function CustomizeSessionSecretsModal({
       isSaving={updateResult.isLoading}
       isSuccess={updateResult.isSuccess}
       onSave={onSave}
-      successContent={<SecretPolicyUpdateConfirmation launcher={launcher} />}
+      successContent={
+        <LauncherResourceUpdateConfirmation launcher={launcher} />
+      }
       title={`Customize Session Secrets in ${launcher.name}`}
       toggle={toggle}
     >

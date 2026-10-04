@@ -29,7 +29,14 @@ import {
   type InputProps,
 } from "reactstrap";
 
+import { SuccessAlert } from "../../../components/Alert";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
+import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import {
+  getLauncherCategory,
+  getLauncherCategoryDefinition,
+  getLauncherChangeEffectMessage,
+} from "../session.utils";
 import type { AccessPolicyOption } from "./launcherResources.constants";
 
 interface LauncherResourceModalProps {
@@ -108,6 +115,27 @@ export default function LauncherResourceModal({
         )}
       </ModalFooter>
     </ScrollableModal>
+  );
+}
+
+export function LauncherResourceUpdateConfirmation({
+  launcher,
+}: {
+  launcher: SessionLauncher;
+}) {
+  const launcherCategory = getLauncherCategory(launcher);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
+  return (
+    <div data-cy="session-launcher-update-success">
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p className="fw-bold">
+          {launcherDefinition.text.display} launcher updated successfully!
+        </p>
+        <p className="mb-0" data-cy="launcher-change-effect">
+          {getLauncherChangeEffectMessage(launcherCategory)}
+        </p>
+      </SuccessAlert>
+    </div>
   );
 }
 
