@@ -19,7 +19,7 @@
 import type { SerializedError } from "@reduxjs/toolkit";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Database } from "react-bootstrap-icons";
 import {
   Controller,
@@ -29,10 +29,12 @@ import {
 } from "react-hook-form";
 import { Form } from "reactstrap";
 
+import { Loader } from "~/components/Loader";
 import type {
   DataConnectorRead,
   DataConnectorToProjectLink,
 } from "~/features/dataConnectorsV2/api/data-connectors.api";
+import DataConnectorScopeSource from "~/features/dataConnectorsV2/components/DataConnectorScopeSource";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import {
   usePatchSessionLaunchersByLauncherIdDataConnectorsMutation as useUpdateLauncherDataConnectorsMutation,
@@ -54,24 +56,13 @@ const READ_WRITE_DISABLED: readonly DataConnectorAccessPolicyName[] = [
   "readWrite",
 ];
 
-const DATA_CONNECTOR_COLUMN_WIDTHS = ["40%", "30%", "30%"] as const;
-
-function TruncatedCell({ value }: { value: string }) {
-  return (
-    <td className="align-middle">
-      <span className="d-block text-truncate" title={value}>
-        {value}
-      </span>
-    </td>
-  );
-}
+const DATA_CONNECTOR_COLUMN_WIDTHS = ["50%", "30%", "20%"] as const;
 
 interface DataConnectorAccessField {
   isStorageReadOnly: boolean;
   linkId: string;
   name: string;
   policy: DataConnectorAccessPolicyName;
-  slug: string;
 }
 
 interface DataConnectorsForm {
@@ -102,7 +93,6 @@ function getDefaultValues(
             isStorageReadOnly,
             savedPolicy,
           ),
-          slug: dataConnector.slug,
         },
       ];
     }),
@@ -111,23 +101,32 @@ function getDefaultValues(
 
 interface DataConnectorAccessRowProps {
   control: Control<DataConnectorsForm>;
+  dataConnector: DataConnectorRead;
   index: number;
   isStorageReadOnly: boolean;
   name: string;
-  slug: string;
 }
 
 function DataConnectorAccessRow({
   control,
+  dataConnector,
   index,
   isStorageReadOnly,
   name,
-  slug,
 }: DataConnectorAccessRowProps) {
   return (
     <tr data-cy="launcher-data-connector-row">
-      <TruncatedCell value={name} />
-      <TruncatedCell value={slug} />
+      <td className="align-middle">
+        <span className={cx("d-block", "text-truncate", "fw-bold")}>
+          {name}
+        </span>
+      </td>
+      <td className={cx("align-middle", "min-w-0")}>
+        <DataConnectorScopeSource
+          dataConnector={dataConnector}
+          textClassName="text-truncate"
+        />
+      </td>
       <td className="align-middle">
         <Controller
           control={control}
@@ -155,7 +154,9 @@ function DataConnectorAccessRow({
 
 interface CustomizeDataConnectorsModalProps {
   dataConnectorLinks: DataConnectorToProjectLink[];
+  dataConnectorsError?: FetchBaseQueryError | SerializedError;
   dataConnectorsMap: Record<string, DataConnectorRead>;
+  isLoading?: boolean;
   isOpen: boolean;
   launcher: SessionLauncher;
   policiesError?: FetchBaseQueryError | SerializedError;
@@ -165,7 +166,9 @@ interface CustomizeDataConnectorsModalProps {
 
 export default function CustomizeDataConnectorsModal({
   dataConnectorLinks,
+  dataConnectorsError,
   dataConnectorsMap,
+  isLoading = false,
   isOpen,
   launcher,
   policiesError,
@@ -179,6 +182,18 @@ export default function CustomizeDataConnectorsModal({
       getDefaultValues(dataConnectorLinks, dataConnectorsMap, savedPolicies),
     [dataConnectorLinks, dataConnectorsMap, savedPolicies],
   );
+  const defaultValuesRef = useRef(defaultValues);
+  defaultValuesRef.current = defaultValues;
+  const dataConnectorByLinkId = useMemo(() => {
+    const byLinkId: Record<string, DataConnectorRead> = {};
+    for (const link of dataConnectorLinks) {
+      const dataConnector = dataConnectorsMap[link.data_connector_id];
+      if (dataConnector != null) {
+        byLinkId[link.id] = dataConnector;
+      }
+    }
+    return byLinkId;
+  }, [dataConnectorLinks, dataConnectorsMap]);
 
   const {
     control,
@@ -201,6 +216,7 @@ export default function CustomizeDataConnectorsModal({
           }),
         ),
       }).unwrap();
+      reset(defaultValuesRef.current);
     } catch {
       return;
     }
@@ -213,15 +229,18 @@ export default function CustomizeDataConnectorsModal({
   }, [isOpen, updateResult]);
 
   useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues, isOpen, reset]);
+    if (!isOpen || isLoading) {
+      return;
+    }
+    reset(defaultValuesRef.current);
+  }, [isOpen, isLoading, reset]);
 
   return (
     <LauncherResourceModal
       dataCy="customize-data-connectors-modal"
       description="Limit access to data connectors in this launcher."
       icon={<Database className={cx("bi", "me-1")} />}
-      isDirty={isDirty && savedPolicies != null}
+      isDirty={isDirty && savedPolicies != null && !isLoading}
       isOpen={isOpen}
       isSaving={updateResult.isLoading}
       isSuccess={updateResult.isSuccess}
@@ -232,31 +251,42 @@ export default function CustomizeDataConnectorsModal({
       title={`Customize Data Connectors in ${launcher.name}`}
       toggle={toggle}
     >
-      {policiesError != null && (
+      {!isLoading && dataConnectorsError != null && (
+        <RtkOrDataServicesError error={dataConnectorsError} />
+      )}
+      {!isLoading && policiesError != null && (
         <RtkOrDataServicesError error={policiesError} />
       )}
       {updateResult.error != null && (
         <RtkOrDataServicesError error={updateResult.error} />
       )}
-      {fields.length < 1 ? (
+      {isLoading && <Loader />}
+      {!isLoading && dataConnectorsError == null && fields.length < 1 && (
         <p className={cx("fst-italic", "mb-0")}>No data connectors included</p>
-      ) : (
+      )}
+      {!isLoading && fields.length > 0 && (
         <Form noValidate onSubmit={onSave}>
           <LauncherResourceTable
             columnWidths={DATA_CONNECTOR_COLUMN_WIDTHS}
             dataCy="launcher-data-connectors-table"
-            headers={["Data connector name", "Owner", "Access"]}
+            headers={["Data connector", "Source", "Access level"]}
           >
-            {fields.map((field, index) => (
-              <DataConnectorAccessRow
-                key={field.id}
-                control={control}
-                index={index}
-                isStorageReadOnly={field.isStorageReadOnly}
-                name={field.name}
-                slug={field.slug}
-              />
-            ))}
+            {fields.map((field, index) => {
+              const dataConnector = dataConnectorByLinkId[field.linkId];
+              if (!dataConnector) {
+                return null;
+              }
+              return (
+                <DataConnectorAccessRow
+                  key={field.id}
+                  control={control}
+                  dataConnector={dataConnector}
+                  index={index}
+                  isStorageReadOnly={field.isStorageReadOnly}
+                  name={field.name}
+                />
+              );
+            })}
           </LauncherResourceTable>
         </Form>
       )}
