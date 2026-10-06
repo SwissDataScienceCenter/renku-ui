@@ -211,7 +211,7 @@ export function getDataConnectorScope(namespace?: string): DataConnectorScope {
 }
 
 export function useGetDataConnectorSource(
-  dataConnector: DataConnector | undefined,
+  dataConnector: DataConnector | DataConnectorRead | undefined,
 ) {
   const scope = useMemo(
     () => getDataConnectorScope(dataConnector?.namespace),

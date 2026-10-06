@@ -16,9 +16,7 @@
  * limitations under the License.
  */
 
-import type {
-  DataConnectorAccessPolicyName,
-} from "../api/sessionLaunchersV2.api";
+import type { DataConnectorAccessPolicyName } from "../api/sessionLaunchersV2.api";
 
 export interface AccessPolicyOption<T extends string> {
   label: string;
