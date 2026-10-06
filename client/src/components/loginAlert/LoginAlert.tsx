@@ -69,7 +69,7 @@ const LoginAlert = ({
   return (
     <>
       {introElement}
-      <Alert color={color}>
+      <Alert color={color} data-cy="login-alert">
         <p className="mb-0">
           {textPre} {link} {textPost}
         </p>
