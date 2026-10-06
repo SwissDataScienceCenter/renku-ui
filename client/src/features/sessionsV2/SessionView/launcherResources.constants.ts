@@ -18,17 +18,16 @@
 
 import type { DataConnectorAccessPolicyName } from "../api/sessionLaunchersV2.api";
 
-export interface AccessPolicyOption<T extends string> {
+export interface AccessPolicyOption {
   label: string;
-  value: T;
+  value: DataConnectorAccessPolicyName;
 }
 
-export const DATA_CONNECTOR_ACCESS_OPTIONS: AccessPolicyOption<DataConnectorAccessPolicyName>[] =
-  [
-    { value: "readWrite", label: "Read-Write" },
-    { value: "readOnly", label: "Read-Only" },
-    { value: "excluded", label: "Excluded" },
-  ];
+export const DATA_CONNECTOR_ACCESS_OPTIONS: AccessPolicyOption[] = [
+  { value: "readWrite", label: "Read-Write" },
+  { value: "readOnly", label: "Read-Only" },
+  { value: "excluded", label: "Excluded" },
+];
 
 export function getDefaultDataConnectorAccessPolicy(
   isStorageReadOnly: boolean,
