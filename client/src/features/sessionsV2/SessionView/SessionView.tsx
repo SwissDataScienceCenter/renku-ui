@@ -838,7 +838,7 @@ function AccessPolicyLabel({
   if (savedPolicies == null || links.length < 1) {
     return null;
   }
-  const link = links?.find((item) => item.data_connector_id === connector.id);
+  const link = links.find((item) => item.data_connector_id === connector.id);
   if (!link) {
     return null;
   }
