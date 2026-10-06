@@ -32,28 +32,40 @@ import {
 
 interface DataConnectorScopeSourceProps {
   dataConnector: DataConnector | DataConnectorRead;
+  textClassName?: string;
 }
 
 export default function DataConnectorScopeSource({
   dataConnector,
+  textClassName = "text-break",
 }: DataConnectorScopeSourceProps) {
   const dataConnectorSource = useGetDataConnectorSource(dataConnector);
   const { namespace } = dataConnector;
   const scopeIcon = useMemo(() => {
     const scope = getDataConnectorScope(namespace);
     if (scope === "project") {
-      return <Folder className="bi" />;
+      return <Folder className={cx("bi", "flex-shrink-0")} />;
     }
     if (scope === "namespace" && namespace) {
       return <UserAvatar namespace={namespace} size="sm" />;
     }
-    return <Journals className="bi" />;
+    return <Journals className={cx("bi", "flex-shrink-0")} />;
   }, [namespace]);
 
   return (
-    <div className={cx("align-items-center", "d-flex", "flex-row", "gap-1")}>
+    <div
+      className={cx(
+        "align-items-center",
+        "d-flex",
+        "flex-row",
+        "gap-1",
+        "min-w-0",
+      )}
+    >
       {scopeIcon}
-      <p className={cx("mb-0", "text-break")}>{dataConnectorSource}</p>
+      <span className={cx("d-block", "min-w-0", textClassName)}>
+        {dataConnectorSource}
+      </span>
     </div>
   );
 }

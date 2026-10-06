@@ -21,14 +21,12 @@ import { Fragment, type ReactNode } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import {
   Button,
-  ButtonGroup,
   Input,
-  Label,
   ModalBody,
   ModalFooter,
   ModalHeader,
   Table,
-  type InputProps,
+  type InputProps, Label, ButtonGroup,
 } from "reactstrap";
 
 import { SuccessAlert } from "../../../components/Alert";
@@ -156,12 +154,11 @@ export function LauncherResourceTable({
 }: LauncherResourceTableProps) {
   return (
     <Table
-      className="mb-0"
+      className={cx("mb-0")}
       data-cy={dataCy}
-      size="sm"
       style={{ tableLayout: "fixed", width: "100%" }}
     >
-      {columnWidths != null && (
+      {columnWidths && (
         <colgroup>
           {columnWidths.map((width, index) => (
             <col key={headers[index] ?? index} style={{ width }} />
@@ -171,7 +168,11 @@ export function LauncherResourceTable({
       <thead>
         <tr>
           {headers.map((header) => (
-            <th key={header} scope="col">
+            <th
+              key={header}
+              scope="col"
+              className={cx("text-muted", "fw-medium")}
+            >
               {header}
             </th>
           ))}
@@ -223,14 +224,14 @@ interface AccessPolicyToggleProps<T extends string> {
 }
 
 export function AccessPolicyToggle<T extends string>({
-  ariaLabel,
-  dataCy,
-  name,
-  onBlur,
-  onChange,
-  options,
-  value,
-}: AccessPolicyToggleProps<T>) {
+                                                       ariaLabel,
+                                                       dataCy,
+                                                       name,
+                                                       onBlur,
+                                                       onChange,
+                                                       options,
+                                                       value,
+                                                     }: AccessPolicyToggleProps<T>) {
   return (
     <ButtonGroup aria-label={ariaLabel} data-cy={dataCy} size="sm">
       {options.map((option) => {
@@ -260,3 +261,4 @@ export function AccessPolicyToggle<T extends string>({
     </ButtonGroup>
   );
 }
+
