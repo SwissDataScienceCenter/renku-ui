@@ -52,7 +52,6 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
     "BuildLogs",
     "LauncherDataConnectors",
     "LauncherSecrets",
-    "LauncherRepositories",
   ],
   endpoints: {
     getEnvironments: {
@@ -152,16 +151,6 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
         { id: arg.launcherId, type: "LauncherSecrets" as const },
       ],
     },
-    getSessionLaunchersByLauncherIdRepositories: {
-      providesTags: (_result, _error, arg) => [
-        { id: arg.launcherId, type: "LauncherRepositories" as const },
-      ],
-    },
-    patchSessionLaunchersByLauncherIdRepositories: {
-      invalidatesTags: (_result, _error, arg) => [
-        { id: arg.launcherId, type: "LauncherRepositories" as const },
-      ],
-    },
   },
 });
 
@@ -191,8 +180,6 @@ export const {
   usePatchSessionLaunchersByLauncherIdDataConnectorsMutation,
   useGetSessionLaunchersByLauncherIdSecretsQuery,
   usePatchSessionLaunchersByLauncherIdSecretsMutation,
-  useGetSessionLaunchersByLauncherIdRepositoriesQuery,
-  usePatchSessionLaunchersByLauncherIdRepositoriesMutation,
   // "builds" hooks
   useGetBuildsByBuildIdQuery,
   usePostEnvironmentsByEnvironmentIdBuildsMutation,

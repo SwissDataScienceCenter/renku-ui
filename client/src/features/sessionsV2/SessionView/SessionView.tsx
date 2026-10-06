@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
+import type { SerializedError } from "@reduxjs/toolkit";
+import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
@@ -55,6 +56,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert, InfoAlert } from "~/components/Alert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import InternalIdField from "~/components/InternalIdField";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
@@ -113,6 +115,9 @@ import {
 } from "./launcherResources.constants";
 
 import styles from "./SessionView.module.scss";
+
+const EMPTY_DATA_CONNECTOR_LINKS: DataConnectorToProjectLink[] = [];
+const EMPTY_DATA_CONNECTORS_MAP: Record<string, DataConnectorRead> = {};
 
 interface SessionCardContentProps {
   color: string;
@@ -297,23 +302,42 @@ export function SessionView({
     launcherCategory || orphanCategory,
   );
 
-  const { data: dataConnectorLinks } =
+  const dataConnectorLinksQuery =
     useGetProjectsByProjectIdDataConnectorLinksQuery({
       projectId: project.id,
     });
+  const dataConnectorLinks = dataConnectorLinksQuery.data;
   const dataConnectorIds = dataConnectorLinks?.map(
     (link) => link.data_connector_id,
   );
-  const { data: dataConnectorsMap } =
+  const dataConnectorsMapQuery =
     useGetDataConnectorsListByDataConnectorIdsQuery(
       dataConnectorIds ? { dataConnectorIds } : skipToken,
     );
+  const dataConnectorsMap = dataConnectorsMapQuery.data;
   const launcherDataConnectorsQuery =
     useGetSessionLaunchersByLauncherIdDataConnectorsQuery(
       launcher ? { launcherId: launcher.id } : skipToken,
     );
   const savedDataConnectorPolicies = launcherDataConnectorsQuery.isSuccess
     ? launcherDataConnectorsQuery.data
+    : undefined;
+  const isDataConnectorsLoading =
+    dataConnectorLinksQuery.isLoading ||
+    (!!dataConnectorIds?.length &&
+      (dataConnectorsMapQuery.isLoading ||
+        dataConnectorsMapQuery.isUninitialized)) ||
+    (launcher != null &&
+      (launcherDataConnectorsQuery.isLoading ||
+        launcherDataConnectorsQuery.isUninitialized));
+  const dataConnectorsError = dataConnectorLinksQuery.isError
+    ? dataConnectorLinksQuery.error
+    : undefined;
+  const dataConnectorsMapError = dataConnectorsMapQuery.isError
+    ? dataConnectorsMapQuery.error
+    : undefined;
+  const dataConnectorPoliciesError = launcherDataConnectorsQuery.isError
+    ? launcherDataConnectorsQuery.error
     : undefined;
 
   const dataConnectors = useMemo(
@@ -656,8 +680,11 @@ export function SessionView({
           )}
 
           <DataConnectorsCard
-            dataConnectorLinks={dataConnectorLinks ?? []}
+            dataConnectorLinks={
+              dataConnectorLinks ?? EMPTY_DATA_CONNECTOR_LINKS
+            }
             dataConnectors={isApp ? appDataConnectors : dataConnectors}
+            policiesError={dataConnectorPoliciesError}
             savedPolicies={savedDataConnectorPolicies}
             skippedCount={isApp ? skippedDataConnectors.length : 0}
             toggleEdit={launcher && !isApp ? toggleDataConnectors : undefined}
@@ -710,15 +737,19 @@ export function SessionView({
           {launcher && !isApp && (
             <>
               <CustomizeDataConnectorsModal
-                dataConnectorLinks={dataConnectorLinks ?? []}
-                dataConnectorsMap={dataConnectorsMap ?? {}}
+                dataConnectorLinks={
+                  dataConnectorLinks ?? EMPTY_DATA_CONNECTOR_LINKS
+                }
+                dataConnectorsError={
+                  dataConnectorsError ?? dataConnectorsMapError
+                }
+                dataConnectorsMap={
+                  dataConnectorsMap ?? EMPTY_DATA_CONNECTORS_MAP
+                }
+                isLoading={isDataConnectorsLoading}
                 isOpen={isDataConnectorsOpen}
                 launcher={launcher}
-                policiesError={
-                  launcherDataConnectorsQuery.isError
-                    ? launcherDataConnectorsQuery.error
-                    : undefined
-                }
+                policiesError={dataConnectorPoliciesError}
                 savedPolicies={savedDataConnectorPolicies}
                 toggle={toggleDataConnectors}
               />
@@ -795,16 +826,20 @@ export function SessionView({
 }
 
 interface AccessPolicyLabelProps {
-  connector: DataConnectorRead,
-  links: DataConnectorToProjectLink[],
-  savedPolicies: SessionLauncherDataConnector[] | undefined,
+  connector: DataConnectorRead;
+  links: DataConnectorToProjectLink[];
+  savedPolicies: SessionLauncherDataConnector[] | undefined;
 }
-function AccessPolicyLabel({connector, links, savedPolicies}: AccessPolicyLabelProps) {
-  if (savedPolicies == null) {
+function AccessPolicyLabel({
+  connector,
+  links,
+  savedPolicies,
+}: AccessPolicyLabelProps) {
+  if (savedPolicies == null || links.length < 1) {
     return null;
   }
-  const link = links.find((item) => item.data_connector_id === connector.id);
-  if (link == null) {
+  const link = links?.find((item) => item.data_connector_id === connector.id);
+  if (!link) {
     return null;
   }
   const savedPolicy = savedPolicies.find(
@@ -813,13 +848,9 @@ function AccessPolicyLabel({connector, links, savedPolicies}: AccessPolicyLabelP
   const label = getDataConnectorAccessPolicyLabel(
     resolveDataConnectorAccessPolicy(connector.storage.readonly, savedPolicy),
   );
-
-  if(savedPolicy === "excluded") {
-    return (<RenkuBadge
-        className="fw-normal"
-        color="secondary"
-        pill
-      >
+  if (savedPolicy === "excluded") {
+    return (
+      <RenkuBadge className="fw-normal" color="secondary" pill>
         <CircleFill className={cx("me-1", "bi")} />
         {label}
       </RenkuBadge>
@@ -827,20 +858,17 @@ function AccessPolicyLabel({connector, links, savedPolicies}: AccessPolicyLabelP
   }
 
   return (
-    <RenkuBadge
-      className="fw-normal"
-      color="success"
-      pill
-    >
+    <RenkuBadge className="fw-normal" color="success" pill>
       <CircleFill className={cx("me-1", "bi")} />
       {label}
     </RenkuBadge>
-  )
+  );
 }
 
 interface DataConnectorsCardProps {
   dataConnectorLinks: DataConnectorToProjectLink[];
   dataConnectors: DataConnectorRead[];
+  policiesError?: FetchBaseQueryError | SerializedError;
   savedPolicies?: SessionLauncherDataConnector[];
   skippedCount: number;
   toggleEdit?: () => void;
@@ -850,6 +878,7 @@ interface DataConnectorsCardProps {
 function DataConnectorsCard({
   dataConnectorLinks,
   dataConnectors,
+  policiesError,
   savedPolicies,
   skippedCount,
   toggleEdit,
@@ -902,6 +931,9 @@ function DataConnectorsCard({
         )}
       </CardHeader>
       <CardBody>
+        {policiesError != null && (
+          <RtkOrDataServicesError dismissible={false} error={policiesError} />
+        )}
         {dataConnectors.length > 0 ? (
           <ListGroup flush>
             {dataConnectors.map((storage, index) => (
@@ -917,9 +949,10 @@ function DataConnectorsCard({
                   <div className="fw-bold">{storage.name}</div>
                   <div data-cy="access-policy">
                     <AccessPolicyLabel
-                      storage={storage}
-                      dataConnectorLinks={dataConnectorLinks}
-                      savedPolicies={savedPolicies} />
+                      connector={storage}
+                      links={dataConnectorLinks}
+                      savedPolicies={savedPolicies}
+                    />
                   </div>
                 </div>
                 <div>{storage.storage.storage_type}</div>
