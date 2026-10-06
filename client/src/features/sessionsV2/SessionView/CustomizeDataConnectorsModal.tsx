@@ -19,7 +19,7 @@
 import type { SerializedError } from "@reduxjs/toolkit";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { Database } from "react-bootstrap-icons";
 import {
   Controller,
@@ -182,8 +182,6 @@ export default function CustomizeDataConnectorsModal({
       getDefaultValues(dataConnectorLinks, dataConnectorsMap, savedPolicies),
     [dataConnectorLinks, dataConnectorsMap, savedPolicies],
   );
-  const defaultValuesRef = useRef(defaultValues);
-  defaultValuesRef.current = defaultValues;
   const dataConnectorByLinkId = useMemo(() => {
     const byLinkId: Record<string, DataConnectorRead> = {};
     for (const link of dataConnectorLinks) {
@@ -216,7 +214,6 @@ export default function CustomizeDataConnectorsModal({
           }),
         ),
       }).unwrap();
-      reset(defaultValuesRef.current);
     } catch {
       return;
     }
@@ -224,16 +221,17 @@ export default function CustomizeDataConnectorsModal({
 
   useEffect(() => {
     if (!isOpen) {
+      reset();
       updateResult.reset();
     }
-  }, [isOpen, updateResult]);
+  }, [isOpen, reset, updateResult]);
 
   useEffect(() => {
-    if (!isOpen || isLoading) {
+    if (isLoading) {
       return;
     }
-    reset(defaultValuesRef.current);
-  }, [isOpen, isLoading, reset]);
+    reset(defaultValues);
+  }, [defaultValues, isLoading, reset]);
 
   return (
     <LauncherResourceModal

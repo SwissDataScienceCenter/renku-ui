@@ -183,21 +183,21 @@ export function LauncherResourceTable({
   );
 }
 
-type AccessPolicySelectProps<T extends string> = Omit<
+type AccessPolicySelectProps = Omit<
   InputProps,
   "children" | "options" | "type"
 > & {
   ariaLabel: string;
-  disabledValues?: readonly T[];
-  options: AccessPolicyOption<T>[];
+  disabledValues?: readonly AccessPolicyOption["value"][];
+  options: AccessPolicyOption[];
 };
 
-export function AccessPolicySelect<T extends string>({
+export function AccessPolicySelect({
   ariaLabel,
   disabledValues,
   options,
   ...inputProps
-}: AccessPolicySelectProps<T>) {
+}: AccessPolicySelectProps) {
   return (
     <Input aria-label={ariaLabel} bsSize="sm" type="select" {...inputProps}>
       {options.map(({ label, value }) => (
@@ -213,17 +213,17 @@ export function AccessPolicySelect<T extends string>({
   );
 }
 
-interface AccessPolicyToggleProps<T extends string> {
+interface AccessPolicyToggleProps {
   ariaLabel: string;
   dataCy: string;
   name: string;
   onBlur: InputProps["onBlur"];
   onChange: InputProps["onChange"];
-  options: AccessPolicyOption<T>[];
-  value: T;
+  options: AccessPolicyOption[];
+  value: AccessPolicyOption["value"];
 }
 
-export function AccessPolicyToggle<T extends string>({
+export function AccessPolicyToggle({
                                                        ariaLabel,
                                                        dataCy,
                                                        name,
@@ -231,7 +231,7 @@ export function AccessPolicyToggle<T extends string>({
                                                        onChange,
                                                        options,
                                                        value,
-                                                     }: AccessPolicyToggleProps<T>) {
+                                                     }: AccessPolicyToggleProps) {
   return (
     <ButtonGroup aria-label={ariaLabel} data-cy={dataCy} size="sm">
       {options.map((option) => {
