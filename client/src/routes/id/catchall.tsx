@@ -17,10 +17,10 @@ export default function IdCatchallPage() {
   return (
     <NotFound
       description={
-        <>
-          Links by id are only supported for projects, in the form{" "}
-          <code>/id/p/&lt;project-id&gt;</code>.
-        </>
+        <p>
+          We currently support links by id only for projects, in the form{" "}
+          <code>/id/p/&lt;project-id&gt;/*</code>
+        </p>
       }
     />
   );
