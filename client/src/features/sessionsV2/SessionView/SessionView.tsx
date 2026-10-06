@@ -104,6 +104,7 @@ import {
 import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
 import { LauncherCategory, SessionV2 } from "../sessionsV2.types";
 import useResourceClassDetails from "../useResourceClassDetails.hook";
+import AccessPolicyBadge from "./AccessPolicyBadge";
 import CustomizeDataConnectorsModal from "./CustomizeDataConnectorsModal";
 import EnvironmentItem, {
   EnvironmentJSONArrayRowWithLabel,
@@ -278,6 +279,7 @@ export function SessionView({
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
   const [isDataConnectorsOpen, setIsDataConnectorsOpen] = useState(false);
+  const [isSessionSecretsOpen, setIsSessionSecretsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsUpdateOpen((open) => !open);
   }, []);
@@ -286,6 +288,9 @@ export function SessionView({
   }, []);
   const toggleDataConnectors = useCallback(() => {
     setIsDataConnectorsOpen((open) => !open);
+  }, []);
+  const toggleSessionSecrets = useCallback(() => {
+    setIsSessionSecretsOpen((open) => !open);
   }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
   const environment = launcher?.environment;
@@ -730,7 +735,11 @@ export function SessionView({
                 </CardBody>
               </Card>
 
-              <SessionViewSessionSecrets />
+              <SessionViewSessionSecrets
+                isEditOpen={isSessionSecretsOpen}
+                launcher={launcher}
+                toggleEdit={launcher ? toggleSessionSecrets : undefined}
+              />
             </>
           )}
 
@@ -848,20 +857,9 @@ function AccessPolicyLabel({
   const label = getDataConnectorAccessPolicyLabel(
     resolveDataConnectorAccessPolicy(connector.storage.readonly, savedPolicy),
   );
-  if (savedPolicy === "excluded") {
-    return (
-      <RenkuBadge className="fw-normal" color="secondary" pill>
-        <CircleFill className={cx("me-1", "bi")} />
-        {label}
-      </RenkuBadge>
-    );
-  }
 
   return (
-    <RenkuBadge className="fw-normal" color="success" pill>
-      <CircleFill className={cx("me-1", "bi")} />
-      {label}
-    </RenkuBadge>
+    <AccessPolicyBadge excluded={savedPolicy === "excluded"} label={label} />
   );
 }
 

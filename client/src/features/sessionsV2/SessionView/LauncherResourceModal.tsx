@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Fragment, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import {
   Button,
@@ -26,7 +26,7 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-  type InputProps, Label, ButtonGroup,
+  type InputProps,
 } from "reactstrap";
 
 import { SuccessAlert } from "../../../components/Alert";
@@ -38,6 +38,8 @@ import {
   getLauncherChangeEffectMessage,
 } from "../session.utils";
 import type { AccessPolicyOption } from "./launcherResources.constants";
+
+import styles from "./LauncherResource.module.scss";
 
 interface LauncherResourceModalProps {
   children: ReactNode;
@@ -154,7 +156,7 @@ export function LauncherResourceTable({
 }: LauncherResourceTableProps) {
   return (
     <Table
-      className={cx("mb-0", "w-100")}
+      className={cx("mb-0", "w-100", styles.ResourceTable)}
       data-cy={dataCy}
       style={{ tableLayout: "fixed" }}
     >
@@ -212,53 +214,3 @@ export function AccessPolicySelect({
     </Input>
   );
 }
-
-interface AccessPolicyToggleProps {
-  ariaLabel: string;
-  dataCy: string;
-  name: string;
-  onBlur: InputProps["onBlur"];
-  onChange: InputProps["onChange"];
-  options: AccessPolicyOption[];
-  value: AccessPolicyOption["value"];
-}
-
-export function AccessPolicyToggle({
-                                                       ariaLabel,
-                                                       dataCy,
-                                                       name,
-                                                       onBlur,
-                                                       onChange,
-                                                       options,
-                                                       value,
-                                                     }: AccessPolicyToggleProps) {
-  return (
-    <ButtonGroup aria-label={ariaLabel} data-cy={dataCy} size="sm">
-      {options.map((option) => {
-        const id = `${dataCy}-${option.value}`;
-        return (
-          <Fragment key={option.value}>
-            <Input
-              checked={value === option.value}
-              className="btn-check"
-              id={id}
-              name={name}
-              onBlur={onBlur}
-              onChange={onChange}
-              type="radio"
-              value={option.value}
-            />
-            <Label
-              className={cx("btn", "btn-outline-primary", "mb-0")}
-              data-cy={id}
-              for={id}
-            >
-              {option.label}
-            </Label>
-          </Fragment>
-        );
-      })}
-    </ButtonGroup>
-  );
-}
-
