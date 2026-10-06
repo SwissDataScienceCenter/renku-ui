@@ -154,9 +154,9 @@ export function LauncherResourceTable({
 }: LauncherResourceTableProps) {
   return (
     <Table
-      className={cx("mb-0")}
+      className={cx("mb-0", "w-100")}
       data-cy={dataCy}
-      style={{ tableLayout: "fixed", width: "100%" }}
+      style={{ tableLayout: "fixed" }}
     >
       {columnWidths && (
         <colgroup>
