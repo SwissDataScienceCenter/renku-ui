@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useState } from "react";
+import { PlayCircle } from "react-bootstrap-icons";
 import {
   Card,
   CardBody,
@@ -47,8 +48,11 @@ import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
 
 export default function SessionEnvironmentsSection() {
   return (
-    <section className="mt-4">
-      <h2>Session Environments</h2>
+    <section>
+      <h2 className="mb-3">
+        <PlayCircle className="me-1" />
+        Session Environments
+      </h2>
       <SessionEnvironments />
     </section>
   );

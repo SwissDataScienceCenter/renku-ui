@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
 import {
   CheckLg,
+  Cpu,
   FolderFill,
   PeopleFill,
   PersonFill,
@@ -28,6 +29,7 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -44,7 +46,6 @@ import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
-import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
 import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import { useGetResourcePoolsByResourcePoolIdLimitsQuery } from "../resourceUsage/api/resourceUsage.api";
 import UpdateResourceClassCostButton from "../resourceUsage/UpdateResourceClassCostButton";
@@ -59,109 +60,61 @@ import {
   type ResourcePoolWithId,
   type ResourcePoolWithIdFiltered,
 } from "../sessionsV2/api/computeResources.api";
-import { useGetUsersQuery } from "../usersV2/api/users.api";
 import AddMemberToResourcePoolButton from "./AddMemberToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
-import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
-import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
-import ProjectStorageAllowSection from "./ProjectStorageAllowSection";
-import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import UpdateResourcePoolRemoteButton from "./UpdateResourcePoolRemoteButton";
 import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
 
-export default function AdminPage() {
-  return (
-    <>
-      <h1 className="mb-3">Admin Panel</h1>
-      <IncidentsAndMaintenanceSection />
-      <ComputeResourcesSection />
-      <ConnectedServicesSection />
-      <SessionEnvironmentsSection />
-      <ProjectStorageAllowSection />
-    </>
-  );
-}
+export default function ComputeResourcesSection() {
+  const { data, error, isLoading } = useGetResourcePoolsQuery({});
 
-function ComputeResourcesSection() {
   return (
     <section>
-      <h2>Compute Resources</h2>
-      <AdminComputeResourcesOverview />
+      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
+        <h2 className="mb-0">
+          <Cpu className="me-1" />
+          Compute Resources
+        </h2>
+        {data && !isLoading && !error && <Badge>{data?.length}</Badge>}
+
+        <div className="ms-auto">
+          <AddResourcePoolButton />
+        </div>
+      </div>
+
+      <ResourcePoolsList />
     </section>
   );
 }
-function AdminComputeResourcesOverview() {
-  const {
-    data: rawUsers,
-    error: rawUsersError,
-    isLoading: rawUsersIsLoading,
-  } = useGetUsersQuery({});
-  const {
-    data: resourcePools,
-    error: resourcePoolsError,
-    isLoading: resourcePoolsIsLoading,
-  } = useGetResourcePoolsQuery({});
 
-  const error = rawUsersError || resourcePoolsError;
-  const isLoading = rawUsersIsLoading || resourcePoolsIsLoading;
+function ResourcePoolsList() {
+  const { data, error, isLoading } = useGetResourcePoolsQuery({});
 
   if (isLoading) {
     return <Loader />;
   }
 
-  if (error && isFetchBaseQueryError(error) && error.status === 401) {
+  if (error) {
+    return <RtkOrDataServicesError error={error} />;
+  } else if (!data) {
     return (
       <ErrorAlert dismissible={false}>
-        <h3>
-          Oops! It looks like you do not have the required permissions to
-          administer compute resources.
-        </h3>
-      </ErrorAlert>
-    );
-  }
-
-  if (error || !rawUsers || !resourcePools) {
-    return (
-      <ErrorAlert>
-        <pre>{JSON.stringify(error, null, 2)}</pre>
+        Oops! It looks like you do not have the required permissions to
+        administer compute resources.
       </ErrorAlert>
     );
   }
 
   return (
     <div>
-      <div className={cx("hstack", "gap-2")}>
-        <div>Users with special access: {rawUsers.length}</div>
-        <div className="vr"></div>
-        <div>Resource pools: {resourcePools.length}</div>
-      </div>
-
-      <ResourcePoolsList />
-    </div>
-  );
-}
-
-function ResourcePoolsList() {
-  const { data: resourcePools } = useGetResourcePoolsQuery({});
-
-  if (!resourcePools) {
-    return null;
-  }
-
-  return (
-    <div className="mt-2">
-      <h3 className="fs-4">Resource Pools</h3>
-
-      <AddResourcePoolButton />
-
-      {resourcePools.map((pool) => (
+      {data.map((pool) => (
         <ResourcePoolItem key={pool.id} resourcePool={pool} />
       ))}
     </div>
