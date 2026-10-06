@@ -16,16 +16,24 @@
  * limitations under the License.
  */
 
-import type { DataConnectorAccessPolicyName } from "../api/sessionLaunchersV2.api";
+import type {
+  DataConnectorAccessPolicyName,
+  SecretAccessPolicyName,
+} from "../api/sessionLaunchersV2.api";
 
 export interface AccessPolicyOption {
   label: string;
-  value: DataConnectorAccessPolicyName;
+  value: DataConnectorAccessPolicyName | SecretAccessPolicyName;
 }
 
 export const DATA_CONNECTOR_ACCESS_OPTIONS: AccessPolicyOption[] = [
   { value: "readWrite", label: "Read-Write" },
   { value: "readOnly", label: "Read-Only" },
+  { value: "excluded", label: "Excluded" },
+];
+
+export const SECRET_ACCESS_OPTIONS: AccessPolicyOption[] = [
+  { value: "included", label: "Included" },
   { value: "excluded", label: "Excluded" },
 ];
 
@@ -53,5 +61,22 @@ export function getDataConnectorAccessPolicyLabel(
   return (
     DATA_CONNECTOR_ACCESS_OPTIONS.find((option) => option.value === policy)
       ?.label ?? policy
+  );
+}
+
+export const DEFAULT_SECRET_ACCESS_POLICY: SecretAccessPolicyName = "included";
+
+export function resolveSecretAccessPolicy(
+  savedPolicy: SecretAccessPolicyName | undefined,
+): SecretAccessPolicyName {
+  return savedPolicy ?? DEFAULT_SECRET_ACCESS_POLICY;
+}
+
+export function getSecretAccessPolicyLabel(
+  policy: SecretAccessPolicyName,
+): string {
+  return (
+    SECRET_ACCESS_OPTIONS.find((option) => option.value === policy)?.label ??
+    policy
   );
 }
