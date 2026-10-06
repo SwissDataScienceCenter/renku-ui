@@ -940,14 +940,16 @@ function DataConnectorsCard({
               <ListGroupItem key={`storage-${index}`}>
                 <div
                   className={cx(
+                    "align-items-center",
                     "d-flex",
-                    "flex-row",
-                    "fw-bold",
+                    "gap-2",
                     "justify-content-between",
                   )}
                 >
-                  <div className="fw-bold">{storage.name}</div>
-                  <div data-cy="access-policy">
+                  <div className={cx("fw-bold", "min-w-0", "text-truncate")}>
+                    {storage.name}
+                  </div>
+                  <div className="flex-shrink-0" data-cy="access-policy">
                     <AccessPolicyLabel
                       connector={storage}
                       links={dataConnectorLinks}
