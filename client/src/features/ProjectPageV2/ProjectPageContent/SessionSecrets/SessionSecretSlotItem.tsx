@@ -21,56 +21,55 @@ import { Key, Lock } from "react-bootstrap-icons";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
+import type { SecretAccessPolicyName } from "../../../sessionsV2/api/sessionLaunchersV2.api";
+import AccessPolicyBadge from "../../../sessionsV2/SessionView/AccessPolicyBadge";
+import { getSecretAccessPolicyLabel } from "../../../sessionsV2/SessionView/launcherResources.constants";
 import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
 import SessionSecretActions from "./SessionSecretActions";
 import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
+import { getSecretSlotSessionPath } from "./sessionSecrets.utils";
 
 interface SessionSecretSlotItemProps {
+  accessPolicy?: SecretAccessPolicyName | null;
   secretsMountDirectory: string;
   secretSlot: SessionSecretSlotWithSecret;
   noActions?: boolean;
 }
 
 export default function SessionSecretSlotItem({
+  accessPolicy,
   secretsMountDirectory,
   secretSlot,
   noActions,
 }: SessionSecretSlotItemProps) {
   const { filename, name, description } = secretSlot.secretSlot;
 
-  const mountDir = secretsMountDirectory.startsWith("/")
-    ? secretsMountDirectory
-    : `<work-dir>/${secretsMountDirectory}`;
-  const fullPath = `${mountDir}/${filename}`;
+  const fullPath = getSecretSlotSessionPath(secretsMountDirectory, filename);
 
   return (
     <ListGroupItem action={!noActions} data-cy="session-secret-slot-item">
       <Row>
         <Col>
-          <div className={cx("align-items-center", "d-flex")}>
-            <span className={cx("fw-bold", "me-2")}>{name}</span>
-            {secretSlot.secretId ? (
-              <>
-                <RenkuBadge className="fw-normal" color="success" pill>
-                  <Key className="me-1" />
-                  Secret saved
-                </RenkuBadge>
-                <Key className={cx("bi", "ms-2", "me-1")} />
-                <span>
-                  Secret name:{" "}
-                  <span className="fw-bold">
-                    <SessionSecretSlotItemSecretReference
-                      userSecretId={secretSlot.secretId}
-                    />
-                  </span>
-                </span>
-              </>
-            ) : (
-              <RenkuBadge className="fw-normal" color="light" pill>
-                <Lock className="me-1" />
-                Secret not provided
-              </RenkuBadge>
+          <div
+            className={cx(
+              "align-items-center",
+              "d-flex",
+              "justify-content-between",
             )}
+          >
+            <div className="fw-bold">
+              {secretSlot.secretId ? (
+                <SessionSecretSlotItemSecretReference
+                  userSecretId={secretSlot.secretId}
+                />
+              ) : (
+                name
+              )}
+            </div>
+            <SecretSlotStatusBadge
+              accessPolicy={accessPolicy}
+              hasSecret={secretSlot.secretId != null}
+            />
           </div>
           {description && <p className="mb-0">{description}</p>}
           <div>
@@ -80,6 +79,43 @@ export default function SessionSecretSlotItem({
         {!noActions && <SessionSecretActions secretSlot={secretSlot} />}
       </Row>
     </ListGroupItem>
+  );
+}
+
+interface SecretSlotStatusBadgeProps {
+  accessPolicy?: SecretAccessPolicyName | null;
+  hasSecret: boolean;
+}
+
+function SecretSlotStatusBadge({
+  accessPolicy,
+  hasSecret,
+}: SecretSlotStatusBadgeProps) {
+  if (accessPolicy === "excluded") {
+    return (
+      <div className="flex-shrink-0" data-cy="access-policy">
+        <AccessPolicyBadge
+          excluded
+          label={getSecretAccessPolicyLabel("excluded")}
+        />
+      </div>
+    );
+  }
+
+  if (hasSecret) {
+    return (
+      <RenkuBadge className="fw-normal" color="success" pill>
+        <Key className="me-1" />
+        Secret saved
+      </RenkuBadge>
+    );
+  }
+
+  return (
+    <RenkuBadge className="fw-normal" color="light" pill>
+      <Lock className="me-1" />
+      Secret not provided
+    </RenkuBadge>
   );
 }
 
