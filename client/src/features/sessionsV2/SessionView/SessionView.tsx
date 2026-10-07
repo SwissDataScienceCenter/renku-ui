@@ -433,15 +433,14 @@ export function SessionView({
           {description && <p className="m-0">{description}</p>}
           {isRestricted && (
             <Card>
-              <div className={cx("card-body", "d-flex", "flex-row", "gap-2")}>
+              <CardBody className={cx("d-flex", "flex-row", "gap-2")}>
                 <div className="fs-2">
                   <UiChecksGrid />
                 </div>
                 <p className="mb-0">
-                  This launcher has restriction in Data connectors or Session
-                  secrets.
+                  This launcher restricts data connectors or session secrets.
                 </p>
-              </div>
+              </CardBody>
             </Card>
           )}
 

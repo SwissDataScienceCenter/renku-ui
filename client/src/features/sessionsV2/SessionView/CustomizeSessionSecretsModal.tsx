@@ -29,6 +29,7 @@ import {
 } from "react-hook-form";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 
+import { Loader } from "~/components/Loader";
 import { getSecretSlotSessionPath } from "~/features/ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.utils";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import type { SessionSecretSlot } from "../../projectsV2/api/projectV2.api";
@@ -174,21 +175,17 @@ export default function CustomizeSessionSecretsModal({
     reset,
   } = useForm<SessionSecretsForm>({ defaultValues });
   const { fields } = useFieldArray({ control, name: "secrets" });
-  const onSave = handleSubmit(async (form) => {
+  const onSave = handleSubmit((form) => {
     if (savedPolicies == null) {
       return;
     }
-    try {
-      await updateLauncherSecrets({
-        launcherId: launcher.id,
-        sessionLauncherSecretPatchList: form.secrets.map((row) => ({
-          secret_slot_id: row.secretSlotId,
-          policy: row.policy,
-        })),
-      }).unwrap();
-    } catch {
-      return;
-    }
+    updateLauncherSecrets({
+      launcherId: launcher.id,
+      sessionLauncherSecretPatchList: form.secrets.map((row) => ({
+        secret_slot_id: row.secretSlotId,
+        policy: row.policy,
+      })),
+    });
   });
 
   useEffect(() => {
@@ -223,31 +220,35 @@ export default function CustomizeSessionSecretsModal({
       {updateResult.error != null && (
         <RtkOrDataServicesError error={updateResult.error} />
       )}
-      {fields.length < 1 ? (
-        <p className={cx("fst-italic", "mb-0")}>No session secrets included</p>
-      ) : (
-        <Form noValidate onSubmit={onSave}>
-          <LauncherResourceTable
-            dataCy="launcher-session-secrets-table"
-            headers={[
-              "Secret name",
-              "Location in session",
-              "Include in this launcher",
-            ]}
-          >
-            {fields.map((field, index) => (
-              <SessionSecretRow
-                key={field.id}
-                control={control}
-                filename={field.filename}
-                index={index}
-                name={field.name}
-                secretsMountDirectory={secretsMountDirectory}
-              />
-            ))}
-          </LauncherResourceTable>
-        </Form>
-      )}
+      {savedPolicies == null && policiesError == null && <Loader />}
+      {savedPolicies != null &&
+        (fields.length < 1 ? (
+          <p className={cx("fst-italic", "mb-0")}>
+            No session secrets included
+          </p>
+        ) : (
+          <Form noValidate onSubmit={onSave}>
+            <LauncherResourceTable
+              dataCy="launcher-session-secrets-table"
+              headers={[
+                "Secret name",
+                "Location in session",
+                "Include in this launcher",
+              ]}
+            >
+              {fields.map((field, index) => (
+                <SessionSecretRow
+                  key={field.id}
+                  control={control}
+                  filename={field.filename}
+                  index={index}
+                  name={field.name}
+                  secretsMountDirectory={secretsMountDirectory}
+                />
+              ))}
+            </LauncherResourceTable>
+          </Form>
+        ))}
     </LauncherResourceModal>
   );
 }

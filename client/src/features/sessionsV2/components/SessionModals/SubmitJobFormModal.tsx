@@ -76,8 +76,10 @@ export default function SubmitJobFormModal({
     buildRequestError,
     handleSubmitAttempt,
     isCheckingLaunchPrerequisites,
+    isLauncherResourcesError,
     isPermissionsError,
     isSubmitting,
+    launcherResourcesError,
     permissionsError,
     postSessionResult,
   } = submitJobFlow;
@@ -190,6 +192,7 @@ export default function SubmitJobFormModal({
 
   const isSubmitDisabled =
     isPermissionsError ||
+    isLauncherResourcesError ||
     !displayLaunchSession ||
     !watchResourceClass ||
     isFormLoading ||
@@ -234,6 +237,19 @@ export default function SubmitJobFormModal({
             <WarnAlert dismissible={false}>
               <p className="mb-0">
                 Unable to load project permissions. Please try again later.
+              </p>
+            </WarnAlert>
+          )
+        ) : isLauncherResourcesError ? (
+          launcherResourcesError != null ? (
+            <RtkOrDataServicesError
+              dismissible={false}
+              error={launcherResourcesError}
+            />
+          ) : (
+            <WarnAlert dismissible={false}>
+              <p className="mb-0">
+                Unable to load launcher restrictions. Please try again later.
               </p>
             </WarnAlert>
           )
