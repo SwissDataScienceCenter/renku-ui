@@ -55,6 +55,7 @@ export default function useSessionLauncherState({
     repositories,
     sessionSecretSlotsWithSecrets,
   } = useSessionLaunchPrerequisites({
+    launcherId: launcher.id,
     project,
     autoMarkSecretsReady: true,
   });
