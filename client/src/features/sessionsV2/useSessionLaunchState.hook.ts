@@ -54,8 +54,10 @@ export default function useSessionLauncherState({
     isFetchingOrLoadingDataConnectors: isFetchingOrLoadingStorages,
     isFetchingRepositories,
     isFetchingSessionSecrets,
+    isLauncherResourcesError,
     isFetchingSshKeys,
     isReadyDataConnectorConfigs,
+    launcherResourcesError,
     repositories,
     sessionSecretSlotsWithSecrets,
     sshKeys,
@@ -133,6 +135,7 @@ export default function useSessionLauncherState({
 
   useEffect(() => {
     if (
+      !isLauncherResourcesError &&
       !isFetchingOrLoadingStorages &&
       initialDataConnectorConfigs &&
       isReadyDataConnectorConfigs
@@ -147,19 +150,29 @@ export default function useSessionLauncherState({
     dispatch,
     initialDataConnectorConfigs,
     isFetchingOrLoadingStorages,
+    isLauncherResourcesError,
     isReadyDataConnectorConfigs,
   ]);
 
   // Check for expired data connectors -- it should block only if any connector has expired
   useEffect(() => {
-    if (!isFetchingOrLoadingStorages && !hasExpiredDataConnectors) {
+    if (
+      !isLauncherResourcesError &&
+      !isFetchingOrLoadingStorages &&
+      !hasExpiredDataConnectors
+    ) {
       dispatch(
         startSessionOptionsV2Slice.actions.setDataConnectorsExpirationReady(
           true,
         ),
       );
     }
-  }, [dispatch, hasExpiredDataConnectors, isFetchingOrLoadingStorages]);
+  }, [
+    dispatch,
+    hasExpiredDataConnectors,
+    isFetchingOrLoadingStorages,
+    isLauncherResourcesError,
+  ]);
 
   // check session image availability -- it should block only for external images
   useEffect(() => {
@@ -196,8 +209,10 @@ export default function useSessionLauncherState({
     isFetchingOrLoadingStorages,
     isFetchingRepositories,
     isFetchingSessionSecrets,
+    isLauncherResourcesError,
     isFetchingSshKeys,
     isLoadingSessionImage,
+    launcherResourcesError,
     isPendingResourceClass,
     repositories,
     resourcePools,

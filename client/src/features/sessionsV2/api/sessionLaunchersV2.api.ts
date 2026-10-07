@@ -139,6 +139,7 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
     patchSessionLaunchersByLauncherIdDataConnectors: {
       invalidatesTags: (_result, _error, arg) => [
         { id: arg.launcherId, type: "LauncherDataConnectors" as const },
+        { id: arg.launcherId, type: "Launcher" as const },
       ],
     },
     getSessionLaunchersByLauncherIdSecrets: {
@@ -149,6 +150,7 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
     patchSessionLaunchersByLauncherIdSecrets: {
       invalidatesTags: (_result, _error, arg) => [
         { id: arg.launcherId, type: "LauncherSecrets" as const },
+        { id: arg.launcherId, type: "Launcher" as const },
       ],
     },
   },

@@ -30,7 +30,7 @@ import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
 import { getSecretSlotSessionPath } from "./sessionSecrets.utils";
 
 interface SessionSecretSlotItemProps {
-  accessPolicy?: SecretAccessPolicyName | null;
+  accessPolicy?: SecretAccessPolicyName;
   secretsMountDirectory: string;
   secretSlot: SessionSecretSlotWithSecret;
   noActions?: boolean;
@@ -57,19 +57,24 @@ export default function SessionSecretSlotItem({
               "justify-content-between",
             )}
           >
-            <div className="fw-bold">
-              {secretSlot.secretId ? (
-                <SessionSecretSlotItemSecretReference
-                  userSecretId={secretSlot.secretId}
-                />
-              ) : (
-                name
+            <div className="fw-bold">{name}</div>
+            <div className={cx("align-items-center", "d-flex", "gap-2")}>
+              {secretSlot.secretId != null && accessPolicy !== "excluded" && (
+                <span>
+                  <Key className={cx("bi", "me-1")} />
+                  Secret name:{" "}
+                  <span className="fw-bold">
+                    <SessionSecretSlotItemSecretReference
+                      userSecretId={secretSlot.secretId}
+                    />
+                  </span>
+                </span>
               )}
+              <SecretSlotStatusBadge
+                accessPolicy={accessPolicy}
+                hasSecret={secretSlot.secretId != null}
+              />
             </div>
-            <SecretSlotStatusBadge
-              accessPolicy={accessPolicy}
-              hasSecret={secretSlot.secretId != null}
-            />
           </div>
           {description && <p className="mb-0">{description}</p>}
           <div>
@@ -83,7 +88,7 @@ export default function SessionSecretSlotItem({
 }
 
 interface SecretSlotStatusBadgeProps {
-  accessPolicy?: SecretAccessPolicyName | null;
+  accessPolicy?: SecretAccessPolicyName;
   hasSecret: boolean;
 }
 
