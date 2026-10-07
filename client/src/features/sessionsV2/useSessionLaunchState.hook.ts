@@ -60,6 +60,7 @@ export default function useSessionLauncherState({
     sessionSecretSlotsWithSecrets,
     sshKeys,
   } = useSessionLaunchPrerequisites({
+    launcherId: launcher.id,
     project,
     autoMarkSecretsReady: true,
   });

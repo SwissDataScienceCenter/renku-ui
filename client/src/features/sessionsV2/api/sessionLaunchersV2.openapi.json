@@ -1155,6 +1155,9 @@
           },
           "launcher_type": {
             "$ref": "#/components/schemas/LauncherType"
+          },
+          "is_restricted": {
+            "$ref": "#/components/schemas/IsRestricted"
           }
         },
         "required": [
@@ -1771,6 +1774,11 @@
       "IsArchivedPatch": {
         "type": "boolean",
         "description": "Whether this environment is archived and not for use in new projects or not"
+      },
+      "IsRestricted": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Whether this session launcher access to its project resources are restricted or not."
       },
       "Build": {
         "description": "A container image build",

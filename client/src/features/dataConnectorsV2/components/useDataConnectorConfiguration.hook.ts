@@ -16,6 +16,7 @@
  * limitations under the License
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo } from "react";
 
 import { CLOUD_OPTIONS_OVERRIDE } from "../../cloudStorage/projectCloudStorage.constants";
@@ -40,11 +41,14 @@ export default function useDataConnectorConfiguration({
 }: UseDataSourceConfigurationArgs) {
   const {
     data: dataConnectorSecrets,
-    isLoading,
     isFetching,
-  } = useGetDataConnectorsListSecretsQuery({
-    dataConnectorIds: dataConnectors?.map((dc) => dc.id) ?? [],
-  });
+    isLoading,
+    isUninitialized,
+  } = useGetDataConnectorsListSecretsQuery(
+    dataConnectors != null
+      ? { dataConnectorIds: dataConnectors.map((dc) => dc.id) }
+      : skipToken,
+  );
   const dataConnectorConfigs = useMemo(
     () =>
       dataConnectors?.map((dataConnector) => {
@@ -103,6 +107,7 @@ export default function useDataConnectorConfiguration({
 
   return {
     dataConnectorConfigs,
-    isReadyDataConnectorConfigs: !isLoading && !isFetching,
+    isReadyDataConnectorConfigs:
+      dataConnectors != null && !isUninitialized && !isLoading && !isFetching,
   };
 }
