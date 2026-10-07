@@ -436,6 +436,7 @@ export type EnvVar = {
 };
 export type EnvVariables = EnvVar[];
 export type LauncherType = "interactive" | "non-interactive" | "app";
+export type IsRestricted = boolean | null;
 export type SessionLauncher = {
   id: Ulid;
   project_id: Ulid;
@@ -447,6 +448,7 @@ export type SessionLauncher = {
   disk_storage?: DiskStorage;
   env_variables?: EnvVariables;
   launcher_type: LauncherType;
+  is_restricted?: IsRestricted;
 };
 export type SessionLaunchersList = SessionLauncher[];
 export type EnvironmentPostInLauncherHelper = EnvironmentPost & {

@@ -381,6 +381,7 @@ export function SessionView({
     />
   );
   const description = launcher?.description;
+  const isRestricted = launcher?.is_restricted;
 
   const key = launcher
     ? launcher.id
@@ -430,6 +431,19 @@ export function SessionView({
           </OffcanvasHeaderWithType>
 
           {description && <p className="m-0">{description}</p>}
+          {isRestricted && (
+            <Card>
+              <div className={cx("card-body", "d-flex", "flex-row", "gap-2")}>
+                <div className="fs-2">
+                  <UiChecksGrid />
+                </div>
+                <p className="mb-0">
+                  This launcher has restriction in Data connectors or Session
+                  secrets.
+                </p>
+              </div>
+            </Card>
+          )}
 
           {isApp && <AppContentsNotice />}
 

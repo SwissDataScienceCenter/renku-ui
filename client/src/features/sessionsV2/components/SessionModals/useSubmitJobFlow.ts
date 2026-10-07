@@ -49,6 +49,7 @@ export default function useSubmitJobFlow({
   project,
 }: UseSubmitJobFlowArgs) {
   const prerequisites = useSessionLaunchPrerequisites({
+    launcherId: launcher.id,
     project,
   });
 
