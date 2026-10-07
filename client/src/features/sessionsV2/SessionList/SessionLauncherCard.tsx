@@ -79,7 +79,7 @@ function RestrictedBadge() {
         Restricted
       </RenkuBadge>
       <UncontrolledTooltip target={ref}>
-        This launcher has restriction in Data connectors or Session secrets
+        This launcher restricts data connectors or session secrets.
       </UncontrolledTooltip>
     </>
   );

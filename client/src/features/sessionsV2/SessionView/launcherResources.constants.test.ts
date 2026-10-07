@@ -23,6 +23,8 @@ import {
   getExcludedSecretSlotIds,
   getIncludedDataConnectorIds,
   isLauncherResourceIncluded,
+  resolveDataConnectorAccessPolicy,
+  resolveSecretAccessPolicy,
 } from "./launcherResources.constants";
 
 describe("isLauncherResourceIncluded", () => {
@@ -71,6 +73,30 @@ describe("getIncludedDataConnectorIds", () => {
         [{ data_connector_link_id: "link-excluded", policy: "excluded" }],
       ),
     ).toEqual([]);
+  });
+});
+
+describe("resolveDataConnectorAccessPolicy", () => {
+  it("defaults a read-only connector with no saved policy to read-only", () => {
+    expect(resolveDataConnectorAccessPolicy(true, undefined)).toBe("readOnly");
+  });
+
+  it("downgrades a saved read-write policy on a read-only connector", () => {
+    expect(resolveDataConnectorAccessPolicy(true, "readWrite")).toBe(
+      "readOnly",
+    );
+  });
+
+  it("keeps an explicit excluded policy on a read-only connector", () => {
+    expect(resolveDataConnectorAccessPolicy(true, "excluded")).toBe(
+      "excluded",
+    );
+  });
+});
+
+describe("resolveSecretAccessPolicy", () => {
+  it("defaults a secret with no saved policy to included", () => {
+    expect(resolveSecretAccessPolicy(undefined)).toBe("included");
   });
 });
 

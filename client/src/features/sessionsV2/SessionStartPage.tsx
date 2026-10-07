@@ -373,6 +373,7 @@ function StartSessionFromLauncher({
     isLoadingSessionImage,
     sessionImage,
     isFetchingRepositories,
+    launcherResourcesError,
   } = useSessionLaunchState({
     launcher,
     project,
@@ -404,14 +405,14 @@ function StartSessionFromLauncher({
 
   // set favicon during session launch
   useEffect(() => {
-    if (!allDataFetched || needsCredentials) {
+    if (!launcherResourcesError && (!allDataFetched || needsCredentials)) {
       dispatch(setFavicon("waiting"));
     }
     return () => {
       // cleanup and set favicon to default
       dispatch(resetFavicon());
     };
-  }, [allDataFetched, needsCredentials, dispatch]);
+  }, [allDataFetched, launcherResourcesError, needsCredentials, dispatch]);
 
   useEffect(() => {
     // Handle all data fetched and no credentials needed
@@ -431,6 +432,7 @@ function StartSessionFromLauncher({
     }
 
     if (
+      launcherResourcesError == null &&
       allDataFetched &&
       !needsCredentials &&
       !shouldSaveCredentials &&
@@ -445,6 +447,7 @@ function StartSessionFromLauncher({
     }
   }, [
     allDataFetched,
+    launcherResourcesError,
     needsCredentials,
     sessionStarted,
     shouldSaveCredentials,
@@ -472,6 +475,18 @@ function StartSessionFromLauncher({
       step: "Requesting session",
     },
   ];
+
+  if (launcherResourcesError) {
+    return (
+      <div>
+        <h3>Error: could not load launcher restrictions</h3>
+        <RtkOrDataServicesError
+          dismissible={false}
+          error={launcherResourcesError}
+        />
+      </div>
+    );
+  }
 
   if (showSaveCredentials)
     return (

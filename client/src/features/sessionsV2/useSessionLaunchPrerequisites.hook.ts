@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
+import type { SerializedError } from "@reduxjs/toolkit";
+import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useMemo } from "react";
 
 import {
@@ -68,6 +69,8 @@ export default function useSessionLaunchPrerequisites({
   );
   const {
     data: launcherDataConnectors,
+    error: launcherDataConnectorsError,
+    isError: isLauncherDataConnectorsError,
     isFetching: isFetchingLauncherDataConnectors,
     isLoading: isLoadingLauncherDataConnectors,
   } = useGetSessionLaunchersByLauncherIdDataConnectorsQuery(
@@ -75,11 +78,23 @@ export default function useSessionLaunchPrerequisites({
   );
   const {
     data: launcherSecrets,
+    error: launcherSecretsError,
+    isError: isLauncherSecretsError,
     isFetching: isFetchingLauncherSecrets,
     isLoading: isLoadingLauncherSecrets,
   } = useGetSessionLaunchersByLauncherIdSecretsQuery(
     launcherId ? { launcherId } : skipToken,
   );
+  const isLauncherResourcesError =
+    isLauncherDataConnectorsError || isLauncherSecretsError;
+  const launcherResourcesError:
+    | FetchBaseQueryError
+    | SerializedError
+    | undefined = isLauncherDataConnectorsError
+    ? launcherDataConnectorsError
+    : isLauncherSecretsError
+      ? launcherSecretsError
+      : undefined;
   const includedDataConnectorIds = useMemo(
     () =>
       getIncludedDataConnectorIds(dataConnectorLinks, launcherDataConnectors),
@@ -127,21 +142,21 @@ export default function useSessionLaunchPrerequisites({
     isLoadingDataConnectorLinks ||
     isFetchingLauncherDataConnectors ||
     isLoadingLauncherDataConnectors ||
-    launcherDataConnectors == null ||
+    (launcherDataConnectors == null && !isLauncherDataConnectorsError) ||
     (includedDataConnectorIds != null &&
       (isLoadingDataConnectors ||
         isFetchingDataConnectors ||
         dataConnectorsMap == null)) ||
-    !isReadyDataConnectorConfigs;
+    (!isLauncherDataConnectorsError && !isReadyDataConnectorConfigs);
 
   const isInitialLoading =
     projectPermissions.isLoadingPermissions ||
-    launcherDataConnectors == null ||
-    launcherSecrets == null ||
+    (launcherDataConnectors == null && !isLauncherDataConnectorsError) ||
+    (launcherSecrets == null && !isLauncherSecretsError) ||
     dataConnectorLinks == null ||
     (includedDataConnectorIds != null && dataConnectorsMap == null) ||
     (repositoryUrls.length > 0 && repositories == null) ||
-    sessionSecretSlotsWithSecrets == null;
+    (sessionSecretSlotsWithSecrets == null && !isLauncherSecretsError);
 
   const hasWritePermission =
     projectPermissions.arePermissionsResolved &&
@@ -186,9 +201,11 @@ export default function useSessionLaunchPrerequisites({
       isFetchingSessionSecrets ||
       isFetchingLauncherSecrets ||
       isLoadingLauncherSecrets ||
-      launcherSecrets == null,
+      (launcherSecrets == null && !isLauncherSecretsError),
     isInitialLoading,
+    isLauncherResourcesError,
     isPermissionsError: projectPermissions.isPermissionsError,
+    launcherResourcesError,
     isReadyDataConnectorConfigs,
     needsCredentials,
     permissionsError: projectPermissions.permissionsError,

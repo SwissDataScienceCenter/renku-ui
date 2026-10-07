@@ -200,23 +200,19 @@ export default function CustomizeDataConnectorsModal({
     reset,
   } = useForm<DataConnectorsForm>({ defaultValues });
   const { fields } = useFieldArray({ control, name: "dataConnectors" });
-  const onSave = handleSubmit(async (form) => {
+  const onSave = handleSubmit((form) => {
     if (savedPolicies == null) {
       return;
     }
-    try {
-      await updateLauncherDataConnectors({
-        launcherId: launcher.id,
-        sessionLauncherDataConnectorPatchList: form.dataConnectors.map(
-          (row) => ({
-            data_connector_link_id: row.linkId,
-            policy: row.policy,
-          }),
-        ),
-      }).unwrap();
-    } catch {
-      return;
-    }
+    updateLauncherDataConnectors({
+      launcherId: launcher.id,
+      sessionLauncherDataConnectorPatchList: form.dataConnectors.map(
+        (row) => ({
+          data_connector_link_id: row.linkId,
+          policy: row.policy,
+        }),
+      ),
+    });
   });
 
   useEffect(() => {
@@ -259,10 +255,15 @@ export default function CustomizeDataConnectorsModal({
         <RtkOrDataServicesError error={updateResult.error} />
       )}
       {isLoading && <Loader />}
-      {!isLoading && dataConnectorsError == null && fields.length < 1 && (
-        <p className={cx("fst-italic", "mb-0")}>No data connectors included</p>
-      )}
-      {!isLoading && fields.length > 0 && (
+      {!isLoading &&
+        savedPolicies != null &&
+        dataConnectorsError == null &&
+        fields.length < 1 && (
+          <p className={cx("fst-italic", "mb-0")}>
+            No data connectors included
+          </p>
+        )}
+      {!isLoading && savedPolicies != null && fields.length > 0 && (
         <Form noValidate onSubmit={onSave}>
           <LauncherResourceTable
             columnWidths={DATA_CONNECTOR_COLUMN_WIDTHS}
