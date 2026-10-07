@@ -16,9 +16,12 @@
  * limitations under the License.
  */
 
+import type { DataConnectorToProjectLink } from "../../dataConnectorsV2/api/data-connectors.api";
 import type {
   DataConnectorAccessPolicyName,
   SecretAccessPolicyName,
+  SessionLauncherDataConnector,
+  SessionLauncherSecret,
 } from "../api/sessionLaunchersV2.api";
 
 export interface AccessPolicyOption {
@@ -78,5 +81,41 @@ export function getSecretAccessPolicyLabel(
   return (
     SECRET_ACCESS_OPTIONS.find((option) => option.value === policy)?.label ??
     policy
+  );
+}
+
+export function isLauncherResourceIncluded(
+  policy: DataConnectorAccessPolicyName | SecretAccessPolicyName | undefined,
+): boolean {
+  return policy !== "excluded";
+}
+
+export function getIncludedDataConnectorIds(
+  links: DataConnectorToProjectLink[] | undefined,
+  policies: SessionLauncherDataConnector[] | undefined,
+): string[] | undefined {
+  if (!links || !policies) {
+    return undefined;
+  }
+  const excludedLinkIds = new Set(
+    policies
+      .filter((entry) => !isLauncherResourceIncluded(entry.policy))
+      .map((entry) => entry.data_connector_link_id),
+  );
+  return links
+    .filter((link) => !excludedLinkIds.has(link.id))
+    .map((link) => link.data_connector_id);
+}
+
+export function getExcludedSecretSlotIds(
+  policies: SessionLauncherSecret[] | undefined,
+): Set<string> | undefined {
+  if (!policies) {
+    return undefined;
+  }
+  return new Set(
+    policies
+      .filter((entry) => !isLauncherResourceIncluded(entry.policy))
+      .map((entry) => entry.secret_slot_id),
   );
 }

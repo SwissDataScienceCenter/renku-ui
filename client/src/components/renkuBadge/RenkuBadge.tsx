@@ -24,6 +24,7 @@ interface RenkuBadgeProps {
   color?: "success" | "danger" | "warning" | "light" | "info" | "secondary";
   "data-cy"?: string;
   pill?: boolean;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 export default function RenkuBadge({
@@ -32,6 +33,7 @@ export default function RenkuBadge({
   color = "light",
   "data-cy": dataCy,
   pill = false,
+  ref,
 }: RenkuBadgeProps) {
   const colorClasses =
     color === "success"
@@ -56,7 +58,7 @@ export default function RenkuBadge({
   const finalClasses = cx(className, baseClasses);
 
   return (
-    <div className={finalClasses} data-cy={dataCy}>
+    <div ref={ref} className={finalClasses} data-cy={dataCy}>
       {children}
     </div>
   );
