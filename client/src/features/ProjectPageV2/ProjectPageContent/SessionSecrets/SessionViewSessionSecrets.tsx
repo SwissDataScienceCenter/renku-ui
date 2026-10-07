@@ -112,9 +112,7 @@ export default function SessionViewSessionSecrets({
     </>
   ) : (
     <SessionViewSessionSecretsContent
-      savedPolicies={
-        launcher == null ? undefined : (savedSecretPolicies ?? null)
-      }
+      savedPolicies={savedSecretPolicies}
       secretsMountDirectory={secretsMountDirectory}
       sessionSecretSlots={sessionSecretSlots}
       sessionSecrets={sessionSecrets ?? []}
@@ -208,10 +206,10 @@ export default function SessionViewSessionSecrets({
 
 function slotAccessPolicy(
   slotId: string,
-  savedPolicies: SessionLauncherSecret[] | null | undefined,
-): SecretAccessPolicyName | null | undefined {
+  savedPolicies: SessionLauncherSecret[] | undefined,
+): SecretAccessPolicyName | undefined {
   if (savedPolicies == null) {
-    return savedPolicies;
+    return undefined;
   }
   const savedPolicy = savedPolicies.find(
     (entry) => entry.secret_slot_id === slotId,
@@ -220,7 +218,7 @@ function slotAccessPolicy(
 }
 
 interface SessionViewSessionSecretsContentProps {
-  savedPolicies?: SessionLauncherSecret[] | null;
+  savedPolicies?: SessionLauncherSecret[];
   secretsMountDirectory: string;
   sessionSecretSlots: SessionSecretSlot[];
   sessionSecrets: SessionSecret[];
