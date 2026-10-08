@@ -114,9 +114,9 @@ function InnerApp({
         <Loader />
       </section>
     );
-  } /*else if (error) {
+  } else if (error) {
     return <Unavailable params={params} />;
-  }*/
+  }
 
   return (
     <>
