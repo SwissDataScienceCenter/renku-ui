@@ -1,5 +1,5 @@
 /*!
- * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,34 +16,12 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
+import { useCallback } from "react";
 
-interface KeywordContainerProps {
-  children?: React.ReactNode;
-  className?: string;
-  "data-cy"?: string;
-  nowrap?: boolean;
-}
+export default function useCopyToClipboard(clipboardText: string) {
+  const copy = useCallback(() => {
+    return window.navigator.clipboard.writeText(clipboardText);
+  }, [clipboardText]);
 
-export default function KeywordContainer({
-  children,
-  className,
-  "data-cy": dataCy,
-  nowrap = false,
-}: KeywordContainerProps) {
-  return (
-    <div
-      className={cx(
-        "align-items-center",
-        "d-flex",
-        nowrap ? "flex-nowrap" : "flex-wrap",
-        "fs-5",
-        "gap-1",
-        className,
-      )}
-      data-cy={dataCy}
-    >
-      {children}
-    </div>
-  );
+  return { copy };
 }
