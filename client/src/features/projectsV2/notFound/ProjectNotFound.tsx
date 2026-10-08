@@ -98,7 +98,7 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
               <LoginAlert
                 color="info"
                 logged={false}
-                textPost=" first."
+                textPost="first."
                 textPre="You are not logged in. If the project you are trying to reach is not public, please"
               />
             ) : (
