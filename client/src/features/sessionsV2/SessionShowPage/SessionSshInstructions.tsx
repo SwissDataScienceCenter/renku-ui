@@ -31,6 +31,8 @@ interface SessionSshInstructionsProps {
 export default function SessionSshInstructions({
   session,
 }: SessionSshInstructionsProps) {
+  const sshCommand = session.url ? `ssh ${session.url}` : "unknown";
+
   return (
     <div className="p-3" data-cy="session-ssh-instructions">
       <h2>
@@ -42,7 +44,7 @@ export default function SessionSshInstructions({
         terminal instead.
       </p>
       <div className="mb-3">
-        <CommandCopy command={session.url} noMargin />
+        <CommandCopy command={sshCommand} noMargin />
       </div>
       <InfoAlert timeout={0} dismissible={false}>
         <p className="mb-2">
