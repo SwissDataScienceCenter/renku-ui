@@ -22,7 +22,6 @@ import { Link } from "react-router";
 import { InfoAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import { ensureHTTPS } from "../session.utils";
 import type { SessionV2 } from "../sessionsV2.types";
 
 interface SessionSshInstructionsProps {
@@ -32,16 +31,6 @@ interface SessionSshInstructionsProps {
 export default function SessionSshInstructions({
   session,
 }: SessionSshInstructionsProps) {
-  let hostname = "unknown-host";
-  try {
-    hostname = new URL(ensureHTTPS(session.url)).hostname;
-  } catch {
-    // Keep the default for an invalid URL.
-  }
-  const port = 2222;
-
-  const sshCommand = `ssh -p ${port} ${session.name}@${hostname}`;
-
   return (
     <div className="p-3" data-cy="session-ssh-instructions">
       <h2>
@@ -53,7 +42,7 @@ export default function SessionSshInstructions({
         terminal instead.
       </p>
       <div className="mb-3">
-        <CommandCopy command={sshCommand} noMargin />
+        <CommandCopy command={session.url} noMargin />
       </div>
       <InfoAlert timeout={0} dismissible={false}>
         <p className="mb-2">
