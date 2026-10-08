@@ -98,7 +98,12 @@ function AncestorLink({
     );
   }
   return (
-    <Link aria-label={ariaLabel} className={LINK_CLASS_NAME} to={level.to}>
+    <Link
+      aria-label={ariaLabel}
+      className={LINK_CLASS_NAME}
+      to={level.to}
+      data-cy={`${level.type}-namespace-link`}
+    >
       {children}
     </Link>
   );
