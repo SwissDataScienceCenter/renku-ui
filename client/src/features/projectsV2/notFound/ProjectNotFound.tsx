@@ -113,7 +113,6 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
                   pathname: ABSOLUTE_ROUTES.v2.search,
                   search: createSearchParams({
                     type: "Project",
-                    q: slug ?? projectId ?? "",
                   }).toString(),
                 }}
                 className={cx(
