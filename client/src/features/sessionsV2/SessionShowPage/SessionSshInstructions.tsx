@@ -48,12 +48,11 @@ export default function SessionSshInstructions({
       </div>
       <InfoAlert timeout={0} dismissible={false}>
         <p className="mb-2">
-          If you need to change your SSH key, you can do so in your{" "}
+          If you need to add a new SSH key, you can do so in your{" "}
           <Link to={ABSOLUTE_ROUTES.v2.ssh_keys}>SSH keys page</Link>.
         </p>
         <p className="mb-0">
-          You will need to restart your session after any change to your SSH
-          key.
+          You will need to restart your session after adding a new SSH key.
         </p>
       </InfoAlert>
     </div>
