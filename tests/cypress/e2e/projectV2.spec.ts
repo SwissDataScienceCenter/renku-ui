@@ -142,6 +142,42 @@ describe("Navigate to project", () => {
     cy.location("pathname").should("contain", "/user1-uuid/test-2-v2-project");
   });
 
+  it("redirects stable links by project id", () => {
+    fixtures.readProjectV2ById();
+    cy.visit("/id/p/THEPROJECTULID26CHARACTERS/settings");
+    cy.wait("@readProjectV2ById");
+    cy.location("pathname").should(
+      "eq",
+      "/p/user1-uuid/test-2-v2-project/settings",
+    );
+  });
+
+  it("shows not found for stable links to unknown projects", () => {
+    fixtures.readProjectV2ById({ statusCode: 404 });
+    cy.visit("/id/p/THEPROJECTULID26CHARACTERS/sessions/show/my-session");
+    cy.wait("@readProjectV2ById");
+    cy.contains("Project not found").should("be.visible");
+    cy.contains("THEPROJECTULID26CHARACTERS").should("be.visible");
+    cy.contains("a", "Go to the homepage").should("have.attr", "href", "/");
+  });
+
+  it("suggests logging in for stable links when anonymous", () => {
+    fixtures.userNone().readProjectV2ById({ statusCode: 404 });
+    cy.visit("/id/p/THEPROJECTULID26CHARACTERS/sessions/show/my-session");
+    cy.wait("@readProjectV2ById");
+    cy.contains("Project not found").should("be.visible");
+    cy.getDataCy("login-alert").should("be.visible");
+  });
+
+  it("shows not found for unsupported stable links", () => {
+    cy.visit("/id/d/SOMEULID", { failOnStatusCode: false });
+    cy.getDataCy("not-found-title").should("contain.text", "Page not found");
+    cy.getDataCy("not-found-description").should(
+      "contain.text",
+      "only for projects,",
+    );
+  });
+
   it("shows projects by old URL", () => {
     cy.visit("/v2/projects/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");

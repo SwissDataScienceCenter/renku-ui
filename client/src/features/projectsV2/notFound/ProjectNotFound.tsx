@@ -19,13 +19,15 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ArrowLeft } from "react-bootstrap-icons";
-import { Link, useParams } from "react-router";
+import { ArrowLeft, House } from "react-bootstrap-icons";
+import { createSearchParams, Link, useParams } from "react-router";
 
+import LoginAlert from "~/components/loginAlert/LoginAlert";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import rkNotFoundImgV2 from "../../../styles/assets/not-foundV2.svg";
+import { useGetUserQueryState } from "../../usersV2/api/users.api";
 
 interface ProjectNotFoundProps {
   error?: FetchBaseQueryError | SerializedError | undefined | null;
@@ -42,24 +44,32 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
     slug: string;
   }>();
 
-  const notFoundText =
-    namespace && slug ? (
-      <>
-        We could not find the project{" "}
-        <span className={cx("fw-bold", "user-select-all")}>
-          {namespace}
-          <span className="mx-1">{"/"}</span>
-          {slug}
-        </span>
-        .
-      </>
-    ) : projectId ? (
-      <>
-        We could not find the project with id <code>{projectId}</code>.
-      </>
-    ) : (
-      <>We could not find the requested project.</>
-    );
+  const { data: user } = useGetUserQueryState();
+  const userLoggedIn = !!user?.isLoggedIn;
+
+  const notFoundText = (
+    <>
+      We could not find the{" "}
+      {namespace && slug ? (
+        <>
+          project{" "}
+          <span className="fw-bold">
+            {namespace} / {slug}
+          </span>
+          .
+        </>
+      ) : projectId ? (
+        <>
+          project with id <span className="fw-bold">{projectId}</span>.
+        </>
+      ) : (
+        <>We could not find the requested project.</>
+      )}
+    </>
+  );
+
+  const errorIs404 = error != null && "status" in error && error.status === 404;
+  const showLoginAlert = errorIs404 && !userLoggedIn;
 
   return (
     <ContainerWrap>
@@ -84,16 +94,44 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
               It is possible that the project has been deleted by its owner or
               you do not have permission to access it.
             </p>
-            {error && (
-              <RtkOrDataServicesError error={error} dismissible={false} />
+            {showLoginAlert ? (
+              <LoginAlert
+                color="info"
+                logged={false}
+                textPost="first."
+                textPre="You are not logged in. If the project you are trying to reach is not public, please"
+              />
+            ) : (
+              error && (
+                <RtkOrDataServicesError error={error} dismissible={false} />
+              )
             )}
-            <Link
-              to={ABSOLUTE_ROUTES.v2.index}
-              className={cx("btn", "btn-primary")}
-            >
-              <ArrowLeft className={cx("bi", "me-1")} />
-              Return to the projects list
-            </Link>
+
+            <div className={cx("d-flex", "flex-wrap", "gap-2")}>
+              <Link
+                to={{
+                  pathname: ABSOLUTE_ROUTES.v2.search,
+                  search: createSearchParams({
+                    type: "Project",
+                  }).toString(),
+                }}
+                className={cx(
+                  "btn",
+                  showLoginAlert ? "btn-outline-primary" : "btn-primary",
+                )}
+              >
+                <ArrowLeft className={cx("bi", "me-1")} />
+                Go to the projects list
+              </Link>
+
+              <Link
+                to={ABSOLUTE_ROUTES.v2.index}
+                className={cx("btn", "btn-outline-primary")}
+              >
+                <House className={cx("bi", "me-1")} />
+                Go to the homepage
+              </Link>
+            </div>
           </div>
         </div>
       </div>

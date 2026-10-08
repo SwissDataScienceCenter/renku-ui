@@ -29,6 +29,7 @@ import { Alert } from "reactstrap";
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
 
 interface LoginAlertProps {
+  color?: string;
   logged: boolean;
   noWrapper?: boolean;
   textIntro?: string;
@@ -38,6 +39,7 @@ interface LoginAlertProps {
 }
 
 const LoginAlert = ({
+  color = "primary",
   logged,
   noWrapper,
   textLogin = "Log in",
@@ -67,7 +69,7 @@ const LoginAlert = ({
   return (
     <>
       {introElement}
-      <Alert color="primary">
+      <Alert color={color} data-cy="login-alert">
         <p className="mb-0">
           {textPre} {link} {textPost}
         </p>
