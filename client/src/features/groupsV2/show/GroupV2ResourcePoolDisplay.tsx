@@ -20,12 +20,11 @@ import cx from "classnames";
 import { Cpu } from "react-bootstrap-icons";
 import { Badge } from "reactstrap";
 
-import {
-  ResourcePoolWithIdFiltered,
-  useGetGroupsByGroupSlugResourcePoolsQuery,
-} from "~/features/sessionsV2/api/computeResources.generated-api";
-import { Loader } from "../../../components/Loader";
-import { GroupInformationBox } from "./GroupV2Information";
+import ExternalLink from "~/components/ExternalLink";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
+import { MoreInfo } from "~/components/MoreInfo";
+import { useGetGroupsByGroupSlugResourcePoolsQuery } from "~/features/sessionsV2/api/computeResources.generated-api";
+import { NEW_DOCS_RESOURCE_POOLS_AND_CLASSES } from "~/utils/constants/NewDocs";
 
 interface GroupV2ResourcePoolDisplayProps {
   group: string;
@@ -38,52 +37,36 @@ export default function GroupV2ResourcePoolDisplay({
     groupSlug: group,
   });
 
-  return isLoading ? (
-    <div className={cx("d-flex", "justify-content-center", "w-100")}>
-      <div className={cx("d-flex", "flex-column")}>
-        <Loader />
-        <div>Retrieving resource pools...</div>
-      </div>
-    </div>
-  ) : error || data ? (
-    <GroupInformationBox
-      dataCy="group-resource-pools"
-      icon={<Cpu className="bi" />}
-      title={
-        <>
-          <span>Resource Pools</span>
-          <Badge>{data?.length ?? 0}</Badge>
-        </>
-      }
-    >
-      {error ? (
-        <p
-          className={cx("mb-0", "text-body-secondary")}
-          data-cy="group-resource-pools-not-visible"
-        >
-          This group has no visible resource pools.
-        </p>
-      ) : !data.length ? (
-        <p
-          className={cx("mb-0", "text-body-secondary")}
-          data-cy="group-resource-pools-empty"
-        >
-          There are no resource pools explicitly linked to this group.
-        </p>
-      ) : (
-        <ul className={cx("ps-3", "mb-0")}>
-          {data.map((rp) => (
-            <GroupV2ResourcePool key={rp.id} rp={rp} />
-          ))}
-        </ul>
-      )}
-    </GroupInformationBox>
-  ) : null;
-}
+  const info = error
+    ? "This group has no visible resource pools."
+    : !data?.length
+      ? "There are no resource pools explicitly linked to this group."
+      : "";
 
-interface GroupV2ResourcePoolProps {
-  rp: ResourcePoolWithIdFiltered;
-}
-function GroupV2ResourcePool({ rp }: GroupV2ResourcePoolProps) {
-  return rp.name && <li>{rp.name}</li>;
+  if (isLoading || (!error && data == null)) {
+    return null;
+  }
+
+  return (
+    <div data-cy="group-resource-pools">
+      <Cpu className="bi me-2" />
+      <span className={cx("text-body-secondary", "small", "me-2")}>
+        Resource Pools
+      </span>
+      <Badge className="me-2">{data?.length ?? 0}</Badge>
+      {data && data?.length > 0 && (
+        <span className={cx("small")}>
+          {data.map((rp) => rp.name).join(", ")}
+        </span>
+      )}
+      <span className="ms-1">
+        <MoreInfo trigger="legacy">
+          <LazyMarkdown>{info}</LazyMarkdown>
+          <ExternalLink href={NEW_DOCS_RESOURCE_POOLS_AND_CLASSES}>
+            Read more
+          </ExternalLink>
+        </MoreInfo>
+      </span>
+    </div>
+  );
 }
