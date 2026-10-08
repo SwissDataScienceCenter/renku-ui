@@ -69,6 +69,7 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
   );
 
   const errorIs404 = error != null && "status" in error && error.status === 404;
+  const showLoginAlert = errorIs404 && !userLoggedIn;
 
   return (
     <ContainerWrap>
@@ -93,16 +94,17 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
               It is possible that the project has been deleted by its owner or
               you do not have permission to access it.
             </p>
-            {error && !(errorIs404 && !userLoggedIn) && (
-              <RtkOrDataServicesError error={error} dismissible={false} />
-            )}
-            {error && errorIs404 && !userLoggedIn && (
+            {showLoginAlert ? (
               <LoginAlert
                 color="info"
                 logged={false}
                 textPost=" first."
                 textPre="You are not logged in. If the project you are trying to reach is not public, please"
               />
+            ) : (
+              error && (
+                <RtkOrDataServicesError error={error} dismissible={false} />
+              )
             )}
 
             <div className={cx("d-flex", "flex-wrap", "gap-2")}>
@@ -116,9 +118,7 @@ export default function ProjectNotFound({ error }: ProjectNotFoundProps) {
                 }}
                 className={cx(
                   "btn",
-                  userLoggedIn || !errorIs404
-                    ? "btn-primary"
-                    : "btn-outline-primary",
+                  showLoginAlert ? "btn-outline-primary" : "btn-primary",
                 )}
               >
                 <ArrowLeft className={cx("bi", "me-1")} />
