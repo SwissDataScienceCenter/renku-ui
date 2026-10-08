@@ -1,6 +1,12 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useState } from "react";
-import { data, generatePath, redirect, useNavigate } from "react-router";
+import {
+  data,
+  generatePath,
+  redirect,
+  useNavigate,
+  type MetaDescriptor,
+} from "react-router";
 import type { Reducer, Store } from "redux";
 
 import { Loader } from "~/components/Loader";
@@ -12,10 +18,13 @@ import {
   sessionsV2Api,
   useGetSessionsBySessionIdQuery,
 } from "~/features/sessionsV2/api/sessionsV2.api";
+import SessionNoProjectPagePage from "~/features/sessionsV2/SessionNoProjectPage";
+import SessionNotFoundPage from "~/features/sessionsV2/SessionNotFoundPage";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { store } from "~/store/store";
 import { storeContext } from "~/store/store.utils.server";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
+import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 import type { Route } from "./+types/redirect";
 
 type SessionsV2ApiStoreType =
@@ -156,6 +165,17 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   return { clientSideFetch: true, session, project, error };
 }
 
+const metaNotFound = makeMeta({
+  title: makeMetaTitle(["Session Not Found", "Renku"]),
+});
+
+export function meta({ loaderData }: Route.MetaArgs): MetaDescriptor[] {
+  if (loaderData.clientSideFetch) {
+    return makeMeta({ title: makeMetaTitle(["Session redirect", "Renku"]) });
+  }
+  return metaNotFound;
+}
+
 export default function Component({
   loaderData,
   params,
@@ -220,6 +240,7 @@ export default function Component({
           slug: project.slug,
           session: sessionId,
         }),
+        { replace: true },
       );
     }
   }, [navigate, project, sessionId]);
@@ -231,31 +252,14 @@ export default function Component({
     return <Loader className="align-self-center" />;
   }
 
-  if (error || session == null || project == null) {
-    return <>TODO: not found</>;
+  if (sessionError || session == null) {
+    return <SessionNotFoundPage error={sessionError ?? loaderData.error} />;
   }
 
   return (
-    <>
-      <div>
-        <p>TODO: redirect to session page</p>
-        <div>
-          <pre>{JSON.stringify(loaderData, null, 2)}</pre>
-        </div>
-        <div>
-          <pre>
-            {JSON.stringify(
-              {
-                session,
-                isLoadingSession,
-                sessionError,
-              },
-              null,
-              2,
-            )}
-          </pre>
-        </div>
-      </div>
-    </>
+    <SessionNoProjectPagePage
+      session={session}
+      error={error ?? loaderData.error}
+    />
   );
 }
