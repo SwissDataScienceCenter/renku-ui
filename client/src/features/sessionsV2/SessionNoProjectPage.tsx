@@ -28,7 +28,7 @@ import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import rkNotFoundImgV2 from "~/styles/assets/not-foundV2.svg";
 import type { SessionResponse } from "./api/sessionsV2.api";
 
-interface SessionNoProjectPagePageProps {
+interface SessionNoProjectPageProps {
   session: SessionResponse;
   error?: FetchBaseQueryError | SerializedError | undefined | null;
 }
@@ -36,7 +36,7 @@ interface SessionNoProjectPagePageProps {
 export default function SessionNoProjectPage({
   session,
   error,
-}: SessionNoProjectPagePageProps) {
+}: SessionNoProjectPageProps) {
   const projectId = session.project_id;
 
   const notFoundText = projectId ? (
@@ -45,13 +45,13 @@ export default function SessionNoProjectPage({
       <span className={cx("fw-bold", "user-select-all")}>{projectId}</span> of
       the session{" "}
       <span className={cx("fw-bold", "user-select-all")}>{session.name}</span>{" "}
-      has been deleted.
+      cannot be found.
     </>
   ) : (
     <>
       The parent project of the session{" "}
       <span className={cx("fw-bold", "user-select-all")}>{session.name}</span>{" "}
-      has been deleted.
+      cannot be found.
     </>
   );
 
@@ -70,7 +70,7 @@ export default function SessionNoProjectPage({
             )}
           >
             <img src={rkNotFoundImgV2} />
-            Session is orphaned!
+            Session has no parent project
           </h3>
           <div className={cx("text-start", "mt-3")}>
             <p>{notFoundText}</p>

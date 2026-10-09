@@ -18,7 +18,7 @@ import {
   sessionsV2Api,
   useGetSessionsBySessionIdQuery,
 } from "~/features/sessionsV2/api/sessionsV2.api";
-import SessionNoProjectPagePage from "~/features/sessionsV2/SessionNoProjectPage";
+import SessionNoProjectPage from "~/features/sessionsV2/SessionNoProjectPage";
 import SessionNotFoundPage from "~/features/sessionsV2/SessionNotFoundPage";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { store } from "~/store/store";
@@ -257,9 +257,6 @@ export default function Component({
   }
 
   return (
-    <SessionNoProjectPagePage
-      session={session}
-      error={error ?? loaderData.error}
-    />
+    <SessionNoProjectPage session={session} error={error ?? loaderData.error} />
   );
 }
