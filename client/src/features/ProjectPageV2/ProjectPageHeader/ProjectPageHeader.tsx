@@ -21,15 +21,15 @@ import { useLocation } from "react-router";
 
 import EntityBreadcrumb from "~/components/entityBreadcrumb/EntityBreadcrumb";
 import EntityIcon from "~/components/entityIcon/EntityIcon";
+import EntityPageHeaderKeywords, {
+  usePageHeaderKeywords,
+} from "../../../components/keywords/EntityPageHeaderKeywords";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 import ProjectAutostartRedirectBanner from "./ProjectAutostartRedirectBanner";
 import { ProjectCopiedFrom } from "./ProjectCopiedFrom";
 import ProjectCopyBanner from "./ProjectCopyBanner";
 import ProjectPageHeaderDescription from "./ProjectPageHeaderDescription";
 import ProjectPageHeaderInfo from "./ProjectPageHeaderInfo";
-import ProjectPageHeaderKeywords, {
-  useProjectPageHeaderKeywords,
-} from "./ProjectPageHeaderKeywords";
 import ProjectPageHeaderMenu from "./ProjectPageHeaderMenu";
 import ProjectTemplateInfoBanner from "./ProjectTemplateInfoBanner";
 
@@ -49,7 +49,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
     measureRef,
     metadataRef,
     rowRef,
-  } = useProjectPageHeaderKeywords(project.keywords);
+  } = usePageHeaderKeywords(project.keywords);
 
   return (
     <div
@@ -117,7 +117,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
               />
             )}
             {keywordsInline && (
-              <ProjectPageHeaderKeywords
+              <EntityPageHeaderKeywords
                 keywordsSorted={keywordsSorted}
                 leadingSeparator
               />
@@ -126,7 +126,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
         </div>
       </header>
       {keywordsInline === false && (
-        <ProjectPageHeaderKeywords keywordsSorted={keywordsSorted} wrapBadges />
+        <EntityPageHeaderKeywords keywordsSorted={keywordsSorted} wrapBadges />
       )}
       {project.description && (
         <ProjectPageHeaderDescription
@@ -145,7 +145,7 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
       )}
       <ProjectCopiedFrom project={project} />
       {hasKeywords && (
-        <ProjectPageHeaderKeywords
+        <EntityPageHeaderKeywords
           keywordsSorted={keywordsSorted}
           leadingSeparator
           measureRef={measureRef}

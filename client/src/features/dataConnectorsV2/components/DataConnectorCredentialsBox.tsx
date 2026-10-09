@@ -1,7 +1,7 @@
 import cx from "classnames";
 import { useMemo } from "react";
 import { Key, Lock, PersonBadge } from "react-bootstrap-icons";
-import { Card, CardBody, CardHeader } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { CredentialMoreInfo } from "~/features/cloudStorage/CloudStorageItem";
@@ -10,28 +10,22 @@ import { getCredentialFieldDefinitions } from "~/features/cloudStorage/projectCl
 import { storageSecretNameToFieldName } from "~/features/secretsV2/secrets.utils";
 import { DataConnectorRead } from "../api/data-connectors.api";
 import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-connectors.enhanced-api";
-import { InfoEntry } from "./DataConnectorInfoBox";
+import { hasSensitiveFields } from "./dataConnector.utils";
+import { InfoEntry, type InfoEntryLayout } from "./DataConnectorInfoBox";
 
 interface DataConnectorCredentialsBoxProps {
   dataConnector: DataConnectorRead;
   headerTag?: "h2" | "h3" | "h4";
+  showRequiresCredentials?: boolean;
+  layout?: InfoEntryLayout;
 }
 export default function DataConnectorCredentialsBox({
   dataConnector,
   headerTag = "h2",
+  showRequiresCredentials = true,
+  layout = "one-column",
 }: DataConnectorCredentialsBoxProps) {
-  // Sensitive fields
-  const sensitiveFieldNames = useMemo(
-    () => dataConnector.storage.sensitive_fields?.map((f) => f.name) ?? [],
-    [dataConnector.storage.sensitive_fields],
-  );
-  const anySensitiveField = useMemo(
-    () =>
-      Object.keys(dataConnector.storage.configuration).some((key) =>
-        sensitiveFieldNames.includes(key),
-      ),
-    [dataConnector.storage.configuration, sensitiveFieldNames],
-  );
+  const anySensitiveField = hasSensitiveFields(dataConnector.storage);
 
   // Fields requiring credentials and their status
   const credentialFieldDefinitions = useMemo(
@@ -57,6 +51,10 @@ export default function DataConnectorCredentialsBox({
       return acc;
     }, {}) ?? {};
 
+  const hasCredentialFields = !!requiredCredentials?.length;
+
+  if (!hasCredentialFields && !showRequiresCredentials) return null;
+
   return (
     <Card data-cy="data-connector-credentials-box">
       <CardHeader tag={headerTag}>
@@ -66,22 +64,34 @@ export default function DataConnectorCredentialsBox({
         </span>
       </CardHeader>
       <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
-        <InfoEntry title="Requires credentials" dataCy="requires-credentials">
-          {anySensitiveField ? "Yes" : "No"}
-        </InfoEntry>
-        {requiredCredentials &&
-          requiredCredentials.length > 0 &&
-          requiredCredentials.map(({ name, help }) => {
+        {showRequiresCredentials && (
+          <InfoEntry
+            title="Requires credentials"
+            dataCy="requires-credentials"
+            layout={layout}
+          >
+            {anySensitiveField ? "Yes" : "No"}
+          </InfoEntry>
+        )}
+        {hasCredentialFields && layout === "two-columns" && (
+          <Row className={cx("d-none", "d-md-flex")}>
+            <Col md={4} lg={3} className="text-muted">
+              Field
+            </Col>
+            <Col className="text-muted">Status</Col>
+          </Row>
+        )}
+        {hasCredentialFields &&
+          requiredCredentials?.map(({ name, help }) => {
             if (!name) return null;
             const title = (
               <>
-                Field <span className="fst-italic">{name}</span>{" "}
-                {help && <CredentialMoreInfo help={help} />}
+                {name} {help && <CredentialMoreInfo help={help} />}
               </>
             );
             return (
               <>
-                <InfoEntry title={title} dataCy={name}>
+                <InfoEntry title={title} dataCy={name} layout={layout}>
                   {savedCredentialFields[name] ? (
                     <RenkuBadge color="success">
                       <Key className="me-1" />
