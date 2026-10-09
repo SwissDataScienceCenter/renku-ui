@@ -79,6 +79,10 @@ export default [
     // Not found page for /d/*
     route("*", "routes/dataConnectors/catchall.tsx"),
   ]),
+  // Session pages
+  ...prefix(RELATIVE_ROUTES.v2.sessions.root, [
+    route(RELATIVE_ROUTES.v2.sessions.show, "routes/sessions/redirect.tsx"),
+  ]),
   // Admin page
   route(RELATIVE_ROUTES.v2.admin, "routes/admin.tsx"),
   // Legacy projects (may redirect)
