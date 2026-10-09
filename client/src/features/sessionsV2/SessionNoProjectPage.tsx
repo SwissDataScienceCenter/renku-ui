@@ -33,7 +33,7 @@ interface SessionNoProjectPagePageProps {
   error?: FetchBaseQueryError | SerializedError | undefined | null;
 }
 
-export default function SessionNoProjectPagePage({
+export default function SessionNoProjectPage({
   session,
   error,
 }: SessionNoProjectPagePageProps) {
