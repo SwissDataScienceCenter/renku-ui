@@ -516,6 +516,7 @@ function ResourceClassItem({
     memory,
     name,
     node_affinities,
+    preemptible,
     tolerations,
   } = resourceClass;
 
@@ -541,6 +542,9 @@ function ResourceClassItem({
         </div>
         <div className={cx(columnClasses)}>
           node affinities: {node_affinities?.length ?? 0}
+        </div>
+        <div className={cx(columnClasses)}>
+          preemptible: {preemptible ? "yes" : "no"}
         </div>
         <div className={cx(columnClasses)}>
           <ResourceClassFlavourName

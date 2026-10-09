@@ -44,6 +44,7 @@ import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { toHumanDuration } from "~/utils/helpers/DurationUtils";
 import { usageAvailableString } from "../session.utils";
+import PreemptibleBadge from "./PreemptibleBadge";
 
 import styles from "./SessionClassSelector.module.scss";
 
@@ -172,6 +173,13 @@ const SessionClassSelector = ({
         currentSessionClass={currentSessionClass}
         resourcePools={resourcePools}
       />
+      {currentSessionClass?.preemptible && (
+        <div className="form-text" data-cy="session-class-preemptible-notice">
+          This class is preemptible. Renku can stop sessions and jobs in this
+          class at any time to give the resources to other sessions. Save your
+          work frequently.
+        </div>
+      )}
     </div>
   );
 };
@@ -294,6 +302,7 @@ const OptionOrSingleValueContent = ({
         <span className="text-muted">
           {usageAvailableString(sessionClass.usage_hours_remaining, true)}
         </span>
+        {sessionClass.preemptible && <PreemptibleBadge className="ms-1" />}
       </span>{" "}
       <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}
       <span className={detailLabelClassName}>CPUs</span>{" "}

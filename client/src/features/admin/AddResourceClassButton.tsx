@@ -47,6 +47,7 @@ import ResourceClassFirecrestFields from "./forms/ResourceClassFirecrestFields";
 import ResourceClassFlavourSelect, {
   NO_RESOURCE_FLAVOUR,
 } from "./ResourceClassFlavourSelect";
+import ResourceClassPreemptibleField from "./ResourceClassPreemptibleField";
 
 interface AddResourceClassButtonProps {
   resourcePool: ResourcePoolWithId;
@@ -106,6 +107,7 @@ function AddResourceClassModal({
       max_storage: 1,
       memory: 1,
       name: "",
+      preemptible: false,
       remote: { systemName: "", partition: "", forwardResourceValues: false },
       resource_flavour_id: NO_RESOURCE_FLAVOUR,
     },
@@ -137,6 +139,7 @@ function AddResourceClassModal({
               name: values.name,
               default: values.default,
               node_affinities: values.node_affinities,
+              preemptible: values.preemptible,
               resource_flavour_id,
               tolerations,
               remote,
@@ -336,6 +339,11 @@ function AddResourceClassModal({
               </div>
             </>
           )}
+
+          <ResourceClassPreemptibleField
+            control={control}
+            idPrefix="addResourceClass"
+          />
 
           {requiresIntegerCpu && (
             <div className="mb-3">

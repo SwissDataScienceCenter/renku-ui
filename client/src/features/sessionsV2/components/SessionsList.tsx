@@ -18,6 +18,7 @@
 
 import { UsageAvailable } from "../session.utils";
 import type { SessionLauncherResourceUsageLimit } from "../sessionsV2.types";
+import PreemptibleBadge from "./PreemptibleBadge";
 
 interface SessionLauncherResources {
   poolName?: string;
@@ -26,6 +27,7 @@ interface SessionLauncherResources {
   memory?: number;
   gpu?: number;
   storage?: number;
+  preemptible?: boolean;
 }
 
 interface SessionResources {
@@ -51,10 +53,12 @@ export function SessionRowResourceRequests({
   }
 
   const numericEntries = Object.entries(resourceRequests).filter(
-    ([name]) => name !== "name" && name !== "poolName",
+    ([name]) =>
+      name !== "name" && name !== "poolName" && name !== "preemptible",
   );
 
-  const { poolName, name } = resourceRequests as SessionLauncherResources;
+  const { poolName, name, preemptible } =
+    resourceRequests as SessionLauncherResources;
 
   const resourceClassName =
     poolName && name ? (
@@ -74,6 +78,7 @@ export function SessionRowResourceRequests({
         {resourceClassName && (
           <span key="name">
             <span>{resourceClassName}</span>
+            {preemptible && <PreemptibleBadge className="ms-1" />}
             {" | "}
           </span>
         )}
