@@ -188,6 +188,7 @@ const jsRules = {
         "poller",
         "polybox",
         "popups",
+        "preemptible",
         "prepend",
         "presentational",
         "profiler",
