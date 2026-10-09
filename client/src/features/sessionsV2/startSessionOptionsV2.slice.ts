@@ -36,6 +36,7 @@ const initialState: StartSessionOptionsV2 = {
   repositories: [],
   repositoriesReady: false,
   sessionClass: 0,
+  sshKeysReady: false,
   storage: MIN_SESSION_STORAGE_GB,
   userSecretsReady: false,
 };
@@ -97,6 +98,9 @@ const startSessionOptionsV2Slice = createSlice({
     },
     setSessionClass: (state, action: PayloadAction<number>) => {
       state.sessionClass = action.payload;
+    },
+    setSshKeysReady: (state, action: PayloadAction<boolean>) => {
+      state.sshKeysReady = action.payload;
     },
     setStorage: (state, action: PayloadAction<number>) => {
       state.storage = action.payload;

@@ -142,6 +142,7 @@ export type SessionStatus = {
 };
 export type Ulid = string;
 export type SessionType = "interactive" | "non-interactive";
+export type FrontendVariant = string;
 export type SubmissionId = string;
 export type SessionResponse = {
   image: string;
@@ -156,6 +157,7 @@ export type SessionResponse = {
   launcher_id: Ulid;
   resource_class_id: number;
   session_type: SessionType;
+  frontend_variant?: FrontendVariant;
   submission_id?: SubmissionId;
   command_args?: string[] | null;
 };
