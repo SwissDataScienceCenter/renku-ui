@@ -17,9 +17,9 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CheckLg, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import {
   Button,
   Form,
@@ -35,6 +35,7 @@ import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import {
+  useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourMutation,
   usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   type ResourceClassWithId,
   type ResourcePoolWithId,
@@ -45,6 +46,9 @@ import {
   poolRequiresIntegerCpu,
 } from "./adminComputeResources.utils";
 import ResourceClassFirecrestFields from "./forms/ResourceClassFirecrestFields";
+import ResourceClassFlavourSelect, {
+  NO_RESOURCE_FLAVOUR,
+} from "./ResourceClassFlavourSelect";
 
 import styles from "./UpdateResourceClassButton.module.scss";
 
@@ -77,6 +81,28 @@ export default function UpdateResourceClassButton({
   );
 }
 
+function toFormValues(resourceClass: ResourceClassWithId): ResourceClassForm {
+  return {
+    cpu: resourceClass.cpu,
+    default: resourceClass.default,
+    default_storage: resourceClass.default_storage,
+    gpu: resourceClass.gpu,
+    max_storage: resourceClass.max_storage,
+    memory: resourceClass.memory,
+    name: resourceClass.name,
+    remote: {
+      systemName: resourceClass.remote?.system_name ?? "",
+      partition: resourceClass.remote?.partition ?? "",
+      forwardResourceValues:
+        resourceClass.remote?.forward_resource_values ?? false,
+    },
+    tolerations: (resourceClass.tolerations ?? []).map((label) => ({ label })),
+    node_affinities: resourceClass.node_affinities ?? [],
+    resource_flavour_id:
+      resourceClass.resource_flavour_id ?? NO_RESOURCE_FLAVOUR,
+  };
+}
+
 interface UpdateResourceClassModalProps {
   isOpen: boolean;
   resourceClass: ResourceClassWithId;
@@ -97,6 +123,10 @@ function UpdateResourceClassModal({
 
   const [updateResourceClass, result] =
     usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation();
+  const [unlinkResourceFlavour, unlinkResult] =
+    useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourMutation();
+  const { reset: resetUpdate } = result;
+  const { reset: resetUnlink } = unlinkResult;
 
   const {
     control,
@@ -104,26 +134,9 @@ function UpdateResourceClassModal({
     handleSubmit,
     reset,
   } = useForm<ResourceClassForm>({
-    defaultValues: {
-      cpu: resourceClass.cpu,
-      default: resourceClass.default,
-      default_storage: resourceClass.default_storage,
-      gpu: resourceClass.gpu,
-      max_storage: resourceClass.max_storage,
-      memory: resourceClass.memory,
-      name: resourceClass.name,
-      remote: {
-        systemName: resourceClass.remote?.system_name ?? "",
-        partition: resourceClass.remote?.partition ?? "",
-        forwardResourceValues:
-          resourceClass.remote?.forward_resource_values ?? false,
-      },
-      tolerations: (resourceClass.tolerations ?? []).map((label) => ({
-        label,
-      })),
-      node_affinities: resourceClass.node_affinities ?? [],
-    },
+    defaultValues: toFormValues(resourceClass),
   });
+  const selectedFlavourId = useWatch({ control, name: "resource_flavour_id" });
   const {
     fields: tolerationsFields,
     append: tolerationsAppend,
@@ -138,26 +151,55 @@ function UpdateResourceClassModal({
     remove: affinitiesRemove,
   } = useFieldArray({ control, name: "node_affinities" });
   const onSubmit = useCallback(
-    (data: ResourceClassForm) => {
+    async (data: ResourceClassForm) => {
       const tolerations = data.tolerations.map(({ label }) => label);
       const remote = buildResourceClassRemote(data.remote, requiresIntegerCpu);
+      const { resource_flavour_id, ...values } = data;
+      const wasLinked = resourceClass.resource_flavour_id != null;
+      const isLinked = resource_flavour_id !== NO_RESOURCE_FLAVOUR;
+
+      // The class keeps the flavour's values as its own, so the shape fields
+      // become writable only once the link is gone.
+      if (wasLinked && !isLinked) {
+        try {
+          await unlinkResourceFlavour({
+            resourcePoolId: resourcePool.id,
+            classId: `${resourceClass.id}`,
+          }).unwrap();
+        } catch {
+          return;
+        }
+      }
+
+      // A linked class may not carry its own shape values.
+      const resourceClassPatch = isLinked
+        ? {
+            name: values.name,
+            default: values.default,
+            node_affinities: values.node_affinities,
+            resource_flavour_id,
+            tolerations,
+            remote,
+          }
+        : { ...values, tolerations, remote };
+
       updateResourceClass({
         resourcePoolId: resourcePool.id,
         classId: `${resourceClass.id}`,
-        resourceClassPatch: {
-          ...data,
-          tolerations,
-          remote,
-        },
+        resourceClassPatch,
       });
     },
     [
       resourceClass.id,
+      resourceClass.resource_flavour_id,
       resourcePool.id,
       requiresIntegerCpu,
+      unlinkResourceFlavour,
       updateResourceClass,
     ],
   );
+
+  const isSaving = result.isLoading || unlinkResult.isLoading;
 
   const onAddTolerationLabel = useCallback(() => {
     tolerationsAppend({ label: "" });
@@ -174,27 +216,18 @@ function UpdateResourceClassModal({
     }
   }, [reset, result.isSuccess, toggle]);
 
+  const resourceClassRef = useRef(resourceClass);
   useEffect(() => {
-    reset({
-      cpu: resourceClass.cpu,
-      default: resourceClass.default,
-      default_storage: resourceClass.default_storage,
-      gpu: resourceClass.gpu,
-      max_storage: resourceClass.max_storage,
-      memory: resourceClass.memory,
-      name: resourceClass.name,
-      remote: {
-        systemName: resourceClass.remote?.system_name ?? "",
-        partition: resourceClass.remote?.partition ?? "",
-        forwardResourceValues:
-          resourceClass.remote?.forward_resource_values ?? false,
-      },
-      tolerations: (resourceClass.tolerations ?? []).map((label) => ({
-        label,
-      })),
-      node_affinities: resourceClass.node_affinities ?? [],
-    });
-  }, [reset, resourceClass]);
+    resourceClassRef.current = resourceClass;
+  }, [resourceClass]);
+
+  useEffect(() => {
+    if (isOpen) {
+      reset(toFormValues(resourceClassRef.current));
+      resetUpdate();
+      resetUnlink();
+    }
+  }, [isOpen, reset, resetUnlink, resetUpdate]);
 
   return (
     <ScrollableModal
@@ -215,6 +248,9 @@ function UpdateResourceClassModal({
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
+          {unlinkResult.error && (
+            <RtkOrDataServicesError error={unlinkResult.error} />
+          )}
           {result.error && <RtkOrDataServicesError error={result.error} />}
 
           <div className="mb-3">
@@ -237,126 +273,141 @@ function UpdateResourceClassModal({
             <div className="invalid-feedback">Please provide a name</div>
           </div>
 
-          <div className="mb-3">
-            <Label className="form-label" for={`updateResourceClassCpu-${id}`}>
-              CPUs
-            </Label>
-            <Controller
-              control={control}
-              name="cpu"
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.cpu && "is-invalid")}
-                  id={`updateResourceClassCpu-${id}`}
-                  type="number"
-                  min={cpuStep}
-                  step={cpuStep}
-                  {...field}
-                />
-              )}
-              rules={{
-                min: cpuStep,
-                max: quota?.cpu,
-                validate: requiresIntegerCpu
-                  ? (value) =>
-                      Number.isInteger(Number(value)) ||
-                      "CPUs must be a whole number for firecrest pools"
-                  : undefined,
-              }}
-            />
-            <div className="invalid-feedback">Invalid value for CPUs</div>
-          </div>
+          <ResourceClassFlavourSelect
+            control={control}
+            idPrefix={`updateResourceClass-${id}`}
+          />
 
-          <div className="mb-3">
-            <Label
-              className="form-label"
-              for={`updateResourceClassMemory-${id}`}
-            >
-              Memory (GB RAM)
-            </Label>
-            <Controller
-              control={control}
-              name="memory"
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.memory && "is-invalid")}
-                  id={`updateResourceClassMemory-${id}`}
-                  type="number"
-                  min={1}
-                  step={1}
-                  {...field}
+          {selectedFlavourId === NO_RESOURCE_FLAVOUR && (
+            <>
+              <div className="mb-3">
+                <Label
+                  className="form-label"
+                  for={`updateResourceClassCpu-${id}`}
+                >
+                  CPUs
+                </Label>
+                <Controller
+                  control={control}
+                  name="cpu"
+                  render={({ field }) => (
+                    <Input
+                      className={cx(errors.cpu && "is-invalid")}
+                      id={`updateResourceClassCpu-${id}`}
+                      type="number"
+                      min={cpuStep}
+                      step={cpuStep}
+                      {...field}
+                    />
+                  )}
+                  rules={{
+                    min: cpuStep,
+                    max: quota?.cpu,
+                    validate: requiresIntegerCpu
+                      ? (value) =>
+                          Number.isInteger(Number(value)) ||
+                          "CPUs must be a whole number for firecrest pools"
+                      : undefined,
+                  }}
                 />
-              )}
-              rules={{ min: 1, max: quota?.memory }}
-            />
-            <div className="invalid-feedback">Invalid value for memory</div>
-          </div>
+                <div className="invalid-feedback">Invalid value for CPUs</div>
+              </div>
 
-          <div className="mb-3">
-            <Label className="form-label" for={`updateResourceClassGpu-${id}`}>
-              GPUs
-            </Label>
-            <Controller
-              control={control}
-              name="gpu"
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.gpu && "is-invalid")}
-                  id={`updateResourceClassGpu-${id}`}
-                  type="number"
-                  min={0}
-                  step={1}
-                  {...field}
+              <div className="mb-3">
+                <Label
+                  className="form-label"
+                  for={`updateResourceClassMemory-${id}`}
+                >
+                  Memory (GB RAM)
+                </Label>
+                <Controller
+                  control={control}
+                  name="memory"
+                  render={({ field }) => (
+                    <Input
+                      className={cx(errors.memory && "is-invalid")}
+                      id={`updateResourceClassMemory-${id}`}
+                      type="number"
+                      min={1}
+                      step={1}
+                      {...field}
+                    />
+                  )}
+                  rules={{ min: 1, max: quota?.memory }}
                 />
-              )}
-              rules={{ min: 0, max: quota?.gpu }}
-            />
-            <div className="invalid-feedback">Invalid value for GPUs</div>
-          </div>
+                <div className="invalid-feedback">Invalid value for memory</div>
+              </div>
 
-          <div className="mb-3">
-            <Label
-              className="form-label"
-              for={`updateResourceClassDefaultStorage-${id}`}
-            >
-              Default storage (GB disk)
-            </Label>
-            <Controller
-              control={control}
-              name="default_storage"
-              render={({ field }) => (
-                <Input
-                  id={`updateResourceClassDefaultStorage-${id}`}
-                  type="number"
-                  min={1}
-                  step={1}
-                  {...field}
+              <div className="mb-3">
+                <Label
+                  className="form-label"
+                  for={`updateResourceClassGpu-${id}`}
+                >
+                  GPUs
+                </Label>
+                <Controller
+                  control={control}
+                  name="gpu"
+                  render={({ field }) => (
+                    <Input
+                      className={cx(errors.gpu && "is-invalid")}
+                      id={`updateResourceClassGpu-${id}`}
+                      type="number"
+                      min={0}
+                      step={1}
+                      {...field}
+                    />
+                  )}
+                  rules={{ min: 0, max: quota?.gpu }}
                 />
-              )}
-            />
-          </div>
+                <div className="invalid-feedback">Invalid value for GPUs</div>
+              </div>
 
-          <div className="mb-3">
-            <Label
-              className="form-label"
-              for={`updateResourceClassMaxStorage-${id}`}
-            >
-              Max storage (GB disk)
-            </Label>
-            <Controller
-              control={control}
-              name="max_storage"
-              render={({ field }) => (
-                <Input
-                  id={`updateResourceClassMaxStorage-${id}`}
-                  type="number"
-                  min={1}
-                  step={1}
-                  {...field}
+              <div className="mb-3">
+                <Label
+                  className="form-label"
+                  for={`updateResourceClassDefaultStorage-${id}`}
+                >
+                  Default storage (GB disk)
+                </Label>
+                <Controller
+                  control={control}
+                  name="default_storage"
+                  render={({ field }) => (
+                    <Input
+                      id={`updateResourceClassDefaultStorage-${id}`}
+                      type="number"
+                      min={1}
+                      step={1}
+                      {...field}
+                    />
+                  )}
                 />
-              )}
-            />
-          </div>
+              </div>
+
+              <div className="mb-3">
+                <Label
+                  className="form-label"
+                  for={`updateResourceClassMaxStorage-${id}`}
+                >
+                  Max storage (GB disk)
+                </Label>
+                <Controller
+                  control={control}
+                  name="max_storage"
+                  render={({ field }) => (
+                    <Input
+                      id={`updateResourceClassMaxStorage-${id}`}
+                      type="number"
+                      min={1}
+                      step={1}
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+            </>
+          )}
 
           {requiresIntegerCpu && (
             <div className="mb-3">
@@ -502,11 +553,11 @@ function UpdateResourceClassModal({
         </Button>
         <Button
           color="primary"
-          disabled={result.isLoading || !isDirty}
+          disabled={isSaving || !isDirty}
           onClick={handleSubmit(onSubmit)}
           type="submit"
         >
-          {result.isLoading ? (
+          {isSaving ? (
             <Loader className="me-1" inline size={16} />
           ) : (
             <CheckLg className={cx("bi", "me-1")} />
