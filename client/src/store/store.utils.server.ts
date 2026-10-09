@@ -23,6 +23,7 @@ import { createContext, type MiddlewareFunction } from "react-router";
 import { dataConnectorsApi } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { platformApi } from "~/features/platform/api/platform.api";
 import { projectV2Api } from "~/features/projectsV2/api/projectV2.enhanced-api";
+import { sessionsV2Api } from "~/features/sessionsV2/api/sessionsV2.api";
 import { usersApi } from "~/features/usersV2/api/users.api";
 import cookieSlice from "./cookie.slice.server";
 
@@ -38,16 +39,18 @@ function makeStore() {
       // Slices
       [cookieSlice.reducerPath]: cookieSlice.reducer,
       // APIs
-      [platformApi.reducerPath]: platformApi.reducer,
       [dataConnectorsApi.reducerPath]: dataConnectorsApi.reducer,
+      [platformApi.reducerPath]: platformApi.reducer,
       [projectV2Api.reducerPath]: projectV2Api.reducer,
+      [sessionsV2Api.reducerPath]: sessionsV2Api.reducer,
       [usersApi.reducerPath]: usersApi.reducer,
     },
     middleware: (gDM) =>
       gDM()
-        .concat(platformApi.middleware)
         .concat(dataConnectorsApi.middleware)
+        .concat(platformApi.middleware)
         .concat(projectV2Api.middleware)
+        .concat(sessionsV2Api.middleware)
         .concat(usersApi.middleware),
   });
 }
