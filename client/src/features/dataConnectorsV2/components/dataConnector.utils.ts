@@ -210,6 +210,14 @@ export function getDataConnectorScope(namespace?: string): DataConnectorScope {
   return "namespace";
 }
 
+export function hasSensitiveFields(storage: DataConnectorRead["storage"]) {
+  const sensitiveFieldNames =
+    storage.sensitive_fields?.map((field) => field.name) ?? [];
+  return Object.keys(storage.configuration).some((key) =>
+    sensitiveFieldNames.includes(key),
+  );
+}
+
 export function useGetDataConnectorSource(
   dataConnector: DataConnector | undefined,
 ): { isLoading: boolean; source: string } {
