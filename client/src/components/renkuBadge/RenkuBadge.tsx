@@ -21,9 +21,10 @@ import cx from "classnames";
 interface RenkuBadgeProps {
   children?: React.ReactNode;
   className?: string;
-  color?: "success" | "danger" | "warning" | "light" | "info";
+  color?: "success" | "danger" | "warning" | "light" | "info" | "secondary";
   "data-cy"?: string;
   pill?: boolean;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 export default function RenkuBadge({
@@ -32,6 +33,7 @@ export default function RenkuBadge({
   color = "light",
   "data-cy": dataCy,
   pill = false,
+  ref,
 }: RenkuBadgeProps) {
   const colorClasses =
     color === "success"
@@ -40,9 +42,11 @@ export default function RenkuBadge({
         ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
         : color === "warning"
           ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
-          : color === "info"
-            ? ["border-info", "bg-info-subtle", "text-info-emphasis"]
-            : ["border-dark-subtle", "bg-light", "text-dark-emphasis"];
+          : color === "secondary"
+            ? ["border-secondary", "bg-secondary", "text-white"]
+            : color === "info"
+              ? ["border-info", "bg-info-subtle", "text-info-emphasis"]
+              : ["border-dark-subtle", "bg-light", "text-dark-emphasis"];
 
   const baseClasses = [
     "border",
@@ -54,7 +58,7 @@ export default function RenkuBadge({
   const finalClasses = cx(className, baseClasses);
 
   return (
-    <div className={finalClasses} data-cy={dataCy}>
+    <div ref={ref} className={finalClasses} data-cy={dataCy}>
       {children}
     </div>
   );

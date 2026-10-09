@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
+import type { SerializedError } from "@reduxjs/toolkit";
+import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
@@ -33,6 +34,7 @@ import {
   Pencil,
   PlayCircle,
   Send,
+  UiChecksGrid,
 } from "react-bootstrap-icons";
 import {
   AccordionBody,
@@ -54,22 +56,31 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert, InfoAlert } from "~/components/Alert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import InternalIdField from "~/components/InternalIdField";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
-import type { DataConnectorRead } from "~/features/dataConnectorsV2/api/data-connectors.api";
+import type {
+  DataConnectorRead,
+  DataConnectorToProjectLink,
+} from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { partitionDataConnectorsForApp } from "~/features/sessionsV2/apps/appDataConnectors.utils";
 import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "../../dataConnectorsV2/api/data-connectors.enhanced-api";
+import type { Permissions } from "../../permissionsV2/permissions.types";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import { RepositoryItem } from "../../ProjectPageV2/ProjectPageContent/CodeRepositories/CodeRepositoryDisplay";
 import SessionViewSessionSecrets from "../../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionViewSessionSecrets";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
+import {
+  useGetSessionLaunchersByLauncherIdDataConnectorsQuery,
+  type SessionLauncher,
+  type SessionLauncherDataConnector,
+} from "../api/sessionLaunchersV2.api";
 import AppRuntimeCard from "../apps/AppRuntimeCard";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
@@ -93,12 +104,21 @@ import {
 import { getShowSessionUrlByProject, SessionV2Actions } from "../SessionsV2";
 import { LauncherCategory, SessionV2 } from "../sessionsV2.types";
 import useResourceClassDetails from "../useResourceClassDetails.hook";
+import AccessPolicyBadge from "./AccessPolicyBadge";
+import CustomizeDataConnectorsModal from "./CustomizeDataConnectorsModal";
 import EnvironmentItem, {
   EnvironmentJSONArrayRowWithLabel,
 } from "./EnvironmentItem";
 import EnvVariablesCard from "./EnvVariablesCard";
+import {
+  getDataConnectorAccessPolicyLabel,
+  resolveDataConnectorAccessPolicy,
+} from "./launcherResources.constants";
 
 import styles from "./SessionView.module.scss";
+
+const EMPTY_DATA_CONNECTOR_LINKS: DataConnectorToProjectLink[] = [];
+const EMPTY_DATA_CONNECTORS_MAP: Record<string, DataConnectorRead> = {};
 
 interface SessionCardContentProps {
   color: string;
@@ -258,11 +278,19 @@ export function SessionView({
 }: SessionViewProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isModifyResourcesOpen, setModifyResourcesOpen] = useState(false);
+  const [isDataConnectorsOpen, setIsDataConnectorsOpen] = useState(false);
+  const [isSessionSecretsOpen, setIsSessionSecretsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsUpdateOpen((open) => !open);
   }, []);
   const toggleModifyResources = useCallback(() => {
     setModifyResourcesOpen((open) => !open);
+  }, []);
+  const toggleDataConnectors = useCallback(() => {
+    setIsDataConnectorsOpen((open) => !open);
+  }, []);
+  const toggleSessionSecrets = useCallback(() => {
+    setIsSessionSecretsOpen((open) => !open);
   }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
   const environment = launcher?.environment;
@@ -279,17 +307,43 @@ export function SessionView({
     launcherCategory || orphanCategory,
   );
 
-  const { data: dataConnectorLinks } =
+  const dataConnectorLinksQuery =
     useGetProjectsByProjectIdDataConnectorLinksQuery({
       projectId: project.id,
     });
+  const dataConnectorLinks = dataConnectorLinksQuery.data;
   const dataConnectorIds = dataConnectorLinks?.map(
     (link) => link.data_connector_id,
   );
-  const { data: dataConnectorsMap } =
+  const dataConnectorsMapQuery =
     useGetDataConnectorsListByDataConnectorIdsQuery(
       dataConnectorIds ? { dataConnectorIds } : skipToken,
     );
+  const dataConnectorsMap = dataConnectorsMapQuery.data;
+  const launcherDataConnectorsQuery =
+    useGetSessionLaunchersByLauncherIdDataConnectorsQuery(
+      launcher ? { launcherId: launcher.id } : skipToken,
+    );
+  const savedDataConnectorPolicies = launcherDataConnectorsQuery.isSuccess
+    ? launcherDataConnectorsQuery.data
+    : undefined;
+  const isDataConnectorsLoading =
+    dataConnectorLinksQuery.isLoading ||
+    (!!dataConnectorIds?.length &&
+      (dataConnectorsMapQuery.isLoading ||
+        dataConnectorsMapQuery.isUninitialized)) ||
+    (launcher != null &&
+      (launcherDataConnectorsQuery.isLoading ||
+        launcherDataConnectorsQuery.isUninitialized));
+  const dataConnectorsError = dataConnectorLinksQuery.isError
+    ? dataConnectorLinksQuery.error
+    : undefined;
+  const dataConnectorsMapError = dataConnectorsMapQuery.isError
+    ? dataConnectorsMapQuery.error
+    : undefined;
+  const dataConnectorPoliciesError = launcherDataConnectorsQuery.isError
+    ? launcherDataConnectorsQuery.error
+    : undefined;
 
   const dataConnectors = useMemo(
     () => Object.values(dataConnectorsMap ?? {}),
@@ -327,6 +381,7 @@ export function SessionView({
     />
   );
   const description = launcher?.description;
+  const isRestricted = launcher?.is_restricted;
 
   const key = launcher
     ? launcher.id
@@ -376,6 +431,18 @@ export function SessionView({
           </OffcanvasHeaderWithType>
 
           {description && <p className="m-0">{description}</p>}
+          {isRestricted && (
+            <Card>
+              <CardBody className={cx("d-flex", "flex-row", "gap-2")}>
+                <div className="fs-2">
+                  <UiChecksGrid />
+                </div>
+                <p className="mb-0">
+                  This launcher restricts data connectors or session secrets.
+                </p>
+              </CardBody>
+            </Card>
+          )}
 
           {isApp && <AppContentsNotice />}
 
@@ -631,8 +698,15 @@ export function SessionView({
           )}
 
           <DataConnectorsCard
+            dataConnectorLinks={
+              dataConnectorLinks ?? EMPTY_DATA_CONNECTOR_LINKS
+            }
             dataConnectors={isApp ? appDataConnectors : dataConnectors}
+            policiesError={dataConnectorPoliciesError}
+            savedPolicies={savedDataConnectorPolicies}
             skippedCount={isApp ? skippedDataConnectors.length : 0}
+            toggleEdit={launcher && !isApp ? toggleDataConnectors : undefined}
+            userPermissions={permissions}
           />
 
           {!isApp && (
@@ -674,7 +748,33 @@ export function SessionView({
                 </CardBody>
               </Card>
 
-              <SessionViewSessionSecrets />
+              <SessionViewSessionSecrets
+                isEditOpen={isSessionSecretsOpen}
+                launcher={launcher}
+                toggleEdit={launcher ? toggleSessionSecrets : undefined}
+              />
+            </>
+          )}
+
+          {launcher && !isApp && (
+            <>
+              <CustomizeDataConnectorsModal
+                dataConnectorLinks={
+                  dataConnectorLinks ?? EMPTY_DATA_CONNECTOR_LINKS
+                }
+                dataConnectorsError={
+                  dataConnectorsError ?? dataConnectorsMapError
+                }
+                dataConnectorsMap={
+                  dataConnectorsMap ?? EMPTY_DATA_CONNECTORS_MAP
+                }
+                isLoading={isDataConnectorsLoading}
+                isOpen={isDataConnectorsOpen}
+                launcher={launcher}
+                policiesError={dataConnectorPoliciesError}
+                savedPolicies={savedDataConnectorPolicies}
+                toggle={toggleDataConnectors}
+              />
             </>
           )}
 
@@ -747,14 +847,53 @@ export function SessionView({
   );
 }
 
+interface AccessPolicyLabelProps {
+  connector: DataConnectorRead;
+  links: DataConnectorToProjectLink[];
+  savedPolicies: SessionLauncherDataConnector[] | undefined;
+}
+function AccessPolicyLabel({
+  connector,
+  links,
+  savedPolicies,
+}: AccessPolicyLabelProps) {
+  if (savedPolicies == null || links.length < 1) {
+    return null;
+  }
+  const link = links.find((item) => item.data_connector_id === connector.id);
+  if (!link) {
+    return null;
+  }
+  const savedPolicy = savedPolicies.find(
+    (entry) => entry.data_connector_link_id === link.id,
+  )?.policy;
+  const label = getDataConnectorAccessPolicyLabel(
+    resolveDataConnectorAccessPolicy(connector.storage.readonly, savedPolicy),
+  );
+
+  return (
+    <AccessPolicyBadge excluded={savedPolicy === "excluded"} label={label} />
+  );
+}
+
 interface DataConnectorsCardProps {
+  dataConnectorLinks: DataConnectorToProjectLink[];
   dataConnectors: DataConnectorRead[];
+  policiesError?: FetchBaseQueryError | SerializedError;
+  savedPolicies?: SessionLauncherDataConnector[];
   skippedCount: number;
+  toggleEdit?: () => void;
+  userPermissions: Permissions;
 }
 
 function DataConnectorsCard({
+  dataConnectorLinks,
   dataConnectors,
+  policiesError,
+  savedPolicies,
   skippedCount,
+  toggleEdit,
+  userPermissions,
 }: DataConnectorsCardProps) {
   const skippedLabel = `${skippedCount} data connector${
     skippedCount === 1 ? "" : "s"
@@ -762,20 +901,74 @@ function DataConnectorsCard({
 
   return (
     <Card>
-      <CardHeader className={cx("align-items-center", "d-flex")}>
-        <h3 className={cx("mb-0", "me-2")}>
-          <Database className={cx("me-1", "bi")} />
-          Data Connectors
-        </h3>
-        <Badge>{dataConnectors.length}</Badge>
+      <CardHeader
+        className={cx(
+          "align-items-center",
+          "d-flex",
+          "justify-content-between",
+        )}
+      >
+        <div className={cx("align-items-center", "d-flex")}>
+          <h3 className={cx("mb-0", "me-2")}>
+            <Database className={cx("me-1", "bi")} />
+            Data Connectors
+          </h3>
+          <Badge>{dataConnectors.length}</Badge>
+        </div>
+        {toggleEdit && (
+          <PermissionsGuard
+            disabled={null}
+            enabled={
+              <>
+                <Button
+                  aria-label="Customize data connectors"
+                  color="outline-primary"
+                  data-cy="session-view-modify-data-connectors-button"
+                  id="modify-data-connectors-button"
+                  onClick={toggleEdit}
+                  size="sm"
+                  tabIndex={0}
+                >
+                  <UiChecksGrid className="bi" />
+                </Button>
+                <UncontrolledTooltip target="modify-data-connectors-button">
+                  Customize data connectors
+                </UncontrolledTooltip>
+              </>
+            }
+            requestedPermission="write"
+            userPermissions={userPermissions}
+          />
+        )}
       </CardHeader>
       <CardBody>
+        {policiesError != null && (
+          <RtkOrDataServicesError dismissible={false} error={policiesError} />
+        )}
         {dataConnectors.length > 0 ? (
           <ListGroup flush>
             {dataConnectors.map((storage, index) => (
               <ListGroupItem key={`storage-${index}`}>
-                <div>Name: {storage.name}</div>
-                <div>Type: {storage.storage.storage_type}</div>
+                <div
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "gap-2",
+                    "justify-content-between",
+                  )}
+                >
+                  <div className={cx("fw-bold", "min-w-0", "text-truncate")}>
+                    {storage.name}
+                  </div>
+                  <div className="flex-shrink-0" data-cy="access-policy">
+                    <AccessPolicyLabel
+                      connector={storage}
+                      links={dataConnectorLinks}
+                      savedPolicies={savedPolicies}
+                    />
+                  </div>
+                </div>
+                <div>{storage.storage.storage_type}</div>
               </ListGroupItem>
             ))}
           </ListGroup>
