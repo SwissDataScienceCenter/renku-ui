@@ -63,6 +63,7 @@ export interface ResourceClassForm {
   default_storage: number;
   max_storage: number;
   default: boolean;
+  preemptible: boolean;
   tolerations: ResourceClassFormToleration[];
   node_affinities: ResourceClassFormNodeAffinity[];
   remote: ResourceClassFormRemote;

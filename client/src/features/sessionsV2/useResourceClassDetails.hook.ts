@@ -34,6 +34,7 @@ export interface ResourceClassRequests {
   memory?: number;
   gpu?: number;
   storage?: number;
+  preemptible?: boolean;
 }
 
 interface UseResourceClassDetailsProps {
@@ -87,6 +88,7 @@ export default function useResourceClassDetails({
       memory: resourceClass.memory,
       storage: storage ?? resourceClass.default_storage,
       gpu: resourceClass.gpu,
+      preemptible: resourceClass.preemptible,
     };
   }, [resourceClass, resourcePool, storage]);
 

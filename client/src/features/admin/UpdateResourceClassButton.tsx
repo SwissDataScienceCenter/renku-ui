@@ -49,6 +49,7 @@ import ResourceClassFirecrestFields from "./forms/ResourceClassFirecrestFields";
 import ResourceClassFlavourSelect, {
   NO_RESOURCE_FLAVOUR,
 } from "./ResourceClassFlavourSelect";
+import ResourceClassPreemptibleField from "./ResourceClassPreemptibleField";
 
 import styles from "./UpdateResourceClassButton.module.scss";
 
@@ -90,6 +91,7 @@ function toFormValues(resourceClass: ResourceClassWithId): ResourceClassForm {
     max_storage: resourceClass.max_storage,
     memory: resourceClass.memory,
     name: resourceClass.name,
+    preemptible: resourceClass.preemptible ?? false,
     remote: {
       systemName: resourceClass.remote?.system_name ?? "",
       partition: resourceClass.remote?.partition ?? "",
@@ -177,6 +179,7 @@ function UpdateResourceClassModal({
             name: values.name,
             default: values.default,
             node_affinities: values.node_affinities,
+            preemptible: values.preemptible,
             resource_flavour_id,
             tolerations,
             remote,
@@ -408,6 +411,11 @@ function UpdateResourceClassModal({
               </div>
             </>
           )}
+
+          <ResourceClassPreemptibleField
+            control={control}
+            idPrefix={`updateResourceClass-${id}`}
+          />
 
           {requiresIntegerCpu && (
             <div className="mb-3">
