@@ -637,7 +637,11 @@ describe("Display group's resource pools", () => {
     });
 
     cy.getDataCy("group-resource-pools").should("be.visible");
-    cy.getDataCy("group-resource-pools-empty").should("be.visible");
+    cy.getDataCy("group-resource-pools-info").click();
+    cy.contains(
+      ".popover-body",
+      "There are no resource pools explicitly linked to this group.",
+    ).should("be.visible");
   });
 
   it("show not visible message to user with no permissions", () => {
@@ -646,6 +650,10 @@ describe("Display group's resource pools", () => {
     });
 
     cy.getDataCy("group-resource-pools").should("be.visible");
-    cy.getDataCy("group-resource-pools-not-visible").should("be.visible");
+    cy.getDataCy("group-resource-pools-info").click();
+    cy.contains(
+      ".popover-body",
+      "This group has no visible resource pools.",
+    ).should("be.visible");
   });
 });

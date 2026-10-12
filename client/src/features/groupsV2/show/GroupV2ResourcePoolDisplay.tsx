@@ -59,7 +59,7 @@ export default function GroupV2ResourcePoolDisplay({
           {data.map((rp) => rp.name).join(", ")}
         </span>
       )}
-      <span className="ms-1">
+      <span className="ms-1" data-cy="group-resource-pools-info">
         <MoreInfo trigger="legacy">
           <LazyMarkdown>{info}</LazyMarkdown>
           <ExternalLink href={NEW_DOCS_RESOURCE_POOLS_AND_CLASSES}>
