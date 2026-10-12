@@ -171,7 +171,7 @@ function UpdateResourceClassModal({
         }
       }
 
-      // A linked class may not carry its own shape values.
+      // The API rejects CPU, memory, GPU and storage values on a linked class.
       const resourceClassPatch = isLinked
         ? {
             name: values.name,

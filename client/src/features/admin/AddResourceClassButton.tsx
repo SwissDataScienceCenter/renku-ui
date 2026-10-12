@@ -129,7 +129,6 @@ function AddResourceClassModal({
       const tolerations = data.tolerations.map(({ label }) => label);
       const remote = buildResourceClassRemote(data.remote, requiresIntegerCpu);
       const { resource_flavour_id, ...values } = data;
-      // A linked class may not carry its own shape values.
       const resourceClassCreate =
         resource_flavour_id === NO_RESOURCE_FLAVOUR
           ? { ...values, tolerations, remote }
