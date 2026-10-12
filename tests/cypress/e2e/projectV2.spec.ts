@@ -190,9 +190,10 @@ describe("Navigate to project", () => {
   });
 
   it("show project information", () => {
-    fixtures.readProjectV2();
+    fixtures.readProjectV2().readUserV2Namespace();
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
+    cy.wait("@readUserV2Namespace");
     // check project data
     cy.getDataCy("project-name").should("contain.text", "test 2 v2-project");
     cy.getDataCy("project-description").should(
@@ -200,8 +201,9 @@ describe("Navigate to project", () => {
       "Project 2 description",
     );
     cy.getDataCy("project-info").should("contain.text", "Public");
-    cy.getDataCy("project-identifier").should("contain.text", "user1-uuid");
-    cy.getDataCy("project-namespace-link").should("be.visible");
+    cy.getDataCy("user-namespace-link")
+      .should("be.visible")
+      .and("have.attr", "href", "/u/user1-uuid");
     cy.getDataCy("project-documentation-text").should("be.visible");
     cy.getDataCy("project-documentation-text")
       .contains(
@@ -228,7 +230,7 @@ describe("Navigate to project", () => {
       .should("be.visible");
   });
 
-  it("shows at most 5 members, owners first", () => {
+  it("shows at most 2 members, owners first", () => {
     fixtures
       .listProjectV2Members({
         fixture: "projectV2/list-projectV2-members-many.json",
@@ -236,13 +238,19 @@ describe("Navigate to project", () => {
       .readProjectV2();
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.wait("@readProjectV2");
-    cy.contains("User One").should("be.visible");
+    cy.wait("@listProjectV2Members");
+    cy.getDataCy("project-info").within(() => {
+      cy.contains("User One").should("be.visible");
+      cy.contains("UserSix").should("be.visible");
+      cy.contains("User Two").should("not.exist");
+      cy.contains("User Three").should("not.exist");
+      cy.contains("User Four").should("not.exist");
+      cy.getDataCy("member-list-overflow")
+        .should("be.visible")
+        .and("contain.text", "+4");
+    });
+    cy.getDataCy("member-list-overflow").click();
     cy.contains("User Two").should("be.visible");
-    cy.contains("User Three").should("be.visible");
-    cy.contains("User Four").should("be.visible");
-    cy.contains("user5-uuid").should("not.exist");
-    cy.contains("UserSix").should("be.visible");
-    cy.contains("All members").should("be.visible").click();
     cy.contains("@user5").should("be.visible");
   });
 });
