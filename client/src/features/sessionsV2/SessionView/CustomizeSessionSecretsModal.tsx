@@ -94,7 +94,7 @@ function SessionSecretRow({
 
   return (
     <tr data-cy="launcher-session-secret-row">
-      <td className={cx("align-middle", "fw-bold")}>{name}</td>
+      <td className={cx("align-middle", "fw-bold", "text-truncate")}>{name}</td>
       <td className={cx("align-middle", "text-break")}>
         <code>{sessionPath}</code>
       </td>
