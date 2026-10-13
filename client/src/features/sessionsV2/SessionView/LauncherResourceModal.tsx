@@ -17,17 +17,16 @@
  */
 
 import cx from "classnames";
-import { type ReactNode } from "react";
-import { CheckLg, XLg } from "react-bootstrap-icons";
-import {
-  Button,
-  Input,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Table,
-  type InputProps,
-} from "reactstrap";
+import { useCallback, useMemo, type ReactNode } from "react";
+import { CheckLg, ChevronDown, XLg } from "react-bootstrap-icons";
+import Select, {
+  components,
+  type ClassNamesConfig,
+  type GroupBase,
+  type SelectComponentsConfig,
+  type SingleValue,
+} from "react-select";
+import { Button, ModalBody, ModalFooter, ModalHeader, Table } from "reactstrap";
 
 import { SuccessAlert } from "../../../components/Alert";
 import ScrollableModal from "../../../components/modal/ScrollableModal";
@@ -39,6 +38,7 @@ import {
 } from "../session.utils";
 import type { AccessPolicyOption } from "./launcherResources.constants";
 
+import selectStyles from "../components/SessionForm/Select.module.scss";
 import styles from "./LauncherResource.module.scss";
 
 interface LauncherResourceModalProps {
@@ -185,32 +185,107 @@ export function LauncherResourceTable({
   );
 }
 
-type AccessPolicySelectProps = Omit<
-  InputProps,
-  "children" | "options" | "type"
-> & {
+interface AccessPolicySelectProps {
   ariaLabel: string;
+  dataCy?: string;
+  disabled?: boolean;
   disabledValues?: readonly AccessPolicyOption["value"][];
-  options: AccessPolicyOption[];
-};
+  inputId?: string;
+  name: string;
+  onBlur?: () => void;
+  onChange?: (newValue?: AccessPolicyOption["value"]) => void;
+  options: readonly AccessPolicyOption[];
+  value: AccessPolicyOption["value"];
+}
 
 export function AccessPolicySelect({
   ariaLabel,
+  dataCy,
+  disabled,
   disabledValues,
+  inputId,
+  name,
+  onBlur,
+  onChange: onChange_,
   options,
-  ...inputProps
+  value: value_,
 }: AccessPolicySelectProps) {
+  const value = useMemo(
+    () => options.find((option) => option.value === value_) ?? null,
+    [options, value_],
+  );
+
+  const onChange = useCallback(
+    (newValue: SingleValue<AccessPolicyOption>) => {
+      if (newValue) {
+        onChange_?.(newValue.value);
+      }
+    },
+    [onChange_],
+  );
+
+  const isOptionDisabled = useCallback(
+    (option: AccessPolicyOption) =>
+      disabledValues?.includes(option.value) ?? false,
+    [disabledValues],
+  );
+
   return (
-    <Input aria-label={ariaLabel} bsSize="sm" type="select" {...inputProps}>
-      {options.map(({ label, value }) => (
-        <option
-          disabled={disabledValues?.includes(value)}
-          key={value}
-          value={value}
-        >
-          {label}
-        </option>
-      ))}
-    </Input>
+    <div data-cy={dataCy}>
+      <Select
+        aria-label={ariaLabel}
+        classNames={selectClassNames}
+        components={selectComponents}
+        getOptionLabel={(option) => option.label}
+        getOptionValue={(option) => option.value}
+        inputId={inputId}
+        isClearable={false}
+        isDisabled={disabled}
+        isOptionDisabled={isOptionDisabled}
+        isSearchable={false}
+        menuPortalTarget={document.body}
+        menuPosition="fixed"
+        name={name}
+        onBlur={onBlur}
+        onChange={onChange}
+        options={options}
+        unstyled
+        value={value}
+      />
+    </div>
   );
 }
+
+const selectClassNames: ClassNamesConfig<AccessPolicyOption, false> = {
+  control: ({ menuIsOpen }) =>
+    cx(menuIsOpen ? "rounded-top" : "rounded", "border", selectStyles.control),
+  dropdownIndicator: () => cx("pe-3"),
+  menu: () => cx("bg-white", "rounded-bottom", "border"),
+  menuList: () => cx("d-grid"),
+  menuPortal: () => styles.menuPortal,
+  option: ({ isFocused, isSelected, isDisabled }) =>
+    cx(
+      "px-3",
+      "py-2",
+      isDisabled && "text-secondary",
+      selectStyles.option,
+      isDisabled && selectStyles.optionIsDisabled,
+      isFocused && !isDisabled && selectStyles.optionIsFocused,
+      !isFocused && isSelected && !isDisabled && selectStyles.optionIsSelected,
+    ),
+  singleValue: () => cx("px-3"),
+};
+
+const selectComponents: SelectComponentsConfig<
+  AccessPolicyOption,
+  false,
+  GroupBase<AccessPolicyOption>
+> = {
+  DropdownIndicator: (props) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        <ChevronDown className="bi" />
+      </components.DropdownIndicator>
+    );
+  },
+};

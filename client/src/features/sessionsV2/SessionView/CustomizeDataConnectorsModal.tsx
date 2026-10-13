@@ -131,21 +131,21 @@ function DataConnectorAccessRow({
         <Controller
           control={control}
           name={`dataConnectors.${index}.policy`}
-          render={({ field }) => {
-            const { ref, ...fieldProps } = field;
-            return (
-              <AccessPolicySelect
-                ariaLabel={`Access for ${name}`}
-                data-cy={`launcher-data-connector-access_${index}`}
-                disabledValues={
-                  isStorageReadOnly ? READ_WRITE_DISABLED : undefined
-                }
-                innerRef={ref}
-                options={DATA_CONNECTOR_ACCESS_OPTIONS}
-                {...fieldProps}
-              />
-            );
-          }}
+          render={({ field }) => (
+            <AccessPolicySelect
+              ariaLabel={`Access for ${name}`}
+              dataCy={`launcher-data-connector-access_${index}`}
+              disabledValues={
+                isStorageReadOnly ? READ_WRITE_DISABLED : undefined
+              }
+              inputId={`launcher-data-connector-access_${index}`}
+              name={field.name}
+              onBlur={field.onBlur}
+              onChange={field.onChange}
+              options={DATA_CONNECTOR_ACCESS_OPTIONS}
+              value={field.value}
+            />
+          )}
         />
       </td>
     </tr>
