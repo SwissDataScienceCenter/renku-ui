@@ -62,7 +62,7 @@
   .circle {
     .entityBadge {
       background-color: transparent;
-      border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
+      border: var(--#{$prefix}border-width) solid var(--#{$prefix}secondary);
       border-radius: 50%;
       color: var(--entity-icon-fill);
       height: var(--entity-icon-avatar-size);
