@@ -74,6 +74,7 @@ function RestrictedBadge() {
         color="secondary"
         className={cx("fw-normal", "d-inline-flex", "align-items-center")}
         pill
+        tabIndex={0}
       >
         <UiChecksGrid className={cx("bi", "me-1")} />
         Restricted
