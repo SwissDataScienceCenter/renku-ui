@@ -55,27 +55,28 @@ export default function SessionSecretSlotItem({
               "align-items-center",
               "d-flex",
               "justify-content-between",
+              "flex-wrap",
             )}
           >
-            <div className="fw-bold">{name}</div>
-            <div className={cx("align-items-center", "d-flex", "gap-2")}>
-              {secretSlot.secretId != null && accessPolicy !== "excluded" && (
-                <span>
-                  <Key className={cx("bi", "me-1")} />
-                  Secret name:{" "}
-                  <span className="fw-bold">
-                    <SessionSecretSlotItemSecretReference
-                      userSecretId={secretSlot.secretId}
-                    />
-                  </span>
-                </span>
-              )}
-              <SecretSlotStatusBadge
-                accessPolicy={accessPolicy}
-                hasSecret={secretSlot.secretId != null}
-              />
+            <div>
+              Secret slot: <span className="fw-bold">{name}</span>
             </div>
+
+            <SecretSlotStatusBadge
+              accessPolicy={accessPolicy}
+              hasSecret={secretSlot.secretId != null}
+            />
           </div>
+          {secretSlot.secretId != null && accessPolicy !== "excluded" && (
+            <div>
+              Secret name:{" "}
+              <span className="fw-bold">
+                <SessionSecretSlotItemSecretReference
+                  userSecretId={secretSlot.secretId}
+                />
+              </span>
+            </div>
+          )}
           {description && <p className="mb-0">{description}</p>}
           <div>
             Location in sessions: <code>{fullPath}</code>
