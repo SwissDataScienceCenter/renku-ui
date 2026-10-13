@@ -195,11 +195,7 @@ function EditSecretModal({
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <Form
-        className={cx(!isV2 && "form-rk-green")}
-        noValidate
-        onSubmit={onSubmit}
-      >
+      <Form noValidate onSubmit={onSubmit}>
         <ModalHeader tag="h2" toggle={toggle}>
           <Pencil className={cx("bi", "me-1")} />
           Edit user secret

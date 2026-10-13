@@ -165,11 +165,7 @@ function UpdateConnectedServiceModal({
       size="lg"
       toggle={toggle}
     >
-      <Form
-        className="form-rk-green"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader tag="h2" toggle={toggle}>
           Update intergation
         </ModalHeader>
