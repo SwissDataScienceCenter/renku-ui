@@ -27,6 +27,7 @@ import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDat
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetRepositoriesQuery } from "../repositories/api/repositories.api";
+import { useGetUserSshKeysQuery } from "../usersV2/api/users.api";
 import {
   dataConnectorsNeedCredentials,
   doesCloudStorageNeedCredentials,
@@ -90,6 +91,9 @@ export default function useSessionLaunchPrerequisites({
     autoMarkReady: autoMarkSecretsReady,
   });
 
+  const { data: sshKeys, isFetching: isFetchingSshKeys } =
+    useGetUserSshKeysQuery();
+
   const isFetchingOrLoadingDataConnectors =
     isFetchingDataConnectorLinks ||
     isLoadingDataConnectorLinks ||
@@ -146,6 +150,7 @@ export default function useSessionLaunchPrerequisites({
     isFetchingOrLoadingDataConnectors,
     isFetchingRepositories,
     isFetchingSessionSecrets,
+    isFetchingSshKeys,
     isInitialLoading,
     isPermissionsError: projectPermissions.isPermissionsError,
     isReadyDataConnectorConfigs,
@@ -155,5 +160,6 @@ export default function useSessionLaunchPrerequisites({
     repositoriesNeedAttention: repositoriesNeedAttentionFlag,
     secretsNeedAttention: secretsNeedAttentionFlag,
     sessionSecretSlotsWithSecrets,
+    sshKeys,
   };
 }

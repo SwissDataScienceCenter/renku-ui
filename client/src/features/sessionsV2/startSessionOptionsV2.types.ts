@@ -44,6 +44,7 @@ export interface StartSessionOptionsV2 {
   repositories: SessionRepository[];
   repositoriesReady: boolean;
   sessionClass: number;
+  sshKeysReady: boolean;
   storage: number;
   userSecretsReady: boolean;
 }

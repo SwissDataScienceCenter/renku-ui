@@ -207,6 +207,7 @@ tee > ./public/config.json << EOF
   "PERSISTED_LOGS_ENABLED": true,
   "PERSISTED_LOGS_TTL_SECONDS": 86400,
   "APPS_ENABLED": true,
+  "SSH_ENABLED": true,
   "APP_LOBBY": {
     "maxAttempts": 7,
     "probeTimeoutMs": 45000,

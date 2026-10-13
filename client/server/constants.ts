@@ -92,6 +92,7 @@ export const CONFIG_JSON = {
   APPS_ENABLED: process.env.APPS_ENABLED,
   APP_LOBBY: safeJsonToObject(process.env.APP_LOBBY),
   ENVIDAT_EXPORTS_ENABLED: process.env.ENVIDAT_EXPORTS_ENABLED,
+  SSH_ENABLED: process.env.SSH_ENABLED,
 };
 
 export const SAMPLE_PRIVACY_CONTENT = `# Privacy statement
