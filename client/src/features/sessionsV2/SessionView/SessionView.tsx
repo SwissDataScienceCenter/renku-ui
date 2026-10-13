@@ -117,9 +117,6 @@ import {
 
 import styles from "./SessionView.module.scss";
 
-const EMPTY_DATA_CONNECTOR_LINKS: DataConnectorToProjectLink[] = [];
-const EMPTY_DATA_CONNECTORS_MAP: Record<string, DataConnectorRead> = {};
-
 interface SessionCardContentProps {
   color: string;
   contentDescription: ReactNode;
@@ -698,9 +695,7 @@ export function SessionView({
           )}
 
           <DataConnectorsCard
-            dataConnectorLinks={
-              dataConnectorLinks ?? EMPTY_DATA_CONNECTOR_LINKS
-            }
+            dataConnectorLinks={dataConnectorLinks ?? []}
             dataConnectors={isApp ? appDataConnectors : dataConnectors}
             policiesError={dataConnectorPoliciesError}
             savedPolicies={savedDataConnectorPolicies}
@@ -759,15 +754,11 @@ export function SessionView({
           {launcher && !isApp && (
             <>
               <CustomizeDataConnectorsModal
-                dataConnectorLinks={
-                  dataConnectorLinks ?? EMPTY_DATA_CONNECTOR_LINKS
-                }
+                dataConnectorLinks={dataConnectorLinks ?? []}
                 dataConnectorsError={
                   dataConnectorsError ?? dataConnectorsMapError
                 }
-                dataConnectorsMap={
-                  dataConnectorsMap ?? EMPTY_DATA_CONNECTORS_MAP
-                }
+                dataConnectorsMap={dataConnectorsMap ?? {}}
                 isLoading={isDataConnectorsLoading}
                 isOpen={isDataConnectorsOpen}
                 launcher={launcher}
