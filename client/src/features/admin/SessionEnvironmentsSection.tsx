@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
 import {
+  Badge,
   Card,
   CardBody,
   CardHeader,
@@ -32,10 +33,12 @@ import {
 
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import ExternalLink from "~/components/ExternalLink";
 import { ErrorLabel } from "~/components/formlabels/FormLabels";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
 import { TimeCaption } from "~/components/TimeCaption";
+import { NEW_DOCS_ADMIN_SESSION_ENVIRONMENTS } from "~/utils/constants/NewDocs";
 import type {
   Environment as SessionEnvironment,
   EnvironmentList as SessionEnvironmentList,
@@ -47,12 +50,38 @@ import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
 
 export default function SessionEnvironmentsSection() {
+  const { data: environments, error, isLoading } = useGetEnvironmentsQuery({});
+
   return (
     <section>
-      <h2 className="mb-3">
-        <PlayCircle className="me-1" />
-        Session Environments
-      </h2>
+      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
+        <h2 className="mb-0">
+          <PlayCircle className="me-1" />
+          Global session environments
+        </h2>
+
+        {environments && !isLoading && !error && (
+          <Badge>{environments?.length}</Badge>
+        )}
+
+        <div className="ms-auto">
+          <AddSessionEnvironmentButton />
+        </div>
+      </div>
+
+      <p className="mb-2">
+        Global session environments are curated environments readily available
+        for users to quickly create session launchers without needing to prepare
+        their own.
+      </p>
+      <p className="mb-4">
+        Check out the{" "}
+        <ExternalLink href={NEW_DOCS_ADMIN_SESSION_ENVIRONMENTS}>
+          documentation for session environments
+        </ExternalLink>
+        .
+      </p>
+
       <SessionEnvironments />
     </section>
   );
@@ -69,15 +98,7 @@ function SessionEnvironments() {
     return <RtkOrDataServicesError error={error} />;
   }
 
-  return (
-    <div>
-      <AddSessionEnvironmentButton />
-
-      <div className="mt-2">
-        <SessionEnvironmentsListDisplay environments={environments} />
-      </div>
-    </div>
-  );
+  return <SessionEnvironmentsListDisplay environments={environments} />;
 }
 
 interface SessionEnvironmentsListDisplayProps {

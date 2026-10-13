@@ -29,13 +29,13 @@ import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 export const ADMIN_TABS = [
   {
     path: ABSOLUTE_ROUTES.v2.admin.root,
-    title: "Incidents and Maintenance",
+    title: "Maintenance",
     icon: WrenchAdjustableCircle,
     dataCy: "admin-incidents-link",
   },
   {
     path: ABSOLUTE_ROUTES.v2.admin.computeResources,
-    title: "Compute Resources",
+    title: "Resources",
     icon: Cpu,
     dataCy: "admin-compute-resources-link",
   },
@@ -47,13 +47,13 @@ export const ADMIN_TABS = [
   },
   {
     path: ABSOLUTE_ROUTES.v2.admin.sessionEnvironments,
-    title: "Session Environments",
+    title: "Environments",
     icon: PlayCircle,
     dataCy: "admin-session-environments-link",
   },
   {
     path: ABSOLUTE_ROUTES.v2.admin.projectStorage,
-    title: "Project Storage",
+    title: "Storage",
     icon: Archive,
     dataCy: "admin-project-storage-link",
   },

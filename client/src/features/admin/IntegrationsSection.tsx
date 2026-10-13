@@ -20,6 +20,7 @@ import cx from "classnames";
 import { useCallback, useState } from "react";
 import { Plugin } from "react-bootstrap-icons";
 import {
+  Badge,
   Card,
   CardBody,
   CardHeader,
@@ -30,6 +31,8 @@ import {
   Row,
 } from "reactstrap";
 
+import ExternalLink from "~/components/ExternalLink";
+import { NEW_DOCS_ADMIN_INTEGRATIONS } from "~/utils/constants/NewDocs";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
@@ -43,12 +46,37 @@ import DeleteConnectedServiceButton from "./DeleteIntegrationsButton";
 import UpdateConnectedServiceButton from "./UpdateIntegrationsButton";
 
 export default function ConnectedServicesSection() {
+  const { data: providers, isLoading, error } = useGetOauth2ProvidersQuery();
+
   return (
     <section>
-      <h2 className="mb-3">
-        <Plugin className="me-1" />
-        Integrations
-      </h2>
+      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
+        <h2 className="mb-0">
+          <Plugin className="me-1" />
+          Integrations
+        </h2>
+
+        {providers && !isLoading && !error && (
+          <Badge>{providers?.length}</Badge>
+        )}
+
+        <div className="ms-auto">
+          <AddConnectedServiceButton />
+        </div>
+      </div>
+
+      <p className="mb-2">
+        Integrations enable connecting external services to import/export data
+        seamlessly.
+      </p>
+      <p className="mb-4">
+        Check out the{" "}
+        <ExternalLink href={NEW_DOCS_ADMIN_INTEGRATIONS}>
+          documentation for integrations
+        </ExternalLink>
+        .
+      </p>
+
       <ConnectedServices />
     </section>
   );
@@ -65,16 +93,7 @@ function ConnectedServices() {
     return <RtkOrDataServicesError error={error} />;
   }
 
-  return (
-    <div>
-      <div className="mb-2">
-        <AddConnectedServiceButton />
-      </div>
-      <div>
-        <ConnectedServicesList providers={providers} />
-      </div>
-    </div>
-  );
+  return <ConnectedServicesList providers={providers} />;
 }
 
 interface ConnectedServicesListProps {

@@ -47,7 +47,7 @@ export default function AddConnectedServiceButton() {
     <>
       <Button color="primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
-        Add Integration
+        Add integration
       </Button>
       <AddConnectedServiceModal isOpen={isOpen} toggle={toggle} />
     </>

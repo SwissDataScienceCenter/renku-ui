@@ -61,18 +61,29 @@ export default function IncidentsAndMaintenanceSection() {
     <section>
       <h2 className="mb-3">
         <WrenchAdjustableCircle className="me-1" />
-        Incidents and Maintenance
+        Maintenance banners
       </h2>
 
+      <div className="mb-4">
+        <p className="mb-2">
+          You can set a maintenance banner to inform users about ongoing or
+          upcoming maintenance activities.
+        </p>
+        <p>
+          Check out the{" "}
+          {/* // ! This link points to outdated resources. Needs to be updated. */}
+          <ExternalLink href={Links.RENKU_2_ADMIN_HOW_TO_GUIDE_INCIDENTS}>
+            documentation for incidents and maintenance
+          </ExternalLink>
+          .
+        </p>
+      </div>
+
+      <div className="mb-4">
+        <IncidentBannerSection />
+      </div>
+
       <StatusPageCheck statusPageId={statusPageId} />
-
-      <IncidentBannerSection />
-
-      <p>
-        <ExternalLink href={Links.RENKU_2_ADMIN_HOW_TO_GUIDE_INCIDENTS}>
-          Renku documentation about incidents and maintenance
-        </ExternalLink>
-      </p>
     </section>
   );
 }
@@ -92,9 +103,12 @@ function StatusPageCheck({ statusPageId }: StatusPageCheckProps) {
 
   if (!statusPageId) {
     return (
-      <p>
-        Status Page ID: <span className="fst-italic">Not configured</span>
-      </p>
+      <div>
+        <h3 className="mb-3">Status Page</h3>
+        <p>
+          Status Page ID: <span className="fst-italic">Not configured</span>
+        </p>
+      </div>
     );
   }
 
@@ -124,7 +138,8 @@ function StatusPageCheck({ statusPageId }: StatusPageCheckProps) {
   );
 
   return (
-    <>
+    <div>
+      <h3 className="mb-3">Status Page</h3>
       <p>
         Status Page ID:{" "}
         <Link
@@ -137,7 +152,7 @@ function StatusPageCheck({ statusPageId }: StatusPageCheckProps) {
         (click to open the management page)
       </p>
       {checkContent}
-    </>
+    </div>
   );
 }
 
@@ -217,8 +232,8 @@ function IncidentBannerSection() {
   }
 
   return (
-    <>
-      <h3>Incident banner</h3>
+    <div>
+      <h3>Maintenance banner</h3>
       <Form className="mb-3" noValidate onSubmit={handleSubmit(onSubmit)}>
         <div className={cx("d-flex", "flex-column", "gap-1", "mb-1")}>
           <Nav tabs>
@@ -262,7 +277,7 @@ function IncidentBannerSection() {
                   )}
                   fade={false}
                 >
-                  <h3>Ongoing incident</h3>
+                  <h3>Ongoing maintenance</h3>
                   <LazyMarkdown>{incidentBanner}</LazyMarkdown>
                 </Alert>
               ) : (
@@ -279,7 +294,7 @@ function IncidentBannerSection() {
             type="submit"
             disabled={result.isLoading || !isDirty}
           >
-            Update incident banner
+            Update maintenance banner
           </Button>
           {platformConfig.incident_banner && (
             <Button
@@ -289,13 +304,13 @@ function IncidentBannerSection() {
               onClick={onClearIncidentBanner}
             >
               <XLg className={cx("bi", "me-1")} />
-              Clear incident banner
+              Clear maintenance banner
             </Button>
           )}
         </div>
         {result.error && <RtkOrDataServicesError error={error} />}
       </Form>
-    </>
+    </div>
   );
 }
 

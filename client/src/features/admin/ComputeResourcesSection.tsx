@@ -42,8 +42,10 @@ import {
 
 import { ErrorAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import ExternalLink from "~/components/ExternalLink";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
+import { NEW_DOCS_ADMIN_OPERATIONS_RPS } from "~/utils/constants/NewDocs";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
@@ -80,14 +82,27 @@ export default function ComputeResourcesSection() {
       <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
         <h2 className="mb-0">
           <Cpu className="me-1" />
-          Compute Resources
+          Resource pools
         </h2>
+
         {data && !isLoading && !error && <Badge>{data?.length}</Badge>}
 
         <div className="ms-auto">
           <AddResourcePoolButton />
         </div>
       </div>
+
+      <p className="mb-2">
+        Resource pools allow you to manage and allocate compute resources for
+        different groups and users.
+      </p>
+      <p className="mb-4">
+        Check out the{" "}
+        <ExternalLink href={NEW_DOCS_ADMIN_OPERATIONS_RPS}>
+          documentation for resource pools
+        </ExternalLink>
+        .
+      </p>
 
       <ResourcePoolsList />
     </section>

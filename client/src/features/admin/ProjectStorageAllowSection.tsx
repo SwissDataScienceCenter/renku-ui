@@ -28,6 +28,7 @@ import {
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
+  Badge,
   Button,
   Form,
   FormText,
@@ -46,6 +47,7 @@ import {
 
 import { WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
 import {
   useDeleteStorageAllowByProjectIdMutation,
@@ -57,6 +59,7 @@ import {
   useGetStorageConfigQuery,
   type ProjectStorageAllow,
 } from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
+import { NEW_DOCS_USER_PROJECT_STORAGE } from "~/utils/constants/NewDocs";
 import {
   PROJECT_STORAGE_MAX_GB,
   PROJECT_STORAGE_MIN_GB,
@@ -68,16 +71,31 @@ export default function ProjectStorageAllowSection() {
 
   return (
     <section>
-      <h2 className="mb-3">
-        <Archive className="me-1" />
-        Project Storage
-      </h2>
-      <p>
-        Only projects listed here are allowed to use local storage on the
-        platform.
+      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
+        <h2 className="mb-0">
+          <Archive className="me-1" />
+          Project storage
+        </h2>
+
+        {data && !isLoading && !error && <Badge>{data?.length}</Badge>}
+
+        <div className="ms-auto">
+          <AddProjectStorageAllowButton />
+        </div>
+      </div>
+
+      <p className="mb-2">
+        Provide persistent storage for white-listed projects. Mind that only
+        projects listed here are allowed to use local storage on the platform.
+      </p>
+      <p className="mb-4">
+        Check out the{" "}
+        <ExternalLink href={NEW_DOCS_USER_PROJECT_STORAGE}>
+          documentation for project storage
+        </ExternalLink>
+        .
       </p>
 
-      <AddProjectStorageAllowButton />
       {isLoading ? (
         <Loader />
       ) : error ? (
@@ -120,7 +138,7 @@ function AddProjectStorageAllowButton() {
     <div className="mb-2">
       <Button color="primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
-        Add Project to Storage Allow List
+        White-list project for storage
       </Button>
       <AddOrEditProjectStorageAllowModal isOpen={isOpen} toggle={toggle} />
     </div>
