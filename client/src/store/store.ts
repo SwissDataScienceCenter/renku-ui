@@ -40,7 +40,7 @@ import { searchV2Slice } from "~/features/searchV2/searchV2.slice";
 import { appsEmptyApi as appsApi } from "~/features/sessionsV2/api/apps.empty-api";
 import { computeResourcesEmptyApi as computeResourcesApi } from "~/features/sessionsV2/api/computeResources.empty-api";
 import { sessionLaunchersV2EmptyApi as sessionLaunchersV2Api } from "~/features/sessionsV2/api/sessionLaunchersV2.empty-api";
-import { sessionsV2EmptyApi as sessionsV2Api } from "~/features/sessionsV2/api/sessionsV2.empty-api";
+import { sessionsV2Api } from "~/features/sessionsV2/api/sessionsV2.api";
 import startSessionOptionsV2Slice from "~/features/sessionsV2/startSessionOptionsV2.slice";
 import termsApi from "~/features/terms/terms.api";
 import { usersEmptyApi as usersApi } from "~/features/usersV2/api/users.empty-api";

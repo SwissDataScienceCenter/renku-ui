@@ -7,7 +7,6 @@ import {
   useNavigate,
   type MetaDescriptor,
 } from "react-router";
-import type { Reducer, Store } from "redux";
 
 import { Loader } from "~/components/Loader";
 import {
@@ -26,9 +25,6 @@ import { storeContext } from "~/store/store.utils.server";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
 import type { Route } from "./+types/redirect";
-
-type SessionsV2ApiStoreType =
-  typeof sessionsV2Api.reducer extends Reducer<infer S> ? S : never;
 
 export async function loader({ context, params }: Route.LoaderArgs) {
   const store = context.get(storeContext);
@@ -120,11 +116,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   await sessionPromise;
   const sessionSelector = sessionEndpoint.select(sessionApiArgs);
   const { data: session, error: sessionError } = sessionSelector(
-    (
-      store as unknown as Store<{
-        [sessionsV2Api.reducerPath]: SessionsV2ApiStoreType;
-      }>
-    ).getState(),
+    store.getState(),
   );
   if (!session?.project_id) {
     //? Unsubscribe to let the cache expire when navigating to other pages
