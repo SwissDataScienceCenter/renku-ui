@@ -45,7 +45,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { WarnAlert } from "~/components/Alert";
+import { InfoAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
@@ -100,30 +100,35 @@ export default function ProjectStorageAllowSection() {
         <Loader />
       ) : error ? (
         <RtkOrDataServicesError error={error} dismissible={false} />
-      ) : data ? (
+      ) : !data || data.length === 0 ? (
+        <InfoAlert dismissible={false} timeout={0}>
+          No projects have been white-listed for storage yet.
+        </InfoAlert>
+      ) : (
         <>
           <ListGroup>
-            {data.map((e) => (
+            {data.map((project) => (
               <ListGroupItem
-                key={e.project_id}
+                key={project.project_id}
                 className={cx(
+                  "align-items-center",
                   "d-flex",
                   "justify-content-between",
-                  "align-items-center",
                 )}
               >
                 <div>
-                  <strong>{e.namespace}</strong> (max {e.max_size} GB)
+                  <strong>{project.namespace}</strong> (max {project.max_size}{" "}
+                  GB)
                 </div>
-                <div className={cx("d-flex", "gap-2")}>
-                  <EditProjectStorageAllowButton project={e} />
-                  <DeleteProjectStorageAllowButton project={e} />
+                <div className={cx("align-items-center", "d-flex", "gap-2")}>
+                  <EditProjectStorageAllowButton project={project} />
+                  <DeleteProjectStorageAllowButton project={project} />
                 </div>
               </ListGroupItem>
             ))}
           </ListGroup>
         </>
-      ) : null}
+      )}
     </section>
   );
 }
@@ -157,7 +162,7 @@ function EditProjectStorageAllowButton({
 
   return (
     <>
-      <Button color="primary" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle} size="sm">
         <Pencil className={cx("bi", "me-1")} />
         Edit
       </Button>
@@ -378,7 +383,7 @@ function DeleteProjectStorageAllowButton({
 
   return (
     <>
-      <Button color="outline-danger" onClick={toggle}>
+      <Button color="outline-danger" onClick={toggle} size="sm">
         <TrashFill className={cx("bi", "me-1")} />
         Remove
       </Button>

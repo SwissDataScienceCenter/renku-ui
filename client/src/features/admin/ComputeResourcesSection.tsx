@@ -40,7 +40,7 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-import { ErrorAlert } from "~/components/Alert";
+import { ErrorAlert, InfoAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
@@ -121,14 +121,24 @@ function ResourcePoolsList() {
   } else if (!data) {
     return (
       <ErrorAlert dismissible={false}>
-        Oops! It looks like you do not have the required permissions to
-        administer compute resources.
+        It looks like you do not have the required permissions to administer
+        compute resources.
       </ErrorAlert>
     );
   }
 
+  // NOTE: This is unlikely to happen because a "default" resource pool should always be defined.
+  if (data.length === 0) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        No resource pool set up yet. Please define at least a{" "}
+        <code>default</code> pool.
+      </InfoAlert>
+    );
+  }
+
   return (
-    <div>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
       {data.map((pool) => (
         <ResourcePoolItem key={pool.id} resourcePool={pool} />
       ))}
@@ -163,7 +173,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
   });
 
   return (
-    <Card className="mt-2">
+    <Card>
       <CardHeader
         className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
         tag="h5"

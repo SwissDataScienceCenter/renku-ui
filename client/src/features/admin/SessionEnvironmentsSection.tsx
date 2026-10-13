@@ -25,12 +25,10 @@ import {
   CardBody,
   CardHeader,
   CardText,
-  Col,
   Collapse,
-  Container,
-  Row,
 } from "reactstrap";
 
+import { InfoAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
@@ -108,21 +106,23 @@ interface SessionEnvironmentsListDisplayProps {
 function SessionEnvironmentsListDisplay({
   environments,
 }: SessionEnvironmentsListDisplayProps) {
-  if (!environments || environments.length == 0) {
-    return null;
+  if (!environments || environments.length === 0) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        No global session environments set up yet.
+      </InfoAlert>
+    );
   }
 
   return (
-    <Container className="px-0" fluid>
-      <Row className="gy-4">
-        {environments.map((environment) => (
-          <SessionEnvironmentDisplay
-            key={environment.id}
-            environment={environment}
-          />
-        ))}
-      </Row>
-    </Container>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      {environments.map((environment) => (
+        <SessionEnvironmentDisplay
+          key={environment.id}
+          environment={environment}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -155,91 +155,89 @@ function SessionEnvironmentDisplay({
   }, []);
 
   return (
-    <Col className={cx("col-12", "col-sm-6")}>
-      <Card>
-        <CardHeader className={cx("fs-4", "p-0")} tag="h3">
-          <button
-            className={cx(
-              "align-items-center",
-              "bg-transparent",
-              "border-0",
-              "d-flex",
-              "fw-bold",
-              "gap-3",
-              "p-3",
-              "w-100",
+    <Card>
+      <CardHeader className={cx("fs-4", "p-0")} tag="h3">
+        <button
+          className={cx(
+            "align-items-center",
+            "bg-transparent",
+            "border-0",
+            "d-flex",
+            "fw-bold",
+            "gap-3",
+            "p-3",
+            "w-100",
+          )}
+          onClick={toggle}
+          type="button"
+        >
+          {name}
+          <div className="ms-auto">
+            <ChevronFlippedIcon flipped={isOpen} />
+          </div>
+        </button>
+      </CardHeader>
+
+      <Collapse isOpen={isOpen}>
+        <CardBody className="pt-0">
+          <CardText className="mb-0">
+            {description ? description : <i>No description</i>}
+          </CardText>
+          <CardText className="mb-0" tag="div">
+            <CommandCopy command={container_image} />
+          </CardText>
+          <CardText className="mb-0">
+            {default_url ? (
+              <>
+                Default URL: <code>{default_url}</code>
+              </>
+            ) : (
+              <i>
+                No default URL {"("}will use <code>{"/lab"}</code>
+                {")"}
+              </i>
             )}
-            onClick={toggle}
-            type="button"
-          >
-            {name}
-            <div className="ms-auto">
-              <ChevronFlippedIcon flipped={isOpen} />
-            </div>
-          </button>
-        </CardHeader>
+          </CardText>
+          <CardText className="mb-0">
+            Mount directory: <code>{mount_directory}</code>
+          </CardText>
+          <CardText className="mb-0">
+            Work directory: <code>{working_directory}</code>
+          </CardText>
+          <CardText className="mb-0">
+            Port: <code>{port}</code>
+          </CardText>
+          <CardText className="mb-0">
+            GID: <code>{gid}</code>
+          </CardText>
+          <CardText className="mb-0">
+            UID: <code>{uid}</code>
+          </CardText>
+          <CardText className="mb-0">
+            Command:{" "}
+            <EnvironmentCode value={command ? safeStringify(command) : "-"} />
+          </CardText>
+          <CardText className="mb-0">
+            Args: <EnvironmentCode value={args ? safeStringify(args) : "-"} />
+          </CardText>
+          <CardText className="mb-0">
+            Strip path prefix: {strip_path_prefix ? "Yes" : "No"}
+          </CardText>
+          <CardText>
+            <TimeCaption
+              datetime={creation_date}
+              enableTooltip
+              prefix="Created"
+            />
+          </CardText>
 
-        <Collapse isOpen={isOpen}>
-          <CardBody className="pt-0">
-            <CardText className="mb-0">
-              {description ? description : <i>No description</i>}
-            </CardText>
-            <CardText className="mb-0" tag="div">
-              <CommandCopy command={container_image} />
-            </CardText>
-            <CardText className="mb-0">
-              {default_url ? (
-                <>
-                  Default URL: <code>{default_url}</code>
-                </>
-              ) : (
-                <i>
-                  No default URL {"("}will use <code>{"/lab"}</code>
-                  {")"}
-                </i>
-              )}
-            </CardText>
-            <CardText className="mb-0">
-              Mount directory: <code>{mount_directory}</code>
-            </CardText>
-            <CardText className="mb-0">
-              Work directory: <code>{working_directory}</code>
-            </CardText>
-            <CardText className="mb-0">
-              Port: <code>{port}</code>
-            </CardText>
-            <CardText className="mb-0">
-              GID: <code>{gid}</code>
-            </CardText>
-            <CardText className="mb-0">
-              UID: <code>{uid}</code>
-            </CardText>
-            <CardText className="mb-0">
-              Command:{" "}
-              <EnvironmentCode value={command ? safeStringify(command) : "-"} />
-            </CardText>
-            <CardText className="mb-0">
-              Args: <EnvironmentCode value={args ? safeStringify(args) : "-"} />
-            </CardText>
-            <CardText className="mb-0">
-              Strip path prefix: {strip_path_prefix ? "Yes" : "No"}
-            </CardText>
-            <CardText>
-              <TimeCaption
-                datetime={creation_date}
-                enableTooltip
-                prefix="Created"
-              />
-            </CardText>
-
-            <div className={cx("d-flex", "justify-content-end", "gap-2")}>
-              <UpdateSessionEnvironmentButton environment={environment} />
-              <DeleteSessionEnvironmentButton environment={environment} />
-            </div>
-          </CardBody>
-        </Collapse>
-      </Card>
-    </Col>
+          <div className={cx("d-flex", "justify-content-end", "gap-2")}>
+            <UpdateSessionEnvironmentButton environment={environment} />
+            <DeleteSessionEnvironmentButton environment={environment} />
+          </div>
+        </CardBody>
+      </Collapse>
+    </Card>
   );
 }
 

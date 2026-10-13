@@ -25,12 +25,10 @@ import {
   CardBody,
   CardHeader,
   CardText,
-  Col,
   Collapse,
-  Container,
-  Row,
 } from "reactstrap";
 
+import { InfoAlert } from "~/components/Alert";
 import ExternalLink from "~/components/ExternalLink";
 import { NEW_DOCS_ADMIN_INTEGRATIONS } from "~/utils/constants/NewDocs";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
@@ -101,16 +99,18 @@ interface ConnectedServicesListProps {
 }
 function ConnectedServicesList({ providers }: ConnectedServicesListProps) {
   if (!providers || providers.length === 0) {
-    return <p>No integration set up yet.</p>;
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        No integration set up yet.
+      </InfoAlert>
+    );
   }
   return (
-    <Container className="px-0" fluid>
-      <Row className="gy-4">
-        {providers.map((provider) => (
-          <ConnectedService key={provider.id} provider={provider} />
-        ))}
-      </Row>
-    </Container>
+    <div className={cx("d-flex", "flex-column", "gap-3")}>
+      {providers.map((provider) => (
+        <ConnectedService key={provider.id} provider={provider} />
+      ))}
+    </div>
   );
 }
 
@@ -124,75 +124,71 @@ function ConnectedService({ provider }: ConnectedServiceProps) {
   }, []);
 
   return (
-    <Col xs={12} md={6}>
-      <Card>
-        <CardHeader className={cx("fs-4", "p-0")} tag="h3">
-          <button
-            className={cx(
-              "align-items-center",
-              "bg-transparent",
-              "border-0",
-              "d-flex",
-              "fw-bold",
-              "gap-3",
-              "p-3",
-              "w-100",
-            )}
-            onClick={toggle}
-            type="button"
-          >
-            {provider.display_name}
-            <div className="ms-auto">
-              <ChevronFlippedIcon flipped={isOpen} />
-            </div>
-          </button>
-        </CardHeader>
+    <Card>
+      <CardHeader className={cx("fs-4", "p-0")} tag="h3">
+        <button
+          className={cx(
+            "align-items-center",
+            "bg-transparent",
+            "border-0",
+            "d-flex",
+            "fw-bold",
+            "gap-3",
+            "p-3",
+            "w-100",
+          )}
+          onClick={toggle}
+          type="button"
+        >
+          {provider.display_name}
+          <div className="ms-auto">
+            <ChevronFlippedIcon flipped={isOpen} />
+          </div>
+        </button>
+      </CardHeader>
 
-        <Collapse isOpen={isOpen}>
-          <CardBody className="pt-0">
-            <CardText className="mb-2">ID: {provider.id}</CardText>
-            <CardText className="mb-2">Kind: {provider.kind}</CardText>
-            <CardText className="mb-2">
-              Application slug: {provider.app_slug}
-            </CardText>
-            <CardText className="mb-2">URL: {provider.url}</CardText>
-            <CardText className="mb-2">
-              Image Registry URL:{" "}
-              {provider.image_registry_url ?? (
-                <span className="fst-italic">Not configured</span>
-              )}
-            </CardText>
-            <CardText className="mb-2">
-              Client ID: {provider.client_id}
-            </CardText>
-            <CardText className="mb-2">
-              Client secret: {provider.client_secret}
-            </CardText>
-            <CardText className="mb-2">Scope: {provider.scope}</CardText>
-            <CardText className="mb-2">
-              Use PKCE: {provider.use_pkce.toString()}
-            </CardText>
-            {provider.oidc_issuer_url && (
-              <CardText>
-                OpenID Connect Issuer URL: {provider.oidc_issuer_url}
-              </CardText>
+      <Collapse isOpen={isOpen}>
+        <CardBody className="pt-0">
+          <CardText className="mb-2">ID: {provider.id}</CardText>
+          <CardText className="mb-2">Kind: {provider.kind}</CardText>
+          <CardText className="mb-2">
+            Application slug: {provider.app_slug}
+          </CardText>
+          <CardText className="mb-2">URL: {provider.url}</CardText>
+          <CardText className="mb-2">
+            Image Registry URL:{" "}
+            {provider.image_registry_url ?? (
+              <span className="fst-italic">Not configured</span>
             )}
-          </CardBody>
+          </CardText>
+          <CardText className="mb-2">Client ID: {provider.client_id}</CardText>
+          <CardText className="mb-2">
+            Client secret: {provider.client_secret}
+          </CardText>
+          <CardText className="mb-2">Scope: {provider.scope}</CardText>
+          <CardText className="mb-2">
+            Use PKCE: {provider.use_pkce.toString()}
+          </CardText>
+          {provider.oidc_issuer_url && (
+            <CardText>
+              OpenID Connect Issuer URL: {provider.oidc_issuer_url}
+            </CardText>
+          )}
+        </CardBody>
 
-          <CardBody
-            className={cx(
-              "d-flex",
-              "flex-row",
-              "gap-2",
-              "justify-content-end",
-              "pt-0",
-            )}
-          >
-            <UpdateConnectedServiceButton provider={provider} />
-            <DeleteConnectedServiceButton provider={provider} />
-          </CardBody>
-        </Collapse>
-      </Card>
-    </Col>
+        <CardBody
+          className={cx(
+            "d-flex",
+            "flex-row",
+            "gap-2",
+            "justify-content-end",
+            "pt-0",
+          )}
+        >
+          <UpdateConnectedServiceButton provider={provider} />
+          <DeleteConnectedServiceButton provider={provider} />
+        </CardBody>
+      </Collapse>
+    </Card>
   );
 }
