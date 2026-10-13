@@ -482,18 +482,6 @@ function StartSessionFromLauncher({
     },
   ];
 
-  if (launcherResourcesError) {
-    return (
-      <div>
-        <h3>Error: could not load launcher restrictions</h3>
-        <RtkOrDataServicesError
-          dismissible={false}
-          error={launcherResourcesError}
-        />
-      </div>
-    );
-  }
-
   if (showSaveCredentials)
     return (
       <SaveCloudStorage
