@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Plugin } from "react-bootstrap-icons";
 import {
   Badge,
@@ -36,10 +36,10 @@ import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../components/Loader";
 import {
   Provider,
-  ProviderList,
   useGetOauth2ProvidersQuery,
 } from "../connectedServices/api/connectedServices.api";
 import AddConnectedServiceButton from "./AddIntegrationsButton";
+import AdminListFilter from "./AdminListFilter";
 import DeleteConnectedServiceButton from "./DeleteIntegrationsButton";
 import UpdateConnectedServiceButton from "./UpdateIntegrationsButton";
 
@@ -83,6 +83,17 @@ export default function ConnectedServicesSection() {
 function ConnectedServices() {
   const { data: providers, isLoading, error } = useGetOauth2ProvidersQuery();
 
+  const [filter, setFilter] = useState("");
+  const filteredProviders = useMemo(() => {
+    if (!providers || !filter) return providers;
+    const lowerCaseFilter = filter.toLowerCase();
+    return providers.filter(
+      ({ display_name, id }) =>
+        display_name.toLowerCase().includes(lowerCaseFilter) ||
+        id.toLowerCase().includes(lowerCaseFilter),
+    );
+  }, [providers, filter]);
+
   if (isLoading) {
     return <Loader />;
   }
@@ -91,14 +102,7 @@ function ConnectedServices() {
     return <RtkOrDataServicesError error={error} />;
   }
 
-  return <ConnectedServicesList providers={providers} />;
-}
-
-interface ConnectedServicesListProps {
-  providers?: ProviderList;
-}
-function ConnectedServicesList({ providers }: ConnectedServicesListProps) {
-  if (!providers || providers.length === 0) {
+  if (!providers || !filteredProviders || providers.length === 0) {
     return (
       <InfoAlert dismissible={false} timeout={0}>
         No integration set up yet.
@@ -106,11 +110,21 @@ function ConnectedServicesList({ providers }: ConnectedServicesListProps) {
     );
   }
   return (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
-      {providers.map((provider) => (
-        <ConnectedService key={provider.id} provider={provider} />
-      ))}
-    </div>
+    <>
+      <AdminListFilter filter={filter} onFilterChange={setFilter} />
+
+      {filteredProviders.length === 0 ? (
+        <p className="fst-italic">
+          No integration matches the filter <code>{filter}</code>.
+        </p>
+      ) : (
+        <div className={cx("d-flex", "flex-column", "gap-3")}>
+          {filteredProviders.map((provider) => (
+            <ConnectedService key={provider.id} provider={provider} />
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 

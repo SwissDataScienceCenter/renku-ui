@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Archive,
   CheckLg,
@@ -65,9 +65,21 @@ import {
   PROJECT_STORAGE_MIN_GB,
   PROJECT_STORAGE_STEP_GB,
 } from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants";
+import AdminListFilter from "./AdminListFilter";
 
 export default function ProjectStorageAllowSection() {
   const { data, error, isLoading } = useGetStorageAllowQuery({});
+
+  const [filter, setFilter] = useState("");
+  const filteredProjects = useMemo(() => {
+    if (!data || !filter) return data;
+    const lowerCaseFilter = filter.toLowerCase();
+    return data.filter(
+      ({ name, namespace }) =>
+        name.toLowerCase().includes(lowerCaseFilter) ||
+        namespace.toLowerCase().includes(lowerCaseFilter),
+    );
+  }, [data, filter]);
 
   return (
     <section>
@@ -100,33 +112,41 @@ export default function ProjectStorageAllowSection() {
         <Loader />
       ) : error ? (
         <RtkOrDataServicesError error={error} dismissible={false} />
-      ) : !data || data.length === 0 ? (
+      ) : !data || !filteredProjects || data.length === 0 ? (
         <InfoAlert dismissible={false} timeout={0}>
           No projects have been white-listed for storage yet.
         </InfoAlert>
       ) : (
         <>
-          <ListGroup>
-            {data.map((project) => (
-              <ListGroupItem
-                key={project.project_id}
-                className={cx(
-                  "align-items-center",
-                  "d-flex",
-                  "justify-content-between",
-                )}
-              >
-                <div>
-                  <strong>{project.namespace}</strong> (max {project.max_size}{" "}
-                  GB)
-                </div>
-                <div className={cx("align-items-center", "d-flex", "gap-2")}>
-                  <EditProjectStorageAllowButton project={project} />
-                  <DeleteProjectStorageAllowButton project={project} />
-                </div>
-              </ListGroupItem>
-            ))}
-          </ListGroup>
+          <AdminListFilter filter={filter} onFilterChange={setFilter} />
+
+          {filteredProjects.length === 0 ? (
+            <p className="fst-italic">
+              No project matches the filter <code>{filter}</code>.
+            </p>
+          ) : (
+            <ListGroup>
+              {filteredProjects.map((project) => (
+                <ListGroupItem
+                  key={project.project_id}
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <div>
+                    <strong>{project.namespace}</strong> (max {project.max_size}{" "}
+                    GB)
+                  </div>
+                  <div className={cx("align-items-center", "d-flex", "gap-2")}>
+                    <EditProjectStorageAllowButton project={project} />
+                    <DeleteProjectStorageAllowButton project={project} />
+                  </div>
+                </ListGroupItem>
+              ))}
+            </ListGroup>
+          )}
         </>
       )}
     </section>

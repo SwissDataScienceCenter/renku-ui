@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   CheckLg,
   Cpu,
@@ -67,6 +67,7 @@ import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
+import AdminListFilter from "./AdminListFilter";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
@@ -112,13 +113,23 @@ export default function ComputeResourcesSection() {
 function ResourcePoolsList() {
   const { data, error, isLoading } = useGetResourcePoolsQuery({});
 
+  const [filter, setFilter] = useState("");
+
+  const filteredPools = useMemo(() => {
+    if (!data || !filter) return data;
+    const lowerCaseFilter = filter.toLowerCase();
+    return data.filter(({ name }) =>
+      name.toLowerCase().includes(lowerCaseFilter),
+    );
+  }, [data, filter]);
+
   if (isLoading) {
     return <Loader />;
   }
 
   if (error) {
     return <RtkOrDataServicesError error={error} />;
-  } else if (!data) {
+  } else if (!data || !filteredPools) {
     return (
       <ErrorAlert dismissible={false}>
         It looks like you do not have the required permissions to administer
@@ -138,11 +149,21 @@ function ResourcePoolsList() {
   }
 
   return (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
-      {data.map((pool) => (
-        <ResourcePoolItem key={pool.id} resourcePool={pool} />
-      ))}
-    </div>
+    <>
+      <AdminListFilter filter={filter} onFilterChange={setFilter} />
+
+      {filteredPools.length === 0 ? (
+        <p className="fst-italic">
+          No resource pool matches the filter <code>{filter}</code>.
+        </p>
+      ) : (
+        <div className={cx("d-flex", "flex-column", "gap-3")}>
+          {filteredPools.map((pool) => (
+            <ResourcePoolItem key={pool.id} resourcePool={pool} />
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 

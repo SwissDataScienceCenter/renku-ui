@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
 import {
   Badge,
@@ -37,13 +37,11 @@ import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
 import { TimeCaption } from "~/components/TimeCaption";
 import { NEW_DOCS_ADMIN_SESSION_ENVIRONMENTS } from "~/utils/constants/NewDocs";
-import type {
-  Environment as SessionEnvironment,
-  EnvironmentList as SessionEnvironmentList,
-} from "../sessionsV2/api/sessionLaunchersV2.api";
+import type { Environment as SessionEnvironment } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { useGetEnvironmentsQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeStringify } from "../sessionsV2/session.utils";
 import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
+import AdminListFilter from "./AdminListFilter";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
 
@@ -88,6 +86,15 @@ export default function SessionEnvironmentsSection() {
 function SessionEnvironments() {
   const { data: environments, error, isLoading } = useGetEnvironmentsQuery({});
 
+  const [filter, setFilter] = useState("");
+  const filteredEnvironments = useMemo(() => {
+    if (!environments || !filter) return environments;
+    const lowerCaseFilter = filter.toLowerCase();
+    return environments.filter(({ name }) =>
+      name.toLowerCase().includes(lowerCaseFilter),
+    );
+  }, [environments, filter]);
+
   if (isLoading) {
     return <Loader />;
   }
@@ -96,17 +103,7 @@ function SessionEnvironments() {
     return <RtkOrDataServicesError error={error} />;
   }
 
-  return <SessionEnvironmentsListDisplay environments={environments} />;
-}
-
-interface SessionEnvironmentsListDisplayProps {
-  environments: SessionEnvironmentList | undefined | null;
-}
-
-function SessionEnvironmentsListDisplay({
-  environments,
-}: SessionEnvironmentsListDisplayProps) {
-  if (!environments || environments.length === 0) {
+  if (!environments || !filteredEnvironments || environments.length === 0) {
     return (
       <InfoAlert dismissible={false} timeout={0}>
         No global session environments set up yet.
@@ -115,14 +112,24 @@ function SessionEnvironmentsListDisplay({
   }
 
   return (
-    <div className={cx("d-flex", "flex-column", "gap-3")}>
-      {environments.map((environment) => (
-        <SessionEnvironmentDisplay
-          key={environment.id}
-          environment={environment}
-        />
-      ))}
-    </div>
+    <>
+      <AdminListFilter filter={filter} onFilterChange={setFilter} />
+
+      {filteredEnvironments.length === 0 ? (
+        <p className="fst-italic">
+          No session environment matches the filter <code>{filter}</code>.
+        </p>
+      ) : (
+        <div className={cx("d-flex", "flex-column", "gap-3")}>
+          {filteredEnvironments.map((environment) => (
+            <SessionEnvironmentDisplay
+              key={environment.id}
+              environment={environment}
+            />
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
