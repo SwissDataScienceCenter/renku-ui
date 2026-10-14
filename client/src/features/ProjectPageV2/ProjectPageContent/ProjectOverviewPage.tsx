@@ -30,20 +30,16 @@ export default function ProjectOverviewPage() {
   return (
     <Row className="g-4">
       <Col xs={12}>
-        <Row className="g-4">
-          <Col xs={12}>
-            <SessionsV2 project={project} />
-          </Col>
-          <Col className="order-3" xs={12} xl={6}>
-            <ProjectDataConnectorsBox project={project} />
-          </Col>
-          <Col className="order-4" xs={12} xl={6}>
-            <CodeRepositoriesDisplay project={project} />
-          </Col>
-          <Col className="order-5" xs={12}>
-            <Documentation project={project} />
-          </Col>
-        </Row>
+        <SessionsV2 project={project} />
+      </Col>
+      <Col className="order-3" xs={12} xl={6}>
+        <ProjectDataConnectorsBox project={project} />
+      </Col>
+      <Col className="order-4" xs={12} xl={6}>
+        <CodeRepositoriesDisplay project={project} />
+      </Col>
+      <Col className="order-5" xs={12}>
+        <Documentation project={project} />
       </Col>
     </Row>
   );

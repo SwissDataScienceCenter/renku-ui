@@ -18,10 +18,9 @@
 
 import cx from "classnames";
 import { type RefObject } from "react";
-import { Clock, Globe2, Lock } from "react-bootstrap-icons";
+import { Globe2, Lock } from "react-bootstrap-icons";
 import { generatePath } from "react-router";
 
-import { TimeCaption } from "~/components/TimeCaption";
 import { useGetProjectsByProjectIdMembersQuery } from "~/features/projectsV2/api/projectV2.enhanced-api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import type { Project } from "../../projectsV2/api/projectV2.api";
@@ -88,31 +87,21 @@ export default function ProjectPageHeaderInfo({
           "col-md-auto",
           "d-flex",
           "flex-row",
-          "flex-shrink-1",
-          "gap-2",
-          "min-w-0",
-          "small",
         )}
       >
-        <ProjectPageHeaderMembers members={members} membersUrl={membersUrl} />
+        <div
+          className={cx(
+            "d-flex",
+            "flex-row",
+            "gap-2",
+            "small",
+            "text-truncate",
+          )}
+        >
+          <ProjectPageHeaderMembers members={members} membersUrl={membersUrl} />
+        </div>
       </div>
       <ProjectVisibility isPrivate={project.visibility === "private"} />
-      <div className={cx("col-12", "col-md-auto", "flex-shrink-0", "small")}>
-        <Clock className={cx("bi", "me-1")} />
-        Created
-        <TimeCaption
-          datetime={project.creation_date}
-          prefix=""
-          className={cx(
-            "col-12",
-            "col-md-auto",
-            "flex-shrink-0",
-            "small",
-            "fw-bold",
-            "ms-1",
-          )}
-        />
-      </div>
     </div>
   );
 }
