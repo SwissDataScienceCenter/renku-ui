@@ -52,7 +52,7 @@ function useKeywordsInline({
   const [inline, setInline] = useState<boolean | null>(null);
 
   useLayoutEffect(() => {
-    if (!enabled || keywords.length < 1) return;
+    if (!enabled) return;
 
     const row = rowRef.current;
     const metadata = metadataRef.current;
@@ -135,7 +135,6 @@ export default function ProjectPageHeaderKeywords({
         "align-items-center",
         "d-flex",
         "flex-row",
-        "gap-1",
         measuring && "flex-nowrap",
         measuring && "invisible",
         measuring && "position-absolute",
@@ -149,7 +148,7 @@ export default function ProjectPageHeaderKeywords({
     >
       {keywordsSorted.length > 0 && (
         <KeywordContainer
-          className={cx("mt-1", !measuring && wrapBadges && "min-w-0")}
+          className={cx(!measuring && wrapBadges && "min-w-0")}
           nowrap={measuring}
         >
           <Bookmarks className={cx("bi", "flex-shrink-0")} />
