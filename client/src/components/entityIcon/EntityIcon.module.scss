@@ -5,12 +5,12 @@
 @import "~bootstrap/scss/mixins";
 
 .entityIcon {
-  --entity-icon-size: 86px;
+  --entity-icon-size: 75px;
   --entity-icon-avatar-size: 75px;
   --entity-icon-avatar-font-size: 36px;
-  --entity-icon-card-body-height: 68px;
+  --entity-icon-card-body-height: 62px;
   --entity-icon-glyph-size: 42px;
-  --entity-icon-overlap: -18px;
+  --entity-icon-overlap: -10px;
   --entity-icon-fill: var(--#{$prefix}secondary);
   --entity-circle-label-font-size: 12px;
 }
@@ -23,6 +23,10 @@
 
 .layout {
   background-color: var(--entity-icon-fill);
+}
+
+.label {
+  height: 26px;
 }
 
 @include media-breakpoint-up(md) {
