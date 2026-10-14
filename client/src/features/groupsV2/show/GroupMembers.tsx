@@ -98,7 +98,7 @@ export default function GroupMembers() {
       </div>
     );
   return (
-    <Card data-cy="group-members-card" className="h-100">
+    <Card data-cy="group-members-card">
       <CardHeader>
         <div className={cx("align-items-center", "d-flex")}>
           <h2 className={cx("mb-0", "me-2")}>
