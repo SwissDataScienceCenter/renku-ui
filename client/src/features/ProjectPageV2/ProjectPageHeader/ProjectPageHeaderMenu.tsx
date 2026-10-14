@@ -135,6 +135,7 @@ export default function ProjectPageHeaderMenu({
             data-cy="project-copy-identifier-menu-item"
             onClick={copyIdentifier}
             toggle={false}
+            className="text-truncate"
           >
             {identifierCopied ? (
               <>
@@ -142,7 +143,8 @@ export default function ProjectPageHeaderMenu({
               </>
             ) : (
               <>
-                <Clipboard className="bi" /> Copy project identifier
+                <Clipboard className="bi" /> Copy project identifier{" "}
+                <code>{clipboardText}</code>
               </>
             )}
           </DropdownItem>
