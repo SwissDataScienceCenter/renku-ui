@@ -57,7 +57,7 @@ export default function GroupPageLayout({
       <GroupNew />
 
       <Row className="my-3">
-        <Col xs={12} className="mb-3">
+        <Col xs={12} className={cx("mb-3", "min-w-0")}>
           <GroupHeader group={group} />
         </Col>
         <Col xs={12} className="mb-3">
@@ -82,17 +82,36 @@ function GroupHeader({ group }: { group: GroupResponse }) {
           "flex-md-row",
           "flex-nowrap",
           "gap-3",
+          "min-w-0",
         )}
       >
-        <EntityIcon type="group" />
-        <div className={cx("d-flex", "flex-column", "justify-content-evenly")}>
+        <EntityIcon className="flex-shrink-0" type="group" />
+        <div
+          className={cx(
+            "d-flex",
+            "flex-column",
+            "justify-content-evenly",
+            "min-w-0",
+          )}
+        >
           <h1 className={cx("mb-0", "text-break")} data-cy="group-name">
             {group.name ?? "Unknown group"}
           </h1>
-          <div className={cx("align-items-center", "d-flex", "gap-2")}>
-            <span className="text-truncate">{namespace}</span>
+          <div
+            className={cx("align-items-center", "d-flex", "gap-2", "min-w-0")}
+            data-cy="group-identifier"
+          >
+            <span className={cx("min-w-0", "text-truncate")} title={namespace}>
+              {namespace}
+            </span>
             <Clipboard
-              className={cx("border-0", "btn", "p-0", "shadow-none")}
+              className={cx(
+                "border-0",
+                "btn",
+                "flex-shrink-0",
+                "p-0",
+                "shadow-none",
+              )}
               clipboardText={namespace}
             />
           </div>
