@@ -88,7 +88,7 @@ function GroupHeader({ group }: { group: GroupResponse }) {
           "min-w-0",
         )}
       >
-        <EntityIcon  className="flex-shrink-0" type="group" />
+        <EntityIcon className="flex-shrink-0" type="group" />
         <div className={cx("d-flex", "flex-column", "justify-content-evenly", "min-w-0")}>
           <h1 className={cx("mb-0", "text-break")} data-cy="group-name">
             {group.name ?? "Unknown group"}
@@ -96,7 +96,6 @@ function GroupHeader({ group }: { group: GroupResponse }) {
           <div
             className={cx(
               "d-flex",
-              "gap-3",
               "flex-column",
               "flex-md-row",
               "flex-wrap",
@@ -106,18 +105,11 @@ function GroupHeader({ group }: { group: GroupResponse }) {
               styles.dotSeparated,
             )}
           >
-            <div className={cx("align-items-center", "d-flex", "gap-2")}>
+            <div className={cx("align-items-center", "d-flex")}>
               <span className={cx("min-w-0", "text-truncate")}>{namespace}</span>
               <Clipboard
-                className={cx("border-0", "btn", "flex-shrink-0", "p-0", "shadow-none")}
+                className={cx("border-0", "btn", "flex-shrink-0", "p-0", "shadow-none", "ms-2")}
                 clipboardText={namespace}
-              />
-            </div>
-            <div className="flex-shrink-0">
-              Created
-              <TimeCaption
-                datetime={group?.creation_date}
-                className={cx("fw-bold", "small", "ms-1")}
               />
             </div>
             <GroupV2ResourcePoolDisplay group={namespace} />
