@@ -56,7 +56,7 @@ const READ_WRITE_DISABLED: readonly DataConnectorAccessPolicyName[] = [
   "readWrite",
 ];
 
-const DATA_CONNECTOR_COLUMN_WIDTHS = ["50%", "30%", "20%"] as const;
+const DATA_CONNECTOR_COLUMN_WIDTHS = ["40%", "30%", "30%"] as const;
 
 interface DataConnectorAccessField {
   isStorageReadOnly: boolean;
