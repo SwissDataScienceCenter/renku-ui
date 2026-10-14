@@ -24,17 +24,5 @@ describe.skip("Docs links", () => {
         await annotate(`Got redirected (HTTP ${statusNoRedirect})`, "warning");
       }
     });
-
-    //   it(`"${name}": "${link}" is a direct link`, async () => {
-    //     const { status } = await fetch(link, {
-    //       method: "GET",
-    //       redirect: "manual",
-    //     });
-    //     // expect(status).toBe(200);
-    //     if (status != 200) {
-    //       console.warn(link);
-    //     }
-    //     // expect(status).toBe(202);
-    //   });
   });
 });
