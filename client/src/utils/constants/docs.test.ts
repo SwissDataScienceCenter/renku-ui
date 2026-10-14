@@ -9,12 +9,32 @@ describe.skip("Docs links", () => {
   );
 
   links.forEach(([name, link]) => {
-    it(`"${name}": "${link}" can be resolved`, async () => {
+    it(`"${name}": "${link}" can be resolved`, async ({ annotate }) => {
       const { status } = await fetch(link, {
         method: "GET",
         redirect: "follow",
       });
       expect(status).toBe(200);
+
+      const { status: statusNoRedirect } = await fetch(link, {
+        method: "GET",
+        redirect: "manual",
+      });
+      if (statusNoRedirect != 200) {
+        await annotate(`Got redirected (HTTP ${statusNoRedirect})`, "warning");
+      }
     });
+
+    //   it(`"${name}": "${link}" is a direct link`, async () => {
+    //     const { status } = await fetch(link, {
+    //       method: "GET",
+    //       redirect: "manual",
+    //     });
+    //     // expect(status).toBe(200);
+    //     if (status != 200) {
+    //       console.warn(link);
+    //     }
+    //     // expect(status).toBe(202);
+    //   });
   });
 });
