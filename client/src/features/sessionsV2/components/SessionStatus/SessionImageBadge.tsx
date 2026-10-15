@@ -62,7 +62,7 @@ export default function SessionImageBadge({
                 ? "warning"
                 : "danger"
       }
-      className="fw-normal"
+      className={cx("fw-normal", "d-inline-flex", "align-items-center")}
       pill
     >
       {isLoading || isLoadingResourcePools ? (

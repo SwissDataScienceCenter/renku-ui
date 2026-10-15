@@ -45,7 +45,14 @@ const withFixedEndpoints = sessionLaunchersV2GeneratedApi.injectEndpoints({
 
 // Adds tag handling for cache management
 const withTagHandling = withFixedEndpoints.enhanceEndpoints({
-  addTagTypes: ["Environment", "Launcher", "Build", "BuildLogs"],
+  addTagTypes: [
+    "Environment",
+    "Launcher",
+    "Build",
+    "BuildLogs",
+    "LauncherDataConnectors",
+    "LauncherSecrets",
+  ],
   endpoints: {
     getEnvironments: {
       providesTags: (result) =>
@@ -124,6 +131,28 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
           ? [{ id: args.buildId, type: "BuildLogs" }, "BuildLogs"]
           : ["BuildLogs"],
     },
+    getSessionLaunchersByLauncherIdDataConnectors: {
+      providesTags: (_result, _error, arg) => [
+        { id: arg.launcherId, type: "LauncherDataConnectors" as const },
+      ],
+    },
+    patchSessionLaunchersByLauncherIdDataConnectors: {
+      invalidatesTags: (_result, _error, arg) => [
+        { id: arg.launcherId, type: "LauncherDataConnectors" as const },
+        { id: arg.launcherId, type: "Launcher" as const },
+      ],
+    },
+    getSessionLaunchersByLauncherIdSecrets: {
+      providesTags: (_result, _error, arg) => [
+        { id: arg.launcherId, type: "LauncherSecrets" as const },
+      ],
+    },
+    patchSessionLaunchersByLauncherIdSecrets: {
+      invalidatesTags: (_result, _error, arg) => [
+        { id: arg.launcherId, type: "LauncherSecrets" as const },
+        { id: arg.launcherId, type: "Launcher" as const },
+      ],
+    },
   },
 });
 
@@ -149,6 +178,10 @@ export const {
   usePatchSessionLaunchersByLauncherIdMutation,
   useDeleteSessionLaunchersByLauncherIdMutation,
   useGetProjectsByProjectIdSessionLaunchersQuery,
+  useGetSessionLaunchersByLauncherIdDataConnectorsQuery,
+  usePatchSessionLaunchersByLauncherIdDataConnectorsMutation,
+  useGetSessionLaunchersByLauncherIdSecretsQuery,
+  usePatchSessionLaunchersByLauncherIdSecretsMutation,
   // "builds" hooks
   useGetBuildsByBuildIdQuery,
   usePostEnvironmentsByEnvironmentIdBuildsMutation,
