@@ -54,6 +54,7 @@ import {
   usePatchPlatformConfigMutation,
 } from "../platform/api/platform.api";
 import { useGetSummaryQuery } from "../platform/statuspage-api/statuspage.api";
+import AdminSection from "./AdminSection";
 
 export default function IncidentsAndMaintenanceSection() {
   const { params } = useContext(AppContext);
@@ -61,9 +62,7 @@ export default function IncidentsAndMaintenanceSection() {
     params?.STATUSPAGE_ID ?? DEFAULT_APP_PARAMS.STATUSPAGE_ID;
 
   return (
-    <section>
-      <h2>Incidents And Maintenance</h2>
-
+    <AdminSection title="Incidents And Maintenance">
       <p>
         <Link
           to={Links.RENKU_2_ADMIN_HOW_TO_GUIDE_INCIDENTS}
@@ -78,7 +77,7 @@ export default function IncidentsAndMaintenanceSection() {
       <StatusPageCheck statusPageId={statusPageId} />
 
       <IncidentBannerSection />
-    </section>
+    </AdminSection>
   );
 }
 
@@ -219,7 +218,7 @@ function IncidentBannerSection() {
     <Card className="mb-3">
       <CardHeader
         className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
-        tag="h5"
+        tag="h3"
       >
         <button
           className={cx(

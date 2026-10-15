@@ -38,15 +38,15 @@ import {
   useGetOauth2ProvidersQuery,
 } from "../connectedServices/api/connectedServices.api";
 import AddConnectedServiceButton from "./AddConnectedServiceButton";
+import AdminSection from "./AdminSection";
 import DeleteConnectedServiceButton from "./DeleteConnectedServiceButton";
 import UpdateConnectedServiceButton from "./UpdateConnectedServiceButton";
 
 export default function ConnectedServicesSection() {
   return (
-    <section className="mt-4">
-      <h2>Integrations</h2>
+    <AdminSection title="Integrations">
       <ConnectedServices />
-    </section>
+    </AdminSection>
   );
 }
 

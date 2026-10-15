@@ -56,6 +56,62 @@ const injectedRtkApi = api.injectEndpoints({
     getError: build.query<GetErrorApiResponse, GetErrorApiArg>({
       query: () => ({ url: `/error` }),
     }),
+    getResourceFlavors: build.query<
+      GetResourceFlavorsApiResponse,
+      GetResourceFlavorsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavors`,
+        params: {
+          resource_flavor_params: queryArg.resourceFlavorParams,
+        },
+      }),
+    }),
+    postResourceFlavors: build.mutation<
+      PostResourceFlavorsApiResponse,
+      PostResourceFlavorsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavors`,
+        method: "POST",
+        body: queryArg.resourceFlavorPost,
+      }),
+    }),
+    getResourceFlavorsByResourceFlavorId: build.query<
+      GetResourceFlavorsByResourceFlavorIdApiResponse,
+      GetResourceFlavorsByResourceFlavorIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavors/${queryArg.resourceFlavorId}`,
+      }),
+    }),
+    patchResourceFlavorsByResourceFlavorId: build.mutation<
+      PatchResourceFlavorsByResourceFlavorIdApiResponse,
+      PatchResourceFlavorsByResourceFlavorIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavors/${queryArg.resourceFlavorId}`,
+        method: "PATCH",
+        body: queryArg.resourceFlavorPatch,
+      }),
+    }),
+    deleteResourceFlavorsByResourceFlavorId: build.mutation<
+      DeleteResourceFlavorsByResourceFlavorIdApiResponse,
+      DeleteResourceFlavorsByResourceFlavorIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavors/${queryArg.resourceFlavorId}`,
+        method: "DELETE",
+      }),
+    }),
+    getResourceFlavorsByResourceFlavorIdResourceClasses: build.query<
+      GetResourceFlavorsByResourceFlavorIdResourceClassesApiResponse,
+      GetResourceFlavorsByResourceFlavorIdResourceClassesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_flavors/${queryArg.resourceFlavorId}/resource_classes`,
+      }),
+    }),
     getResourcePools: build.query<
       GetResourcePoolsApiResponse,
       GetResourcePoolsApiArg
@@ -410,6 +466,39 @@ export type DeleteClustersByClusterIdApiArg = {
 };
 export type GetErrorApiResponse = unknown;
 export type GetErrorApiArg = void;
+export type GetResourceFlavorsApiResponse =
+  /** status 200 The list of resource flavors */ ResourceFlavorsList;
+export type GetResourceFlavorsApiArg = {
+  /** Filter for resource flavors based on the provided name as a prefix. Omitting this parameter returns all flavors. */
+  resourceFlavorParams?: {
+    name?: Name;
+  };
+};
+export type PostResourceFlavorsApiResponse =
+  /** status 201 The resource flavor was created */ ResourceFlavor;
+export type PostResourceFlavorsApiArg = {
+  resourceFlavorPost: ResourceFlavorPost;
+};
+export type GetResourceFlavorsByResourceFlavorIdApiResponse =
+  /** status 200 The resource flavor that was requested */ ResourceFlavor;
+export type GetResourceFlavorsByResourceFlavorIdApiArg = {
+  resourceFlavorId: Ulid;
+};
+export type PatchResourceFlavorsByResourceFlavorIdApiResponse =
+  /** status 200 The updated resource flavor */ ResourceFlavor;
+export type PatchResourceFlavorsByResourceFlavorIdApiArg = {
+  resourceFlavorId: Ulid;
+  resourceFlavorPatch: ResourceFlavorPatch;
+};
+export type DeleteResourceFlavorsByResourceFlavorIdApiResponse = unknown;
+export type DeleteResourceFlavorsByResourceFlavorIdApiArg = {
+  resourceFlavorId: Ulid;
+};
+export type GetResourceFlavorsByResourceFlavorIdResourceClassesApiResponse =
+  /** status 200 The resource classes linked to the resource flavor */ LinkedResourceClassesList;
+export type GetResourceFlavorsByResourceFlavorIdResourceClassesApiArg = {
+  resourceFlavorId: Ulid;
+};
 export type GetResourcePoolsApiResponse =
   /** status 200 The resource pool definitions */ ResourcePoolsWithIdFiltered;
 export type GetResourcePoolsApiArg = {
@@ -653,6 +742,7 @@ export type RemoteClassConfigurationFirecrest = {
    */
   forward_resource_values?: boolean;
 };
+export type ResourceFlavorId = string;
 export type ResourceClassWithId = {
   name: Name;
   default: DefaultFlag;
@@ -666,6 +756,7 @@ export type ResourceClassWithId = {
   id: IntegerId;
   quota_enforced?: QuotaEnforced;
   remote?: RemoteClassConfigurationFirecrest;
+  resource_flavor_id?: ResourceFlavorId;
 };
 export type ErrorResponse = {
   error: {
@@ -733,6 +824,46 @@ export type ClusterPatch = {
   service_account_name?: K8SResourceNamePatch;
   session_ingress_use_default_cluster_tls_cert?: boolean;
 };
+export type ResourceFlavor = {
+  id: Ulid;
+  /** The name of the resource flavor */
+  name: string;
+  /** Why a resource flavor is sized the way it is */
+  description?: string;
+  cpu: Cpu;
+  memory: Memory;
+  gpu: Gpu;
+  max_storage: Storage;
+  default_storage: Storage;
+};
+export type ResourceFlavorsList = ResourceFlavor[];
+export type ResourceFlavorName = string;
+export type ResourceFlavorDescription = string;
+export type ResourceFlavorPost = {
+  name: ResourceFlavorName;
+  description?: ResourceFlavorDescription;
+  cpu: Cpu;
+  memory: Memory;
+  gpu: Gpu;
+  max_storage: Storage;
+  default_storage: Storage;
+};
+export type ResourceFlavorPatch = {
+  name?: ResourceFlavorName;
+  description?: ResourceFlavorDescription;
+  cpu?: Cpu;
+  memory?: Memory;
+  gpu?: Gpu;
+  max_storage?: Storage;
+  default_storage?: Storage;
+};
+export type LinkedResourceClass = {
+  id: IntegerId;
+  name: Name;
+  resource_pool_id?: IntegerId;
+  resource_pool_name?: Name;
+};
+export type LinkedResourceClassesList = LinkedResourceClass[];
 export type QuotaWithId = {
   cpu: Cpu;
   memory: Memory;
@@ -819,15 +950,16 @@ export type QuotaWithOptionalId = {
 export type ResourceClass = {
   name: Name;
   default: DefaultFlag;
-  cpu: Cpu;
-  memory: Memory;
-  gpu: Gpu;
-  max_storage: Storage;
-  default_storage: Storage;
+  cpu?: Cpu;
+  memory?: Memory;
+  gpu?: Gpu;
+  max_storage?: Storage;
+  default_storage?: Storage;
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
   quota_enforced?: QuotaEnforced;
   remote?: RemoteClassConfigurationFirecrest;
+  resource_flavor_id?: ResourceFlavorId;
 };
 export type ResourceClasses = ResourceClass[];
 export type ResourcePool = {
@@ -865,6 +997,7 @@ export type QuotaPatch = {
   memory?: Memory;
   gpu?: Gpu;
 };
+export type ResourceFlavorIdPatch = string;
 export type ResourceClassProperties = {
   name?: Name;
   default?: DefaultFlag;
@@ -877,6 +1010,7 @@ export type ResourceClassProperties = {
   node_affinities?: NodeAffinityList;
   quota_enforced?: QuotaEnforced;
   remote?: RemoteClassConfigurationFirecrest;
+  resource_flavor_id?: ResourceFlavorIdPatch;
 };
 export type ResourceClassPatchWithId = ResourceClassProperties & {
   id: IntegerId;
@@ -982,6 +1116,12 @@ export const {
   usePatchClustersByClusterIdMutation,
   useDeleteClustersByClusterIdMutation,
   useGetErrorQuery,
+  useGetResourceFlavorsQuery,
+  usePostResourceFlavorsMutation,
+  useGetResourceFlavorsByResourceFlavorIdQuery,
+  usePatchResourceFlavorsByResourceFlavorIdMutation,
+  useDeleteResourceFlavorsByResourceFlavorIdMutation,
+  useGetResourceFlavorsByResourceFlavorIdResourceClassesQuery,
   useGetResourcePoolsQuery,
   usePostResourcePoolsMutation,
   useGetResourcePoolsByResourcePoolIdQuery,
