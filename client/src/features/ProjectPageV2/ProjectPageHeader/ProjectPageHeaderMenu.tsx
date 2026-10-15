@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useCallback, useState } from "react";
 import {
   CheckLg,
@@ -85,10 +86,15 @@ export default function ProjectPageHeaderMenu({
                 <CheckLg className="bi" /> Identifier copied
               </>
             ) : (
-              <>
-                <Clipboard className="bi" /> Copy project identifier{" "}
-                <code>{clipboardText}</code>
-              </>
+              <div className={cx("d-flex", "flex-row", "gap-2")}>
+                <Clipboard className="bi" />
+                <div>
+                  <span>Copy project identifier</span>
+                  <div className={cx("text-truncate", "small")} style={{maxWidth: "250px"}}>
+                      <code>{clipboardText}</code>
+                  </div>
+                </div>
+              </div>
             )}
           </DropdownItem>
         </DropdownMenu>
