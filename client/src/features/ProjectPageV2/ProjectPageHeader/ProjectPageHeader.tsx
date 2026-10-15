@@ -19,6 +19,8 @@
 import cx from "classnames";
 import { useLocation } from "react-router";
 
+import EntityBreadcrumb from "~/components/entityBreadcrumb/EntityBreadcrumb";
+import EntityIcon from "~/components/entityIcon/EntityIcon";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import ProjectAutostartRedirectBanner from "./ProjectAutostartRedirectBanner";
 import ProjectCopyBanner from "./ProjectCopyBanner";
@@ -34,8 +36,18 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
     new URLSearchParams(search).get("autostartRedirect") === "true";
 
   return (
-    <div className={cx("d-flex", "flex-column", "gap-2")}>
-      <header>
+    <div className={cx("d-flex", "flex-column", "gap-3", "min-w-0")}>
+      <EntityBreadcrumb project={project} />
+      <header
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "flex-md-row",
+          "flex-nowrap",
+          "gap-3",
+        )}
+      >
+        <EntityIcon type="project" />
         <h1 className={cx("mb-0", "text-break")} data-cy="project-name">
           {project.name}
         </h1>
