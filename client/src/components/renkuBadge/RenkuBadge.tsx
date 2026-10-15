@@ -45,7 +45,11 @@ export default function RenkuBadge({
         : color === "warning"
           ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
           : color === "secondary"
-            ? ["border-secondary", "bg-secondary", "text-white"]
+            ? [
+                "border-secondary",
+                "bg-secondary-subtle",
+                "text-secondary-emphasis",
+              ]
             : color === "info"
               ? ["border-info", "bg-info-subtle", "text-info-emphasis"]
               : ["border-dark-subtle", "bg-light", "text-dark-emphasis"];
