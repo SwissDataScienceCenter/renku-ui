@@ -17,10 +17,9 @@
  */
 
 import cx from "classnames";
-import { Clock, InfoCircle, JournalAlbum } from "react-bootstrap-icons";
+import { Clock, InfoCircle } from "react-bootstrap-icons";
 import { Card, CardBody, CardHeader } from "reactstrap";
 
-import { Clipboard } from "~/components/clipboard/Clipboard";
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import { TimeCaption } from "../../../components/TimeCaption";
 import GroupV2MemberListDisplay from "../members/GroupV2MemberListDisplay";
@@ -38,18 +37,6 @@ export default function GroupInformation({
 
   const information = kind === "group" && namespace && (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
-      <GroupInformationBox
-        icon={<JournalAlbum className="bi" />}
-        title="Identifier:"
-      >
-        <div className={cx("align-items-center", "d-flex", "gap-2")}>
-          <span className="text-truncate">{namespace}</span>
-          <Clipboard
-            className={cx("border-0", "btn", "p-0", "shadow-none")}
-            clipboardText={namespace}
-          />
-        </div>
-      </GroupInformationBox>
       <GroupInformationBox icon={<Clock className="bi" />} title="Created:">
         <p className="mb-0">
           <TimeCaption datetime={group?.creation_date} className={cx("fs-6")} />
