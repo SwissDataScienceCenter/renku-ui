@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   CheckLg,
@@ -135,17 +136,33 @@ export default function ProjectPageHeaderMenu({
             data-cy="project-copy-identifier-menu-item"
             onClick={copyIdentifier}
             toggle={false}
-            className="text-truncate"
           >
             {identifierCopied ? (
-              <>
-                <CheckLg className="bi" /> Identifier copied
-              </>
+              <span className={cx("d-flex", "gap-1")}>
+                <CheckLg className="bi" />
+                <span className={cx("d-flex", "flex-column", "min-w-0")}>
+                  <code
+                    className={cx("d-block", "text-truncate", "small")}
+                    style={{ maxWidth: "200px" }}
+                  >
+                    {clipboardText}
+                  </code>
+                  <span>Copied!</span>
+                </span>
+              </span>
             ) : (
-              <>
-                <Clipboard className="bi" /> Copy project identifier{" "}
-                <code>{clipboardText}</code>
-              </>
+              <span className={cx("d-flex", "gap-1")}>
+                <Clipboard className="bi" />
+                <span className={cx("d-flex", "flex-column", "min-w-0")}>
+                  <span>Copy project identifier</span>
+                  <code
+                    className={cx("d-block", "text-truncate", "small")}
+                    style={{ maxWidth: "200px" }}
+                  >
+                    {clipboardText}
+                  </code>
+                </span>
+              </span>
             )}
           </DropdownItem>
         </DropdownMenu>

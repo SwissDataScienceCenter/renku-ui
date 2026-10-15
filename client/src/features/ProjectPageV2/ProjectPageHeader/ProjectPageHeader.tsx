@@ -77,8 +77,9 @@ export default function ProjectPageHeader({ project }: ProjectPageHeaderProps) {
             "d-flex",
             "flex-column",
             "flex-grow-1",
-            "justify-content-evenly",
             "min-w-0",
+            "justify-content-center",
+            "gap-2",
           )}
         >
           <div
