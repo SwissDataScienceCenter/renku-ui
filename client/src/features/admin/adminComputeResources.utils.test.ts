@@ -20,12 +20,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildResourceClassRemote,
-  buildResourceFlavour,
-  buildResourceFlavourPatch,
+  buildResourceFlavor,
+  buildResourceFlavorPatch,
   poolRequiresIntegerCpu,
 } from "./adminComputeResources.utils";
 
-const FLAVOUR_FORM = {
+const FLAVOR_FORM = {
   name: "  small  ",
   description: "",
   cpu: 1.5,
@@ -112,9 +112,9 @@ describe("buildResourceClassRemote", () => {
 });
 /* eslint-enable spellcheck/spell-checker */
 
-describe("buildResourceFlavour", () => {
+describe("buildResourceFlavor", () => {
   it("omits an empty description", () => {
-    expect(buildResourceFlavour(FLAVOUR_FORM)).toEqual({
+    expect(buildResourceFlavor(FLAVOR_FORM)).toEqual({
       name: "small",
       cpu: 1.5,
       memory: 8,
@@ -124,19 +124,14 @@ describe("buildResourceFlavour", () => {
     });
   });
 
-  it("keeps a description and coerces the numbers", () => {
+  it("keeps a trimmed description", () => {
     expect(
-      buildResourceFlavour({
-        ...FLAVOUR_FORM,
-        description: " fits a node ",
-        cpu: "2.5" as unknown as number,
-        memory: "16" as unknown as number,
-      }),
+      buildResourceFlavor({ ...FLAVOR_FORM, description: " fits a node " }),
     ).toEqual({
       name: "small",
       description: "fits a node",
-      cpu: 2.5,
-      memory: 16,
+      cpu: 1.5,
+      memory: 8,
       gpu: 0,
       default_storage: 20,
       max_storage: 200,
@@ -144,9 +139,9 @@ describe("buildResourceFlavour", () => {
   });
 });
 
-describe("buildResourceFlavourPatch", () => {
+describe("buildResourceFlavorPatch", () => {
   it("sends an empty description, which the API reads as a reset", () => {
-    expect(buildResourceFlavourPatch(FLAVOUR_FORM)).toEqual({
+    expect(buildResourceFlavorPatch(FLAVOR_FORM)).toEqual({
       name: "small",
       description: "",
       cpu: 1.5,

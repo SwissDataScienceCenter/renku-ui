@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CheckLg, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import {
@@ -35,7 +35,6 @@ import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import {
-  useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourMutation,
   usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   type ResourceClassWithId,
   type ResourcePoolWithId,
@@ -46,9 +45,9 @@ import {
   poolRequiresIntegerCpu,
 } from "./adminComputeResources.utils";
 import ResourceClassFirecrestFields from "./forms/ResourceClassFirecrestFields";
-import ResourceClassFlavourSelect, {
-  NO_RESOURCE_FLAVOUR,
-} from "./ResourceClassFlavourSelect";
+import ResourceClassFlavorSelect, {
+  NO_RESOURCE_FLAVOR,
+} from "./ResourceClassFlavorSelect";
 
 import styles from "./UpdateResourceClassButton.module.scss";
 
@@ -98,8 +97,7 @@ function toFormValues(resourceClass: ResourceClassWithId): ResourceClassForm {
     },
     tolerations: (resourceClass.tolerations ?? []).map((label) => ({ label })),
     node_affinities: resourceClass.node_affinities ?? [],
-    resource_flavour_id:
-      resourceClass.resource_flavour_id ?? NO_RESOURCE_FLAVOUR,
+    resource_flavor_id: resourceClass.resource_flavor_id ?? NO_RESOURCE_FLAVOR,
   };
 }
 
@@ -123,10 +121,6 @@ function UpdateResourceClassModal({
 
   const [updateResourceClass, result] =
     usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation();
-  const [unlinkResourceFlavour, unlinkResult] =
-    useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourMutation();
-  const { reset: resetUpdate } = result;
-  const { reset: resetUnlink } = unlinkResult;
 
   const {
     control,
@@ -136,7 +130,7 @@ function UpdateResourceClassModal({
   } = useForm<ResourceClassForm>({
     defaultValues: toFormValues(resourceClass),
   });
-  const selectedFlavourId = useWatch({ control, name: "resource_flavour_id" });
+  const selectedFlavorId = useWatch({ control, name: "resource_flavor_id" });
   const {
     fields: tolerationsFields,
     append: tolerationsAppend,
@@ -151,25 +145,12 @@ function UpdateResourceClassModal({
     remove: affinitiesRemove,
   } = useFieldArray({ control, name: "node_affinities" });
   const onSubmit = useCallback(
-    async (data: ResourceClassForm) => {
+    (data: ResourceClassForm) => {
       const tolerations = data.tolerations.map(({ label }) => label);
       const remote = buildResourceClassRemote(data.remote, requiresIntegerCpu);
-      const { resource_flavour_id, ...values } = data;
-      const wasLinked = resourceClass.resource_flavour_id != null;
-      const isLinked = resource_flavour_id !== NO_RESOURCE_FLAVOUR;
-
-      // The class keeps the flavour's values as its own, so the shape fields
-      // become writable only once the link is gone.
-      if (wasLinked && !isLinked) {
-        try {
-          await unlinkResourceFlavour({
-            resourcePoolId: resourcePool.id,
-            classId: `${resourceClass.id}`,
-          }).unwrap();
-        } catch {
-          return;
-        }
-      }
+      const { resource_flavor_id, ...values } = data;
+      const wasLinked = resourceClass.resource_flavor_id != null;
+      const isLinked = resource_flavor_id !== NO_RESOURCE_FLAVOR;
 
       // The API rejects CPU, memory, GPU and storage values on a linked class.
       const resourceClassPatch = isLinked
@@ -177,11 +158,16 @@ function UpdateResourceClassModal({
             name: values.name,
             default: values.default,
             node_affinities: values.node_affinities,
-            resource_flavour_id,
+            resource_flavor_id,
             tolerations,
             remote,
           }
-        : { ...values, tolerations, remote };
+        : {
+            ...values,
+            tolerations,
+            remote,
+            ...(wasLinked ? { resource_flavor_id: "" } : {}),
+          };
 
       updateResourceClass({
         resourcePoolId: resourcePool.id,
@@ -191,15 +177,12 @@ function UpdateResourceClassModal({
     },
     [
       resourceClass.id,
-      resourceClass.resource_flavour_id,
+      resourceClass.resource_flavor_id,
       resourcePool.id,
       requiresIntegerCpu,
-      unlinkResourceFlavour,
       updateResourceClass,
     ],
   );
-
-  const isSaving = result.isLoading || unlinkResult.isLoading;
 
   const onAddTolerationLabel = useCallback(() => {
     tolerationsAppend({ label: "" });
@@ -216,18 +199,9 @@ function UpdateResourceClassModal({
     }
   }, [reset, result.isSuccess, toggle]);
 
-  const resourceClassRef = useRef(resourceClass);
   useEffect(() => {
-    resourceClassRef.current = resourceClass;
-  }, [resourceClass]);
-
-  useEffect(() => {
-    if (isOpen) {
-      reset(toFormValues(resourceClassRef.current));
-      resetUpdate();
-      resetUnlink();
-    }
-  }, [isOpen, reset, resetUnlink, resetUpdate]);
+    reset(toFormValues(resourceClass));
+  }, [reset, resourceClass]);
 
   return (
     <ScrollableModal
@@ -248,9 +222,6 @@ function UpdateResourceClassModal({
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          {unlinkResult.error && (
-            <RtkOrDataServicesError error={unlinkResult.error} />
-          )}
           {result.error && <RtkOrDataServicesError error={result.error} />}
 
           <div className="mb-3">
@@ -273,12 +244,12 @@ function UpdateResourceClassModal({
             <div className="invalid-feedback">Please provide a name</div>
           </div>
 
-          <ResourceClassFlavourSelect
+          <ResourceClassFlavorSelect
             control={control}
             idPrefix={`updateResourceClass-${id}`}
           />
 
-          {selectedFlavourId === NO_RESOURCE_FLAVOUR && (
+          {selectedFlavorId === NO_RESOURCE_FLAVOR && (
             <>
               <div className="mb-3">
                 <Label
@@ -553,11 +524,11 @@ function UpdateResourceClassModal({
         </Button>
         <Button
           color="primary"
-          disabled={isSaving || !isDirty}
+          disabled={result.isLoading || !isDirty}
           onClick={handleSubmit(onSubmit)}
           type="submit"
         >
-          {isSaving ? (
+          {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
             <CheckLg className={cx("bi", "me-1")} />

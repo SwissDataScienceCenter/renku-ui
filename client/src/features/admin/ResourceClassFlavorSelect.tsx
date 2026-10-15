@@ -20,52 +20,52 @@ import { Controller, type Control } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 
 import {
-  useGetResourceFlavoursQuery,
-  type ResourceFlavourWithId,
+  useGetResourceFlavorsQuery,
+  type ResourceFlavor,
 } from "../sessionsV2/api/computeResources.api";
 import type { ResourceClassForm } from "./adminComputeResources.types";
 
-export const NO_RESOURCE_FLAVOUR = "";
+export const NO_RESOURCE_FLAVOR = "";
 
-export function describeResourceFlavour(flavour: ResourceFlavourWithId) {
-  const { cpu, default_storage, gpu, max_storage, memory, name } = flavour;
+export function describeResourceFlavor(flavor: ResourceFlavor) {
+  const { cpu, default_storage, gpu, max_storage, memory, name } = flavor;
   return `${name}: ${cpu} CPUs, ${memory} GB RAM, ${gpu} GPUs, ${default_storage}/${max_storage} GB disk`;
 }
 
-interface ResourceClassFlavourSelectProps {
+interface ResourceClassFlavorSelectProps {
   control: Control<ResourceClassForm>;
   idPrefix: string;
 }
 
-export default function ResourceClassFlavourSelect({
+export default function ResourceClassFlavorSelect({
   control,
   idPrefix,
-}: ResourceClassFlavourSelectProps) {
-  const { data: flavours } = useGetResourceFlavoursQuery({});
+}: ResourceClassFlavorSelectProps) {
+  const { data: flavors } = useGetResourceFlavorsQuery({});
 
-  if (!flavours || flavours.length === 0) {
+  if (!flavors || flavors.length === 0) {
     return null;
   }
 
   return (
     <div className="mb-3">
-      <Label className="form-label" for={`${idPrefix}ResourceFlavour`}>
-        Resource flavour
+      <Label className="form-label" for={`${idPrefix}ResourceFlavor`}>
+        Resource flavor
       </Label>
       <Controller
         control={control}
-        name="resource_flavour_id"
+        name="resource_flavor_id"
         render={({ field }) => (
           <Input
             className="form-select"
-            id={`${idPrefix}ResourceFlavour`}
+            id={`${idPrefix}ResourceFlavor`}
             type="select"
             {...field}
           >
-            <option value={NO_RESOURCE_FLAVOUR}>None</option>
-            {flavours.map((flavour) => (
-              <option key={flavour.id} value={flavour.id}>
-                {describeResourceFlavour(flavour)}
+            <option value={NO_RESOURCE_FLAVOR}>None</option>
+            {flavors.map((flavor) => (
+              <option key={flavor.id} value={flavor.id}>
+                {describeResourceFlavor(flavor)}
               </option>
             ))}
           </Input>
@@ -73,7 +73,7 @@ export default function ResourceClassFlavourSelect({
       />
       <div className="form-text">
         A linked class takes its CPU, memory, GPU and disk values from the
-        flavour, and keeps its own name.
+        flavor, and keeps its own name.
       </div>
     </div>
   );

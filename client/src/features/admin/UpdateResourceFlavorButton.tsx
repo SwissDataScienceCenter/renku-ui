@@ -33,35 +33,33 @@ import { WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import {
-  usePatchResourceFlavoursByResourceFlavourIdMutation,
-  type ResourceFlavourWithId,
+  usePatchResourceFlavorsByResourceFlavorIdMutation,
+  type ResourceFlavor,
 } from "../sessionsV2/api/computeResources.api";
-import type { ResourceFlavourForm } from "./adminComputeResources.types";
-import { buildResourceFlavourPatch } from "./adminComputeResources.utils";
+import type { ResourceFlavorForm } from "./adminComputeResources.types";
+import { buildResourceFlavorPatch } from "./adminComputeResources.utils";
 import { LinkedResourceClassesSummary } from "./LinkedResourceClasses";
-import ResourceFlavourFormContent from "./ResourceFlavourFormContent";
+import ResourceFlavorFormContent from "./ResourceFlavorFormContent";
 
-function toFormValues(
-  resourceFlavour: ResourceFlavourWithId,
-): ResourceFlavourForm {
+function toFormValues(resourceFlavor: ResourceFlavor): ResourceFlavorForm {
   return {
-    name: resourceFlavour.name,
-    description: resourceFlavour.description ?? "",
-    cpu: resourceFlavour.cpu,
-    memory: resourceFlavour.memory,
-    gpu: resourceFlavour.gpu,
-    default_storage: resourceFlavour.default_storage,
-    max_storage: resourceFlavour.max_storage,
+    name: resourceFlavor.name,
+    description: resourceFlavor.description ?? "",
+    cpu: resourceFlavor.cpu,
+    memory: resourceFlavor.memory,
+    gpu: resourceFlavor.gpu,
+    default_storage: resourceFlavor.default_storage,
+    max_storage: resourceFlavor.max_storage,
   };
 }
 
-interface UpdateResourceFlavourButtonProps {
-  resourceFlavour: ResourceFlavourWithId;
+interface UpdateResourceFlavorButtonProps {
+  resourceFlavor: ResourceFlavor;
 }
 
-export default function UpdateResourceFlavourButton({
-  resourceFlavour,
-}: UpdateResourceFlavourButtonProps) {
+export default function UpdateResourceFlavorButton({
+  resourceFlavor,
+}: UpdateResourceFlavorButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -73,50 +71,50 @@ export default function UpdateResourceFlavourButton({
         <PencilSquare className={cx("bi", "me-1")} />
         Update
       </Button>
-      <UpdateResourceFlavourModal
+      <UpdateResourceFlavorModal
         isOpen={isOpen}
-        resourceFlavour={resourceFlavour}
+        resourceFlavor={resourceFlavor}
         toggle={toggle}
       />
     </>
   );
 }
 
-interface UpdateResourceFlavourModalProps {
+interface UpdateResourceFlavorModalProps {
   isOpen: boolean;
-  resourceFlavour: ResourceFlavourWithId;
+  resourceFlavor: ResourceFlavor;
   toggle: () => void;
 }
 
-function UpdateResourceFlavourModal({
+function UpdateResourceFlavorModal({
   isOpen,
-  resourceFlavour,
+  resourceFlavor,
   toggle,
-}: UpdateResourceFlavourModalProps) {
-  const [updateResourceFlavour, result] =
-    usePatchResourceFlavoursByResourceFlavourIdMutation();
+}: UpdateResourceFlavorModalProps) {
+  const [updateResourceFlavor, result] =
+    usePatchResourceFlavorsByResourceFlavorIdMutation();
 
   const {
     control,
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<ResourceFlavourForm>({
-    defaultValues: toFormValues(resourceFlavour),
+  } = useForm<ResourceFlavorForm>({
+    defaultValues: toFormValues(resourceFlavor),
   });
 
   useEffect(() => {
-    reset(toFormValues(resourceFlavour));
-  }, [reset, resourceFlavour]);
+    reset(toFormValues(resourceFlavor));
+  }, [reset, resourceFlavor]);
 
   const onSubmit = useCallback(
-    (data: ResourceFlavourForm) => {
-      updateResourceFlavour({
-        resourceFlavourId: resourceFlavour.id,
-        resourceFlavourPatch: buildResourceFlavourPatch(data),
+    (data: ResourceFlavorForm) => {
+      updateResourceFlavor({
+        resourceFlavorId: resourceFlavor.id,
+        resourceFlavorPatch: buildResourceFlavorPatch(data),
       });
     },
-    [resourceFlavour.id, updateResourceFlavour],
+    [resourceFlavor.id, updateResourceFlavor],
   );
 
   useEffect(() => {
@@ -135,7 +133,7 @@ function UpdateResourceFlavourModal({
       toggle={toggle}
     >
       <ModalHeader tag="h2" toggle={toggle}>
-        Update {resourceFlavour.name}
+        Update {resourceFlavor.name}
       </ModalHeader>
       <Form
         className="form-rk-green"
@@ -146,16 +144,16 @@ function UpdateResourceFlavourModal({
           {result.error && <RtkOrDataServicesError error={result.error} />}
           <WarnAlert dismissible={false}>
             <LinkedResourceClassesSummary
-              emptyMessage="No resource class links to this flavour yet."
-              intro="These resource classes link to this flavour and will change with it:"
-              resourceFlavourId={resourceFlavour.id}
+              emptyMessage="No resource class links to this flavor yet."
+              intro="These resource classes link to this flavor and will change with it:"
+              resourceFlavorId={resourceFlavor.id}
               skip={!isOpen}
             />
           </WarnAlert>
-          <ResourceFlavourFormContent
+          <ResourceFlavorFormContent
             control={control}
             errors={errors}
-            idPrefix={`updateResourceFlavour-${resourceFlavour.id}`}
+            idPrefix={`updateResourceFlavor-${resourceFlavor.id}`}
           />
         </ModalBody>
         <ModalFooter>
@@ -169,7 +167,7 @@ function UpdateResourceFlavourModal({
             ) : (
               <CheckLg className={cx("bi", "me-1")} />
             )}
-            Update Resource Flavour
+            Update Resource Flavor
           </Button>
         </ModalFooter>
       </Form>

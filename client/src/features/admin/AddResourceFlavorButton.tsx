@@ -31,12 +31,12 @@ import {
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
-import { usePostResourceFlavoursMutation } from "../sessionsV2/api/computeResources.api";
-import type { ResourceFlavourForm } from "./adminComputeResources.types";
-import { buildResourceFlavour } from "./adminComputeResources.utils";
-import ResourceFlavourFormContent from "./ResourceFlavourFormContent";
+import { usePostResourceFlavorsMutation } from "../sessionsV2/api/computeResources.api";
+import type { ResourceFlavorForm } from "./adminComputeResources.types";
+import { buildResourceFlavor } from "./adminComputeResources.utils";
+import ResourceFlavorFormContent from "./ResourceFlavorFormContent";
 
-const DEFAULT_VALUES: ResourceFlavourForm = {
+const DEFAULT_VALUES: ResourceFlavorForm = {
   name: "",
   description: "",
   cpu: 1,
@@ -46,7 +46,7 @@ const DEFAULT_VALUES: ResourceFlavourForm = {
   max_storage: 1,
 };
 
-export default function AddResourceFlavourButton() {
+export default function AddResourceFlavorButton() {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -56,36 +56,36 @@ export default function AddResourceFlavourButton() {
     <>
       <Button color="primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
-        Add Resource Flavour
+        Add Resource Flavor
       </Button>
-      <AddResourceFlavourModal isOpen={isOpen} toggle={toggle} />
+      <AddResourceFlavorModal isOpen={isOpen} toggle={toggle} />
     </>
   );
 }
 
-interface AddResourceFlavourModalProps {
+interface AddResourceFlavorModalProps {
   isOpen: boolean;
   toggle: () => void;
 }
 
-function AddResourceFlavourModal({
+function AddResourceFlavorModal({
   isOpen,
   toggle,
-}: AddResourceFlavourModalProps) {
-  const [addResourceFlavour, result] = usePostResourceFlavoursMutation();
+}: AddResourceFlavorModalProps) {
+  const [addResourceFlavor, result] = usePostResourceFlavorsMutation();
 
   const {
     control,
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<ResourceFlavourForm>({ defaultValues: DEFAULT_VALUES });
+  } = useForm<ResourceFlavorForm>({ defaultValues: DEFAULT_VALUES });
 
   const onSubmit = useCallback(
-    (data: ResourceFlavourForm) => {
-      addResourceFlavour({ resourceFlavour: buildResourceFlavour(data) });
+    (data: ResourceFlavorForm) => {
+      addResourceFlavor({ resourceFlavorPost: buildResourceFlavor(data) });
     },
-    [addResourceFlavour],
+    [addResourceFlavor],
   );
 
   useEffect(() => {
@@ -105,7 +105,7 @@ function AddResourceFlavourModal({
       toggle={toggle}
     >
       <ModalHeader tag="h2" toggle={toggle}>
-        Add resource flavour
+        Add resource flavor
       </ModalHeader>
       <Form
         className="form-rk-green"
@@ -115,13 +115,13 @@ function AddResourceFlavourModal({
         <ModalBody>
           {result.error && <RtkOrDataServicesError error={result.error} />}
           <p>
-            A resource flavour is a named shape that resource classes can link
-            to instead of setting their own CPU, memory, GPU and disk values.
+            A resource flavor is a named shape that resource classes can link to
+            instead of setting their own CPU, memory, GPU and disk values.
           </p>
-          <ResourceFlavourFormContent
+          <ResourceFlavorFormContent
             control={control}
             errors={errors}
-            idPrefix="addResourceFlavour"
+            idPrefix="addResourceFlavor"
           />
         </ModalBody>
         <ModalFooter>
@@ -135,7 +135,7 @@ function AddResourceFlavourModal({
             ) : (
               <PlusLg className={cx("bi", "me-1")} />
             )}
-            Add Resource Flavour
+            Add Resource Flavor
           </Button>
         </ModalFooter>
       </Form>

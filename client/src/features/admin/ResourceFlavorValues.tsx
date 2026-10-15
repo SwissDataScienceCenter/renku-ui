@@ -20,24 +20,24 @@ import cx from "classnames";
 import type { ReactNode } from "react";
 import { Cpu, GpuCard, Hdd, HddStack, Memory } from "react-bootstrap-icons";
 
-import type { ResourceFlavourWithId } from "../sessionsV2/api/computeResources.api";
+import type { ResourceFlavor } from "../sessionsV2/api/computeResources.api";
 
-type ResourceFlavourShape = Pick<
-  ResourceFlavourWithId,
+type ResourceFlavorShape = Pick<
+  ResourceFlavor,
   "cpu" | "default_storage" | "gpu" | "max_storage" | "memory"
 >;
 
-interface ResourceFlavourValueProps {
+interface ResourceFlavorValueProps {
   children: ReactNode;
   icon: ReactNode;
   title: string;
 }
 
-function ResourceFlavourValue({
+function ResourceFlavorValue({
   children,
   icon,
   title,
-}: ResourceFlavourValueProps) {
+}: ResourceFlavorValueProps) {
   return (
     <span
       className={cx("align-items-center", "d-inline-flex", "gap-1")}
@@ -49,19 +49,19 @@ function ResourceFlavourValue({
   );
 }
 
-interface ResourceFlavourValuesProps {
+interface ResourceFlavorValuesProps {
   className?: string;
   compact?: boolean;
-  resourceFlavour: ResourceFlavourShape;
+  resourceFlavor: ResourceFlavorShape;
 }
 
-/** The five values a resource flavour supplies, one icon each. */
-export default function ResourceFlavourValues({
+/** The five values a resource flavor supplies, one icon each. */
+export default function ResourceFlavorValues({
   className,
   compact,
-  resourceFlavour,
-}: ResourceFlavourValuesProps) {
-  const { cpu, default_storage, gpu, max_storage, memory } = resourceFlavour;
+  resourceFlavor,
+}: ResourceFlavorValuesProps) {
+  const { cpu, default_storage, gpu, max_storage, memory } = resourceFlavor;
   const iconClasses = cx("bi", "flex-shrink-0");
 
   return (
@@ -73,33 +73,33 @@ export default function ResourceFlavourValues({
         className,
       )}
     >
-      <ResourceFlavourValue icon={<Cpu className={iconClasses} />} title="CPUs">
+      <ResourceFlavorValue icon={<Cpu className={iconClasses} />} title="CPUs">
         {cpu}&nbsp;{compact ? "CPU" : "CPUs"}
-      </ResourceFlavourValue>
-      <ResourceFlavourValue
+      </ResourceFlavorValue>
+      <ResourceFlavorValue
         icon={<Memory className={iconClasses} />}
         title="Memory"
       >
         {memory}&nbsp;GB{compact ? "" : " RAM"}
-      </ResourceFlavourValue>
-      <ResourceFlavourValue
+      </ResourceFlavorValue>
+      <ResourceFlavorValue
         icon={<GpuCard className={iconClasses} />}
         title="GPUs"
       >
         {gpu}&nbsp;{compact ? "GPU" : "GPUs"}
-      </ResourceFlavourValue>
-      <ResourceFlavourValue
+      </ResourceFlavorValue>
+      <ResourceFlavorValue
         icon={<Hdd className={iconClasses} />}
         title="Default disk size"
       >
         {default_storage}&nbsp;GB{compact ? "" : " default disk"}
-      </ResourceFlavourValue>
-      <ResourceFlavourValue
+      </ResourceFlavorValue>
+      <ResourceFlavorValue
         icon={<HddStack className={iconClasses} />}
         title="Maximum disk size"
       >
         {max_storage}&nbsp;GB{compact ? "" : " max disk"}
-      </ResourceFlavourValue>
+      </ResourceFlavorValue>
     </span>
   );
 }

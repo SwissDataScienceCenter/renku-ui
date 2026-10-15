@@ -53,7 +53,7 @@ import UpdateResourcePoolUsageLimitsButton from "../resourceUsage/UpdateResource
 import {
   useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation,
   useDeleteResourcePoolsByResourcePoolIdMutation,
-  useGetResourceFlavoursQuery,
+  useGetResourceFlavorsQuery,
   useGetResourcePoolsByResourcePoolIdMembersQuery,
   useGetResourcePoolsQuery,
   type PoolMemberResponse,
@@ -73,7 +73,7 @@ import ConnectedServicesSection from "./ConnectedServicesSection";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
 import ProjectStorageAllowSection from "./ProjectStorageAllowSection";
-import ResourceFlavoursSection from "./ResourceFlavoursSection";
+import ResourceFlavorsSection from "./ResourceFlavorsSection";
 import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
@@ -153,7 +153,7 @@ function AdminComputeResourcesOverview() {
 
       <ResourcePoolsList />
 
-      <ResourceFlavoursSection />
+      <ResourceFlavorsSection />
     </div>
   );
 }
@@ -466,34 +466,34 @@ function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
   );
 }
 
-interface ResourceClassFlavourNameProps {
-  resourceFlavourId: string | undefined;
+interface ResourceClassFlavorNameProps {
+  resourceFlavorId: string | undefined;
 }
 
-function ResourceClassFlavourName({
-  resourceFlavourId,
-}: ResourceClassFlavourNameProps) {
-  const { data: resourceFlavours } = useGetResourceFlavoursQuery(
+function ResourceClassFlavorName({
+  resourceFlavorId,
+}: ResourceClassFlavorNameProps) {
+  const { data: resourceFlavors } = useGetResourceFlavorsQuery(
     {},
-    { skip: resourceFlavourId == null },
+    { skip: resourceFlavorId == null },
   );
 
-  if (resourceFlavourId == null) {
+  if (resourceFlavorId == null) {
     return (
       <span className="text-muted">
         <Tags className={cx("bi", "me-1")} />
-        no flavour
+        no flavor
       </span>
     );
   }
 
-  const resourceFlavour = resourceFlavours?.find(
-    ({ id }) => id === resourceFlavourId,
+  const resourceFlavor = resourceFlavors?.find(
+    ({ id }) => id === resourceFlavorId,
   );
   return (
-    <span title="Resource flavour">
+    <span title="Resource flavor">
       <Tags className={cx("bi", "me-1")} />
-      {resourceFlavour?.name ?? resourceFlavourId}
+      {resourceFlavor?.name ?? resourceFlavorId}
     </span>
   );
 }
@@ -543,8 +543,8 @@ function ResourceClassItem({
           node affinities: {node_affinities?.length ?? 0}
         </div>
         <div className={cx(columnClasses)}>
-          <ResourceClassFlavourName
-            resourceFlavourId={resourceClass.resource_flavour_id}
+          <ResourceClassFlavorName
+            resourceFlavorId={resourceClass.resource_flavor_id}
           />
         </div>
         {requiresIntegerCpu && (

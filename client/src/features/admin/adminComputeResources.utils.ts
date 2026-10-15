@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import type { ResourceFlavourForm } from "./adminComputeResources.types";
+import type { ResourceFlavorForm } from "./adminComputeResources.types";
 
 interface RemoteKindLike {
   kind: string | null;
@@ -56,28 +56,28 @@ export function buildResourceClassRemote(
 }
 
 // The API takes an empty description as "clear it"; on create we omit it instead.
-export function buildResourceFlavourValues(data: ResourceFlavourForm) {
+export function buildResourceFlavorValues(data: ResourceFlavorForm) {
   return {
     name: data.name.trim(),
-    cpu: Number(data.cpu),
-    memory: Number(data.memory),
-    gpu: Number(data.gpu),
-    default_storage: Number(data.default_storage),
-    max_storage: Number(data.max_storage),
+    cpu: data.cpu,
+    memory: data.memory,
+    gpu: data.gpu,
+    default_storage: data.default_storage,
+    max_storage: data.max_storage,
   };
 }
 
-export function buildResourceFlavour(data: ResourceFlavourForm) {
+export function buildResourceFlavor(data: ResourceFlavorForm) {
   const description = data.description.trim();
   return {
-    ...buildResourceFlavourValues(data),
+    ...buildResourceFlavorValues(data),
     ...(description ? { description } : {}),
   };
 }
 
-export function buildResourceFlavourPatch(data: ResourceFlavourForm) {
+export function buildResourceFlavorPatch(data: ResourceFlavorForm) {
   return {
-    ...buildResourceFlavourValues(data),
+    ...buildResourceFlavorValues(data),
     description: data.description.trim(),
   };
 }

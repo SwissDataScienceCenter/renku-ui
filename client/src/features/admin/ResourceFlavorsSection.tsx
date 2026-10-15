@@ -25,35 +25,35 @@ import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
 import {
-  useGetResourceFlavoursQuery,
-  type ResourceFlavourWithId,
+  useGetResourceFlavorsQuery,
+  type ResourceFlavor,
 } from "../sessionsV2/api/computeResources.api";
-import AddResourceFlavourButton from "./AddResourceFlavourButton";
-import DeleteResourceFlavourButton from "./DeleteResourceFlavourButton";
+import AddResourceFlavorButton from "./AddResourceFlavorButton";
+import DeleteResourceFlavorButton from "./DeleteResourceFlavorButton";
 import { LinkedResourceClassesSummary } from "./LinkedResourceClasses";
-import ResourceFlavourValues from "./ResourceFlavourValues";
-import UpdateResourceFlavourButton from "./UpdateResourceFlavourButton";
+import ResourceFlavorValues from "./ResourceFlavorValues";
+import UpdateResourceFlavorButton from "./UpdateResourceFlavorButton";
 
-export default function ResourceFlavoursSection() {
+export default function ResourceFlavorsSection() {
   return (
     <div className="mt-4">
-      <h3 className="fs-4">Resource Flavours</h3>
+      <h3 className="fs-4">Resource Flavors</h3>
       <p className="mb-2">
-        A resource flavour is a named shape that resource classes across pools
-        can link to. A linked class reports the flavour&apos;s CPU, memory, GPU
+        A resource flavor is a named shape that resource classes across pools
+        can link to. A linked class reports the flavor&apos;s CPU, memory, GPU
         and disk values, and keeps its own name.
       </p>
-      <ResourceFlavours />
+      <ResourceFlavors />
     </div>
   );
 }
 
-function ResourceFlavours() {
+function ResourceFlavors() {
   const {
-    data: resourceFlavours,
+    data: resourceFlavors,
     error,
     isLoading,
-  } = useGetResourceFlavoursQuery({});
+  } = useGetResourceFlavorsQuery({});
 
   if (isLoading) {
     return <Loader />;
@@ -65,16 +65,16 @@ function ResourceFlavours() {
 
   return (
     <div>
-      <AddResourceFlavourButton />
+      <AddResourceFlavorButton />
 
       <div className="mt-2">
-        {!resourceFlavours || resourceFlavours.length === 0 ? (
-          <p className="mb-0">No resource flavour has been defined yet.</p>
+        {!resourceFlavors || resourceFlavors.length === 0 ? (
+          <p className="mb-0">No resource flavor has been defined yet.</p>
         ) : (
-          resourceFlavours.map((resourceFlavour) => (
-            <ResourceFlavourItem
-              key={resourceFlavour.id}
-              resourceFlavour={resourceFlavour}
+          resourceFlavors.map((resourceFlavor) => (
+            <ResourceFlavorItem
+              key={resourceFlavor.id}
+              resourceFlavor={resourceFlavor}
             />
           ))
         )}
@@ -83,12 +83,12 @@ function ResourceFlavours() {
   );
 }
 
-interface ResourceFlavourItemProps {
-  resourceFlavour: ResourceFlavourWithId;
+interface ResourceFlavorItemProps {
+  resourceFlavor: ResourceFlavor;
 }
 
-function ResourceFlavourItem({ resourceFlavour }: ResourceFlavourItemProps) {
-  const { description, name } = resourceFlavour;
+function ResourceFlavorItem({ resourceFlavor }: ResourceFlavorItemProps) {
+  const { description, name } = resourceFlavor;
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
@@ -120,7 +120,7 @@ function ResourceFlavourItem({ resourceFlavour }: ResourceFlavourItemProps) {
           <div
             className={cx("align-items-center", "d-flex", "gap-3", "ms-auto")}
           >
-            <ResourceFlavourValues
+            <ResourceFlavorValues
               className={cx(
                 "d-none",
                 "d-lg-inline-flex",
@@ -129,7 +129,7 @@ function ResourceFlavourItem({ resourceFlavour }: ResourceFlavourItemProps) {
                 "text-muted",
               )}
               compact
-              resourceFlavour={resourceFlavour}
+              resourceFlavor={resourceFlavor}
             />
             <ChevronFlippedIcon flipped={isOpen} />
           </div>
@@ -144,14 +144,14 @@ function ResourceFlavourItem({ resourceFlavour }: ResourceFlavourItemProps) {
           </div>
 
           <div className={cx("border-bottom", "py-2")}>
-            <ResourceFlavourValues resourceFlavour={resourceFlavour} />
+            <ResourceFlavorValues resourceFlavor={resourceFlavor} />
           </div>
 
           <div className={cx("border-bottom", "py-2")}>
             <LinkedResourceClassesSummary
-              emptyMessage="No resource class links to this flavour."
+              emptyMessage="No resource class links to this flavor."
               intro="Linked resource classes:"
-              resourceFlavourId={resourceFlavour.id}
+              resourceFlavorId={resourceFlavor.id}
               skip={!isOpen}
             />
           </div>
@@ -165,8 +165,8 @@ function ResourceFlavourItem({ resourceFlavour }: ResourceFlavourItemProps) {
             "pt-0",
           )}
         >
-          <UpdateResourceFlavourButton resourceFlavour={resourceFlavour} />
-          <DeleteResourceFlavourButton resourceFlavour={resourceFlavour} />
+          <UpdateResourceFlavorButton resourceFlavor={resourceFlavor} />
+          <DeleteResourceFlavorButton resourceFlavor={resourceFlavor} />
         </CardBody>
       </Collapse>
     </Card>

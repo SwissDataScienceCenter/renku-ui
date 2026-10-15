@@ -44,9 +44,9 @@ import {
   poolRequiresIntegerCpu,
 } from "./adminComputeResources.utils";
 import ResourceClassFirecrestFields from "./forms/ResourceClassFirecrestFields";
-import ResourceClassFlavourSelect, {
-  NO_RESOURCE_FLAVOUR,
-} from "./ResourceClassFlavourSelect";
+import ResourceClassFlavorSelect, {
+  NO_RESOURCE_FLAVOR,
+} from "./ResourceClassFlavorSelect";
 
 interface AddResourceClassButtonProps {
   resourcePool: ResourcePoolWithId;
@@ -107,10 +107,10 @@ function AddResourceClassModal({
       memory: 1,
       name: "",
       remote: { systemName: "", partition: "", forwardResourceValues: false },
-      resource_flavour_id: NO_RESOURCE_FLAVOUR,
+      resource_flavor_id: NO_RESOURCE_FLAVOR,
     },
   });
-  const selectedFlavourId = useWatch({ control, name: "resource_flavour_id" });
+  const selectedFlavorId = useWatch({ control, name: "resource_flavor_id" });
   const {
     fields: tolerationsFields,
     append: tolerationsAppend,
@@ -128,21 +128,21 @@ function AddResourceClassModal({
     (data: ResourceClassForm) => {
       const tolerations = data.tolerations.map(({ label }) => label);
       const remote = buildResourceClassRemote(data.remote, requiresIntegerCpu);
-      const { resource_flavour_id, ...values } = data;
-      const resourceClassCreate =
-        resource_flavour_id === NO_RESOURCE_FLAVOUR
+      const { resource_flavor_id, ...values } = data;
+      const resourceClass =
+        resource_flavor_id === NO_RESOURCE_FLAVOR
           ? { ...values, tolerations, remote }
           : {
               name: values.name,
               default: values.default,
               node_affinities: values.node_affinities,
-              resource_flavour_id,
+              resource_flavor_id,
               tolerations,
               remote,
             };
       addResourceClass({
         resourcePoolId: resourcePool.id,
-        resourceClassCreate,
+        resourceClass,
       });
     },
     [addResourceClass, requiresIntegerCpu, resourcePool.id],
@@ -202,12 +202,12 @@ function AddResourceClassModal({
             <div className="invalid-feedback">Please provide a name</div>
           </div>
 
-          <ResourceClassFlavourSelect
+          <ResourceClassFlavorSelect
             control={control}
             idPrefix="addResourceClass"
           />
 
-          {selectedFlavourId === NO_RESOURCE_FLAVOUR && (
+          {selectedFlavorId === NO_RESOURCE_FLAVOR && (
             <>
               <div className="mb-3">
                 <Label className="form-label" for={`addResourceClassCpu-${id}`}>

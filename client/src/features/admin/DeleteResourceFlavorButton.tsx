@@ -24,20 +24,20 @@ import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import {
-  useDeleteResourceFlavoursByResourceFlavourIdMutation,
-  type ResourceFlavourWithId,
+  useDeleteResourceFlavorsByResourceFlavorIdMutation,
+  type ResourceFlavor,
 } from "../sessionsV2/api/computeResources.api";
 import LinkedResourceClasses, {
   useLinkedResourceClasses,
 } from "./LinkedResourceClasses";
 
-interface DeleteResourceFlavourButtonProps {
-  resourceFlavour: ResourceFlavourWithId;
+interface DeleteResourceFlavorButtonProps {
+  resourceFlavor: ResourceFlavor;
 }
 
-export default function DeleteResourceFlavourButton({
-  resourceFlavour,
-}: DeleteResourceFlavourButtonProps) {
+export default function DeleteResourceFlavorButton({
+  resourceFlavor,
+}: DeleteResourceFlavorButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -49,34 +49,34 @@ export default function DeleteResourceFlavourButton({
         <TrashFill className={cx("bi", "me-1")} />
         Delete
       </Button>
-      <DeleteResourceFlavourModal
+      <DeleteResourceFlavorModal
         isOpen={isOpen}
-        resourceFlavour={resourceFlavour}
+        resourceFlavor={resourceFlavor}
         toggle={toggle}
       />
     </>
   );
 }
 
-interface DeleteResourceFlavourModalProps {
+interface DeleteResourceFlavorModalProps {
   isOpen: boolean;
-  resourceFlavour: ResourceFlavourWithId;
+  resourceFlavor: ResourceFlavor;
   toggle: () => void;
 }
 
-function DeleteResourceFlavourModal({
+function DeleteResourceFlavorModal({
   isOpen,
-  resourceFlavour,
+  resourceFlavor,
   toggle,
-}: DeleteResourceFlavourModalProps) {
+}: DeleteResourceFlavorModalProps) {
   const { data: linkedClasses, isLoading: linkedClassesIsLoading } =
-    useLinkedResourceClasses(resourceFlavour.id, !isOpen);
+    useLinkedResourceClasses(resourceFlavor.id, !isOpen);
 
-  const [deleteResourceFlavour, result] =
-    useDeleteResourceFlavoursByResourceFlavourIdMutation();
+  const [deleteResourceFlavor, result] =
+    useDeleteResourceFlavorsByResourceFlavorIdMutation();
   const onDelete = useCallback(() => {
-    deleteResourceFlavour({ resourceFlavourId: resourceFlavour.id });
-  }, [deleteResourceFlavour, resourceFlavour.id]);
+    deleteResourceFlavor({ resourceFlavorId: resourceFlavor.id });
+  }, [deleteResourceFlavor, resourceFlavor.id]);
 
   useEffect(() => {
     if (result.isSuccess) {
@@ -94,35 +94,32 @@ function DeleteResourceFlavourModal({
           <Loader className="me-1" inline size={16} />
         ) : isLinked ? (
           <>
-            <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
-              This resource flavour is still in use
+            <h3 className="text-danger">
+              This resource flavor is still in use
             </h3>
             <p className="mb-1">
-              Unlink <strong>{resourceFlavour.name}</strong> from these resource
+              Unlink <strong>{resourceFlavor.name}</strong> from these resource
               classes before you delete it:
             </p>
             <LinkedResourceClasses classes={linkedClasses} />
           </>
         ) : (
           <>
-            <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
-              Are you sure?
-            </h3>
+            <h3 className="text-danger">Are you sure?</h3>
             <p className="mb-0">
               Please confirm that you want to delete the{" "}
-              <strong>{resourceFlavour.name}</strong> resource flavour. No
+              <strong>{resourceFlavor.name}</strong> resource flavor. No
               resource class links to it.
             </p>
           </>
         )}
       </ModalBody>
-      <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-danger" onClick={toggle}>
+      <ModalFooter>
+        <Button color="outline-danger" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
-          Cancel, keep resource flavour
+          Cancel, keep resource flavor
         </Button>
         <Button
-          className="ms-2"
           color="danger"
           disabled={isLinked || linkedClassesIsLoading}
           onClick={onDelete}
@@ -132,7 +129,7 @@ function DeleteResourceFlavourModal({
           ) : (
             <CheckLg className={cx("bi", "me-1")} />
           )}
-          Yes, delete this resource flavour
+          Yes, delete this resource flavor
         </Button>
       </ModalFooter>
     </Modal>

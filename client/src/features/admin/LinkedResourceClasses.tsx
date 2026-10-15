@@ -24,17 +24,17 @@ import { Button } from "reactstrap";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import {
-  useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourMutation,
-  useGetResourceFlavoursByResourceFlavourIdResourceClassesQuery,
+  useGetResourceFlavorsByResourceFlavorIdResourceClassesQuery,
+  usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation,
   type LinkedResourceClass,
 } from "../sessionsV2/api/computeResources.api";
 
 export function useLinkedResourceClasses(
-  resourceFlavourId: string,
+  resourceFlavorId: string,
   skip?: boolean,
 ) {
-  return useGetResourceFlavoursByResourceFlavourIdResourceClassesQuery(
-    { resourceFlavourId },
+  return useGetResourceFlavorsByResourceFlavorIdResourceClassesQuery(
+    { resourceFlavorId },
     { skip },
   );
 }
@@ -46,20 +46,21 @@ interface LinkedResourceClassesProps {
 export default function LinkedResourceClasses({
   classes,
 }: LinkedResourceClassesProps) {
-  const [unlinkResourceFlavour, result] =
-    useDeleteResourcePoolsByResourcePoolIdClassesAndClassIdResourceFlavourMutation();
+  const [unlinkResourceFlavor, result] =
+    usePatchResourcePoolsByResourcePoolIdClassesAndClassIdMutation();
 
   const onUnlink = useCallback(
     (resourceClass: LinkedResourceClass) => {
       if (resourceClass.resource_pool_id == null) {
         return;
       }
-      unlinkResourceFlavour({
+      unlinkResourceFlavor({
         resourcePoolId: resourceClass.resource_pool_id,
         classId: `${resourceClass.id}`,
+        resourceClassPatch: { resource_flavor_id: "" },
       });
     },
-    [unlinkResourceFlavour],
+    [unlinkResourceFlavor],
   );
 
   const pendingClassId = result.isLoading
@@ -80,7 +81,7 @@ export default function LinkedResourceClasses({
         ))}
       </ul>
       <div className="form-text">
-        Unlinking copies the flavour&apos;s current values onto the resource
+        Unlinking copies the flavor&apos;s current values onto the resource
         class and leaves them there.
       </div>
     </>
@@ -170,23 +171,28 @@ function LinkedResourceClassItem({
 interface LinkedResourceClassesSummaryProps {
   emptyMessage: string;
   intro: string;
-  resourceFlavourId: string;
+  resourceFlavorId: string;
   skip?: boolean;
 }
 
 export function LinkedResourceClassesSummary({
   emptyMessage,
   intro,
-  resourceFlavourId,
+  resourceFlavorId,
   skip,
 }: LinkedResourceClassesSummaryProps) {
-  const { data: classes, isLoading } = useLinkedResourceClasses(
-    resourceFlavourId,
-    skip,
-  );
+  const {
+    data: classes,
+    error,
+    isLoading,
+  } = useLinkedResourceClasses(resourceFlavorId, skip);
 
   if (isLoading) {
     return <Loader className="me-1" inline size={16} />;
+  }
+
+  if (error) {
+    return <RtkOrDataServicesError error={error} />;
   }
 
   if (!classes || classes.length === 0) {

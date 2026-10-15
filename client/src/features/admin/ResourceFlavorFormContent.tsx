@@ -20,22 +20,22 @@ import cx from "classnames";
 import { Controller, type Control, type FieldErrors } from "react-hook-form";
 import { Input, Label } from "reactstrap";
 
-import type { ResourceFlavourForm } from "./adminComputeResources.types";
+import type { ResourceFlavorForm } from "./adminComputeResources.types";
 
-export const RESOURCE_FLAVOUR_NAME_MIN_LENGTH = 5;
+export const RESOURCE_FLAVOR_NAME_MIN_LENGTH = 5;
 const DESCRIPTION_MAX_LENGTH = 500;
 
-interface ResourceFlavourFormContentProps {
-  control: Control<ResourceFlavourForm>;
-  errors: FieldErrors<ResourceFlavourForm>;
+interface ResourceFlavorFormContentProps {
+  control: Control<ResourceFlavorForm>;
+  errors: FieldErrors<ResourceFlavorForm>;
   idPrefix: string;
 }
 
-export default function ResourceFlavourFormContent({
+export default function ResourceFlavorFormContent({
   control,
   errors,
   idPrefix,
-}: ResourceFlavourFormContentProps) {
+}: ResourceFlavorFormContentProps) {
   return (
     <>
       <div className="mb-3">
@@ -55,11 +55,11 @@ export default function ResourceFlavourFormContent({
           )}
           rules={{
             required: true,
-            minLength: RESOURCE_FLAVOUR_NAME_MIN_LENGTH,
+            minLength: RESOURCE_FLAVOR_NAME_MIN_LENGTH,
           }}
         />
         <div className="invalid-feedback">
-          Please provide a name of at least {RESOURCE_FLAVOUR_NAME_MIN_LENGTH}{" "}
+          Please provide a name of at least {RESOURCE_FLAVOR_NAME_MIN_LENGTH}{" "}
           characters
         </div>
       </div>
@@ -75,7 +75,7 @@ export default function ResourceFlavourFormContent({
             <Input
               className={cx("form-control", errors.description && "is-invalid")}
               id={`${idPrefix}Description`}
-              placeholder="Why this flavour is sized the way it is"
+              placeholder="Why this flavor is sized the way it is"
               rows={2}
               type="textarea"
               {...field}

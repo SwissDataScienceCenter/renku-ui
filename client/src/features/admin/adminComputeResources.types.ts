@@ -66,10 +66,10 @@ export interface ResourceClassForm {
   tolerations: ResourceClassFormToleration[];
   node_affinities: ResourceClassFormNodeAffinity[];
   remote: ResourceClassFormRemote;
-  resource_flavour_id: string;
+  resource_flavor_id: string;
 }
 
-export interface ResourceFlavourForm {
+export interface ResourceFlavorForm {
   name: string;
   description: string;
   cpu: number;
