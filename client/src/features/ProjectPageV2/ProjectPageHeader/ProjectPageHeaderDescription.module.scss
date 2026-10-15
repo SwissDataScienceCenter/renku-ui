@@ -1,0 +1,56 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+
+.description {
+  --description-line-height: 1.5em;
+
+  flex: 1 1 auto;
+  line-height: var(--description-line-height);
+  overflow-wrap: anywhere;
+}
+
+.descriptionText {
+  white-space: pre-line;
+}
+
+.descriptionClamped {
+  max-height: calc(var(--description-line-height) * 2);
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    float: right;
+    width: 0;
+    height: var(--description-line-height);
+  }
+
+  .descriptionToggle {
+    clear: both;
+    float: right;
+  }
+
+  .descriptionEllipsis {
+    float: right;
+  }
+}
+
+.descriptionToggle {
+  background: none;
+  border: 0;
+  color: var(--#{$prefix}link-color);
+  cursor: pointer;
+  line-height: inherit;
+  margin-inline-start: 0.25rem;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    border-radius: 2px;
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
