@@ -42,12 +42,13 @@ export default function GroupV2MemberListDisplay({
   ));
 
   if (!byRole.length) return null;
+  const title = byRole.length === 1 ? capitalize(role) : capitalize(`${role}s`);
 
   return (
     <div>
       <div className={cx("d-flex", "align-items-center", "gap-3")}>
         <div className="border-top" style={{ width: "20px" }}></div>
-        <span className={cx("fs-5", "text-muted")}>{capitalize(role)}</span>
+        <span className={cx("fs-5", "text-muted")}>{title}</span>
         <div className={cx("flex-grow-1", "border-top")}></div>
       </div>
       <div className={cx("d-flex", "flex-column", "gap-2", "my-2")}>
