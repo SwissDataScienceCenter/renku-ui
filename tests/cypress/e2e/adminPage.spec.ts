@@ -67,11 +67,11 @@ describe("admin page", () => {
     cy.visit("/admin");
 
     cy.get("h1").contains("Admin Panel").should("be.visible");
-    cy.get("h2").contains("Incidents and Maintenance").should("be.visible");
+    cy.get("h2").contains("Maintenance banners").should("be.visible");
 
     cy.getDataCy("admin-compute-resources-link").click();
     cy.location("pathname").should("eq", "/admin/compute-resources");
-    cy.get("h2").contains("Compute Resources").should("be.visible");
+    cy.get("h2").contains("Resource pools").should("be.visible");
   });
 
   it("should show the link to the admin page", () => {
@@ -108,8 +108,8 @@ describe("admin page", () => {
 
     cy.get("h1").contains("Admin Panel").should("be.visible");
 
-    // Check the "Add Resource Pool" button
-    cy.get("button").contains("Add Resource Pool").should("be.visible").click();
+    // Check the "Add resource pool" button
+    cy.get("button").contains("Add resource pool").should("be.visible").click();
     cy.get(".modal")
       .contains(".modal-title", "Add resource pool")
       .should("be.visible");
@@ -224,14 +224,14 @@ describe("admin page", () => {
 
     cy.get("h1").contains("Admin Panel").should("be.visible");
 
-    // Check the "Add Resource Pool" button
-    cy.get("button").contains("Add Resource Pool").should("be.visible").click();
+    // Check the "Add resource pool" button
+    cy.get("button").contains("Add resource pool").should("be.visible").click();
     cy.get(".modal").within(() => {
       cy.contains(".modal-title", "Add resource pool").should("be.visible");
       cy.get("#addResourcePoolName").should("be.visible").type("Local pool");
     });
     cy.get(".modal")
-      .contains("button", "Add Resource Pool")
+      .contains("button", "Add resource pool")
       .should("be.visible")
       .click();
     cy.wait("@postResourcePool");
@@ -256,8 +256,8 @@ describe("admin page", () => {
 
     cy.get("h1").contains("Admin Panel").should("be.visible");
 
-    // Check the "Add Resource Pool" button
-    cy.get("button").contains("Add Resource Pool").should("be.visible").click();
+    // Check the "Add resource pool" button
+    cy.get("button").contains("Add resource pool").should("be.visible").click();
     cy.get(".modal").within(() => {
       cy.contains(".modal-title", "Add resource pool").should("be.visible");
       cy.get("#addResourcePoolRemote").should("be.visible").click();
@@ -269,7 +269,7 @@ describe("admin page", () => {
         .type("https://runai.example.com");
     });
     cy.get(".modal")
-      .contains("button", "Add Resource Pool")
+      .contains("button", "Add resource pool")
       .should("be.visible")
       .click();
     cy.wait("@postResourcePool");
@@ -305,7 +305,7 @@ describe("admin page", () => {
           .should("be.visible")
           .click();
       });
-    cy.get("button[type='submit']").should("be.visible").click();
+    cy.get(".modal button[type='submit']").should("be.visible").click();
     cy.wait("@putResourcePoolLimits");
     cy.get(".card")
       .contains(".card", "Special pool")

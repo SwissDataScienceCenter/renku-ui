@@ -35,7 +35,7 @@ export const ADMIN_TABS = [
   },
   {
     path: ABSOLUTE_ROUTES.v2.admin.computeResources,
-    title: "Resources",
+    title: "Compute",
     icon: Cpu,
     dataCy: "admin-compute-resources-link",
   },
