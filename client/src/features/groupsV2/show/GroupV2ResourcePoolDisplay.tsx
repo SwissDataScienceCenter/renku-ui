@@ -47,34 +47,44 @@ export default function GroupV2ResourcePoolDisplay({
     return null;
   }
 
+  const hasResourcePools = data != undefined && data?.length > 0;
+
   return (
     <div
       data-cy="group-resource-pools"
-      className={cx("d-flex", "align-items-center", "gap-2")}
+      className={cx("d-flex", "align-items-center", "gap-1")}
     >
       <Cpu className="bi" />
-      <div className={cx("text-body-secondary", "small")}>Resource Pools:</div>
-      {data?.length == 0 && <Badge className="me-2">{data?.length ?? 0}</Badge>}
-      <div className={cx("d-flex", "flex-row", "gap-1")}>
-        {data &&
-          data?.length > 0 &&
-          data.map((rp) => (
+      <div className={cx("text-body-secondary")}>Resource Pools</div>
+      {!hasResourcePools && <Badge>{data?.length ?? 0}</Badge>}
+      {data != undefined && hasResourcePools && (
+        <div
+          className={cx("d-flex", "flex-row", "align-items-center", "gap-1")}
+        >
+          {":"}
+          {data.map((rp) => (
             <span
               key={rp.id}
-              className={cx("badge", "bg-secondary-subtle", "text-secondary")}
+              className={cx(
+                "badge",
+                "bg-secondary-subtle",
+                "text-secondary-emphasis",
+                "fw-semibold",
+              )}
             >
               {rp.name}
             </span>
           ))}
-      </div>
+        </div>
+      )}
 
       <span className="ms-1" data-cy="group-resource-pools-info">
         <MoreInfo trigger="legacy">
           <LazyMarkdown>{errorMessage}</LazyMarkdown>
           <ExternalLink href={NEW_DOCS_RESOURCE_POOLS_AND_CLASSES}>
             Read more
-          </ExternalLink>
-          {!errorMessage && " about custom resource pools"}
+          </ExternalLink>{" "}
+          about custom resource pools.
         </MoreInfo>
       </span>
     </div>
