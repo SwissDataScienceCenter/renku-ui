@@ -167,7 +167,7 @@ function UpdateConnectedServiceModal({
     >
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader tag="h2" toggle={toggle}>
-          Update intergation
+          Update integration
         </ModalHeader>
         <ModalBody>
           {result.error && <RtkOrDataServicesError error={result.error} />}
