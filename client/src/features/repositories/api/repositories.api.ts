@@ -93,25 +93,46 @@ const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
 });
 
 const withTagHandling = withResponseRewrite.enhanceEndpoints({
-  addTagTypes: ["Repository"],
+  addTagTypes: ["Repository", "RepositoryPermissions"],
   endpoints: {
     getRepository: {
       providesTags: (result, _error, { url }) =>
-        result ? [{ type: "Repository" as const, id: url }] : [],
+        result
+          ? [{ type: "Repository" as const, id: url }, "Repository"]
+          : ["Repository"],
     },
     getRepositories: {
       providesTags: (result) =>
         result != null
-          ? result.map(({ url }) => ({
-              type: "Repository" as const,
-              id: url,
-            }))
-          : [],
+          ? [
+              ...result.map(({ url }) => ({
+                type: "Repository" as const,
+                id: url,
+              })),
+              "Repository",
+            ]
+          : ["Repository"],
+    },
+    getRepositoryPermissions: {
+      providesTags: (
+        result,
+        _error,
+        { repositoryPermissionsParams: { url } },
+      ) =>
+        result
+          ? [
+              { type: "RepositoryPermissions", id: url },
+              "RepositoryPermissions",
+            ]
+          : ["RepositoryPermissions"],
     },
   },
 });
 
 export { withTagHandling as repositoriesApi };
-export const { useGetRepositoriesQuery, useGetRepositoryQuery } =
-  withTagHandling;
+export const {
+  useGetRepositoriesQuery,
+  useGetRepositoryQuery,
+  useGetRepositoryPermissionsQuery,
+} = withTagHandling;
 export type * from "./repositories.generated-api";
