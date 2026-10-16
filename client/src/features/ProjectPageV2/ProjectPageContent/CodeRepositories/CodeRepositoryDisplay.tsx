@@ -69,6 +69,7 @@ import {
 } from "~/features/connectedServices/connectedServices.constants";
 import {
   repositoriesApi,
+  useGetRepositoryPermissionsQuery,
   useGetRepositoryQuery,
 } from "~/features/repositories/api/repositories.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
@@ -492,49 +493,63 @@ export function RepositoryPermissionsBadge({
     url: repositoryUrl,
   });
 
+  const {
+    data: permissionsData,
+    isLoading: isLoadingPermissions,
+    error: permissionsError,
+  } = useGetRepositoryPermissionsQuery(
+    data?.provider?.kind === "github" && data.connection?.status === "connected"
+      ? { repositoryPermissionsParams: { url: repositoryUrl } }
+      : skipToken,
+  );
+
+  const integrationNoAccess = useMemo(
+    () =>
+      data?.provider?.kind === "github" &&
+      data.connection?.status === "connected" &&
+      !permissionsData?.permissions?.integration_access,
+    [data, permissionsData],
+  );
+  const pullPermission = useMemo(
+    () =>
+      (data?.metadata?.pull_permission &&
+        (data.metadata.visibility === "public" || !integrationNoAccess)) ??
+      false,
+    [data, integrationNoAccess],
+  );
+  const pushPermission = useMemo(
+    () => (data?.metadata?.push_permission && !integrationNoAccess) ?? false,
+    [data, integrationNoAccess],
+  );
+
   let badgeColor: "light" | "danger" | "warning" | "success";
   let badgeText: string;
 
-  if (isLoading) {
+  if (isLoading || isLoadingPermissions) {
     badgeColor = "light";
     badgeText = "Loading...";
-  } else if (error) {
+  } else if (error ?? permissionsError) {
     badgeColor = "danger";
     badgeText = "Error";
-  } else if (!data?.metadata?.pull_permission && !data?.provider?.id) {
+  } else if (!pullPermission && !data?.provider?.id) {
     badgeColor = "danger";
     badgeText = "Inaccessible";
-  } else if (
-    !data?.metadata?.pull_permission &&
-    data?.connection?.status !== "connected"
-  ) {
+  } else if (!pullPermission && data?.connection?.status !== "connected") {
     badgeColor = "danger";
     badgeText = "Integration required";
-  } else if (
-    !data?.metadata?.pull_permission &&
-    data?.connection?.status === "connected"
-  ) {
+  } else if (!pullPermission && data?.connection?.status === "connected") {
     badgeColor = "danger";
     badgeText = "Inaccessible";
-  } else if (!data?.metadata?.push_permission && !data?.provider?.id) {
+  } else if (!pushPermission && !data?.provider?.id) {
     badgeText = hasWriteAccess ? "Request integration" : "Read only";
     badgeColor = hasWriteAccess ? "warning" : "success";
-  } else if (
-    !data?.metadata?.push_permission &&
-    data?.connection?.status !== "connected"
-  ) {
+  } else if (!pushPermission && data?.connection?.status !== "connected") {
     badgeText = hasWriteAccess ? "Integration recommended" : "Read only";
     badgeColor = hasWriteAccess ? "warning" : "success";
-  } else if (
-    !data?.metadata?.push_permission &&
-    data?.connection?.status === "connected"
-  ) {
+  } else if (!pushPermission && data?.connection?.status === "connected") {
     badgeColor = "success";
     badgeText = "Read only";
-  } else if (
-    data?.metadata?.push_permission &&
-    data?.connection?.status === "connected"
-  ) {
+  } else if (pushPermission && data?.connection?.status === "connected") {
     badgeColor = "success";
     badgeText = "Read & write";
   } else {
@@ -542,11 +557,12 @@ export function RepositoryPermissionsBadge({
     badgeText = "Unexpected";
   }
 
-  const badgeIcon = isLoading ? (
-    <Loader className="me-1" inline size={12} />
-  ) : (
-    <CircleFill className={cx("me-1", "bi")} />
-  );
+  const badgeIcon =
+    isLoading || isLoadingPermissions ? (
+      <Loader className="me-1" inline size={12} />
+    ) : (
+      <CircleFill className={cx("me-1", "bi")} />
+    );
 
   return (
     <RenkuBadge
@@ -580,7 +596,15 @@ function RepositoryView({
     url: repositoryUrl,
   });
 
-  // TODO: Get additional details for GitHub
+  const {
+    data: permissionsData,
+    isLoading: isLoadingPermissions,
+    error: permissionsError,
+  } = useGetRepositoryPermissionsQuery(
+    data?.provider?.kind === "github" && data.connection?.status === "connected"
+      ? { repositoryPermissionsParams: { url: repositoryUrl } }
+      : skipToken,
+  );
 
   const webUrl = useMemo(() => {
     return data?.metadata?.web_url ? data.metadata.web_url : repositoryUrl;
@@ -594,6 +618,29 @@ function RepositoryView({
   }, [data, pathname, hash]);
 
   const projectPermissions = useProjectPermissions({ projectId: project.id });
+
+  const integrationNoAccess = useMemo(
+    () =>
+      data?.provider?.kind === "github" &&
+      data.connection?.status === "connected" &&
+      !permissionsData?.permissions?.integration_access,
+    [data, permissionsData],
+  );
+  const pullPermission = useMemo(
+    () =>
+      (data?.metadata?.pull_permission &&
+        (data.metadata.visibility === "public" || !integrationNoAccess)) ??
+      false,
+    [data, integrationNoAccess],
+  );
+  const pushPermission = useMemo(
+    () => (data?.metadata?.push_permission && !integrationNoAccess) ?? false,
+    [data, integrationNoAccess],
+  );
+  const integrationNoAccessButUserCanPush = useMemo(
+    () => integrationNoAccess && data?.metadata?.push_permission,
+    [data, integrationNoAccess],
+  );
 
   return (
     <Offcanvas
@@ -616,7 +663,7 @@ function RepositoryView({
             </OffcanvasHeaderWithType>
           </div>
 
-          {isLoading ? (
+          {isLoading || isLoadingPermissions ? (
             <Loader />
           ) : (
             <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -646,8 +693,11 @@ function RepositoryView({
                   Permissions
                 </CardHeader>
                 <CardBody>
-                  {error ? (
-                    <RtkOrDataServicesError error={error} dismissible={false} />
+                  {(error ?? permissionsError) ? (
+                    <RtkOrDataServicesError
+                      error={error ?? permissionsError}
+                      dismissible={false}
+                    />
                   ) : (
                     <>
                       <div
@@ -671,10 +721,7 @@ function RepositoryView({
                         data-cy="code-repository-pull-permission"
                       >
                         <span>
-                          Pull:{" "}
-                          <YesNoBadge
-                            value={data?.metadata?.pull_permission ?? false}
-                          />
+                          Pull: <YesNoBadge value={pullPermission} />
                         </span>
                       </div>
 
@@ -683,10 +730,7 @@ function RepositoryView({
                         data-cy="code-repository-push-permission"
                       >
                         <span>
-                          Push:{" "}
-                          <YesNoBadge
-                            value={data?.metadata?.push_permission ?? false}
-                          />
+                          Push: <YesNoBadge value={pushPermission} />
                         </span>
                       </div>
 
@@ -698,7 +742,9 @@ function RepositoryView({
                           <span>
                             {data?.connection?.status === "connected"
                               ? "connected"
-                              : "not connected"}{" "}
+                              : "not connected"}
+                            {integrationNoAccessButUserCanPush &&
+                              ", but has no access"}{" "}
                             (
                             <Link
                               to={{
@@ -748,9 +794,43 @@ export function RepositoryCallToActionAlert({
   const { params } = useContext(AppContext);
   const renkuContactEmail =
     params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
+
   const { data, isLoading, error } = useGetRepositoryQuery({
     url: repositoryUrl,
   });
+
+  const {
+    data: permissionsData,
+    isLoading: isLoadingPermissions,
+    error: permissionsError,
+  } = useGetRepositoryPermissionsQuery(
+    data?.provider?.kind === "github" && data.connection?.status === "connected"
+      ? { repositoryPermissionsParams: { url: repositoryUrl } }
+      : skipToken,
+  );
+
+  const integrationNoAccess = useMemo(
+    () =>
+      data?.provider?.kind === "github" &&
+      data.connection?.status === "connected" &&
+      !permissionsData?.permissions?.integration_access,
+    [data, permissionsData],
+  );
+  const pullPermission = useMemo(
+    () =>
+      (data?.metadata?.pull_permission &&
+        (data.metadata.visibility === "public" || !integrationNoAccess)) ??
+      false,
+    [data, integrationNoAccess],
+  );
+  const pushPermission = useMemo(
+    () => (data?.metadata?.push_permission && !integrationNoAccess) ?? false,
+    [data, integrationNoAccess],
+  );
+  const integrationNoAccessButUserCanPush = useMemo(
+    () => integrationNoAccess && data?.metadata?.push_permission,
+    [data, integrationNoAccess],
+  );
 
   const { data: userInfo } = useGetUserQueryState();
   const anonymousUser = useMemo(() => {
@@ -783,12 +863,17 @@ export function RepositoryCallToActionAlert({
     }).toString()}`;
   }, [data, pathname, hash]);
 
-  if (isLoading) return null;
+  if (isLoading || isLoadingPermissions) return null;
 
-  if (error)
-    return <RtkOrDataServicesError error={error} dismissible={false} />;
+  if (error ?? permissionsError)
+    return (
+      <RtkOrDataServicesError
+        error={error ?? permissionsError}
+        dismissible={false}
+      />
+    );
 
-  if (!data?.metadata?.pull_permission) {
+  if (!pullPermission) {
     return (
       <ErrorAlert
         className="mb-0"
@@ -873,11 +958,7 @@ export function RepositoryCallToActionAlert({
     );
   }
 
-  if (
-    !data?.metadata?.push_permission &&
-    !data?.provider?.id &&
-    hasWriteAccess
-  ) {
+  if (!pushPermission && !data?.provider?.id && hasWriteAccess) {
     return (
       <WarnAlert
         className="mb-0"
@@ -907,7 +988,7 @@ export function RepositoryCallToActionAlert({
   }
 
   if (
-    !data?.metadata?.push_permission &&
+    !pushPermission &&
     data?.provider?.id &&
     data?.connection?.status !== "connected" &&
     hasWriteAccess
@@ -949,7 +1030,7 @@ export function RepositoryCallToActionAlert({
   }
 
   if (
-    !data?.metadata?.push_permission &&
+    !pushPermission &&
     data?.provider?.id &&
     data?.connection?.status !== "connected" &&
     !hasWriteAccess
@@ -1003,6 +1084,36 @@ export function RepositoryCallToActionAlert({
           Check integration
         </Link>
       </InfoAlert>
+    );
+  }
+
+  if (
+    !pushPermission &&
+    data?.provider?.id &&
+    data?.connection?.status === "connected" &&
+    integrationNoAccessButUserCanPush
+  ) {
+    return (
+      <WarnAlert
+        className="mb-0"
+        dismissible={false}
+        data-cy="code-repository-alert"
+      >
+        <p className="mb-2">
+          It seems that the integration does not have access to the repository.
+          If you want to push commits to the repository you need to grant access
+          to the corresponding integration.
+        </p>
+        <Link
+          className={cx("btn", "btn-outline-primary", "btn-sm")}
+          to={{
+            pathname: ABSOLUTE_ROUTES.v2.integrations.root,
+            search: searchActionRequired,
+          }}
+        >
+          Check integration
+        </Link>
+      </WarnAlert>
     );
   }
 

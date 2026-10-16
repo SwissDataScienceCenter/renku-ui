@@ -35,8 +35,10 @@
  */
 
 import {
-  GetRepositoryApiResponse,
   repositoriesGeneratedApi,
+  type GetRepositoryApiResponse,
+  type GetRepositoryPermissionsApiArg,
+  type GetRepositoryPermissionsApiResponse,
 } from "./repositories.generated-api";
 
 export type RepositoryInterrupts = {
@@ -56,7 +58,29 @@ export type GetRepositoriesApiResponse = {
   url: string;
 };
 
-const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
+export type GetRepositoriesWithPermissionsApiResponse = {
+  data?: GetRepositoryApiResponse & GetRepositoryPermissionsApiResponse;
+  error: boolean;
+  url: string;
+};
+
+// Fixes some API endpoints
+const withFixedEndpoints = repositoriesGeneratedApi.injectEndpoints({
+  endpoints: (build) => ({
+    getRepositoryPermissions: build.query<
+      GetRepositoryPermissionsApiResponse,
+      GetRepositoryPermissionsApiArg
+    >({
+      query: ({ repositoryPermissionsParams }) => ({
+        url: `/repository/permissions`,
+        params: repositoryPermissionsParams,
+      }),
+    }),
+  }),
+  overrideExisting: true,
+});
+
+const withResponseRewrite = withFixedEndpoints.injectEndpoints({
   overrideExisting: true,
   endpoints: (build) => ({
     getRepositories: build.query<GetRepositoriesApiResponse[], string[]>({
@@ -83,6 +107,72 @@ const withResponseRewrite = repositoriesGeneratedApi.injectEndpoints({
               error: false,
               url: repositoryUrl,
             });
+          }
+        }
+
+        return { data: result };
+      },
+    }),
+    getRepositoriesWithPermissions: build.query<
+      GetRepositoriesWithPermissionsApiResponse[],
+      string[]
+    >({
+      async queryFn(queryArg, _api, _options, fetchWithBQ) {
+        const result: GetRepositoriesWithPermissionsApiResponse[] = [];
+        const promises = queryArg.map((repository) =>
+          fetchWithBQ({
+            url: "/repository",
+            params: { url: repository },
+          }),
+        );
+        const responses = await Promise.all(promises);
+        const permissionsPromises = new Map<
+          number,
+          ReturnType<typeof fetchWithBQ>
+        >();
+        for (let i = 0; i < queryArg.length; i++) {
+          const repositoryUrl = queryArg[i];
+          const response = responses[i];
+          if (response.error)
+            result.push({
+              error: true,
+              url: repositoryUrl,
+            });
+          else if (response.data) {
+            if (
+              (response.data as GetRepositoryApiResponse).provider?.kind ===
+              "github"
+            ) {
+              permissionsPromises.set(
+                i,
+                fetchWithBQ({
+                  url: "/repository/permissions",
+                  params: { url: repositoryUrl },
+                }),
+              );
+            }
+            result.push({
+              data: response.data as GetRepositoryApiResponse,
+              error: false,
+              url: repositoryUrl,
+            });
+          }
+        }
+
+        await Promise.all(permissionsPromises.values());
+        for (let i = 0; i < queryArg.length; i++) {
+          const promise = permissionsPromises.get(i);
+          if (promise == null) {
+            continue;
+          }
+          const response = await promise;
+          if (response.error) {
+            result[i].error = true;
+          } else if (response.data) {
+            result[i].data = {
+              ...(response.data as GetRepositoryPermissionsApiResponse),
+              ...(result[i].data as GetRepositoryApiResponse),
+            };
           }
         }
 
@@ -134,5 +224,6 @@ export const {
   useGetRepositoriesQuery,
   useGetRepositoryQuery,
   useGetRepositoryPermissionsQuery,
+  useGetRepositoriesWithPermissionsQuery,
 } = withTagHandling;
 export type * from "./repositories.generated-api";

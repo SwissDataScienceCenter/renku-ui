@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { GetRepositoryApiResponse } from "~/features/repositories/api/repositories.api";
+import type {
+  GetRepositoryApiResponse,
+  GetRepositoryPermissionsApiResponse,
+} from "~/features/repositories/api/repositories.api";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 
 /**
@@ -72,20 +75,32 @@ export function detectSSHRepository(repositoryURL: string): boolean {
 }
 
 export function shouldInterrupt(
-  repositoryData: GetRepositoryApiResponse,
+  repositoryData: GetRepositoryApiResponse &
+    GetRepositoryPermissionsApiResponse,
   hasProjectWritePermission: boolean,
 ): boolean {
-  if (hasProjectWritePermission)
+  const integrationNoAccess =
+    repositoryData.provider?.kind === "github" &&
+    repositoryData.connection?.status === "connected" &&
+    !repositoryData.permissions?.integration_access;
+  const pullPermission =
+    (repositoryData.metadata?.pull_permission &&
+      (repositoryData.metadata.visibility === "public" ||
+        !integrationNoAccess)) ??
+    false;
+  const pushPermission =
+    (repositoryData.metadata?.push_permission && !integrationNoAccess) ?? false;
+
+  if (hasProjectWritePermission) {
     return !!(
-      (!repositoryData?.metadata?.pull_permission &&
-        !(repositoryData?.connection?.status === "connected")) ||
-      (repositoryData?.metadata?.pull_permission &&
-        !repositoryData?.metadata?.push_permission &&
-        !(repositoryData?.connection?.status === "connected"))
+      (!pullPermission && repositoryData?.connection?.status !== "connected") ||
+      (pullPermission &&
+        !pushPermission &&
+        repositoryData?.connection?.status !== "connected")
     );
+  }
   return !!(
-    !repositoryData?.metadata?.pull_permission &&
-    !(repositoryData?.connection?.status === "connected")
+    !pullPermission && repositoryData?.connection?.status !== "connected"
   );
 }
 
