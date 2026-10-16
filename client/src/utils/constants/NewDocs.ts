@@ -86,6 +86,10 @@ export const NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED = newDocsLinkPage(
   "docs/users/compute/environment/guides/create-environment-with-custom-packages-installed",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
+export const NEW_DOCS_RESOURCE_POOLS_AND_CLASSES = newDocsLinkPage(
+  "docs/users/compute/resource-pools-and-classes",
+)(DEFAULT_NEW_DOC_LINK_ARGS);
+
 export const NEW_DOCS_HOW_RENKU_WORKS = newDocsLinkPage(
   "docs/users/knowledge-base/about",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
