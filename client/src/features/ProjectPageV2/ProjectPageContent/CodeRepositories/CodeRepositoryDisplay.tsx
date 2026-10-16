@@ -580,6 +580,8 @@ function RepositoryView({
     url: repositoryUrl,
   });
 
+  // TODO: Get additional details for GitHub
+
   const webUrl = useMemo(() => {
     return data?.metadata?.web_url ? data.metadata.web_url : repositoryUrl;
   }, [data, repositoryUrl]);
