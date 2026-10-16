@@ -109,7 +109,7 @@ function GroupHeader({ group }: { group: GroupResponse }) {
               "flex-wrap",
               "my-0",
               "min-w-0",
-              "gap-3",
+              "gap-2",
               "gap-md-0",
               styles.dotSeparated,
             )}
