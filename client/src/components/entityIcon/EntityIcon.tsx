@@ -90,13 +90,13 @@ export default function EntityIcon(props: EntityIconProps) {
         <span
           className={cx(
             "fw-semibold",
-            "lh-sm",
             "mw-100",
             "position-relative",
             "px-md-2",
             "py-md-1",
             "small",
             "text-truncate",
+            "border-0",
             shape === "circle" && "rounded-pill",
             styles.label,
           )}
