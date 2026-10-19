@@ -17,6 +17,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { capitalize } from "lodash-es";
 import { useMemo } from "react";
 
 import { findSensitive } from "~/features/cloudStorage/projectCloudStorage.utils";
@@ -334,6 +335,19 @@ export function getDataConnectorIdentifier(dataConnector: {
   return getDataConnectorScope(dataConnector.namespace) === "global"
     ? dataConnector.slug
     : `${dataConnector.namespace}/${dataConnector.slug}`;
+}
+
+export function formatDataConnectorProviderType(
+  provider?: string,
+  type?: string,
+) {
+  if (type === "doi") return "DOI";
+  if (provider === "AWS") return `${provider} ${capitalize(type)}`;
+  return `${capitalize(provider)} ${capitalize(type)}`;
+}
+
+export function getDataConnectorAccessModeLabel(readonly: boolean) {
+  return readonly ? "Read-only" : "Read-Write";
 }
 
 // Tries to catch all the valid doi cases -- it returns the string directly, but we could consider reusing parseDoi to extract the initial string

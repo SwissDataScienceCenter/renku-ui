@@ -1,12 +1,8 @@
 import { useMemo } from "react";
-import { CheckLg, Clipboard, ThreeDotsVertical } from "react-bootstrap-icons";
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-} from "reactstrap";
+import { ThreeDotsVertical } from "react-bootstrap-icons";
+import { Dropdown, DropdownMenu, DropdownToggle } from "reactstrap";
 
+import CopyIdentifierMenuItem from "~/components/clipboard/CopyIdentifierMenuItem";
 import { useCopyIdentifierMenu } from "~/components/clipboard/useCopyIdentifierMenu.hook";
 import { DataConnectorRead } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { getDataConnectorIdentifier } from "~/features/dataConnectorsV2/components/dataConnector.utils";
@@ -37,21 +33,13 @@ export default function DataConnectorPageHeaderMenu({
       </DropdownToggle>
 
       <DropdownMenu container="body" end flip={false} strategy="fixed">
-        <DropdownItem
-          data-cy="data-connector-copy-identifier-menu-item"
-          onClick={copyIdentifier}
-          toggle={false}
-        >
-          {identifierCopied ? (
-            <>
-              <CheckLg className="bi" /> Identifier copied
-            </>
-          ) : (
-            <>
-              <Clipboard className="bi" /> Copy data connector identifier
-            </>
-          )}
-        </DropdownItem>
+        <CopyIdentifierMenuItem
+          clipboardText={identifier}
+          copied={identifierCopied}
+          dataCy="data-connector-copy-identifier-menu-item"
+          label="Copy data connector identifier"
+          onCopy={copyIdentifier}
+        />
       </DropdownMenu>
     </Dropdown>
   );
