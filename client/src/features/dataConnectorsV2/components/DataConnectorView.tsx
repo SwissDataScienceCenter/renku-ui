@@ -45,7 +45,11 @@ import useDataConnectorPermissions from "../utils/useDataConnectorPermissions.ho
 import { getDataConnectorScope } from "./dataConnector.utils";
 import DataConnectorActions from "./DataConnectorActions";
 import DataConnectorCredentialsBox from "./DataConnectorCredentialsBox";
-import { DataConnectorCompleteInfoBox } from "./DataConnectorInfoBox";
+import {
+  DataConnectorCompleteInfoBox,
+  DataConnectorConnectionBox,
+  DataConnectorInfoBox,
+} from "./DataConnectorInfoBox";
 import { DataConnectorIntegrationBox } from "./DataConnectorIntegrationBox";
 import DataConnectorModal from "./DataConnectorModal";
 import DataConnectorProjectsBox from "./DataConnectorProjectsBox";
@@ -126,11 +130,26 @@ export default function DataConnectorView({
             {...{ dataConnector, dataConnectorLink, toggleView, toggleEdit }}
           />
 
-          <DataConnectorCompleteInfoBox
-            dataConnector={dataConnector}
-            headerTag="h3"
-            visibilityWarning={dataConnectorPotentiallyInaccessible}
-          />
+          {scope === "global" ? (
+            <DataConnectorCompleteInfoBox
+              dataConnector={dataConnector}
+              headerTag="h3"
+              visibilityWarning={dataConnectorPotentiallyInaccessible}
+            />
+          ) : (
+            <>
+              <DataConnectorInfoBox
+                dataConnector={dataConnector}
+                headerTag="h3"
+                visibilityWarning={dataConnectorPotentiallyInaccessible}
+              />
+              <DataConnectorConnectionBox
+                dataConnector={dataConnector}
+                headerTag="h3"
+                showDescription={false}
+              />
+            </>
+          )}
 
           <DataConnectorIntegrationBox
             dataConnector={dataConnector}

@@ -17,14 +17,7 @@
  */
 
 import cx from "classnames";
-import { capitalize } from "lodash-es";
-import {
-  Database,
-  FilePerson,
-  Globe2,
-  Lock,
-  Pencil,
-} from "react-bootstrap-icons";
+import { Database, FilePerson, Pencil } from "react-bootstrap-icons";
 
 import EntityBreadcrumb from "~/components/entityBreadcrumb/EntityBreadcrumb";
 import EntityIcon from "~/components/entityIcon/EntityIcon";
@@ -32,7 +25,12 @@ import EntityPageHeaderKeywords, {
   usePageHeaderKeywords,
 } from "~/components/keywords/EntityPageHeaderKeywords";
 import { DataConnectorRead } from "~/features/dataConnectorsV2/api/data-connectors.api";
-import { hasSensitiveFields } from "~/features/dataConnectorsV2/components/dataConnector.utils";
+import {
+  formatDataConnectorProviderType,
+  getDataConnectorAccessModeLabel,
+  hasSensitiveFields,
+} from "~/features/dataConnectorsV2/components/dataConnector.utils";
+import { DataConnectorVisibilityLabel } from "~/features/dataConnectorsV2/components/DataConnectorInfoBox";
 import DataConnectorPageHeaderMenu from "~/features/dataConnectorsV2/DataConnectorPage/DataConnectorPageHeaderMenu";
 
 import styles from "~/components/Separator.module.scss";
@@ -173,12 +171,6 @@ export default function DataConnectorPageHeader({
   );
 }
 
-function formatDataConnectorProviderType(provider?: string, type?: string) {
-  if (type === "doi") return "DOI";
-  if (provider === "AWS") return `${provider} ${capitalize(type)}`;
-  return `${capitalize(provider)} ${capitalize(type)}`;
-}
-
 interface DataConnectorHeaderInfoProps {
   dataConnector: DataConnectorRead;
 }
@@ -215,7 +207,7 @@ function DataConnectorHeaderInfo({
         )}
       >
         <Pencil className={cx("bi", "me-1")} />
-        {dataConnector.storage.readonly ? "Read-only" : "Read-Write"}
+        {getDataConnectorAccessModeLabel(dataConnector.storage.readonly)}
       </div>
       <div
         className={cx(
@@ -227,17 +219,7 @@ function DataConnectorHeaderInfo({
           "small",
         )}
       >
-        {dataConnector.visibility === "private" ? (
-          <>
-            <Lock className={cx("bi", "me-1")} />
-            Private
-          </>
-        ) : (
-          <>
-            <Globe2 className={cx("bi", "me-1")} />
-            Public
-          </>
-        )}
+        <DataConnectorVisibilityLabel visibility={dataConnector.visibility} />
       </div>
     </>
   );

@@ -16,14 +16,8 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
 import { useCallback, useState } from "react";
-import {
-  CheckLg,
-  Clipboard,
-  Copy,
-  ThreeDotsVertical,
-} from "react-bootstrap-icons";
+import { Copy, ThreeDotsVertical } from "react-bootstrap-icons";
 import {
   Dropdown,
   DropdownItem,
@@ -31,8 +25,9 @@ import {
   DropdownToggle,
 } from "reactstrap";
 
-import ProjectCopyModal from "~/features/ProjectPageV2/ProjectPageHeader/ProjectCopyModal";
+import CopyIdentifierMenuItem from "~/components/clipboard/CopyIdentifierMenuItem";
 import { useCopyIdentifierMenu } from "~/components/clipboard/useCopyIdentifierMenu.hook";
+import ProjectCopyModal from "~/features/ProjectPageV2/ProjectPageHeader/ProjectCopyModal";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 
@@ -75,33 +70,13 @@ export default function ProjectPageHeaderMenu({
               <Copy className="bi" /> Copy this project
             </DropdownItem>
           )}
-          <DropdownItem
-            data-cy="project-copy-identifier-menu-item"
-            onClick={copyIdentifier}
-            toggle={false}
-          >
-            <span className={cx("d-flex", "gap-1", "align-items-baseline")}>
-              {identifierCopied ? (
-                <CheckLg className="bi" />
-              ) : (
-                <Clipboard className="bi" />
-              )}
-              <span className={cx("d-flex", "flex-column", "min-w-0")}>
-                <span>
-                  {" "}
-                  {identifierCopied
-                    ? "Copied project identifier"
-                    : "Copy project identifier"}
-                </span>
-                <code
-                  className={cx("d-block", "text-truncate", "small")}
-                  style={{ maxWidth: "200px" }}
-                >
-                  {clipboardText}
-                </code>
-              </span>
-            </span>
-          </DropdownItem>
+          <CopyIdentifierMenuItem
+            clipboardText={clipboardText}
+            copied={identifierCopied}
+            dataCy="project-copy-identifier-menu-item"
+            label="Copy project identifier"
+            onCopy={copyIdentifier}
+          />
         </DropdownMenu>
       </Dropdown>
       {isUserLoggedIn && (
