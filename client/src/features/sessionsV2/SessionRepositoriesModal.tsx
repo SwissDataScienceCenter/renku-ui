@@ -46,7 +46,7 @@ import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.
 import type { Project } from "../projectsV2/api/projectV2.api";
 import {
   GetRepositoriesApiResponse,
-  useGetRepositoriesWithPermissionsQuery,
+  useGetRepositoriesQuery,
 } from "../repositories/api/repositories.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
@@ -79,7 +79,7 @@ export default function SessionRepositoriesModal({
   const onCancel = onCancelProp ?? defaultOnCancel;
 
   const projectPermissions = useProjectPermissions({ projectId: project.id });
-  const { data, error, isLoading } = useGetRepositoriesWithPermissionsQuery(
+  const { data, error, isLoading } = useGetRepositoriesQuery(
     project.repositories ?? [],
   );
 

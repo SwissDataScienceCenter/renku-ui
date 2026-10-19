@@ -17,7 +17,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 import {
   useGetDataConnectorsListByDataConnectorIdsQuery,
@@ -26,7 +26,7 @@ import {
 import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
-import { useGetRepositoriesWithPermissionsQuery } from "../repositories/api/repositories.api";
+import { useGetRepositoriesQuery } from "../repositories/api/repositories.api";
 import { useGetUserSshKeysQuery } from "../usersV2/api/users.api";
 import {
   dataConnectorsNeedCredentials,
@@ -79,11 +79,7 @@ export default function useSessionLaunchPrerequisites({
     });
 
   const { data: repositories, isFetching: isFetchingRepositories } =
-    useGetRepositoriesWithPermissionsQuery(
-      repositoryUrls ? repositoryUrls : skipToken,
-    );
-
-  useEffect(() => console.log(repositories), [repositories]);
+    useGetRepositoriesQuery(repositoryUrls ? repositoryUrls : skipToken);
 
   const projectPermissions = useProjectPermissions({ projectId });
 
