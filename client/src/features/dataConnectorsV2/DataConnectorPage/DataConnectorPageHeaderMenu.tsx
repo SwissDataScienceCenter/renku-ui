@@ -8,7 +8,6 @@ import {
 } from "reactstrap";
 
 import CopyIdentifierMenuItem from "~/components/clipboard/CopyIdentifierMenuItem";
-import { useCopyIdentifierMenu } from "~/components/clipboard/useCopyIdentifierMenu.hook";
 import { DataConnectorRead } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import {
   getDataConnectorIdentifier,
@@ -35,8 +34,13 @@ export default function DataConnectorPageHeaderMenu({
   const { permissions } = useDataConnectorPermissions({
     dataConnectorId: dataConnector.id,
   });
-  const { copyIdentifier, identifierCopied, isMenuOpen, toggleMenu } =
-    useCopyIdentifierMenu(identifier);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false);
+  }, []);
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen((open) => !open);
+  }, []);
   const {
     initialStep,
     isOpen,
@@ -80,10 +84,11 @@ export default function DataConnectorPageHeaderMenu({
           )}
           <CopyIdentifierMenuItem
             clipboardText={identifier}
-            copied={identifierCopied}
             dataCy="data-connector-copy-identifier-menu-item"
+            isMenuOpen={isMenuOpen}
             label="Copy data connector identifier"
-            onCopy={copyIdentifier}
+            confirmationText="Copied data connector identifier"
+            onClose={closeMenu}
           />
         </DropdownMenu>
       </Dropdown>

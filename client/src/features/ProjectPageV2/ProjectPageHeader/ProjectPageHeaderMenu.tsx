@@ -26,7 +26,6 @@ import {
 } from "reactstrap";
 
 import CopyIdentifierMenuItem from "~/components/clipboard/CopyIdentifierMenuItem";
-import { useCopyIdentifierMenu } from "~/components/clipboard/useCopyIdentifierMenu.hook";
 import ProjectCopyModal from "~/features/ProjectPageV2/ProjectPageHeader/ProjectCopyModal";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import type { Project } from "../../projectsV2/api/projectV2.api";
@@ -39,13 +38,21 @@ export default function ProjectPageHeaderMenu({
   project,
 }: ProjectPageHeaderMenuProps) {
   const { data: currentUser } = useGetUserQueryState();
-  const [isCopyModalOpen, setCopyModalOpen] = useState(false);
-  const clipboardText = `${project.namespace}/${project.slug}`;
-  const { copyIdentifier, identifierCopied, isMenuOpen, toggleMenu } =
-    useCopyIdentifierMenu(clipboardText);
+
+  const [isCopyProjectModalOpen, setCopyProjectModalOpen] = useState(false);
   const toggleCopyModal = useCallback(() => {
-    setCopyModalOpen((open) => !open);
+    setCopyProjectModalOpen((open) => !open);
   }, []);
+
+  const clipboardText = `${project.namespace}/${project.slug}`;
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false);
+  }, []);
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen((open) => !open);
+  }, []);
+
   const isUserLoggedIn = currentUser?.isLoggedIn === true;
 
   return (
@@ -72,17 +79,18 @@ export default function ProjectPageHeaderMenu({
           )}
           <CopyIdentifierMenuItem
             clipboardText={clipboardText}
-            copied={identifierCopied}
             dataCy="project-copy-identifier-menu-item"
+            isMenuOpen={isMenuOpen}
             label="Copy project identifier"
-            onCopy={copyIdentifier}
+            confirmationText="Copied project identifier"
+            onClose={closeMenu}
           />
         </DropdownMenu>
       </Dropdown>
       {isUserLoggedIn && (
         <ProjectCopyModal
           currentUser={currentUser}
-          isOpen={isCopyModalOpen}
+          isOpen={isCopyProjectModalOpen}
           project={project}
           toggle={toggleCopyModal}
         />
