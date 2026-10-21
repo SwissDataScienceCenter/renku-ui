@@ -406,6 +406,9 @@
           "session_type": {
             "$ref": "#/components/schemas/SessionType"
           },
+          "frontend_variant": {
+            "$ref": "#/components/schemas/FrontendVariant"
+          },
           "submission_id": {
             "$ref": "#/components/schemas/SubmissionId",
             "nullable": true
@@ -725,6 +728,12 @@
           }
         },
         "required": ["architecture", "os"]
+      },
+      "FrontendVariant": {
+        "description": "User's Frontend Choice.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99
       }
     },
     "responses": {

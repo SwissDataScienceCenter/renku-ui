@@ -102,8 +102,9 @@ function UpdateConnectedServiceModal({
   });
   const onSubmit = useCallback(
     (data: ProviderForm) => {
-      const oidc_issuer_url =
-        data.kind === "generic_oidc" ? data.oidc_issuer_url : "";
+      const oidc_issuer_url = ["generic_oidc", "scicat"].includes(data.kind)
+        ? data.oidc_issuer_url
+        : "";
       updateProvider({
         providerId: provider.id,
         providerPatch: {

@@ -164,6 +164,7 @@ export interface SessionV2 {
   submission_id?: SubmissionId;
   command_args?: string[] | null;
   job_completed_at?: string | null;
+  frontend_variant?: string | null;
 }
 
 export interface BuilderSelectorOption<T extends string = string> {

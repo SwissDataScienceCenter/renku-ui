@@ -82,7 +82,7 @@ function AddConnectedServiceModal({
   const onSubmit = useCallback(
     (data: ProviderForm) => {
       const oidc_issuer_url =
-        data.kind === "generic_oidc" && data.oidc_issuer_url
+        ["generic_oidc", "scicat"].includes(data.kind) && data.oidc_issuer_url
           ? data.oidc_issuer_url
           : undefined;
       createProvider({
