@@ -24,9 +24,7 @@ import {
   CircleFill,
   CloudArrowUp,
   EyeFill,
-  Folder,
   Globe2,
-  Journals,
   Lock,
   Pencil,
 } from "react-bootstrap-icons";
@@ -42,7 +40,6 @@ import {
 } from "~/features/connectedServices/api/connectedServices.api";
 import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
-import UserAvatar from "../../usersV2/show/UserAvatar";
 import {
   type DataConnector,
   type DataConnectorToProjectLink,
@@ -55,12 +52,9 @@ import {
 } from "../deposits/deposits.constants";
 import DepositStatusBadge from "../deposits/DepositStatusBadge";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
-import {
-  getDataConnectorScope,
-  useGetDataConnectorSource,
-} from "./dataConnector.utils";
 import DataConnectorActions from "./DataConnectorActions";
 import DataConnectorModal from "./DataConnectorModal";
+import DataConnectorScopeSource from "./DataConnectorScopeSource";
 import DataConnectorView from "./DataConnectorView";
 
 interface DataConnectorBoxListDisplayProps {
@@ -75,7 +69,7 @@ export default function DataConnectorBoxListDisplay({
   extendedPreview,
   dataConnectorPotentiallyInaccessible = false,
 }: DataConnectorBoxListDisplayProps) {
-  const { name, visibility, storage, namespace } = dataConnector;
+  const { name, visibility, storage } = dataConnector;
 
   // Handle hash
   const [hash, setHash] = useLocationHash();
@@ -108,7 +102,6 @@ export default function DataConnectorBoxListDisplay({
   }, []);
 
   // Data
-  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
   const type = `${storage?.configuration?.type?.toString() ?? ""} ${
     storage?.configuration?.provider?.toString() ?? ""
   }`;
@@ -157,17 +150,6 @@ export default function DataConnectorBoxListDisplay({
       </div>
     ));
 
-  const scopeIcon = useMemo(() => {
-    const scope = getDataConnectorScope(namespace);
-    if (scope === "project") {
-      return <Folder className="bi" />;
-    }
-    if (scope === "namespace") {
-      return <UserAvatar namespace={namespace as string} size="sm" />;
-    }
-    return <Journals className="bi" />;
-  }, [namespace]);
-
   return (
     <>
       <ListGroupItem
@@ -202,19 +184,7 @@ export default function DataConnectorBoxListDisplay({
                 </span>
                 <IntegrationBadge dataConnector={dataConnector} />
               </div>
-              <div
-                className={cx(
-                  "align-items-center",
-                  "d-flex",
-                  "flex-row",
-                  "gap-1",
-                )}
-              >
-                {scopeIcon}
-                <p className={cx("mb-0", "text-break")}>
-                  {dataConnectorSource}
-                </p>
-              </div>
+              <DataConnectorScopeSource dataConnector={dataConnector} />
               {extendedPreview && <div>{type}</div>}
               <div
                 className={cx(

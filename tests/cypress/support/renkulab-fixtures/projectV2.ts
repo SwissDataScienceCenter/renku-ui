@@ -484,6 +484,26 @@ export function ProjectV2<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    sessionLauncherDataConnectors(args?: SimpleFixture) {
+      const { fixture, name = "sessionLauncherDataConnectors" } = args ?? {};
+      const response = fixture ? { fixture } : { body: [] };
+      cy.intercept(
+        "GET",
+        "/api/data/session_launchers/*/data_connectors",
+        response,
+      ).as(name);
+      return this;
+    }
+
+    sessionLauncherSecrets(args?: SimpleFixture) {
+      const { fixture, name = "sessionLauncherSecrets" } = args ?? {};
+      const response = fixture ? { fixture } : { body: [] };
+      cy.intercept("GET", "/api/data/session_launchers/*/secrets", response).as(
+        name,
+      );
+      return this;
+    }
+
     sessionSecretSlots(args?: SimpleFixture) {
       const {
         fixture = "projectV2SessionSecrets/secret_slots.json",
