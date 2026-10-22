@@ -33,8 +33,8 @@ describe("isLauncherResourceIncluded", () => {
   });
 
   it("keeps included data connector and secret policies", () => {
-    expect(isLauncherResourceIncluded("readOnly")).toBe(true);
-    expect(isLauncherResourceIncluded("readWrite")).toBe(true);
+    expect(isLauncherResourceIncluded("read_only")).toBe(true);
+    expect(isLauncherResourceIncluded("read_write")).toBe(true);
     expect(isLauncherResourceIncluded("included")).toBe(true);
   });
 
@@ -58,7 +58,7 @@ describe("getIncludedDataConnectorIds", () => {
   it("drops only connectors whose saved policy is excluded", () => {
     expect(
       getIncludedDataConnectorIds(links, [
-        { data_connector_link_id: "link-included", policy: "readOnly" },
+        { data_connector_link_id: "link-included", policy: "read_only" },
         { data_connector_link_id: "link-excluded", policy: "excluded" },
       ]),
     ).toEqual(["connector-included", "connector-default"]);
@@ -82,8 +82,8 @@ describe("resolveDataConnectorAccessPolicy", () => {
   });
 
   it("downgrades a saved read-write policy on a read-only connector", () => {
-    expect(resolveDataConnectorAccessPolicy(true, "readWrite")).toBe(
-      "readOnly",
+    expect(resolveDataConnectorAccessPolicy(true, "read_write")).toBe(
+      "read_only",
     );
   });
 
