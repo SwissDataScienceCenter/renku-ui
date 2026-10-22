@@ -58,6 +58,8 @@ export default function ProjectPageHeaderInfo({
     slug: project.slug ?? "",
   });
   const membersUrl = `${settingsUrl}#members`;
+  const isNamespaceMember =
+    members?.length === 1 && members[0].namespace === project.namespace;
 
   return (
     <div
@@ -80,27 +82,32 @@ export default function ProjectPageHeaderInfo({
         styles.dotSeparated,
       )}
     >
-      <div
-        className={cx(
-          "align-items-center",
-          "col-12",
-          "col-md-auto",
-          "d-flex",
-          "flex-row",
-        )}
-      >
+      {!isNamespaceMember && (
         <div
           className={cx(
+            "align-items-center",
+            "col-12",
+            "col-md-auto",
             "d-flex",
             "flex-row",
-            "gap-2",
-            "small",
-            "text-truncate",
           )}
         >
-          <ProjectPageHeaderMembers members={members} membersUrl={membersUrl} />
+          <div
+            className={cx(
+              "d-flex",
+              "flex-row",
+              "gap-2",
+              "small",
+              "text-truncate",
+            )}
+          >
+            <ProjectPageHeaderMembers
+              members={members}
+              membersUrl={membersUrl}
+            />
+          </div>
         </div>
-      </div>
+      )}
       <ProjectVisibility isPrivate={project.visibility === "private"} />
     </div>
   );
