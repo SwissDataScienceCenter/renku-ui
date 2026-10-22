@@ -21,14 +21,17 @@ import { ReactNode } from "react";
 import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import { Clipboard } from "~/components/clipboard/Clipboard";
+import EntityIcon from "~/components/entityIcon/EntityIcon";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import ContainerWrap from "../../../components/container/ContainerWrap";
-import { EntityWatermark } from "../../../components/entityWatermark/EntityWatermark";
 import PageNav, { PageNavOptions } from "../../../components/PageNav";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { GroupResponse } from "../../projectsV2/api/namespace.api";
-import UserAvatar from "../../usersV2/show/UserAvatar";
 import GroupNew from "../new/GroupNew";
+import GroupV2ResourcePoolDisplay from "./GroupV2ResourcePoolDisplay";
+
+import styles from "../../../components/Separator.module.scss";
 
 interface GroupPageLayoutProps {
   group: GroupResponse;
@@ -57,18 +60,8 @@ export default function GroupPageLayout({
       <GroupNew />
 
       <Row className="my-3">
-        <Col xs={12}>
-          <Row>
-            <Col className={cx("d-block", "d-md-none")} xs={12}>
-              <span className="text-muted">Group</span>
-            </Col>
-            <Col className="mb-3">
-              <GroupHeader group={group} slug={group.slug} />
-            </Col>
-            <Col className={cx("d-md-block", "d-none")} md="auto">
-              <EntityWatermark type="group" />
-            </Col>
-          </Row>
+        <Col xs={12} className={cx("mb-3", "min-w-0")}>
+          <GroupHeader group={group} />
         </Col>
         <Col xs={12} className="mb-3">
           <PageNav options={options} />
@@ -81,15 +74,64 @@ export default function GroupPageLayout({
   );
 }
 
-function GroupHeader({ group, slug }: { group: GroupResponse; slug: string }) {
+function GroupHeader({ group }: { group: GroupResponse }) {
+  const { slug: namespace } = group;
   return (
     <>
-      <header className={cx("d-flex", "flex-row", "flex-nowrap", "gap-2")}>
-        <UserAvatar namespace={slug} size="md" />
-        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+      <header
+        className={cx(
+          "d-flex",
+          "flex-column",
+          "flex-md-row",
+          "flex-nowrap",
+          "gap-3",
+          "min-w-0",
+        )}
+      >
+        <EntityIcon className="flex-shrink-0" type="group" />
+        <div
+          className={cx(
+            "d-flex",
+            "flex-column",
+            "min-w-0",
+            "justify-content-center",
+            "gap-2",
+          )}
+        >
           <h1 className={cx("mb-0", "text-break")} data-cy="group-name">
             {group.name ?? "Unknown group"}
           </h1>
+          <div
+            className={cx(
+              "d-flex",
+              "flex-column",
+              "flex-md-row",
+              "flex-wrap",
+              "my-0",
+              "min-w-0",
+              "gap-2",
+              "gap-md-0",
+              styles.dotSeparated,
+            )}
+          >
+            <div className={cx("align-items-center", "d-flex")}>
+              <span className={cx("min-w-0", "text-truncate")}>
+                {namespace}
+              </span>
+              <Clipboard
+                className={cx(
+                  "border-0",
+                  "btn",
+                  "flex-shrink-0",
+                  "p-0",
+                  "shadow-none",
+                  "ms-2",
+                )}
+                clipboardText={namespace}
+              />
+            </div>
+            <GroupV2ResourcePoolDisplay group={namespace} />
+          </div>
         </div>
       </header>
       {group.description && (

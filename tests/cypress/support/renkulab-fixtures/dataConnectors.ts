@@ -38,11 +38,16 @@ interface DataConnectorIdArgs extends SimpleFixture {
 
 interface DataConnectorIdentifierArgs extends SimpleFixture {
   namespace?: string;
+  project?: string;
   slug?: string;
 }
 
 interface GlobalDataConnectorIdentifierArgs extends SimpleFixture {
   slug?: string;
+}
+
+interface DoiHandleArgs extends SimpleFixture {
+  doi?: string;
 }
 
 interface DeleteDataConnectorProjectLinkArgs extends DataConnectorIdArgs {
@@ -180,14 +185,15 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
         fixture = "dataConnector/data-connector.json",
         name = "getDataConnectorByNamespaceAndSlug",
         namespace = "user1-uuid",
+        project,
         slug = "example-storage",
       } = args ?? {};
 
-      cy.intercept(
-        "GET",
-        `/api/data/namespaces/${namespace}/data_connectors/${slug}`,
-        { fixture },
-      ).as(name);
+      const url = project
+        ? `/api/data/namespaces/${namespace}/projects/${project}/data_connectors/${slug}`
+        : `/api/data/namespaces/${namespace}/data_connectors/${slug}`;
+
+      cy.intercept("GET", url, { fixture }).as(name);
       return this;
     }
 
@@ -207,6 +213,20 @@ export function DataConnector<T extends FixturesConstructor>(Parent: T) {
           },
         ).as(name);
       });
+      return this;
+    }
+
+    /** Stub the external DOI resolver used to determine a global data
+     * connector's source. */
+    getDoiHandle(args?: DoiHandleArgs) {
+      const {
+        doi = "10.7910/DVN/DXH6FK",
+        fixture = "dataConnector/doi-handle-dataverse.json",
+        name = "getDoiHandle",
+      } = args ?? {};
+      cy.intercept("GET", `https://doi.org/api/handles/${doi}*`, {
+        fixture,
+      }).as(name);
       return this;
     }
 
