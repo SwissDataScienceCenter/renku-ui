@@ -152,7 +152,10 @@ export type SessionResponse = {
   job_completed_at?: string | null;
   lastInteraction?: string | null;
   status: SessionStatus;
+  /** The direct URL of a session */
   url: string;
+  /** The URL to use for external access to a session (usually the UI page) */
+  external_url?: string | null;
   project_id: Ulid;
   launcher_id: Ulid;
   resource_class_id: number;
