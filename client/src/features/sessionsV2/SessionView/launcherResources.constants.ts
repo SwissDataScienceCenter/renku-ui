@@ -30,8 +30,8 @@ export interface AccessPolicyOption {
 }
 
 export const DATA_CONNECTOR_ACCESS_OPTIONS: AccessPolicyOption[] = [
-  { value: "readWrite", label: "Read-Write" },
-  { value: "readOnly", label: "Read-Only" },
+  { value: "read_write", label: "Read-Write" },
+  { value: "read_only", label: "Read-Only" },
   { value: "excluded", label: "Excluded" },
 ];
 
@@ -43,7 +43,7 @@ export const SECRET_ACCESS_OPTIONS: AccessPolicyOption[] = [
 export function getDefaultDataConnectorAccessPolicy(
   isStorageReadOnly: boolean,
 ): DataConnectorAccessPolicyName {
-  return isStorageReadOnly ? "readOnly" : "readWrite";
+  return isStorageReadOnly ? "read_only" : "read_write";
 }
 
 export function resolveDataConnectorAccessPolicy(
@@ -52,8 +52,8 @@ export function resolveDataConnectorAccessPolicy(
 ): DataConnectorAccessPolicyName {
   const policy =
     savedPolicy ?? getDefaultDataConnectorAccessPolicy(isStorageReadOnly);
-  if (isStorageReadOnly && policy === "readWrite") {
-    return "readOnly";
+  if (isStorageReadOnly && policy === "read_write") {
+    return "read_only";
   }
   return policy;
 }

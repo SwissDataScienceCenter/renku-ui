@@ -1173,7 +1173,7 @@
       "DataConnectorAccessPolicyName": {
         "description": "Data connector access policy name",
         "type": "string",
-        "enum": ["excluded", "readOnly", "readWrite"]
+        "enum": ["excluded", "read_only", "read_write"]
       },
       "DataConnectorKey": {
         "description": "Key identifying a data connector to a project relationship",
@@ -1223,7 +1223,7 @@
       "RepositoryAccessPolicyName": {
         "description": "Repository access policy name",
         "type": "string",
-        "enum": ["excluded", "readOnly", "readWrite"]
+        "enum": ["excluded", "read_only", "read_write"]
       },
       "ProjectRepositoryId": {
         "description": "The ID of the git repository\n",

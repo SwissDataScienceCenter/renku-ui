@@ -53,7 +53,7 @@ import {
 } from "./launcherResources.constants";
 
 const READ_WRITE_DISABLED: readonly DataConnectorAccessPolicyName[] = [
-  "readWrite",
+  "read_write",
 ];
 
 const DATA_CONNECTOR_COLUMN_WIDTHS = ["40%", "30%", "30%"] as const;

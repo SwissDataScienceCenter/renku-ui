@@ -512,7 +512,10 @@ export type RepositoryUrl = {
   url: Repository;
 };
 export type RepositoryCompositeKey = ProjectRepositoryId & RepositoryUrl;
-export type RepositoryAccessPolicyName = "excluded" | "readOnly" | "readWrite";
+export type RepositoryAccessPolicyName =
+  | "excluded"
+  | "read_only"
+  | "read_write";
 export type GitReference = string;
 export type GitReferenceList = GitReference[] | null;
 export type RepositoryAccessPolicy = {
@@ -531,8 +534,8 @@ export type DataConnectorKey = {
 };
 export type DataConnectorAccessPolicyName =
   | "excluded"
-  | "readOnly"
-  | "readWrite";
+  | "read_only"
+  | "read_write";
 export type DataConnectorAccessPolicy = {
   policy: DataConnectorAccessPolicyName;
 };
