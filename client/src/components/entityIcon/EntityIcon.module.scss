@@ -45,7 +45,7 @@
   }
 
   .card {
-    border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
+    border: var(--#{$prefix}border-width) solid var(--#{$prefix}secondary);
     overflow: hidden;
     width: var(--entity-icon-size);
 

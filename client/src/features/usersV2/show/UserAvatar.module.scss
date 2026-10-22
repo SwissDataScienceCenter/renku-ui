@@ -12,6 +12,11 @@
   width: var(--size);
   font-size: var(--font-size);
 
+  &.xSmall {
+    --size: 24px;
+    --font-size: 12px;
+  }
+
   &.medium {
     --size: 43px;
     --font-size: 20px;

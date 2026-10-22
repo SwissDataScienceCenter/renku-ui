@@ -54,7 +54,7 @@ function ProjectInformationMember({
           "text-decoration-none",
         )}
       >
-        <UserAvatar namespace={member.namespace} />
+        <UserAvatar namespace={member.namespace} size="xs" />
         <span className="text-truncate">{displayName}</span>
       </Link>
     );
@@ -88,6 +88,7 @@ export function ProjectPageHeaderMembers({
           <OverflowBadge
             count={hiddenCount}
             tooltip="View all project members"
+            size="xs"
           />
         </Link>
       )}
