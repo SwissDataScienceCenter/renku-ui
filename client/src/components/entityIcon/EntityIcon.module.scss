@@ -25,10 +25,6 @@
   background-color: var(--entity-icon-fill);
 }
 
-.label {
-  height: 26px;
-}
-
 @include media-breakpoint-up(md) {
   .layout {
     background-color: transparent;
@@ -45,6 +41,7 @@
 
   .label {
     color: var(--entity-icon-fill);
+    height: 26px;
   }
 
   .card {

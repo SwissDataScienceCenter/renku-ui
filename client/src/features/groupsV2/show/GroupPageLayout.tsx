@@ -29,6 +29,9 @@ import PageNav, { PageNavOptions } from "../../../components/PageNav";
 import { ABSOLUTE_ROUTES } from "../../../routing/routes.constants";
 import type { GroupResponse } from "../../projectsV2/api/namespace.api";
 import GroupNew from "../new/GroupNew";
+import GroupV2ResourcePoolDisplay from "./GroupV2ResourcePoolDisplay";
+
+import styles from "../../../components/Separator.module.scss";
 
 interface GroupPageLayoutProps {
   group: GroupResponse;
@@ -90,30 +93,44 @@ function GroupHeader({ group }: { group: GroupResponse }) {
           className={cx(
             "d-flex",
             "flex-column",
-            "justify-content-evenly",
             "min-w-0",
+            "justify-content-center",
+            "gap-2",
           )}
         >
           <h1 className={cx("mb-0", "text-break")} data-cy="group-name">
             {group.name ?? "Unknown group"}
           </h1>
           <div
-            className={cx("align-items-center", "d-flex", "gap-2", "min-w-0")}
-            data-cy="group-identifier"
+            className={cx(
+              "d-flex",
+              "flex-column",
+              "flex-md-row",
+              "flex-wrap",
+              "my-0",
+              "min-w-0",
+              "gap-2",
+              "gap-md-0",
+              styles.dotSeparated,
+            )}
           >
-            <span className={cx("min-w-0", "text-truncate")} title={namespace}>
-              {namespace}
-            </span>
-            <Clipboard
-              className={cx(
-                "border-0",
-                "btn",
-                "flex-shrink-0",
-                "p-0",
-                "shadow-none",
-              )}
-              clipboardText={namespace}
-            />
+            <div className={cx("align-items-center", "d-flex")}>
+              <span className={cx("min-w-0", "text-truncate")}>
+                {namespace}
+              </span>
+              <Clipboard
+                className={cx(
+                  "border-0",
+                  "btn",
+                  "flex-shrink-0",
+                  "p-0",
+                  "shadow-none",
+                  "ms-2",
+                )}
+                clipboardText={namespace}
+              />
+            </div>
+            <GroupV2ResourcePoolDisplay group={namespace} />
           </div>
         </div>
       </header>

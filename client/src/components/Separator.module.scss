@@ -1,0 +1,18 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.dotSeparated > *:not(:last-child)::after,
+.leadingSeparator::before {
+  content: "|";
+  margin-inline-end: 1rem;
+  margin-inline-start: 1rem;
+  color: var(--#{$prefix}secondary-color);
+  font-size: 12px;
+
+  @include media-breakpoint-down(md) {
+    content: none;
+  }
+}
