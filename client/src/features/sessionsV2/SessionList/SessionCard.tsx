@@ -19,6 +19,7 @@
 import cx from "classnames";
 import { Col, Row } from "reactstrap";
 
+import useClickableHostHandlers from "~/components/buttons/useClickableHostHandlers.hook";
 import {
   getLauncherCategoryDefinition,
   sessionLauncherKindToCategory,
@@ -45,6 +46,8 @@ export default function SessionCard({
   session,
   onOpen,
 }: SessionCardProps) {
+  const hostHandlers = useClickableHostHandlers(onOpen);
+
   if (!session) return null;
 
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
@@ -61,7 +64,7 @@ export default function SessionCard({
         "pb-3",
         "cursor-pointer",
       )}
-      onClick={onOpen}
+      onClick={hostHandlers.onClick}
       role={onOpen ? "button" : undefined}
       aria-label={onOpen ? "View session details for this launcher" : undefined}
       tabIndex={onOpen ? 0 : undefined}

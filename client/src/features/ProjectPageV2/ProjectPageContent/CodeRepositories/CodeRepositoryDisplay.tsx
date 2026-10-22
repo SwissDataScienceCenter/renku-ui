@@ -37,7 +37,6 @@ import {
   CardBody,
   CardHeader,
   Col,
-  DropdownItem,
   Form,
   FormGroup,
   Input,
@@ -53,6 +52,7 @@ import {
 } from "reactstrap";
 
 import { ErrorAlert, InfoAlert, WarnAlert } from "~/components/Alert";
+import useClickableHostHandlers from "~/components/buttons/useClickableHostHandlers.hook";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
 import ExternalLink from "~/components/ExternalLink";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
@@ -76,7 +76,10 @@ import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
+import {
+  MenuButton,
+  MenuButtonItem,
+} from "../../../../components/buttons/MenuButton";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
@@ -339,9 +342,11 @@ function CodeRepositoryDeleteModal({
 function CodeRepositoryActions({
   url,
   project,
+  title,
 }: {
   url: string;
   project: Project;
+  title?: string;
 }) {
   const permissions = useProjectPermissions({ projectId: project.id });
 
@@ -373,20 +378,24 @@ function CodeRepositoryActions({
       disabled={null}
       enabled={
         <>
-          <ButtonWithMenuV2
+          <MenuButton
             color="outline-primary"
             default={defaultAction}
+            label={
+              title
+                ? `More actions for ${title}`
+                : "More actions for code repository"
+            }
             preventPropagation
-            size="sm"
           >
-            <DropdownItem
+            <MenuButtonItem
               data-cy="code-repository-delete"
               onClick={toggleDelete}
             >
               <Trash className={cx("bi", "me-1")} />
               Remove
-            </DropdownItem>
-          </ButtonWithMenuV2>
+            </MenuButtonItem>
+          </MenuButton>
           <CodeRepositoryDeleteModal
             repositoryUrl={url}
             isOpen={isDeleteOpen}
@@ -422,6 +431,9 @@ export function RepositoryItem({
   const toggleDetails = useCallback(() => {
     setShowDetails((open) => !open);
   }, []);
+  const rowHandlers = useClickableHostHandlers(
+    readonly ? undefined : toggleDetails,
+  );
   const canonicalUrlStr = useMemo(
     () => `${url.replace(/(?:\.git|\/)$/i, "")}`,
     [url],
@@ -434,7 +446,7 @@ export function RepositoryItem({
         className: cx(
           !readonly && ["cursor-pointer", "link-primary", "text-body"],
         ),
-        onClick: toggleDetails,
+        onClick: rowHandlers.onClick,
       }
     : {};
 
@@ -461,7 +473,11 @@ export function RepositoryItem({
           {!readonly && (
             <>
               <Col xs={12} sm="auto" className="ms-auto">
-                <CodeRepositoryActions project={project} url={url} />
+                <CodeRepositoryActions
+                  project={project}
+                  url={url}
+                  title={title}
+                />
               </Col>
             </>
           )}
@@ -610,7 +626,11 @@ function RepositoryView({
         <div>
           <div className="mb-3">
             <OffcanvasHeaderWithType entityType="code-repository" title={title}>
-              <CodeRepositoryActions project={project} url={repositoryUrl} />
+              <CodeRepositoryActions
+                project={project}
+                url={repositoryUrl}
+                title={title}
+              />
             </OffcanvasHeaderWithType>
           </div>
 
