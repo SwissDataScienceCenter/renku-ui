@@ -197,7 +197,10 @@ export default function DataConnectorBoxListDisplay({
                   "gap-2",
                 )}
               >
-                <span className="fw-bold" data-cy="data-connector-name">
+                <span
+                  className={cx("fw-bold", "text-break")}
+                  data-cy="data-connector-name"
+                >
                   {name}
                 </span>
                 <IntegrationBadge dataConnector={dataConnector} />
