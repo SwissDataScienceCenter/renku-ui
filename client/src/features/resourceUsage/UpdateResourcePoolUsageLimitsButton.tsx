@@ -137,11 +137,7 @@ function UpdateResourcePoolUsageLimitsModal({
         Update usage limits for {name}
       </ModalHeader>
       <ModalBody>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkOrDataServicesError error={result.error} />}
 
           <div className="mb-3">
