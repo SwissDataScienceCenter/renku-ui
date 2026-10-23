@@ -89,8 +89,6 @@ class APIClient {
     }
 
     options["credentials"] = "same-origin";
-    // // Add a custom header for protection against CSRF attacks.
-    // options.headers.append("X-Requested-With", "XMLHttpRequest");
     options.headers = options.headers ?? new Headers();
     options.headers.set("Renku-Service", "renku-ui-server");
 
