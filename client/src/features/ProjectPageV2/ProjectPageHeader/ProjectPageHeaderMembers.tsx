@@ -30,6 +30,8 @@ import {
 import UserAvatar, { OverflowBadge } from "~/features/usersV2/show/UserAvatar";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 
+import styles from "./ProjectPageHeaderMembers.module.scss";
+
 const MAX_MEMBERS_DISPLAYED = 2;
 
 function ProjectInformationMember({
@@ -51,7 +53,7 @@ function ProjectInformationMember({
           "flex-row",
           "gap-1",
           "min-w-0",
-          "text-decoration-none",
+          styles.link,
         )}
       >
         <UserAvatar namespace={member.namespace} size="xs" />
