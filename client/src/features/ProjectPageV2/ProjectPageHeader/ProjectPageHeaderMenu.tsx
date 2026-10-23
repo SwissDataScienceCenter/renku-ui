@@ -16,14 +16,8 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  CheckLg,
-  Clipboard,
-  Copy,
-  ThreeDotsVertical,
-} from "react-bootstrap-icons";
+import { useCallback, useState } from "react";
+import { Copy, ThreeDotsVertical } from "react-bootstrap-icons";
 import {
   Dropdown,
   DropdownItem,
@@ -31,83 +25,34 @@ import {
   DropdownToggle,
 } from "reactstrap";
 
-import useCopyToClipboard from "~/components/clipboard/useCopyToClipboard.hook";
+import CopyIdentifierMenuItem from "~/components/clipboard/CopyIdentifierMenuItem";
 import ProjectCopyModal from "~/features/ProjectPageV2/ProjectPageHeader/ProjectCopyModal";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import type { Project } from "../../projectsV2/api/projectV2.api";
 
-const IDENTIFIER_COPIED_FEEDBACK_MS = 1_000;
-
 interface ProjectPageHeaderMenuProps {
   project: Project;
-}
-
-function useProjectIdentifierCopy(clipboardText: string) {
-  const { copy } = useCopyToClipboard(clipboardText);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [identifierCopied, setIdentifierCopied] = useState(false);
-  const feedbackTimeoutRef = useRef<number | null>(null);
-  const isMenuOpenRef = useRef(isMenuOpen);
-
-  const clearFeedbackTimeout = useCallback(() => {
-    if (feedbackTimeoutRef.current == null) {
-      return;
-    }
-    window.clearTimeout(feedbackTimeoutRef.current);
-    feedbackTimeoutRef.current = null;
-  }, []);
-
-  const closeMenu = useCallback(() => {
-    clearFeedbackTimeout();
-    isMenuOpenRef.current = false;
-    setIdentifierCopied(false);
-    setIsMenuOpen(false);
-  }, [clearFeedbackTimeout]);
-
-  const toggleMenu = useCallback(() => {
-    if (isMenuOpenRef.current) {
-      closeMenu();
-      return;
-    }
-    isMenuOpenRef.current = true;
-    setIsMenuOpen(true);
-  }, [closeMenu]);
-
-  const copyIdentifier = useCallback(() => {
-    copy()
-      .then(() => {
-        if (!isMenuOpenRef.current) {
-          return;
-        }
-        setIdentifierCopied(true);
-        clearFeedbackTimeout();
-        feedbackTimeoutRef.current = window.setTimeout(() => {
-          closeMenu();
-        }, IDENTIFIER_COPIED_FEEDBACK_MS);
-      })
-      .catch(() => undefined);
-  }, [clearFeedbackTimeout, closeMenu, copy]);
-
-  useEffect(() => {
-    return () => {
-      clearFeedbackTimeout();
-    };
-  }, [clearFeedbackTimeout]);
-
-  return { copyIdentifier, identifierCopied, isMenuOpen, toggleMenu };
 }
 
 export default function ProjectPageHeaderMenu({
   project,
 }: ProjectPageHeaderMenuProps) {
   const { data: currentUser } = useGetUserQueryState();
-  const [isCopyModalOpen, setCopyModalOpen] = useState(false);
-  const clipboardText = `${project.namespace}/${project.slug}`;
-  const { copyIdentifier, identifierCopied, isMenuOpen, toggleMenu } =
-    useProjectIdentifierCopy(clipboardText);
+
+  const [isCopyProjectModalOpen, setCopyProjectModalOpen] = useState(false);
   const toggleCopyModal = useCallback(() => {
-    setCopyModalOpen((open) => !open);
+    setCopyProjectModalOpen((open) => !open);
   }, []);
+
+  const clipboardText = `${project.namespace}/${project.slug}`;
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false);
+  }, []);
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen((open) => !open);
+  }, []);
+
   const isUserLoggedIn = currentUser?.isLoggedIn === true;
 
   return (
@@ -132,39 +77,20 @@ export default function ProjectPageHeaderMenu({
               <Copy className="bi" /> Copy this project
             </DropdownItem>
           )}
-          <DropdownItem
-            data-cy="project-copy-identifier-menu-item"
-            onClick={copyIdentifier}
-            toggle={false}
-          >
-            <span className={cx("d-flex", "gap-1", "align-items-baseline")}>
-              {identifierCopied ? (
-                <CheckLg className="bi" />
-              ) : (
-                <Clipboard className="bi" />
-              )}
-              <span className={cx("d-flex", "flex-column", "min-w-0")}>
-                <span>
-                  {" "}
-                  {identifierCopied
-                    ? "Copied project identifier"
-                    : "Copy project identifier"}
-                </span>
-                <code
-                  className={cx("d-block", "text-truncate", "small")}
-                  style={{ maxWidth: "200px" }}
-                >
-                  {clipboardText}
-                </code>
-              </span>
-            </span>
-          </DropdownItem>
+          <CopyIdentifierMenuItem
+            clipboardText={clipboardText}
+            dataCy="project-copy-identifier-menu-item"
+            isMenuOpen={isMenuOpen}
+            label="Copy project identifier"
+            confirmationText="Copied project identifier"
+            onClose={closeMenu}
+          />
         </DropdownMenu>
       </Dropdown>
       {isUserLoggedIn && (
         <ProjectCopyModal
           currentUser={currentUser}
-          isOpen={isCopyModalOpen}
+          isOpen={isCopyProjectModalOpen}
           project={project}
           toggle={toggleCopyModal}
         />

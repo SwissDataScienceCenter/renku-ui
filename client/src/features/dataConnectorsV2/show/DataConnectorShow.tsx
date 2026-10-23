@@ -1,37 +1,25 @@
-import cx from "classnames";
 import { Col, Row } from "reactstrap";
 
 import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceContext.hook";
 import DataConnectorCredentialsBox from "../components/DataConnectorCredentialsBox";
-import DataConnectorInfoBox from "../components/DataConnectorInfoBox";
+import { DataConnectorConnectionBox } from "../components/DataConnectorInfoBox";
 import { DataConnectorIntegrationBox } from "../components/DataConnectorIntegrationBox";
 import DataConnectorProjectsBox from "../components/DataConnectorProjectsBox";
 
 export default function DataConnectorShow() {
   return (
     <Row className="g-4">
-      <Col xs={12} md={8} xl={9}>
-        <Row className="g-4">
-          <Col className={cx("d-block", "d-md-none")} xs={12}>
-            <DataConnectorIntegrationWrapper />
-          </Col>
-          <Col xs={12}>
-            <DataConnectorInformationWrapper />
-          </Col>
-          <Col xs={12}>
-            <DataConnectorProjectsBoxWrapper />
-          </Col>
-        </Row>
+      <Col xs={12}>
+        <DataConnectorIntegrationWrapper />
       </Col>
-      <Col xs={12} md={4} xl={3}>
-        <Row className="g-4">
-          <Col className={cx("d-none", "d-md-block")} xs={12}>
-            <DataConnectorIntegrationWrapper />
-          </Col>
-          <Col xs={12}>
-            <DataConnectorCredentialsWrapper />
-          </Col>
-        </Row>
+      <Col xs={12}>
+        <DataConnectorInformationWrapper />
+      </Col>
+      <Col xs={12}>
+        <DataConnectorCredentialsWrapper />
+      </Col>
+      <Col xs={12}>
+        <DataConnectorProjectsBoxWrapper />
       </Col>
     </Row>
   );
@@ -45,7 +33,13 @@ function DataConnectorInformationWrapper() {
   // ? Not that any of this should ever happen... Hence the return null.
   if (!ctx || kind !== "dataConnector" || !dataConnector) return null;
 
-  return <DataConnectorInfoBox dataConnector={dataConnector} headerTag="h2" />;
+  return (
+    <DataConnectorConnectionBox
+      dataConnector={dataConnector}
+      headerTag="h2"
+      layout="two-columns"
+    />
+  );
 }
 
 function DataConnectorCredentialsWrapper() {
@@ -56,7 +50,12 @@ function DataConnectorCredentialsWrapper() {
   if (!ctx || kind !== "dataConnector" || !dataConnector) return null;
 
   return (
-    <DataConnectorCredentialsBox dataConnector={dataConnector} headerTag="h2" />
+    <DataConnectorCredentialsBox
+      dataConnector={dataConnector}
+      headerTag="h2"
+      showRequiresCredentials={false}
+      layout="two-columns"
+    />
   );
 }
 
