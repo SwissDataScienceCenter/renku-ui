@@ -109,9 +109,11 @@ export default function CopyIdentifierMenuItem({
           <Clipboard aria-hidden="true" className="bi" />
         )}
         <span className={cx("d-flex", "flex-column", "min-w-0")}>
-          {!copied && <span>{label}</span>}
-          <span className={cx(!copied && "visually-hidden")} role="status">
-            {copied ? confirmationText : ""}
+          <span
+            className={cx(!copied && "visually-hidden")}
+            role={copied ? "status" : "menuitem"}
+          >
+            {copied ? <span>{confirmationText}</span> : <span>{label}</span>}
           </span>
           <code
             className={cx("d-block", "small", "text-truncate")}
