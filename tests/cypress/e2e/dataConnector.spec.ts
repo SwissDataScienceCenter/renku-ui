@@ -471,7 +471,12 @@ describe("Data connector page", () => {
     cy.getDataCy("data-connector-standalone-page-link").click();
     cy.wait("@data-connector-no-credentials-namespace");
     cy.url().should("include", `/d/${username}/${dataConnectorSlug}`);
-    cy.getDataCy("data-connector-identifier").should(
+    cy.getDataCy("data-connector-name").should(
+      "contain.text",
+      "example storage without credentials",
+    );
+    cy.getDataCy("data-connector-actions-menu").click();
+    cy.getDataCy("data-connector-copy-identifier-menu-item").should(
       "contain.text",
       `${username}/${dataConnectorSlug}`,
     );
