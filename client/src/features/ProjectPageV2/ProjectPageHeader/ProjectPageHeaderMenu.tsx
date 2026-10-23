@@ -137,33 +137,27 @@ export default function ProjectPageHeaderMenu({
             onClick={copyIdentifier}
             toggle={false}
           >
-            {identifierCopied ? (
-              <span className={cx("d-flex", "gap-1")}>
+            <span className={cx("d-flex", "gap-1", "align-items-baseline")}>
+              {identifierCopied ? (
                 <CheckLg className="bi" />
-                <span className={cx("d-flex", "flex-column", "min-w-0")}>
-                  <code
-                    className={cx("d-block", "text-truncate", "small")}
-                    style={{ maxWidth: "200px" }}
-                  >
-                    {clipboardText}
-                  </code>
-                  <span>Copied!</span>
-                </span>
-              </span>
-            ) : (
-              <span className={cx("d-flex", "gap-1")}>
+              ) : (
                 <Clipboard className="bi" />
-                <span className={cx("d-flex", "flex-column", "min-w-0")}>
-                  <span>Copy project identifier</span>
-                  <code
-                    className={cx("d-block", "text-truncate", "small")}
-                    style={{ maxWidth: "200px" }}
-                  >
-                    {clipboardText}
-                  </code>
+              )}
+              <span className={cx("d-flex", "flex-column", "min-w-0")}>
+                <span>
+                  {" "}
+                  {identifierCopied
+                    ? "Copied project identifier"
+                    : "Copy project identifier"}
                 </span>
+                <code
+                  className={cx("d-block", "text-truncate", "small")}
+                  style={{ maxWidth: "200px" }}
+                >
+                  {clipboardText}
+                </code>
               </span>
-            )}
+            </span>
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
