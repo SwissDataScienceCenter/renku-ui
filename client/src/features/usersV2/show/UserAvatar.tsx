@@ -26,7 +26,7 @@ import { usersApi } from "../api/users.api";
 
 import styles from "./UserAvatar.module.scss";
 
-type AvatarSize = "sm" | "md" | "lg";
+type AvatarSize = "xs" | "sm" | "md" | "lg";
 
 interface UserAvatarProps {
   className?: string;
@@ -124,7 +124,10 @@ export default function UserAvatar({
         "rounded-circle",
         "text-center",
         "fw-medium",
+        "border",
+        "border-secondary-subtle",
         styles.avatar,
+        size === "xs" && styles.xSmall,
         size === "lg" && styles.large,
         size === "md" && styles.medium,
         className,
@@ -169,13 +172,15 @@ function truncateTooltipText(text: string) {
 
 interface OverflowBadgeProps {
   count: number;
-  hiddenMembers: {
-    first_name?: string;
-    last_name?: string;
-  }[];
+  tooltip: string;
+  size?: AvatarSize;
 }
 
-export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
+export function OverflowBadge({
+  count,
+  tooltip,
+  size = "sm",
+}: OverflowBadgeProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -183,25 +188,24 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
       <div
         ref={ref}
         className={cx(
-          "align-items-center",
+          "align-content-center",
           "border",
-          "d-flex",
           "flex-shrink-0",
-          "justify-content-center",
           "rounded-circle",
+          "text-center",
           "text-black",
+          "bg-secondary-subtle",
           styles.avatar,
+          size === "xs" && styles.xSmall,
+          size === "lg" && styles.large,
+          size === "md" && styles.medium,
         )}
         data-cy="member-list-overflow"
       >
         +{count}
       </div>
       <UncontrolledTooltip target={ref}>
-        {truncateTooltipText(
-          hiddenMembers
-            .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
-            .join(", "),
-        )}
+        {truncateTooltipText(tooltip)}
       </UncontrolledTooltip>
     </>
   );
