@@ -79,7 +79,8 @@ export default function DataConnectorPageHeader({
             "d-flex",
             "flex-column",
             "flex-grow-1",
-            "justify-content-evenly",
+            "justify-content-center",
+            "gap-2",
             "min-w-0",
           )}
         >
