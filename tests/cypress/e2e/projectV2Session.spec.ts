@@ -1117,6 +1117,131 @@ describe("view autostart link", () => {
     );
     cy.wait("@getResourceClass");
     cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
+    cy.getDataCy("session-external-start-confirm-modal").should("not.exist");
+    cy.wait("@createSession");
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  });
+});
+
+describe("anonymous session start confirmation", () => {
+  const startUrl =
+    "/p/user1-uuid/test-2-v2-project/sessions/01HYJE99XEKWNKPYN8WRB6QA8Z/start";
+
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userNone()
+      .listNamespaceV2()
+      .projects()
+      .readGroupV2Namespace({ groupSlug: "user1-uuid" })
+      .landingUserProjects()
+      .readProjectV2()
+      .readProjectV2WithoutDocumentation({
+        fixture: "projectV2/read-projectV2-empty.json",
+      })
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .resourcePoolsTest()
+      .getResourceClass()
+      .getProjectV2Permissions({ projectId: "01HYJE5FR1JV4CWFMBFJQFQ4RM" })
+      .listProjectV2Members()
+      .sessionLaunchers({
+        fixture: "projectV2/session-launchers.json",
+      })
+      .sessionServersEmptyV2()
+      .sessionImage()
+      .environments()
+      .listProjectDataConnectors({
+        fixture: "dataConnector/empty-list.json",
+      })
+      .sessionSecretSlots({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      })
+      .sessionSecrets({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      });
+  });
+
+  it("asks before starting from an outside link", () => {
+    let posted = false;
+    cy.intercept("POST", "/api/data/sessions", () => {
+      posted = true;
+    }).as("createSession");
+
+    cy.visit(startUrl);
+    cy.getDataCy("session-external-start-confirm-modal").should("be.visible");
+    cy.getDataCy("session-external-start-project").should(
+      "contain",
+      "test 2 v2-project",
+    );
+    cy.getDataCy("session-external-start-namespace").should(
+      "contain",
+      "test 2 group-v2",
+    );
+    cy.getDataCy("session-external-start-name").should(
+      "contain",
+      "Session-custom",
+    );
+    cy.getDataCy("session-external-start-environment").should(
+      "contain",
+      "External image environment",
+    );
+    cy.getDataCy("session-external-start-image").should(
+      "contain",
+      "renku/renkulab-py:latest",
+    );
+    cy.getDataCy("session-external-start-confirm-login")
+      .should("have.attr", "href")
+      .and("include", "/auth/login")
+      .and("include", "redirect_url");
+    cy.then(() => {
+      expect(posted).to.equal(false);
+    });
+  });
+
+  it("starts after continue and returns to the project on cancel", () => {
+    let posted = false;
+    cy.intercept("POST", "/api/data/sessions", () => {
+      posted = true;
+    });
+    cy.visit(startUrl);
+    cy.getDataCy("session-external-start-confirm-cancel").click();
+    cy.url().should("match", /\/p\/user1-uuid\/test-2-v2-project\/?$/);
+    cy.then(() => {
+      expect(posted).to.equal(false);
+    });
+
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/api/data/sessions", (req) => {
+        req.reply({ body: session, delay: 200 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.visit(startUrl);
+    cy.getDataCy("session-external-start-confirm-continue").click();
+    cy.getDataCy("session-external-start-confirm-modal").should("not.exist");
+    cy.wait("@createSession");
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  });
+
+  it("starts from the project launch button without confirmation", () => {
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/api/data/sessions", (req) => {
+        req.reply({ body: session, delay: 200 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2WithoutDocumentation");
+    cy.wait("@sessionLaunchers");
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").click();
+      });
+    cy.getDataCy("session-external-start-confirm-modal").should("not.exist");
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
