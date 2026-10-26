@@ -18,8 +18,9 @@
 
 import cx from "classnames";
 import { Key, Lock } from "react-bootstrap-icons";
-import { Badge, Col, ListGroupItem, Row } from "reactstrap";
+import { Col, ListGroupItem, Row } from "reactstrap";
 
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import { useGetUserSecretByIdQuery } from "../../../usersV2/api/users.api";
 import SessionSecretActions from "./SessionSecretActions";
 import type { SessionSecretSlotWithSecret } from "./sessionSecrets.types";
@@ -50,18 +51,10 @@ export default function SessionSecretSlotItem({
             <span className={cx("fw-bold", "me-2")}>{name}</span>
             {secretSlot.secretId ? (
               <>
-                <Badge
-                  className={cx(
-                    "border",
-                    "border-success",
-                    "bg-success-subtle",
-                    "text-success-emphasis",
-                  )}
-                  pill
-                >
-                  <Key className={cx("bi", "me-1")} />
+                <RenkuBadge className="fw-normal" color="success" pill>
+                  <Key className="me-1" />
                   Secret saved
-                </Badge>
+                </RenkuBadge>
                 <Key className={cx("bi", "ms-2", "me-1")} />
                 <span>
                   Secret name:{" "}
@@ -73,18 +66,10 @@ export default function SessionSecretSlotItem({
                 </span>
               </>
             ) : (
-              <Badge
-                className={cx(
-                  "border",
-                  "border-dark-subtle",
-                  "bg-light",
-                  "text-dark-emphasis",
-                )}
-                pill
-              >
-                <Lock className={cx("bi", "me-1")} />
+              <RenkuBadge className="fw-normal" color="light" pill>
+                <Lock className="me-1" />
                 Secret not provided
-              </Badge>
+              </RenkuBadge>
             )}
           </div>
           {description && <p className="mb-0">{description}</p>}

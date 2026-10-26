@@ -48,7 +48,12 @@ import {
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
+import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
+import {
+  useGetProjectsByProjectIdStorageQuery,
+  useGetStorageAllowByProjectIdQuery,
+} from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   useGetProjectsByProjectIdDataConnectorLinksQuery,
   usePostDataConnectorsByDataConnectorIdProjectLinksMutation,
@@ -72,6 +77,8 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import dataConnectorFormSlice from "../../../dataConnectorsV2/state/dataConnectors.slice";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { doiFromUrl } from "../../utils/dataConnectorUtils";
+import useProjectPermissions from "../../utils/useProjectPermissions.hook";
+import ProjectStorageForm from "../ProjectStorage/ProjectStorageForm";
 import {
   DC_LIKELY_DOI_ID,
   DC_SEARCH_DOI_PREFIX,
@@ -89,10 +96,13 @@ interface ProjectConnectDataConnectorsModalProps extends Omit<
   "dataConnector" | "projectId"
 > {
   project: Project;
-  switchMode?: () => void;
+  switchMode?: switchModeProps;
 }
 
-type ProjectConnectDataConnectorMode = "create" | "search";
+export type ProjectConnectDataConnectorMode =
+  | "create"
+  | "search"
+  | "add-storage";
 
 export default function ProjectConnectDataConnectorsModal({
   isOpen,
@@ -106,10 +116,24 @@ export default function ProjectConnectDataConnectorsModal({
     dispatch(dataConnectorFormSlice.actions.resetTransientState());
     originalToggle();
   }, [dispatch, originalToggle]);
-  const switchMode = useCallback(() => {
-    if (mode === "create") setMode("search");
-    else setMode("create");
-  }, [mode]);
+
+  const permissions = useProjectPermissions({ projectId: project?.id ?? "" });
+  const canManageProjectStorage = permissions.delete; // User needs to be project owner
+  const { data: storageAllowData } = useGetStorageAllowByProjectIdQuery(
+    canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
+  );
+  const { data: projectStorage } = useGetProjectsByProjectIdStorageQuery(
+    canManageProjectStorage ? { projectId: project?.id ?? "" } : skipToken,
+  );
+  const canAddProjectStorage =
+    canManageProjectStorage && storageAllowData && projectStorage?.length === 0;
+
+  const switchMode = {
+    callback: useCallback((mode: ProjectConnectDataConnectorMode) => {
+      setMode(mode);
+    }, []),
+    canAddProjectStorage,
+  };
 
   return (
     <ScrollableModal
@@ -138,7 +162,7 @@ export default function ProjectConnectDataConnectorsModal({
             toggle,
           }}
         />
-      ) : (
+      ) : mode === "search" ? (
         <ProjectSearchDataConnectorBodyAndFooter
           {...{
             isOpen,
@@ -148,7 +172,17 @@ export default function ProjectConnectDataConnectorsModal({
             toggle,
           }}
         />
-      )}
+      ) : mode === "add-storage" ? (
+        <ProjectStorageDataConnectorBodyAndFooter
+          {...{
+            isOpen,
+            namespace,
+            project,
+            switchMode,
+            toggle,
+          }}
+        />
+      ) : null}
     </ScrollableModal>
   );
 }
@@ -193,12 +227,17 @@ function ProjectCreateDataConnectorBodyAndFooter({
   );
 }
 
+export interface switchModeProps {
+  callback: (mode: ProjectConnectDataConnectorMode) => void;
+  canAddProjectStorage?: boolean;
+}
+
 export function ProjectConnectDataConnectorModeSwitch({
   mode,
   switchMode,
 }: {
   mode: ProjectConnectDataConnectorMode;
-  switchMode: () => void;
+  switchMode: switchModeProps;
 }) {
   return (
     <ButtonGroup>
@@ -208,7 +247,7 @@ export function ProjectConnectDataConnectorModeSwitch({
         id="project-data-controller-mode-search"
         value="search"
         checked={mode === "search"}
-        onChange={switchMode}
+        onChange={() => switchMode.callback("search")}
       />
       <Label
         data-cy="project-data-controller-mode-search"
@@ -230,7 +269,7 @@ export function ProjectConnectDataConnectorModeSwitch({
         id="project-data-controller-mode-create"
         value="create"
         checked={mode === "create"}
-        onChange={switchMode}
+        onChange={() => switchMode.callback("create")}
       />
       <Label
         data-cy="project-data-controller-mode-create"
@@ -240,12 +279,62 @@ export function ProjectConnectDataConnectorModeSwitch({
           "btn-outline-primary",
           "btn",
           "d-flex",
+          "border-start-0",
         )}
       >
         <PlusLg className={cx("fs-3", "me-1")} />
         Create a data connector
       </Label>
+
+      {switchMode.canAddProjectStorage && (
+        <>
+          <Input
+            type="radio"
+            className="btn-check"
+            id="project-data-controller-mode-add-storage"
+            value="add-storage"
+            checked={mode === "add-storage"}
+            onChange={() => switchMode.callback("add-storage")}
+          />
+          <Label
+            data-cy="project-data-controller-mode-add-storage"
+            for="project-data-controller-mode-add-storage"
+            className={cx(
+              "align-items-center",
+              "btn-outline-primary",
+              "btn",
+              "d-flex",
+              "border-start-0",
+            )}
+          >
+            <RenkuStorageIcon className={cx("fs-3", "me-1")} />
+            Add project storage
+          </Label>
+        </>
+      )}
     </ButtonGroup>
+  );
+}
+
+function ProjectStorageDataConnectorBodyAndFooter({
+  isOpen,
+  project,
+  switchMode,
+  toggle,
+}: ProjectConnectDataConnectorsModalProps) {
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+  }, [isOpen]);
+
+  return (
+    <ProjectStorageForm
+      projectId={project.id}
+      namespace={`${project.namespace}/${project.slug}`}
+      switchMode={switchMode}
+      toggle={toggle}
+    />
   );
 }
 
@@ -253,7 +342,6 @@ function ProjectSearchDataConnectorBodyAndFooter({
   isOpen,
   project,
   switchMode,
-  toggle,
 }: ProjectConnectDataConnectorsModalProps) {
   // ? The logic for the input string is the following:
   // ? 0. check if it's a doi
@@ -511,7 +599,7 @@ function ProjectSearchDataConnectorBodyAndFooter({
   // Show components
   return (
     <Form noValidate>
-      <ModalBody data-cy="data-connector-search-body" toggle={toggle}>
+      <ModalBody data-cy="data-connector-search-body">
         {switchMode && (
           <div className="mb-3">
             <ProjectConnectDataConnectorModeSwitch
@@ -851,5 +939,5 @@ function DataConnectorSearchSourceBadge({
       </div>
     );
 
-  return <p className={cx("mb-0", "small", "text-muted")}>{badgeText}</p>;
+  return <div className={cx("small", "text-muted")}>{badgeText}</div>;
 }

@@ -32,7 +32,6 @@ import {
   XOctagon,
 } from "react-bootstrap-icons";
 import {
-  Badge,
   Button,
   Col,
   DropdownItem,
@@ -41,6 +40,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import BuildLogsModal from "~/features/logsDisplay/BuildLogsModal";
 import { useGetRepositoryQuery } from "~/features/repositories/api/repositories.api";
 import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
@@ -85,7 +85,7 @@ export function BuildStatusBadge({
     build.status === "in_progress" ? (
       <Loader className="me-1" inline size={12} />
     ) : (
-      <CircleFill className={cx("me-1", "bi")} />
+      <CircleFill className="me-1" />
     );
 
   const { data, isLoading } = useGetRepositoryQuery(
@@ -124,20 +124,20 @@ export function BuildStatusBadge({
     }
   }
 
-  const badgeColorClasses =
+  const badgeColor =
     isCompatible === false || isCodeAvailable === false
-      ? ["border-danger", "bg-danger-subtle", "text-danger-emphasis"]
+      ? "danger"
       : build.status === "in_progress"
-        ? ["border-warning", "bg-warning-subtle", "text-warning-emphasis"]
+        ? "warning"
         : build.status === "succeeded"
-          ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
-          : ["border-danger", "bg-danger-subtle", "text-danger-emphasis"];
+          ? "success"
+          : "danger";
 
   return (
-    <Badge pill className={cx("border", badgeColorClasses)}>
+    <RenkuBadge className="fw-normal" color={badgeColor} pill>
       {badgeIcon}
-      {badgeText && <span className="fw-normal">{badgeText}</span>}
-    </Badge>
+      {badgeText}
+    </RenkuBadge>
   );
 }
 

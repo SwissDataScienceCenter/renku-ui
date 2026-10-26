@@ -348,7 +348,7 @@ export type EnvVar = {
   value?: string;
 };
 export type EnvVariables = EnvVar[];
-export type LauncherType = "interactive" | "non-interactive";
+export type LauncherType = "interactive" | "non-interactive" | "app";
 export type SessionLauncher = {
   id: Ulid;
   project_id: Ulid;

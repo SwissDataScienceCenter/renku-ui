@@ -58,10 +58,15 @@ export const ABSOLUTE_ROUTES = {
       root: "/integrations",
       complete: "/integrations/complete",
     },
+    ssh_keys: "/ssh_keys",
     projects: {
       show: {
         root: "/p/:namespace/:slug",
         settings: "/p/:namespace/:slug/settings",
+        apps: {
+          root: "/p/:namespace/:slug/apps",
+          show: "/p/:namespace/:slug/apps/:launcherId",
+        },
         sessions: {
           root: "/p/:namespace/:slug/sessions",
           show: "/p/:namespace/:slug/sessions/show/:session",
@@ -73,6 +78,9 @@ export const ABSOLUTE_ROUTES = {
     },
     search: "/search",
     secrets: "/secrets",
+    sessions: {
+      show: "/s/:id",
+    },
     user: "/user",
     users: {
       show: {
@@ -124,11 +132,16 @@ export const RELATIVE_ROUTES = {
       root: "integrations",
       complete: "complete",
     },
+    ssh_keys: "ssh_keys",
     projects: {
       root: "p/*",
       show: {
         root: ":namespace/:slug/*",
         settings: "settings",
+        apps: {
+          root: "apps/*",
+          show: ":launcherId",
+        },
         sessions: {
           root: "sessions/*",
           show: "show/:session",
@@ -139,6 +152,10 @@ export const RELATIVE_ROUTES = {
     },
     search: "search",
     secrets: "secrets",
+    sessions: {
+      root: "s",
+      show: ":id",
+    },
     user: "user",
     users: {
       root: "u",

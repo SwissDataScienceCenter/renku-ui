@@ -27,9 +27,11 @@ import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDat
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetRepositoriesQuery } from "../repositories/api/repositories.api";
+import { useGetUserSshKeysQuery } from "../usersV2/api/users.api";
 import {
   dataConnectorsNeedCredentials,
   doesCloudStorageNeedCredentials,
+  isDataConnectorExpired,
   repositoriesNeedAttention,
   secretsNeedAttention,
 } from "./sessionLaunchValidation.utils";
@@ -89,6 +91,9 @@ export default function useSessionLaunchPrerequisites({
     autoMarkReady: autoMarkSecretsReady,
   });
 
+  const { data: sshKeys, isFetching: isFetchingSshKeys } =
+    useGetUserSshKeysQuery();
+
   const isFetchingOrLoadingDataConnectors =
     isFetchingDataConnectorLinks ||
     isLoadingDataConnectorLinks ||
@@ -128,15 +133,24 @@ export default function useSessionLaunchPrerequisites({
 
   const needsCredentials = dataConnectorsNeedCredentials(dataConnectorConfigs);
 
+  const expiredDataConnectorConfigs = useMemo(
+    () => dataConnectorConfigs?.filter(isDataConnectorExpired) ?? [],
+    [dataConnectorConfigs],
+  );
+  const hasExpiredDataConnectors = expiredDataConnectorConfigs.length > 0;
+
   return {
     dataConnectorConfigs: dataConnectorConfigs as
       | SessionStartDataConnectorConfiguration[]
       | undefined,
     configsNeedingCredentials,
+    expiredDataConnectorConfigs,
+    hasExpiredDataConnectors,
     hasWritePermission,
     isFetchingOrLoadingDataConnectors,
     isFetchingRepositories,
     isFetchingSessionSecrets,
+    isFetchingSshKeys,
     isInitialLoading,
     isPermissionsError: projectPermissions.isPermissionsError,
     isReadyDataConnectorConfigs,
@@ -146,5 +160,6 @@ export default function useSessionLaunchPrerequisites({
     repositoriesNeedAttention: repositoriesNeedAttentionFlag,
     secretsNeedAttention: secretsNeedAttentionFlag,
     sessionSecretSlotsWithSecrets,
+    sshKeys,
   };
 }

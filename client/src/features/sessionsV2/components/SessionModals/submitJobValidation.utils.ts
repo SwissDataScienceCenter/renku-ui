@@ -21,6 +21,7 @@ import { allSessionSecretsReady } from "../../sessionLaunchValidation.utils";
 
 export interface SubmitJobGates {
   repositoriesReady: boolean;
+  dataConnectorsExpirationReady: boolean;
   userSecretsReady: boolean;
   dataConnectorsResolved: boolean;
   credentialsSaved: boolean;
@@ -28,6 +29,7 @@ export interface SubmitJobGates {
 
 export const INITIAL_SUBMIT_JOB_GATES: SubmitJobGates = {
   repositoriesReady: false,
+  dataConnectorsExpirationReady: false,
   userSecretsReady: false,
   dataConnectorsResolved: false,
   credentialsSaved: false,
@@ -35,6 +37,7 @@ export const INITIAL_SUBMIT_JOB_GATES: SubmitJobGates = {
 
 export type SubmitJobValidationStep =
   | "repositories"
+  | "dataConnectorsExpired"
   | "sessionSecrets"
   | "dataConnectors"
   | "saveCredentials"
@@ -45,6 +48,7 @@ export interface GetSubmitJobValidationStepArgs {
   isLoadingPrerequisites: boolean;
   gates: SubmitJobGates;
   repositoriesNeedAttention: boolean;
+  hasExpiredDataConnectors: boolean;
   secretsNeedAttention: boolean;
   sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[] | null;
   needsCredentials: boolean;
@@ -69,6 +73,7 @@ export function getSubmitJobValidationStep({
   isLoadingPrerequisites,
   gates,
   repositoriesNeedAttention,
+  hasExpiredDataConnectors,
   secretsNeedAttention,
   sessionSecretSlotsWithSecrets,
   needsCredentials,
@@ -79,6 +84,9 @@ export function getSubmitJobValidationStep({
   }
   if (!gates.repositoriesReady && repositoriesNeedAttention) {
     return "repositories";
+  }
+  if (!gates.dataConnectorsExpirationReady && hasExpiredDataConnectors) {
+    return "dataConnectorsExpired";
   }
   if (
     !isUserSecretsReadyForSubmit(

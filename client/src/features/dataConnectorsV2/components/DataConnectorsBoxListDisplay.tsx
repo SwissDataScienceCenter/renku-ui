@@ -18,6 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { DateTime } from "luxon";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   CircleFill,
@@ -30,13 +31,7 @@ import {
   Pencil,
 } from "react-bootstrap-icons";
 import { Link, To, useLocation } from "react-router";
-import {
-  Badge,
-  Col,
-  ListGroupItem,
-  Row,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Col, ListGroupItem, Row, UncontrolledTooltip } from "reactstrap";
 
 import { Loader } from "~/components/Loader";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
@@ -45,6 +40,7 @@ import {
   useGetOauth2ConnectionsQuery,
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
+import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import useLocationHash from "../../../utils/customHooks/useLocationHash.hook";
 import UserAvatar from "../../usersV2/show/UserAvatar";
 import {
@@ -255,6 +251,11 @@ export default function DataConnectorBoxListDisplay({
                   {dataConnectorPotentiallyInaccessible && (
                     <DataConnectorNotVisibleToAllUsersBadge />
                   )}
+                  {dataConnector.expires_at && (
+                    <DataConnectorExpiredWarningBadge
+                      expiresAt={dataConnector.expires_at}
+                    />
+                  )}
                 </div>
               </div>
               {lastDeposit && (
@@ -358,22 +359,41 @@ function DataConnectorNotVisibleToAllUsersBadge({
 
   return (
     <>
-      <Badge
-        className={cx(
-          "rounded-pill",
-          "border",
-          "bg-warning-subtle",
-          "border-warning",
-          "text-warning-emphasis",
-          className,
-        )}
-        color="primary"
-        innerRef={ref}
-      >
-        Visibility warning
-      </Badge>
+      <span ref={ref}>
+        <RenkuBadge className={cx(className)} color="warning" pill>
+          Visibility warning
+        </RenkuBadge>
+      </span>
       <UncontrolledTooltip target={ref} placement="bottom">
         {DATA_CONNECTORS_VISIBILITY_WARNING}
+      </UncontrolledTooltip>
+    </>
+  );
+}
+
+interface DataConnectorExpiredWarningBadgeProps {
+  expiresAt: DateTime | Date | string;
+}
+function DataConnectorExpiredWarningBadge({
+  expiresAt: expiresAt_,
+}: DataConnectorExpiredWarningBadgeProps) {
+  const expiresAt = ensureDateTime(expiresAt_);
+  const ref = useRef<HTMLDivElement>(null);
+  const expired = expiresAt < DateTime.now();
+
+  if (!expired) return null;
+
+  return (
+    <>
+      <div ref={ref}>
+        <RenkuBadge color="warning" pill>
+          Expired
+        </RenkuBadge>
+      </div>
+
+      <UncontrolledTooltip target={ref}>
+        This data connector has expired. You need to refresh it to use it in
+        sessions or jobs.
       </UncontrolledTooltip>
     </>
   );

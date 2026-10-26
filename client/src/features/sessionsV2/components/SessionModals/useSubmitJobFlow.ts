@@ -24,8 +24,10 @@ import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import { usePostSessionsMutation } from "../../api/sessionsV2.api";
 import { buildJobSessionPostRequest } from "../../session.utils";
 import {
+  dataConnectorsNeedCredentials,
   dataConnectorsShouldSaveCredentials,
   doesCloudStorageNeedCredentials,
+  isDataConnectorExpired,
 } from "../../sessionLaunchValidation.utils";
 import type { SessionStartDataConnectorConfiguration } from "../../startSessionOptionsV2.types";
 import useSessionLaunchPrerequisites from "../../useSessionLaunchPrerequisites.hook";
@@ -57,6 +59,8 @@ export default function useSubmitJobFlow({
   const [dataConnectorConfigs, setDataConnectorConfigs] = useState<
     SessionStartDataConnectorConfiguration[] | undefined
   >();
+  const [expiredDataConnectorIdsToSkip, setExpiredDataConnectorIdsToSkip] =
+    useState<Set<string>>(new Set());
   const [pendingSubmit, setPendingSubmit] = useState<SubmitJobForm | null>(
     null,
   );
@@ -81,12 +85,35 @@ export default function useSubmitJobFlow({
   const isLoadingPrerequisitesForValidation =
     prerequisites.isInitialLoading && !hasPrerequisitesLoaded;
 
+  // Handle expiring data connectors
+  const resolvedDataConnectorConfigs = useMemo(
+    () =>
+      prerequisites.dataConnectorConfigs?.map((config) =>
+        expiredDataConnectorIdsToSkip.has(config.dataConnector.id)
+          ? { ...config, active: false, skip: true }
+          : config,
+      ),
+    [expiredDataConnectorIdsToSkip, prerequisites.dataConnectorConfigs],
+  );
+
   const configsWithCredentials = useMemo(
     () =>
-      (prerequisites.dataConnectorConfigs ?? []).filter(
+      (resolvedDataConnectorConfigs ?? []).filter(
         (config) => !doesCloudStorageNeedCredentials(config),
       ),
-    [prerequisites.dataConnectorConfigs],
+    [resolvedDataConnectorConfigs],
+  );
+
+  const configsNeedingCredentials = useMemo(
+    () =>
+      (resolvedDataConnectorConfigs ?? []).filter(
+        doesCloudStorageNeedCredentials,
+      ),
+    [resolvedDataConnectorConfigs],
+  );
+
+  const needsCredentials = dataConnectorsNeedCredentials(
+    resolvedDataConnectorConfigs,
   );
 
   const shouldSaveCredentials =
@@ -100,17 +127,19 @@ export default function useSubmitJobFlow({
         isLoadingPrerequisites: isLoadingPrerequisitesForValidation,
         gates,
         repositoriesNeedAttention: prerequisites.repositoriesNeedAttention,
+        hasExpiredDataConnectors: prerequisites.hasExpiredDataConnectors,
         secretsNeedAttention: prerequisites.secretsNeedAttention,
         sessionSecretSlotsWithSecrets:
           prerequisites.sessionSecretSlotsWithSecrets,
-        needsCredentials: prerequisites.needsCredentials,
+        needsCredentials,
         shouldSaveCredentials,
       }),
     [
       gates,
       isValidating,
       isLoadingPrerequisitesForValidation,
-      prerequisites.needsCredentials,
+      needsCredentials,
+      prerequisites.hasExpiredDataConnectors,
       prerequisites.repositoriesNeedAttention,
       prerequisites.secretsNeedAttention,
       prerequisites.sessionSecretSlotsWithSecrets,
@@ -203,17 +232,16 @@ export default function useSubmitJobFlow({
       setBuildRequestError(null);
       setPendingSubmit(data);
       setIsValidating(true);
+      setExpiredDataConnectorIdsToSkip(new Set());
       setGates({
         repositoriesReady: !prerequisites.repositoriesNeedAttention,
+        dataConnectorsExpirationReady: !prerequisites.hasExpiredDataConnectors,
         userSecretsReady: !prerequisites.secretsNeedAttention,
-        dataConnectorsResolved: !prerequisites.needsCredentials,
+        dataConnectorsResolved: !needsCredentials,
         credentialsSaved: false,
       });
-      if (
-        !prerequisites.needsCredentials &&
-        prerequisites.dataConnectorConfigs
-      ) {
-        setDataConnectorConfigs(prerequisites.dataConnectorConfigs);
+      if (!needsCredentials && resolvedDataConnectorConfigs) {
+        setDataConnectorConfigs(resolvedDataConnectorConfigs);
       } else {
         setDataConnectorConfigs(undefined);
       }
@@ -221,13 +249,24 @@ export default function useSubmitJobFlow({
     [
       postSessionResult,
       isLoadingPrerequisitesForValidation,
-      prerequisites.dataConnectorConfigs,
+      needsCredentials,
+      prerequisites.hasExpiredDataConnectors,
       prerequisites.isPermissionsError,
-      prerequisites.needsCredentials,
       prerequisites.repositoriesNeedAttention,
       prerequisites.secretsNeedAttention,
+      resolvedDataConnectorConfigs,
     ],
   );
+
+  const onDataConnectorsExpiredContinue = useCallback(() => {
+    const expiredIds = new Set(
+      (prerequisites.dataConnectorConfigs ?? [])
+        .filter(isDataConnectorExpired)
+        .map((config) => config.dataConnector.id),
+    );
+    setExpiredDataConnectorIdsToSkip(expiredIds);
+    setGates((prev) => ({ ...prev, dataConnectorsExpirationReady: true }));
+  }, [prerequisites.dataConnectorConfigs]);
 
   const onDataConnectorsComplete = useCallback(
     (configs: DataConnectorConfiguration[]) => {
@@ -273,13 +312,15 @@ export default function useSubmitJobFlow({
   return {
     buildRequestError,
     cancelValidation,
-    configsNeedingCredentials: prerequisites.configsNeedingCredentials,
+    configsNeedingCredentials,
     dataConnectorConfigs,
+    expiredDataConnectorConfigs: prerequisites.expiredDataConnectorConfigs,
     handleSubmitAttempt,
     isCheckingLaunchPrerequisites: isLoadingPrerequisitesForValidation,
     isPermissionsError: prerequisites.isPermissionsError,
     isSubmitting,
     onDataConnectorsComplete,
+    onDataConnectorsExpiredContinue,
     onRepositoriesSkip,
     onSaveCredentialsComplete,
     onSecretsSkip,

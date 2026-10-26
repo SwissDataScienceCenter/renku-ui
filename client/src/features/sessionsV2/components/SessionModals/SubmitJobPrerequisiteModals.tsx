@@ -24,6 +24,7 @@ import type { Project } from "../../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
 import DataConnectorSecretsModal from "../../DataConnectorSecretsModal";
 import SaveCloudStorageCredentials from "../../SaveCloudStorageCredentials";
+import SessionExpiredDataConnectorsModal from "../../SessionExpiredDataConnectorsModal";
 import SessionRepositoriesModal from "../../SessionRepositoriesModal";
 import SessionSecretsModal from "../../SessionSecretsModal";
 import type { SessionStartDataConnectorConfiguration } from "../../startSessionOptionsV2.types";
@@ -35,9 +36,11 @@ interface SubmitJobPrerequisiteModalsProps {
   launcher: SessionLauncher;
   sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[] | null;
   configsNeedingCredentials: DataConnectorConfiguration[];
+  expiredDataConnectorConfigs: SessionStartDataConnectorConfiguration[];
   dataConnectorConfigs: SessionStartDataConnectorConfiguration[] | undefined;
   onCancel: () => void;
   onRepositoriesSkip: () => void;
+  onDataConnectorsExpiredContinue: () => void;
   onSecretsSkip: () => void;
   onDataConnectorsComplete: (configs: DataConnectorConfiguration[]) => void;
   onSaveCredentialsComplete: (
@@ -51,9 +54,11 @@ export default function SubmitJobPrerequisiteModals({
   launcher,
   sessionSecretSlotsWithSecrets,
   configsNeedingCredentials,
+  expiredDataConnectorConfigs,
   dataConnectorConfigs,
   onCancel,
   onRepositoriesSkip,
+  onDataConnectorsExpiredContinue,
   onSecretsSkip,
   onDataConnectorsComplete,
   onSaveCredentialsComplete,
@@ -69,6 +74,17 @@ export default function SubmitJobPrerequisiteModals({
           project={project}
           title="Project repositories not accessible"
           warningIntro="your attention before submitting the job"
+        />
+      )}
+
+      {validationStep === "dataConnectorsExpired" && (
+        <SessionExpiredDataConnectorsModal
+          continueLabel="Submit anyway"
+          dataConnectors={expiredDataConnectorConfigs}
+          isOpen
+          onCancel={onCancel}
+          onSkip={onDataConnectorsExpiredContinue}
+          project={project}
         />
       )}
 

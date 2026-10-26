@@ -20,7 +20,6 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import {
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -32,13 +31,11 @@ import {
   CircleFill,
   Plugin,
   PlusLg,
-  Send,
   XCircleFill,
   XLg,
 } from "react-bootstrap-icons";
 import { Link, useSearchParams } from "react-router";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
@@ -59,11 +56,10 @@ import {
 
 import ExternalLink from "~/components/ExternalLink";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon.tsx";
+import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import type { AppInstallationsPaginated } from "~/features/connectedServices/api/connectedServices.types";
 import { useOAuthProviderConnect } from "~/features/connectedServices/useOAuthProviderConnect.hook";
 import { NEW_DOCS_USER_INTEGRATIONS } from "~/utils/constants/NewDocs";
-import AppContext from "~/utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { safeNewUrl } from "~/utils/helpers/safeNewUrl.utils";
 import { InfoAlert, RenkuAlert, WarnAlert } from "../../components/Alert";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
@@ -97,8 +93,6 @@ import {
 } from "./useConnectedServiceProviderLists.hook";
 import type { GithubOAuthCompleteFollowUpData } from "./useGithubOAuthCompleteFollowUpData.hook";
 
-import DashboardStyles from "~/features/dashboardV2/DashboardV2.module.scss";
-
 const CONNECTED_SERVICES_POLLING_INTERVAL_MS = 10_000;
 const DEFAULT_MODAL_PROVIDERS_COUNT = 4;
 
@@ -109,9 +103,6 @@ export default function ConnectedServicesPage() {
   const targetProviderId = searchParams.get(SEARCH_PARAM_PROVIDER);
   const source = searchParams.get(SEARCH_PARAM_SOURCE);
   const actionRequired = searchParams.get(SEARCH_PARAM_ACTION_REQUIRED);
-  const { params } = useContext(AppContext);
-  const renkuContactEmail =
-    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
   const {
     data: providers,
     isLoading: isLoadingProviders,
@@ -164,12 +155,7 @@ export default function ConnectedServicesPage() {
       Anonymous users cannot connect to external services.
     </InfoAlert>
   ) : !providers || providers.length === 0 ? (
-    <>
-      <p>There are currently no external services users can connect to.</p>
-      <div className={cx("row", "g-3")}>
-        <ContactUsCard />
-      </div>
-    </>
+    <p>There are currently no external services users can connect to.</p>
   ) : (
     <>
       {targetedProvider && !IsTargetedProviderVisible && actionRequired && (
@@ -242,9 +228,6 @@ export default function ConnectedServicesPage() {
           )}
         </CardBody>
       </Card>
-      <div className={cx("mt-3", "row", "g-3")}>
-        <ContactUsCard />
-      </div>
       <AddIntegrationModal
         isOpen={isAddIntegrationModalOpen}
         onToggle={toggleAddIntegrationModal}
@@ -270,28 +253,8 @@ export default function ConnectedServicesPage() {
           </Row>
         </Col>
         {isUserLoggedIn && (
-          <Col xs={12} md={4}>
-            <Card
-              className={cx(DashboardStyles.DashboardCard, "border-1", "mb-3")}
-            >
-              <CardBody className={DashboardStyles.FooterCard}>
-                <p>
-                  Do you have another platform you&apos;d like to connect to
-                  Renku?
-                </p>
-                <p>
-                  <Link
-                    to={`mailto:${renkuContactEmail}`}
-                    className={cx("btn", "btn-outline-primary")}
-                    target="_blank"
-                  >
-                    <Send size={27} className="me-2" />
-                    Contact us
-                  </Link>{" "}
-                  to add it to this list!
-                </p>
-              </CardBody>
-            </Card>
+          <Col xs={12} md={4} className={cx("d-flex", "flex-column", "gap-3")}>
+            <ContactUsCard />
             <Card className={cx("border-1")}>
               <CardBody>
                 <p>
@@ -316,37 +279,16 @@ interface ConnectedServiceStatusProps {
 function ConnectedServiceStatus({ connection }: ConnectedServiceStatusProps) {
   const status =
     connection == null
-      ? {
-          text: "Not connected",
-          classes: [
-            "bg-danger-subtle",
-            "border-danger",
-            "text-danger-emphasis",
-          ],
-        }
+      ? { text: "Not connected", color: "danger" as const }
       : connection.status === "connected"
-        ? {
-            text: "Connected",
-            classes: [
-              "bg-success-subtle",
-              "border-success",
-              "text-success-emphasis",
-            ],
-          }
-        : {
-            text: "Pending",
-            classes: [
-              "bg-warning-subtle",
-              "border-warning",
-              "text-warning-emphasis",
-            ],
-          };
+        ? { text: "Connected", color: "success" as const }
+        : { text: "Pending", color: "warning" as const };
 
   return (
-    <Badge className={cx("border", ...status.classes)} color="info">
-      <CircleFill className={cx("bi", "me-1")} />
+    <RenkuBadge className="fw-normal" color={status.color} pill>
+      <CircleFill className="me-1" />
       {status.text}
-    </Badge>
+    </RenkuBadge>
   );
 }
 

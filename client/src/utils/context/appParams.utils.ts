@@ -19,6 +19,10 @@
 import { clamp } from "lodash-es";
 
 import type { HomepageParams } from "../../features/landing/anonymousHome.types";
+import {
+  APP_LOBBY_CONFIG_BOUNDS,
+  type AppLobbyConfig,
+} from "../../features/sessionsV2/apps/appLobby.utils";
 import { DEFAULT_APP_PARAMS } from "./appParams.constants";
 import type {
   AppParams,
@@ -66,6 +70,10 @@ export function validatedAppParams(params: unknown): AppParams {
     "PRIVACY_BANNER_ENABLED",
   );
   const TERMS_PAGES_ENABLED = validateBoolean(params_, "TERMS_PAGES_ENABLED");
+  const ENVIDAT_EXPORTS_ENABLED = validateBoolean(
+    params_,
+    "ENVIDAT_EXPORTS_ENABLED",
+  );
   const IMAGE_BUILDERS_ENABLED = validateBoolean(
     params_,
     "IMAGE_BUILDERS_ENABLED",
@@ -78,6 +86,8 @@ export function validatedAppParams(params: unknown): AppParams {
     params_,
     "PERSISTED_LOGS_ENABLED",
   );
+  const APPS_ENABLED = validateBoolean(params_, "APPS_ENABLED");
+  const SSH_ENABLED = validateBoolean(params_, "SSH_ENABLED");
 
   // Integer params
   const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
@@ -97,18 +107,24 @@ export function validatedAppParams(params: unknown): AppParams {
   const UPLOAD_THRESHOLD = validateUploadThreshold(params_);
   const SESSION_CLASS_EMAIL_US = validateSessionClassEmailUs(params_);
   const CULLING_THRESHOLDS = validateCullingThresholds(params_);
+  const APP_LOBBY = validateAppLobby(params_);
 
   return {
     ANONYMOUS_SESSIONS,
+    APP_LOBBY,
+    APPS_ENABLED,
     BASE_URL,
+    BUILD_PRIVATE_REPO_BUILDS_ENABLED,
     CONTACT_EMAIL,
     CULLING_THRESHOLDS,
+    ENVIDAT_EXPORTS_ENABLED,
     GATEWAY_URL,
     HOMEPAGE,
     IMAGE_BUILDERS_ENABLED,
-    BUILD_PRIVATE_REPO_BUILDS_ENABLED,
     KEYCLOAK_REALM,
     MAINTENANCE,
+    PERSISTED_LOGS_ENABLED,
+    PERSISTED_LOGS_TTL_SECONDS,
     PREVIEW_THRESHOLD,
     PRIVACY_BANNER_CONTENT,
     PRIVACY_BANNER_ENABLED,
@@ -118,6 +134,7 @@ export function validatedAppParams(params: unknown): AppParams {
     SENTRY_SAMPLE_RATE,
     SENTRY_URL,
     SESSION_CLASS_EMAIL_US,
+    SSH_ENABLED,
     STATUSPAGE_ID,
     TEMPLATES,
     TERMS_PAGES_ENABLED,
@@ -126,8 +143,6 @@ export function validatedAppParams(params: unknown): AppParams {
     UISERVER_URL,
     UPLOAD_THRESHOLD,
     USER_PREFERENCES_MAX_PINNED_PROJECTS,
-    PERSISTED_LOGS_ENABLED,
-    PERSISTED_LOGS_TTL_SECONDS,
   };
 }
 
@@ -178,10 +193,16 @@ function validateInteger(
   key: keyof AppParamsNumbers,
   options?: ValidateIntegerOptions,
 ): number {
+  return coerceInteger(params[key], DEFAULT_APP_PARAMS[key], options);
+}
+
+function coerceInteger(
+  value: unknown,
+  fallback: number,
+  options?: ValidateIntegerOptions,
+): number {
   const min = options?.min ?? Number.MIN_SAFE_INTEGER;
   const max = options?.max ?? Number.MAX_SAFE_INTEGER;
-
-  const value = params[key];
 
   // adjust integer param value
   if (typeof value === "string") {
@@ -191,10 +212,43 @@ function validateInteger(
     }
   }
 
-  if (typeof value !== "number") {
-    return DEFAULT_APP_PARAMS[key];
+  if (typeof value !== "number" || !isFinite(value)) {
+    return fallback;
   }
-  return clamp(value, min, max);
+  return clamp(Math.trunc(value), min, max);
+}
+
+function validateAppLobby(params: RawAppParams): AppLobbyConfig {
+  const defaults = DEFAULT_APP_PARAMS["APP_LOBBY"];
+
+  const value = params["APP_LOBBY"];
+  if (typeof value !== "object" || value == null) {
+    return defaults;
+  }
+
+  const rawParams = value as {
+    maxAttempts: unknown;
+    probeTimeoutMs: unknown;
+    retryDelayMs: unknown;
+  };
+
+  return {
+    maxAttempts: coerceInteger(
+      rawParams.maxAttempts,
+      defaults.maxAttempts,
+      APP_LOBBY_CONFIG_BOUNDS.maxAttempts,
+    ),
+    probeTimeoutMs: coerceInteger(
+      rawParams.probeTimeoutMs,
+      defaults.probeTimeoutMs,
+      APP_LOBBY_CONFIG_BOUNDS.probeTimeoutMs,
+    ),
+    retryDelayMs: coerceInteger(
+      rawParams.retryDelayMs,
+      defaults.retryDelayMs,
+      APP_LOBBY_CONFIG_BOUNDS.retryDelayMs,
+    ),
+  };
 }
 
 function validateHomepage(params: RawAppParams): HomepageParams {

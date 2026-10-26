@@ -591,3 +591,61 @@ describe("Create projects in a group", () => {
       .should("be.visible");
   });
 });
+
+describe("Display group's resource pools", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "0945f006-e117-49b7-8966-4c0842146313",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .listNamespaceV2()
+      .listGroupV2()
+      .readGroupV2()
+      .readGroupV2Namespace()
+      .getGroupV2Permissions()
+      .listGroupV2Members()
+      .listProjectV2ByNamespace()
+      .listDataConnectors({ namespace: "test-2-group-v2" });
+
+    cy.visit("/");
+    cy.contains("My groups").should("be.visible");
+    cy.contains("test 2 group-v2").should("be.visible").click();
+    cy.wait("@readGroupV2");
+    cy.contains("test 2 group-v2").should("be.visible");
+  });
+
+  it("show group resource pools to user with permissions", () => {
+    fixtures.listGroupV2ResourcePools();
+
+    cy.getDataCy("group-resource-pools").should("be.visible");
+    cy.getDataCy("group-resource-pools").within(() => {
+      cy.contains("test private").should("be.visible");
+      cy.contains("test private 2").should("be.visible");
+    });
+  });
+
+  it("show empty list of group resource pools", () => {
+    fixtures.listGroupV2ResourcePools({
+      empty: true,
+    });
+
+    cy.getDataCy("group-resource-pools").should("be.visible");
+    cy.getDataCy("group-resource-pools-empty").should("be.visible");
+  });
+
+  it("show not visible message to user with no permissions", () => {
+    fixtures.listGroupV2ResourcePools({
+      allowed: false,
+    });
+
+    cy.getDataCy("group-resource-pools").should("be.visible");
+    cy.getDataCy("group-resource-pools-not-visible").should("be.visible");
+  });
+});

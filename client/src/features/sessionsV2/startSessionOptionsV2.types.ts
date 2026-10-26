@@ -36,6 +36,7 @@ export interface SessionStartDataConnectorConfiguration {
 
 export interface StartSessionOptionsV2 {
   dataConnectors?: SessionStartDataConnectorConfiguration[];
+  dataConnectorsExpirationReady: boolean;
   defaultUrl: string;
   environmentVariables: SessionEnvironmentVariable[];
   imageReady: boolean;
@@ -43,6 +44,7 @@ export interface StartSessionOptionsV2 {
   repositories: SessionRepository[];
   repositoriesReady: boolean;
   sessionClass: number;
+  sshKeysReady: boolean;
   storage: number;
   userSecretsReady: boolean;
 }

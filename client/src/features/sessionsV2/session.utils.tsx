@@ -62,15 +62,20 @@ import type { SessionStartDataConnectorConfiguration } from "./startSessionOptio
 export function getLauncherCategoryDefinitionByLauncher(
   launcher: SessionLauncher,
 ): LauncherCategoryDefinition {
-  return isJobLauncher(launcher)
-    ? LAUNCHER_BY_CATEGORY["job"]
-    : LAUNCHER_BY_CATEGORY["session"];
+  return getLauncherCategoryDefinition(getLauncherCategory(launcher));
 }
 
 export function sessionLauncherKindToCategory(
   kind: SessionLauncherKind,
 ): LauncherCategory {
-  return kind === SESSION_LAUNCHER_KIND.NON_INTERACTIVE ? "job" : "session";
+  switch (kind) {
+    case SESSION_LAUNCHER_KIND.NON_INTERACTIVE:
+      return "job";
+    case SESSION_LAUNCHER_KIND.APP:
+      return "app";
+    default:
+      return "session";
+  }
 }
 
 export function getLauncherCategory(
@@ -95,8 +100,29 @@ export function isJobLauncher(launcher: SessionLauncher): boolean {
   return launcher.launcher_type === SESSION_LAUNCHER_KIND.NON_INTERACTIVE;
 }
 
+export function isAppLauncher(launcher: SessionLauncher): boolean {
+  return launcher.launcher_type === SESSION_LAUNCHER_KIND.APP;
+}
+
 export function isGlobalEnvironmentIncluded(allowedEnvironments: string[]) {
   return allowedEnvironments.includes("global");
+}
+
+export function getLauncherChangeEffectMessage(
+  category: LauncherCategory,
+): string {
+  if (category === "app") {
+    return "The changes will take effect the next time the app is started. A currently running app is not affected until it is stopped and started again.";
+  }
+
+  const { text } = getLauncherCategoryDefinition(category);
+  return `The changes will take effect the next time you ${text.action} a ${text.inline} with this launcher. Current ${text.inline}s will not be affected.`;
+}
+
+export function showsSessionLauncherFields(
+  launcherCategory: LauncherCategory,
+): boolean {
+  return launcherCategory === "session" || launcherCategory === "app";
 }
 
 /**
@@ -120,6 +146,7 @@ function jsonStringArrayOrNull(
 
 export function getNewLauncherFormDefaultValues(
   environmentSelect: EnvironmentSelectOption,
+  launcherCategory: LauncherCategory = "session",
 ): Pick<
   SessionLauncherForm,
   | "name"
@@ -149,7 +176,7 @@ export function getNewLauncherFormDefaultValues(
     repository: "",
     platform: "",
     builder_variant: "python",
-    frontend_variant: "jupyterlab", // eslint-disable-line spellcheck/spell-checker
+    frontend_variant: launcherCategory === "app" ? "none" : "jupyterlab", // eslint-disable-line spellcheck/spell-checker
     command: "",
     args: "",
     gid: 1000,

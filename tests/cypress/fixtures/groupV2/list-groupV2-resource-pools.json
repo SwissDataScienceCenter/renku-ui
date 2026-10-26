@@ -1,0 +1,58 @@
+[
+  {
+    "quota": {
+      "cpu": 1,
+      "memory": 2,
+      "gpu": 0,
+      "id": "9d1847a2-3839-48c8-8ac9-a251bdb68649"
+    },
+    "classes": [
+      {
+        "name": "small",
+        "default": true,
+        "cpu": 0.5,
+        "memory": 1,
+        "gpu": 0,
+        "max_storage": 20,
+        "default_storage": 1,
+        "tolerations": [],
+        "node_affinities": [],
+        "id": 8,
+        "quota_enforced": false
+      }
+    ],
+    "name": "test private",
+    "id": 5,
+    "public": false,
+    "default": false,
+    "platform": "linux/amd64"
+  },
+  {
+    "quota": {
+      "cpu": 1,
+      "memory": 2,
+      "gpu": 0,
+      "id": "c6aa17cb-6e48-4832-ae16-0b71e207415c"
+    },
+    "classes": [
+      {
+        "name": "small",
+        "default": true,
+        "cpu": 0.5,
+        "memory": 1,
+        "gpu": 0,
+        "max_storage": 20,
+        "default_storage": 1,
+        "tolerations": [],
+        "node_affinities": [],
+        "id": 9,
+        "quota_enforced": false
+      }
+    ],
+    "name": "test private 2",
+    "id": 6,
+    "public": false,
+    "default": false,
+    "platform": "linux/amd64"
+  }
+]

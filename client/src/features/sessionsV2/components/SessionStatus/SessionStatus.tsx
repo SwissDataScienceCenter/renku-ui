@@ -32,12 +32,7 @@ import {
   Hourglass,
   Icon,
 } from "react-bootstrap-icons";
-import {
-  Badge,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledPopover,
-} from "reactstrap";
+import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
 
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import {
@@ -126,19 +121,6 @@ function MissingHibernationInfo() {
   );
 }
 
-export function SessionBadge({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className: string;
-}) {
-  return (
-    <Badge className={cx("border", "fs-small", "fw-normal", className)} pill>
-      {children}
-    </Badge>
-  );
-}
 interface ActiveSessionV2Props {
   session: SessionV2;
   variant?: "card" | "list";

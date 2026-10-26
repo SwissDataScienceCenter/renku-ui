@@ -59,15 +59,7 @@ export default function DepositIntegrationInfo({
     );
   }
   if (!provider) {
-    return (
-      <ErrorAlert>
-        <h3>Admin action required</h3>
-        <p className="mb-0">
-          The deposit provider is not available. Please contact a Renku
-          administrator.
-        </p>
-      </ErrorAlert>
-    );
+    return <DepositProviderUnavailableAlert />;
   }
   if (!connection || connection.status !== "connected") {
     return (
@@ -92,3 +84,13 @@ export default function DepositIntegrationInfo({
     </div>
   );
 }
+
+export const DepositProviderUnavailableAlert = () => (
+  <ErrorAlert>
+    <h3>Admin action required</h3>
+    <p className="mb-0">
+      The deposit provider is not available. Please contact a Renku
+      administrator.
+    </p>
+  </ErrorAlert>
+);

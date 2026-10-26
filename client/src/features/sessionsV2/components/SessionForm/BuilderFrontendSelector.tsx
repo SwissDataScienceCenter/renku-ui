@@ -28,6 +28,7 @@ import {
 } from "react-hook-form";
 import { Label } from "reactstrap";
 
+import useSshEnabled from "../../../sshKeys/useSshEnabled.hook";
 import {
   BUILDER_FRONTEND_COMBINATIONS,
   BUILDER_FRONTENDS,
@@ -61,10 +62,16 @@ export default function BuilderFrontendSelector<T extends FieldValues>({
     },
   });
 
+  const sshEnabled = useSshEnabled();
   const compatibleFrontends = useMemo(() => {
     const compatible = getCompatibleFrontends(builderVariant);
-    return BUILDER_FRONTENDS.filter((f) => compatible.includes(f.value));
-  }, [builderVariant]);
+    return BUILDER_FRONTENDS.filter(
+      (f) =>
+        compatible.includes(f.value) &&
+        // Hide SSH when disabled, unless it is already selected (e.g. when editing a launcher)
+        (sshEnabled || f.value !== "ssh" || currentFrontend === "ssh"),
+    );
+  }, [builderVariant, currentFrontend, sshEnabled]);
 
   const isCompatible =
     BUILDER_FRONTEND_COMBINATIONS[builderVariant]?.includes(currentFrontend) ??

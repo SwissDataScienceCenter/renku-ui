@@ -1,5 +1,5 @@
 /*!
- * Copyright 2025 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// INFO: You can check the links validity in this file by running the script `npm run test:docs-links`.
 
 type NewDocLinkArgs = {
   language: string;
@@ -35,7 +37,8 @@ function newDocsBase({ language, version }: NewDocLinkArgs): string {
 }
 
 function newDocsLinkPage(page: string): NewDocLinkFn {
-  const page_ = page.startsWith("/") ? page.substring(1) : page;
+  const page1 = page.startsWith("/") ? page.substring(1) : page;
+  const page_ = page1.endsWith("/") || page1 === "" ? page1 : page1 + "/";
   return (args: NewDocLinkArgs) => newDocsBase(args) + page_;
 }
 
@@ -78,14 +81,6 @@ export const NEW_DOCS_TEACHING = newDocsLinkPage(
 
 export const NEW_DOCS_QUICK_START_TUTORIAL = newDocsLinkPage(
   "docs/users/getting-started",
-)(DEFAULT_NEW_DOC_LINK_ARGS);
-
-export const NEW_DOCS_MIGRATE_AWAY_FROM_GITLAB = newDocsLinkPage(
-  "docs/users/migrate-v1-v2/migrate-from-gitlab",
-)(DEFAULT_NEW_DOC_LINK_ARGS);
-
-export const NEW_DOCS_CREATE_PROJECT = newDocsLinkPage(
-  "docs/users/getting-started/create-project",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
 
 export const NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED = newDocsLinkPage(

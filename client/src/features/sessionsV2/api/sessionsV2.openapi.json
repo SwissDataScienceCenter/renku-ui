@@ -392,7 +392,13 @@
             "$ref": "#/components/schemas/SessionStatus"
           },
           "url": {
-            "type": "string"
+            "type": "string",
+            "description": "The direct URL of a session"
+          },
+          "external_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "The URL to use for external access to a session (usually the UI page)"
           },
           "project_id": {
             "$ref": "#/components/schemas/Ulid"
@@ -405,6 +411,9 @@
           },
           "session_type": {
             "$ref": "#/components/schemas/SessionType"
+          },
+          "frontend_variant": {
+            "$ref": "#/components/schemas/FrontendVariant"
           },
           "submission_id": {
             "$ref": "#/components/schemas/SubmissionId",
@@ -725,6 +734,12 @@
           }
         },
         "required": ["architecture", "os"]
+      },
+      "FrontendVariant": {
+        "description": "User's Frontend Choice.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 99
       }
     },
     "responses": {

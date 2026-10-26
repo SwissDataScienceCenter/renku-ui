@@ -23,6 +23,7 @@ import { Collapse } from "reactstrap";
 
 import CollapseBody from "~/components/container/CollapseBody";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
+import { useGetProjectsByProjectIdStorageQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { getRepositoryName } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
@@ -90,6 +91,26 @@ export default function ShutdownSessionContent({
       .map((dc) => dc.storage.target_path);
   }, [dataConnectorsObjects]);
 
+  const { data: projectStorageData = [] } =
+    useGetProjectsByProjectIdStorageQuery(
+      sessionProjectId
+        ? {
+            projectId: sessionProjectId,
+          }
+        : skipToken,
+    );
+  const projectStorage = useMemo(() => {
+    return projectStorageData.map((storage) => storage.mount_path);
+  }, [projectStorageData]);
+
+  const hasConnectedStorageOrRepository = useMemo(() => {
+    return (
+      dataConnectors.length > 0 ||
+      codeRepositories.length > 0 ||
+      projectStorage.length > 0
+    );
+  }, [dataConnectors, codeRepositories, projectStorage]);
+
   // Control collapsible element status
   const [showDetails, setShowDetails] = useState(false);
   const toggleShowDetails = useCallback(
@@ -119,44 +140,50 @@ export default function ShutdownSessionContent({
         alt="announcement for v2"
       />
       <p>Are you sure you want to permanently shut down this session?</p>
-      <p>
-        <span className="fw-bold">
-          All files will be permanently deleted unless you save them to an
-          external system first.
-        </span>{" "}
-        To preserve your work
-        {dataConnectors.length <= 0 && codeRepositories.length <= 0
-          ? ", consider adding writable data connectors or code repositories to your project."
-          : ":"}
+      <p className="fw-bold">
+        All files will be permanently deleted unless you save them to an
+        external system first.
       </p>
-      {dataConnectors.length > 0 || codeRepositories.length > 0 ? (
-        <ul>
-          {codeRepositories.length > 0 && (
-            <li>
-              Save code changes to your connected repositories:{" "}
-              <span className="fst-italic">{codeRepositories.join(", ")}</span>
-            </li>
-          )}
-          {dataConnectors.length > 0 && (
-            <li>
-              Save files to your connected writeable data connectors:{" "}
-              <span className="fst-italic">{dataConnectors.join(", ")}</span>
-            </li>
-          )}
-          <li>
-            Download files to your local machine, if available in your session
-            interface.
-          </li>
-        </ul>
-      ) : (
-        <p>
-          You can still download files to your local machine, if available in
-          your session interface.
-        </p>
-      )}
-
-      {(dataConnectors.length > 0 || codeRepositories.length > 0) && (
+      {!hasConnectedStorageOrRepository ? (
         <>
+          <p>
+            To preserve your work, consider adding writable data connectors or
+            code repositories to your project.
+          </p>
+          <p>
+            You can still download files to your local machine, if available in
+            your session interface.
+          </p>
+        </>
+      ) : (
+        <>
+          <p>To preserve your work:</p>
+          <ul>
+            {codeRepositories.length > 0 && (
+              <li>
+                Save code changes to your connected repositories:{" "}
+                <span className="fst-italic">
+                  {codeRepositories.join(", ")}
+                </span>
+              </li>
+            )}
+            {projectStorage.length > 0 && (
+              <li>
+                Save files to your project storage directory:{" "}
+                <span className="fst-italic">{projectStorage.join(", ")}</span>
+              </li>
+            )}
+            {dataConnectors.length > 0 && (
+              <li>
+                Save files to your connected writeable data connectors:{" "}
+                <span className="fst-italic">{dataConnectors.join(", ")}</span>
+              </li>
+            )}
+            <li>
+              Download files to your local machine, if available in your session
+              interface.
+            </li>
+          </ul>
           <div>
             <button
               className={cx(
@@ -186,6 +213,14 @@ export default function ShutdownSessionContent({
                       {codeRepositories.join(", ")}
                     </span>
                     ) with unsaved changes.
+                  </li>
+                )}
+                {projectStorage.length > 0 && (
+                  <li>
+                    Move data files to the project storage directory{" "}
+                    <span className="fst-italic">
+                      {projectStorage.join(", ")}
+                    </span>
                   </li>
                 )}
                 {dataConnectors.length > 0 && (

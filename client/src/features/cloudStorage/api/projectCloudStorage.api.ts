@@ -21,10 +21,41 @@ import { projectCloudStorageGeneratedApi } from "./projectCloudStorage.generated
 // Adds tag handling for cache management
 const projectCloudStorageApi = projectCloudStorageGeneratedApi.enhanceEndpoints(
   {
-    addTagTypes: ["CloudStorageSchema"],
+    addTagTypes: [
+      "CloudStorageSchema",
+      "ProjectStorage",
+      "ProjectStorageAllow",
+    ],
     endpoints: {
       getStorageSchema: {
         providesTags: ["CloudStorageSchema"],
+      },
+      getProjectsByProjectIdStorage: {
+        providesTags: ["ProjectStorage"],
+      },
+      postStorage: {
+        invalidatesTags: ["ProjectStorage"],
+      },
+      deleteStorageByStorageId: {
+        invalidatesTags: ["ProjectStorage"],
+      },
+      patchStorageByStorageId: {
+        invalidatesTags: ["ProjectStorage"],
+      },
+      getStorageAllow: {
+        providesTags: ["ProjectStorageAllow"],
+      },
+      getStorageAllowByProjectId: {
+        providesTags: ["ProjectStorageAllow"],
+      },
+      postStorageAllow: {
+        invalidatesTags: ["ProjectStorageAllow"],
+      },
+      deleteStorageAllowByProjectId: {
+        invalidatesTags: ["ProjectStorageAllow"],
+      },
+      patchStorageAllowByProjectId: {
+        invalidatesTags: ["ProjectStorageAllow"],
       },
     },
   },
@@ -33,6 +64,15 @@ const projectCloudStorageApi = projectCloudStorageGeneratedApi.enhanceEndpoints(
 export const {
   useGetStorageSchemaQuery,
   usePostStorageSchemaTestConnectionMutation,
+  useGetProjectsByProjectIdStorageQuery,
+  usePostStorageMutation,
+  useDeleteStorageByStorageIdMutation,
+  usePatchStorageByStorageIdMutation,
+  useGetStorageAllowQuery,
+  useGetStorageAllowByProjectIdQuery,
+  usePostStorageAllowMutation,
+  useDeleteStorageAllowByProjectIdMutation,
+  usePatchStorageAllowByProjectIdMutation,
 } = projectCloudStorageApi;
 
 export type * from "./projectCloudStorage.generated-api";

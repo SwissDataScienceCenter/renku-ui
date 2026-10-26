@@ -36,7 +36,10 @@ import {
   getSchema,
   getSchemaOptions,
 } from "~/features/cloudStorage/projectCloudStorage.utils";
-import { ProjectConnectDataConnectorModeSwitch } from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
+import {
+  ProjectConnectDataConnectorModeSwitch,
+  type switchModeProps,
+} from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../../components/Alert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { Loader } from "../../../../components/Loader";
@@ -70,7 +73,7 @@ interface AddOrEditDataConnectorProps {
   dataConnector?: DataConnectorRead | null;
   project?: Project;
   storageSecrets: DataConnectorSecret[];
-  switchMode?: () => void;
+  switchMode?: switchModeProps;
 }
 
 type DataConnectorModalBodyProps = AddOrEditDataConnectorProps;
@@ -750,7 +753,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
         </Row>
 
         <div className={cx("form-text", "text-muted")}>
-          Keywords help orginizing your work and are available to search. You
+          Keywords help organizing your work and are available to search. You
           can use them to group elements that belong together or to create
           specific topics. You can add multiple keywords.
         </div>

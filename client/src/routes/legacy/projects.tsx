@@ -1,7 +1,7 @@
 import { data, redirect } from "react-router";
 
 import ClientSideCheckForRedirects from "~/features/legacy/ClientSideCheckForRedirects";
-import NoLegacySupportForProjects from "~/features/legacy/NoLegacySupportForProjects";
+import NoLegacySupport from "~/features/legacy/NoLegacySupport";
 import { platformApi } from "~/features/platform/api/platform.api";
 import { locationPathnameToSourceUrl } from "~/features/platform/api/platform.utils";
 import { storeContext } from "~/store/store.utils.server";
@@ -72,7 +72,7 @@ export default function LegacyProjectPage({
   if (loaderData.clientSideFetch) {
     return <ClientSideCheckForRedirects projectSlug={params["*"]} />;
   }
-  return <NoLegacySupportForProjects />;
+  return <NoLegacySupport />;
 }
 
 function makeRedirectUrl(

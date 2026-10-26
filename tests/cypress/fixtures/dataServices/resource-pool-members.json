@@ -1,0 +1,8 @@
+[
+  {
+    "member_type": "user",
+    "id": "user-1",
+    "role": "viewer",
+    "email": "user1@renku.ch"
+  }
+]

@@ -187,7 +187,10 @@ const enhancedApi = injectedApi.enhanceEndpoints({
       providesTags: ["DataConnectors"],
     },
     getDataConnectorsByDataConnectorId: {
-      providesTags: ["DataConnectors"],
+      providesTags: (result) =>
+        result
+          ? [{ id: result.id, type: "DataConnectors" }, "DataConnectors"]
+          : ["DataConnectors"],
     },
     getDataConnectorsByDataConnectorIdDeposits: {
       providesTags: ["Deposits"],
@@ -214,10 +217,16 @@ const enhancedApi = injectedApi.enhanceEndpoints({
           : ["Deposits"],
     },
     getNamespacesByNamespaceDataConnectorsAndSlug: {
-      providesTags: ["DataConnectors"],
+      providesTags: (result) =>
+        result
+          ? [{ id: result.id, type: "DataConnectors" }, "DataConnectors"]
+          : ["DataConnectors"],
     },
     getNamespacesByNamespaceProjectsAndProjectDataConnectorsSlug: {
-      providesTags: ["DataConnectors"],
+      providesTags: (result) =>
+        result
+          ? [{ id: result.id, type: "DataConnectors" }, "DataConnectors"]
+          : ["DataConnectors"],
     },
     getProjectsByProjectIdDataConnectorLinks: {
       providesTags: ["DataConnectorsProjectLinks"],

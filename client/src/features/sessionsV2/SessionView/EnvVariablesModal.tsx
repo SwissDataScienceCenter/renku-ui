@@ -46,7 +46,13 @@ import type {
   SessionLauncherPatch,
 } from "../api/sessionLaunchersV2.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../api/sessionLaunchersV2.api";
-import { validateEnvVariableName } from "../session.utils";
+import {
+  getLauncherCategory,
+  getLauncherCategoryDefinition,
+  getLauncherChangeEffectMessage,
+  validateEnvVariableName,
+} from "../session.utils";
+import type { LauncherCategory } from "../sessionsV2.types";
 
 interface EnvVariable {
   name: string;
@@ -226,6 +232,8 @@ export default function EnvVariablesModal({
   launcher,
   toggle,
 }: EnvVariablesModalProps) {
+  const launcherCategory = getLauncherCategory(launcher);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   const [updateSessionLauncher, result] = useUpdateSessionLauncherMutation();
   const defaultValues = useMemo(
     () => getLauncherDefaultValues(launcher),
@@ -305,7 +313,7 @@ export default function EnvVariablesModal({
       </ModalHeader>
       <ModalBody>
         {result.isSuccess ? (
-          <ConfirmationUpdate />
+          <ConfirmationUpdate launcherCategory={launcherCategory} />
         ) : fields.length < 1 ? (
           <>
             <p className="fst-italic">
@@ -359,7 +367,7 @@ export default function EnvVariablesModal({
               ) : (
                 <CheckLg className={cx("bi", "me-1")} />
               )}
-              Update session launcher
+              Update {launcherDefinition.text.inline} launcher
             </Button>
           )}
         </div>
@@ -368,14 +376,20 @@ export default function EnvVariablesModal({
   );
 }
 
-const ConfirmationUpdate = () => {
+const ConfirmationUpdate = ({
+  launcherCategory,
+}: {
+  launcherCategory: LauncherCategory;
+}) => {
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   return (
     <div data-cy="session-launcher-update-success">
       <SuccessAlert dismissible={false} timeout={0}>
-        <p className="fw-bold">Session launcher updated successfully!</p>
-        <p className="mb-0">
-          The changes will take effect the next time you launch a session with
-          this launcher. Current sessions will not be affected.
+        <p className="fw-bold">
+          {launcherDefinition.text.display} launcher updated successfully!
+        </p>
+        <p className="mb-0" data-cy="launcher-change-effect">
+          {getLauncherChangeEffectMessage(launcherCategory)}
         </p>
       </SuccessAlert>
     </div>

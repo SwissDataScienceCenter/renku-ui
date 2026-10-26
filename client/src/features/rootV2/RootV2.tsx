@@ -44,6 +44,8 @@ import ProjectV2New from "../projectsV2/new/ProjectV2New";
 import { SearchEntity } from "../searchV2/api/searchV2Api.api";
 import LazySearchV2 from "../searchV2/LazySearchV2";
 import LazySecretsV2 from "../secretsV2/LazySecretsV2";
+import useAppsEnabled from "../sessionsV2/apps/useAppsEnabled.hook";
+import LazyAppLobbyPage from "../sessionsV2/LazyAppLobbyPage";
 import LazySessionStartPage from "../sessionsV2/LazySessionStartPage";
 import LazyShowSessionPage from "../sessionsV2/LazyShowSessionPage";
 import LazyUserRedirect from "../usersV2/LazyUserRedirect";
@@ -196,6 +198,10 @@ function ProjectsV2Routes() {
       <Route index element={<RedirectToSearch entityType="Project" />} />
       <Route path={RELATIVE_ROUTES.v2.projects.show.root}>
         <Route
+          path={RELATIVE_ROUTES.v2.projects.show.apps.root}
+          element={<ProjectAppsRoutes />}
+        />
+        <Route
           path={RELATIVE_ROUTES.v2.projects.show.sessions.root}
           element={<ProjectSessionsRoutes />}
         />
@@ -211,6 +217,39 @@ function ProjectsV2Routes() {
       <Route
         path={RELATIVE_ROUTES.v2.projects.showById}
         element={<LazyProjectV2ShowByProjectId />}
+      />
+    </Routes>
+  );
+}
+
+function ProjectAppsRoutes() {
+  const appsEnabled = useAppsEnabled();
+
+  if (!appsEnabled) {
+    return (
+      <ContainerWrap fullSize>
+        <LazyNotFound />
+      </ContainerWrap>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route
+        path={RELATIVE_ROUTES.v2.projects.show.apps.show}
+        element={
+          <ContainerWrap fullSize>
+            <LazyAppLobbyPage />
+          </ContainerWrap>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <ContainerWrap fullSize>
+            <LazyNotFound />
+          </ContainerWrap>
+        }
       />
     </Routes>
   );
