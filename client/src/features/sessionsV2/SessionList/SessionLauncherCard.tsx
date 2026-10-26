@@ -28,7 +28,7 @@ import {
   Trash,
   UiChecksGrid,
 } from "react-bootstrap-icons";
-import { Card, CardBody, Col, Row } from "reactstrap";
+import { Card, CardBody, Col, Row, UncontrolledTooltip } from "reactstrap";
 
 import { MenuButtonItem } from "~/components/buttons/MenuButton";
 import useClickableHostHandlers from "~/components/buttons/useClickableHostHandlers.hook";
