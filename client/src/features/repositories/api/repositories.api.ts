@@ -58,12 +58,6 @@ export type GetRepositoriesApiResponse = {
   url: string;
 };
 
-export type GetRepositoriesWithPermissionsApiResponse = {
-  data?: GetRepositoryApiResponse & GetRepositoryPermissionsApiResponse;
-  error: boolean;
-  url: string;
-};
-
 // Fixes some API endpoints
 const withFixedEndpoints = repositoriesGeneratedApi.injectEndpoints({
   endpoints: (build) => ({

@@ -16,10 +16,7 @@
  * limitations under the License.
  */
 
-import type {
-  GetRepositoryApiResponse,
-  GetRepositoryPermissionsApiResponse,
-} from "~/features/repositories/api/repositories.api";
+import type { GetRepositoryApiResponse } from "~/features/repositories/api/repositories.api";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 
 /**
@@ -75,21 +72,14 @@ export function detectSSHRepository(repositoryURL: string): boolean {
 }
 
 export function shouldInterrupt(
-  repositoryData: GetRepositoryApiResponse &
-    GetRepositoryPermissionsApiResponse,
+  repositoryData: GetRepositoryApiResponse,
   hasProjectWritePermission: boolean,
 ): boolean {
-  const integrationNoAccess =
-    repositoryData.provider?.kind === "github" &&
-    repositoryData.connection?.status === "connected" &&
-    !repositoryData.permissions?.integration_access;
   const pullPermission =
     (repositoryData.metadata?.pull_permission &&
-      (repositoryData.metadata.visibility === "public" ||
-        !integrationNoAccess)) ??
+      repositoryData.metadata.visibility === "public") ??
     false;
-  const pushPermission =
-    (repositoryData.metadata?.push_permission && !integrationNoAccess) ?? false;
+  const pushPermission = repositoryData.metadata?.push_permission ?? false;
 
   if (hasProjectWritePermission) {
     return !!(

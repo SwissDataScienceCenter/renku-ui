@@ -21,7 +21,7 @@ import { DateTime } from "luxon";
 import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import { shouldInterrupt } from "../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
-import type { GetRepositoriesWithPermissionsApiResponse } from "../repositories/api/repositories.api";
+import type { GetRepositoriesApiResponse } from "../repositories/api/repositories.api";
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import type { SshKey } from "../usersV2/api/users.api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
@@ -58,7 +58,7 @@ export function shouldCloudStorageSaveCredentials(
 }
 
 export function repositoriesNeedAttention(
-  repositories: GetRepositoriesWithPermissionsApiResponse[] | undefined,
+  repositories: GetRepositoriesApiResponse[] | undefined,
   hasWritePermission: boolean,
 ): boolean {
   if (!repositories) {

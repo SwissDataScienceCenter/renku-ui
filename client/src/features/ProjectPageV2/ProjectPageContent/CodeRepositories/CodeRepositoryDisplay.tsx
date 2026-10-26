@@ -71,6 +71,8 @@ import {
   repositoriesApi,
   useGetRepositoryPermissionsQuery,
   useGetRepositoryQuery,
+  type GetRepositoryApiResponse,
+  type GetRepositoryPermissionsApiResponse,
 } from "~/features/repositories/api/repositories.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
@@ -503,23 +505,9 @@ export function RepositoryPermissionsBadge({
       : skipToken,
   );
 
-  const integrationNoAccess = useMemo(
-    () =>
-      data?.provider?.kind === "github" &&
-      data.connection?.status === "connected" &&
-      !permissionsData?.permissions?.integration_access,
-    [data, permissionsData],
-  );
-  const pullPermission = useMemo(
-    () =>
-      (data?.metadata?.pull_permission &&
-        (data.metadata.visibility === "public" || !integrationNoAccess)) ??
-      false,
-    [data, integrationNoAccess],
-  );
-  const pushPermission = useMemo(
-    () => (data?.metadata?.push_permission && !integrationNoAccess) ?? false,
-    [data, integrationNoAccess],
+  const { pullPermission, pushPermission } = useEnhancedRepositoryPermissions(
+    data,
+    permissionsData,
   );
 
   let badgeColor: "light" | "danger" | "warning" | "success";
@@ -619,28 +607,8 @@ function RepositoryView({
 
   const projectPermissions = useProjectPermissions({ projectId: project.id });
 
-  const integrationNoAccess = useMemo(
-    () =>
-      data?.provider?.kind === "github" &&
-      data.connection?.status === "connected" &&
-      !permissionsData?.permissions?.integration_access,
-    [data, permissionsData],
-  );
-  const pullPermission = useMemo(
-    () =>
-      (data?.metadata?.pull_permission &&
-        (data.metadata.visibility === "public" || !integrationNoAccess)) ??
-      false,
-    [data, integrationNoAccess],
-  );
-  const pushPermission = useMemo(
-    () => (data?.metadata?.push_permission && !integrationNoAccess) ?? false,
-    [data, integrationNoAccess],
-  );
-  const integrationNoAccessButUserCanPush = useMemo(
-    () => integrationNoAccess && data?.metadata?.push_permission,
-    [data, integrationNoAccess],
-  );
+  const { pullPermission, pushPermission, integrationNoAccessButUserCanPush } =
+    useEnhancedRepositoryPermissions(data, permissionsData);
 
   return (
     <Offcanvas
@@ -809,28 +777,8 @@ export function RepositoryCallToActionAlert({
       : skipToken,
   );
 
-  const integrationNoAccess = useMemo(
-    () =>
-      data?.provider?.kind === "github" &&
-      data.connection?.status === "connected" &&
-      !permissionsData?.permissions?.integration_access,
-    [data, permissionsData],
-  );
-  const pullPermission = useMemo(
-    () =>
-      (data?.metadata?.pull_permission &&
-        (data.metadata.visibility === "public" || !integrationNoAccess)) ??
-      false,
-    [data, integrationNoAccess],
-  );
-  const pushPermission = useMemo(
-    () => (data?.metadata?.push_permission && !integrationNoAccess) ?? false,
-    [data, integrationNoAccess],
-  );
-  const integrationNoAccessButUserCanPush = useMemo(
-    () => integrationNoAccess && data?.metadata?.push_permission,
-    [data, integrationNoAccess],
-  );
+  const { pullPermission, pushPermission, integrationNoAccessButUserCanPush } =
+    useEnhancedRepositoryPermissions(data, permissionsData);
 
   const { data: userInfo } = useGetUserQueryState();
   const anonymousUser = useMemo(() => {
@@ -1133,4 +1081,38 @@ function YesNoBadge({ value }: YesNoBadgeProps) {
       No
     </RenkuBadge>
   );
+}
+
+function useEnhancedRepositoryPermissions(
+  data: GetRepositoryApiResponse | undefined,
+  permissionsData: GetRepositoryPermissionsApiResponse | undefined,
+) {
+  const integrationNoAccess = useMemo(
+    () =>
+      data?.provider?.kind === "github" &&
+      data.connection?.status === "connected" &&
+      !permissionsData?.permissions?.integration_access,
+    [data, permissionsData],
+  );
+  const pullPermission = useMemo(
+    () =>
+      (data?.metadata?.pull_permission &&
+        (data.metadata.visibility === "public" || !integrationNoAccess)) ??
+      false,
+    [data, integrationNoAccess],
+  );
+  const pushPermission = useMemo(
+    () => (data?.metadata?.push_permission && !integrationNoAccess) ?? false,
+    [data, integrationNoAccess],
+  );
+  const integrationNoAccessButUserCanPush = useMemo(
+    () => integrationNoAccess && data?.metadata?.push_permission,
+    [data, integrationNoAccess],
+  );
+  return {
+    pullPermission,
+    pushPermission,
+    integrationNoAccess,
+    integrationNoAccessButUserCanPush,
+  };
 }
