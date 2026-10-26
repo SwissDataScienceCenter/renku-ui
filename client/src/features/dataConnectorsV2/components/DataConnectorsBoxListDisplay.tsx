@@ -160,7 +160,11 @@ export default function DataConnectorBoxListDisplay({
   const scopeIcon = useMemo(() => {
     const scope = getDataConnectorScope(namespace);
     if (scope === "project") {
-      return <Folder className="bi" />;
+      return (
+        <span className="flex-shrink-0">
+          <Folder className="bi" />
+        </span>
+      );
     }
     if (scope === "namespace") {
       return <UserAvatar namespace={namespace as string} size="sm" />;
@@ -207,7 +211,7 @@ export default function DataConnectorBoxListDisplay({
               </div>
               <div
                 className={cx(
-                  "align-items-center",
+                  "align-items-baseline",
                   "d-flex",
                   "flex-row",
                   "gap-1",
