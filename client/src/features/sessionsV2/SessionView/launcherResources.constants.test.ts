@@ -78,7 +78,7 @@ describe("getIncludedDataConnectorIds", () => {
 
 describe("resolveDataConnectorAccessPolicy", () => {
   it("defaults a read-only connector with no saved policy to read-only", () => {
-    expect(resolveDataConnectorAccessPolicy(true, undefined)).toBe("readOnly");
+    expect(resolveDataConnectorAccessPolicy(true, undefined)).toBe("read_only");
   });
 
   it("downgrades a saved read-write policy on a read-only connector", () => {
