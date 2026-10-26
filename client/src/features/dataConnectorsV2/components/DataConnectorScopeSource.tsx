@@ -44,7 +44,11 @@ export default function DataConnectorScopeSource({
   const scopeIcon = useMemo(() => {
     const scope = getDataConnectorScope(namespace);
     if (scope === "project") {
-      return <Folder className={cx("bi", "flex-shrink-0")} />;
+      return (
+        <span className="flex-shrink-0">
+          <Folder className="bi" />
+        </span>
+      );
     }
     if (scope === "namespace" && namespace) {
       return <UserAvatar namespace={namespace} size="sm" />;
