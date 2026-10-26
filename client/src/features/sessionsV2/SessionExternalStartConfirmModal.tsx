@@ -26,6 +26,7 @@ import { useLoginUrl } from "~/authentication/useLoginUrl.hook";
 import ScrollableModal from "~/components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import type { Project } from "../projectsV2/api/projectV2.api";
+import { useGetNamespacesByNamespaceSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { getEnvironmentKindLabel } from "./launcherEnvironment.utils";
 import { BUILDER_IMAGE_NOT_READY_VALUE } from "./session.constants";
@@ -89,6 +90,10 @@ export default function SessionExternalStartConfirmModal({
     });
     navigate(url);
   }, [navigate, project.namespace, project.slug]);
+  const { data: namespace } = useGetNamespacesByNamespaceSlugQuery({
+    namespaceSlug: project.namespace,
+  });
+  const namespaceName = namespace?.name ?? project.namespace;
   const environmentLabel =
     getEnvironmentKindLabel(launcher.environment) ?? NOT_READY_LABEL;
   const containerImage = containerImageLabel(
@@ -105,12 +110,13 @@ export default function SessionExternalStartConfirmModal({
       toggle={onCancel}
     >
       <ModalHeader data-cy="session-external-start-confirm-header" tag="h2">
-        Start a Renku session?
+        Ready to start this session?
       </ModalHeader>
       <ModalBody>
         <p>
-          You are not logged in. Continue only if you meant to start this
-          session.
+          You are not logged in, so this session will run as a guest. Your work
+          won&apos;t be saved after the session ends. Take a quick look at the
+          details below before launching.
         </p>
         <p className="fw-bold mb-2">Session to start</p>
         <dl className={cx("d-flex", "flex-column", "gap-2", "mb-0")}>
@@ -121,12 +127,12 @@ export default function SessionExternalStartConfirmModal({
           />
           <SessionStartDetail
             dataCy="session-external-start-namespace"
-            label="Namespace"
-            value={project.namespace}
+            label="Owner"
+            value={namespaceName}
           />
           <SessionStartDetail
             dataCy="session-external-start-name"
-            label="Name"
+            label="Launcher"
             value={launcher.name}
           />
           <SessionStartDetail
@@ -137,7 +143,7 @@ export default function SessionExternalStartConfirmModal({
           <SessionStartDetail
             asCode={containerImage.asCode}
             dataCy="session-external-start-image"
-            label="Container image"
+            label="Image"
             value={containerImage.label}
           />
         </dl>
@@ -157,7 +163,7 @@ export default function SessionExternalStartConfirmModal({
           onClick={onContinue}
         >
           <PlayCircle className={cx("bi", "me-1")} />
-          Continue
+          Start as guest
         </Button>
         <a
           className={cx("btn", "btn-primary")}
