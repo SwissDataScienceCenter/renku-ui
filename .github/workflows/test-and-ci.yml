@@ -40,6 +40,27 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
+  test-client-doc-links:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up node ${{ matrix.node-version }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Install client dependencies
+        run: npm clean-install
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      - name: Run tests for docs links in client/
+        run: npm run test:docs-links
+        env:
+          CI: true
+        timeout-minutes: 1
+
   test-server:
     runs-on: ubuntu-24.04
     defaults:
