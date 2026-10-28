@@ -27,14 +27,12 @@ import {
 } from "react";
 import { Bookmarks } from "react-bootstrap-icons";
 
-import KeywordBadge, {
-  KeywordBadgeContent,
-} from "~/components/keywords/KeywordBadge";
-import KeywordContainer from "~/components/keywords/KeywordContainer";
+import KeywordBadge, { KeywordBadgeContent } from "./KeywordBadge";
+import KeywordContainer from "./KeywordContainer";
 
-import styles from "../../../components/Separator.module.scss";
+import styles from "../Separator.module.scss";
 
-const KEYWORDS_DATA_CY = "project-header-keywords";
+const KEYWORDS_DATA_CY = "header-keywords";
 
 function useKeywordsInline({
   enabled,
@@ -77,14 +75,16 @@ function useKeywordsInline({
   return inline;
 }
 
-export function useProjectPageHeaderKeywords(keywords: string[] | undefined) {
+export function sortKeywords(keywords: string[] | undefined): string[] {
+  if (!keywords) return [];
+  return keywords
+    .map((keyword) => keyword.trim())
+    .sort((a, b) => a.localeCompare(b));
+}
+
+export function usePageHeaderKeywords(keywords: string[] | undefined) {
   const hasKeywords = !!keywords?.length && keywords.length > 0;
-  const keywordsSorted = useMemo(() => {
-    if (!keywords) return [];
-    return keywords
-      .map((keyword) => keyword.trim())
-      .sort((a, b) => a.localeCompare(b));
-  }, [keywords]);
+  const keywordsSorted = useMemo(() => sortKeywords(keywords), [keywords]);
   const rowRef = useRef<HTMLDivElement>(null);
   const metadataRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
@@ -113,19 +113,19 @@ const keywordMeasureProps = {
 
 const KEYWORD_MEASURE_STYLE = { width: "max-content" } as const;
 
-interface ProjectPageHeaderKeywordsProps {
+interface EntityPageHeaderKeywordsProps {
   keywordsSorted: string[];
   leadingSeparator?: boolean;
   measureRef?: RefObject<HTMLDivElement>; // The ref enables off-screen measurement. Visible rows don't use it
   wrapBadges?: boolean;
 }
 
-export default function ProjectPageHeaderKeywords({
+export default function EntityPageHeaderKeywords({
   keywordsSorted,
   leadingSeparator = false,
   measureRef,
   wrapBadges = false,
-}: ProjectPageHeaderKeywordsProps) {
+}: EntityPageHeaderKeywordsProps) {
   const measuring = measureRef != null;
   const row = (
     <div
