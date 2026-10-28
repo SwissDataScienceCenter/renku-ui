@@ -2439,6 +2439,9 @@
           "quota_enforced": {
             "$ref": "#/components/schemas/QuotaEnforced"
           },
+          "preemptible": {
+            "$ref": "#/components/schemas/Preemptible"
+          },
           "remote": {
             "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
           },
@@ -2483,6 +2486,14 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/QuotaEnforced"
+              }
+            ],
+            "default": false
+          },
+          "preemptible": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Preemptible"
               }
             ],
             "default": false
@@ -2575,6 +2586,14 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/QuotaEnforced"
+              }
+            ],
+            "default": false
+          },
+          "preemptible": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Preemptible"
               }
             ],
             "default": false
@@ -3577,6 +3596,11 @@
         "type": "boolean",
         "description": "Whether sessions in this resource class should be hibernated when quota is exhausted",
         "example": true
+      },
+      "Preemptible": {
+        "type": "boolean",
+        "description": "Whether sessions and jobs in this resource class can be preempted by other workloads. The resource pool must have a quota",
+        "example": false
       },
       "PublicFlag": {
         "type": "boolean",

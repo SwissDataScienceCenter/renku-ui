@@ -733,6 +733,7 @@ export type NodeAffinity = {
 export type NodeAffinityList = NodeAffinity[];
 export type IntegerId = number;
 export type QuotaEnforced = boolean;
+export type Preemptible = boolean;
 export type RemoteConfigurationFirecrestSystemName = string;
 export type RemoteConfigurationFirecrestPartition = string;
 export type RemoteClassConfigurationFirecrest = {
@@ -755,6 +756,7 @@ export type ResourceClassWithId = {
   node_affinities?: NodeAffinityList;
   id: IntegerId;
   quota_enforced?: QuotaEnforced;
+  preemptible?: Preemptible;
   remote?: RemoteClassConfigurationFirecrest;
   resource_flavor_id?: ResourceFlavorId;
 };
@@ -958,6 +960,7 @@ export type ResourceClass = {
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
   quota_enforced?: QuotaEnforced;
+  preemptible?: Preemptible;
   remote?: RemoteClassConfigurationFirecrest;
   resource_flavor_id?: ResourceFlavorId;
 };
@@ -1009,6 +1012,7 @@ export type ResourceClassProperties = {
   tolerations?: K8SLabelList;
   node_affinities?: NodeAffinityList;
   quota_enforced?: QuotaEnforced;
+  preemptible?: Preemptible;
   remote?: RemoteClassConfigurationFirecrest;
   resource_flavor_id?: ResourceFlavorIdPatch;
 };
