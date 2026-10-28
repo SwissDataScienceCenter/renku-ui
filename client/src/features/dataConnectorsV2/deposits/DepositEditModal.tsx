@@ -132,6 +132,15 @@ export default function DepositEditModal({
     }
   }, [isOpen, reset, patchDepositResult, postJobResult]);
 
+  useEffect(() => {
+    if (isOpen) return;
+
+    reset({
+      name: deposit?.name ?? "",
+      path: deposit?.path ?? "",
+    });
+  }, [deposit, isOpen, reset]);
+
   // Check user changes
   const watchNewName = useWatch({
     control,
@@ -219,13 +228,19 @@ export default function DepositEditModal({
             </div>
 
             <div>
-              <Label for="path">Target Provider</Label>
+              <Label for="provider">Target Provider</Label>
               <Input
                 disabled
                 id="provider"
-                type="text"
+                type="select"
                 value={deposit?.provider ?? ""}
-              />
+              >
+                {PROVIDER_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </Input>
               <FormText>
                 The target platform where the files will be exported. If you
                 need to change it, please delete this export and create a new
@@ -246,6 +261,12 @@ export default function DepositEditModal({
                   <EnviDatWarning />
                 </div>
               )}
+              {deposit?.provider === "scicat" &&
+                deposit?.status === "upload_complete" && (
+                  <div className="mt-1">
+                    <SciCatWarning />
+                  </div>
+                )}
             </div>
           </FormGroup>
 
@@ -307,6 +328,16 @@ function EnviDatWarning() {
         </ExternalLink>
         . If you need, you can still delete this export and create a new one.
       </p>
+    </WarnAlert>
+  );
+}
+
+function SciCatWarning() {
+  return (
+    <WarnAlert dismissible={false}>
+      Rerunning a successful export with the same parameters might fail. If you
+      need to rerun the export, you can also consider deleting this export and
+      creating a new one.
     </WarnAlert>
   );
 }

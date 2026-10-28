@@ -680,7 +680,7 @@ export type DataConnectorSecretPatch = {
   value: SecretValueNullable;
 };
 export type DataConnectorSecretPatchList = DataConnectorSecretPatch[];
-export type DepositProvider = "zenodo" | "envidat";
+export type DepositProvider = "zenodo" | "envidat" | "scicat";
 export type DepositSourcePath = string;
 export type DepositPost = {
   name: DataConnectorName;

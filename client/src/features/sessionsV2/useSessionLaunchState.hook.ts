@@ -26,7 +26,10 @@ import { useGetResourcePoolsQuery } from "./api/computeResources.api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";
 import { DEFAULT_URL } from "./session.constants";
-import { repositoriesNeedAttention } from "./sessionLaunchValidation.utils";
+import {
+  repositoriesNeedAttention,
+  sshKeyNeedsAttention,
+} from "./sessionLaunchValidation.utils";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useSessionLaunchPrerequisites from "./useSessionLaunchPrerequisites.hook";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
@@ -51,9 +54,11 @@ export default function useSessionLauncherState({
     isFetchingOrLoadingDataConnectors: isFetchingOrLoadingStorages,
     isFetchingRepositories,
     isFetchingSessionSecrets,
+    isFetchingSshKeys,
     isReadyDataConnectorConfigs,
     repositories,
     sessionSecretSlotsWithSecrets,
+    sshKeys,
   } = useSessionLaunchPrerequisites({
     project,
     autoMarkSecretsReady: true,
@@ -176,6 +181,13 @@ export default function useSessionLauncherState({
     }
   }, [dispatch, hasWritePermission, isFetchingRepositories, repositories]);
 
+  // Check for an SSH key -- only block if the frontend requires it
+  useEffect(() => {
+    if (!isFetchingSshKeys && !sshKeyNeedsAttention(launcher, sshKeys)) {
+      dispatch(startSessionOptionsV2Slice.actions.setSshKeysReady(true));
+    }
+  }, [dispatch, isFetchingSshKeys, launcher, sshKeys]);
+
   return {
     containerImage,
     sessionImage,
@@ -183,6 +195,7 @@ export default function useSessionLauncherState({
     isFetchingOrLoadingStorages,
     isFetchingRepositories,
     isFetchingSessionSecrets,
+    isFetchingSshKeys,
     isLoadingSessionImage,
     isPendingResourceClass,
     repositories,

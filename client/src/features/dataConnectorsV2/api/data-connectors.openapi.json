@@ -1722,7 +1722,7 @@
       },
       "DepositProvider": {
         "type": "string",
-        "enum": ["zenodo", "envidat"]
+        "enum": ["zenodo", "envidat", "scicat"]
       },
       "DepositStatus": {
         "type": "string",

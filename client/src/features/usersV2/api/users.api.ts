@@ -104,7 +104,7 @@ const withFixedEndpoints = usersGeneratedApi.injectEndpoints({
 
 // Adds tag handling for cache management
 const withTagHandling = withFixedEndpoints.enhanceEndpoints({
-  addTagTypes: ["SelfUser", "User", "UserSecret", "UserPreferences"],
+  addTagTypes: ["SelfUser", "User", "UserSecret", "UserPreferences", "SshKey"],
   endpoints: {
     getUser: {
       providesTags: ["SelfUser"],
@@ -164,6 +164,25 @@ const withTagHandling = withFixedEndpoints.enhanceEndpoints({
     postUserPreferencesDismissProjectMigrationBanner: {
       invalidatesTags: ["UserPreferences"],
     },
+    getUserSshKeys: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ id, type: "SshKey" as const })),
+              "SshKey",
+            ]
+          : ["SshKey"],
+    },
+    postUserSshKeys: {
+      invalidatesTags: ["SshKey"],
+    },
+    getUserSshKeysByKeyId: {
+      providesTags: (result) =>
+        result ? [{ id: result.id, type: "SshKey" }, "SshKey"] : ["SshKey"],
+    },
+    deleteUserSshKeysByKeyId: {
+      invalidatesTags: ["SshKey"],
+    },
   },
 });
 
@@ -194,6 +213,11 @@ export const {
   useGetUserSecretsBySecretIdQuery: useGetUserSecretByIdQuery,
   usePatchUserSecretsBySecretIdMutation: usePatchUserSecretMutation,
   useDeleteUserSecretsBySecretIdMutation: useDeleteUserSecretMutation,
+  // "ssh_keys" hooks
+  useGetUserSshKeysQuery,
+  usePostUserSshKeysMutation: usePostUserSshKeyMutation,
+  useGetUserSshKeysByKeyIdQuery: useGetUserSshKeyByIdQuery,
+  useDeleteUserSshKeysByKeyIdMutation: useDeleteUserSshKeyMutation,
   // "user_preferences" hooks
   useGetUserPreferencesQuery,
   usePostUserPreferencesPinnedProjectsMutation: usePostPinnedProjectMutation,
