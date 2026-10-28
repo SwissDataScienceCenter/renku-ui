@@ -22,19 +22,21 @@ interface KeywordContainerProps {
   children?: React.ReactNode;
   className?: string;
   "data-cy"?: string;
+  nowrap?: boolean;
 }
 
 export default function KeywordContainer({
   children,
   className,
   "data-cy": dataCy,
+  nowrap = false,
 }: KeywordContainerProps) {
   return (
     <div
       className={cx(
         "align-items-center",
         "d-flex",
-        "flex-wrap",
+        nowrap ? "flex-nowrap" : "flex-wrap",
         "fs-5",
         "gap-1",
         className,
