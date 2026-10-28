@@ -24,17 +24,20 @@ import {
   Button,
   CardBody,
   CardHeader,
-  DropdownItem,
   ListGroup,
   ListGroupItem,
   UncontrolledTooltip,
 } from "reactstrap";
 
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
-import { ButtonWithMenuV2 } from "../../../components/buttons/Button";
+import {
+  MenuButton,
+  MenuButtonItem,
+} from "../../../components/buttons/MenuButton";
 import { Loader } from "../../../components/Loader";
 import useGroupPermissions from "../../groupsV2/utils/useGroupPermissions.hook";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
+import { getMemberNameToDisplay } from "../../ProjectPageV2/utils/roleUtils";
 import type {
   GroupMemberResponse,
   GroupMemberResponseList,
@@ -296,6 +299,7 @@ function GroupMemberAction({
           numberOfOwners >= 2 || userMember.role !== "owner" ? (
             <MemberActionMenu
               index={index}
+              memberName={getMemberNameToDisplay(member)}
               onRemove={onRemove}
               onEdit={onEdit}
             />
@@ -303,6 +307,7 @@ function GroupMemberAction({
             <MemberActionMenu
               disabled={true}
               index={index}
+              memberName={getMemberNameToDisplay(member)}
               onRemove={onRemove}
               onEdit={onEdit}
               tooltip={"A group requires at least one owner."}
@@ -319,7 +324,12 @@ function GroupMemberAction({
     <PermissionsGuard
       disabled={null}
       enabled={
-        <MemberActionMenu index={index} onEdit={onEdit} onRemove={onRemove} />
+        <MemberActionMenu
+          index={index}
+          memberName={getMemberNameToDisplay(member)}
+          onEdit={onEdit}
+          onRemove={onRemove}
+        />
       }
       requestedPermission="change_membership"
       userPermissions={permissions}
@@ -330,6 +340,7 @@ function GroupMemberAction({
 interface MemberActionMenuProps {
   disabled?: boolean;
   index: number;
+  memberName: string;
   onEdit: () => void;
   onRemove: () => void;
   tooltip?: ReactNode;
@@ -338,6 +349,7 @@ interface MemberActionMenuProps {
 function MemberActionMenu({
   disabled,
   index,
+  memberName,
   onEdit,
   onRemove,
   tooltip,
@@ -358,17 +370,17 @@ function MemberActionMenu({
   return (
     <>
       <span ref={ref}>
-        <ButtonWithMenuV2
+        <MenuButton
           color="outline-primary"
           default={defaultAction}
           disabled={disabled}
-          size="sm"
+          label={`More actions for ${memberName}`}
         >
-          <DropdownItem onClick={onRemove}>
+          <MenuButtonItem onClick={onRemove}>
             <Trash className={cx("bi", "me-1")} />
             Remove
-          </DropdownItem>
-        </ButtonWithMenuV2>
+          </MenuButtonItem>
+        </MenuButton>
       </span>
       {tooltip && (
         <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
