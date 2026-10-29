@@ -16,16 +16,25 @@
  * limitations under the License
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
+import type { SerializedError } from "@reduxjs/toolkit";
+import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   generatePath,
+  useLocation,
   useNavigate,
   useParams,
   useSearchParams,
 } from "react-router";
 
+import { RENKU_USER_SIGNED_IN_COOKIE } from "../../authentication/authentication.constants";
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import PageLoader from "../../components/PageLoader";
 import ProgressStepsIndicator, {
@@ -43,6 +52,7 @@ import { resetFavicon, setFavicon } from "../display/displaySlice";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
+import { useGetUserQueryState } from "../usersV2/api/users.api";
 import { useGetResourcePoolsQuery } from "./api/computeResources.generated-api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetProjectsByProjectIdSessionLaunchersQuery as useGetProjectSessionLaunchersQuery } from "./api/sessionLaunchersV2.api";
@@ -53,9 +63,13 @@ import {
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SaveCloudStorageCredentials from "./SaveCloudStorageCredentials";
-import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
+import {
+  CUSTOM_LAUNCH_SEARCH_PARAM,
+  INTERNAL_SESSION_LAUNCH_STATE_KEY,
+} from "./session.constants";
 import { UsageAvailable, validateEnvVariableName } from "./session.utils";
 import SessionExpiredDataConnectorsModal from "./SessionExpiredDataConnectorsModal";
+import SessionExternalStartConfirmModal from "./SessionExternalStartConfirmModal";
 import SessionImageModal from "./SessionImageModal";
 import {
   dataConnectorsNeedCredentials,
@@ -176,9 +190,7 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
         slug: project.slug,
         session: session.name,
       });
-      navigate(url, {
-        state: { redirectFromStartServer: true, fromLanding: false },
-      });
+      navigate(url);
     }
   }, [navigate, project.namespace, project.slug, session]);
 
@@ -582,6 +594,136 @@ function StartSessionFromLauncher({
   );
 }
 
+type SignedInCookieStatus = "pending" | "present" | "absent";
+
+function isInternalSessionLaunch(state: unknown): boolean {
+  if (typeof state !== "object" || state == null) {
+    return false;
+  }
+  const record = state as Record<string, unknown>;
+  return record[INTERNAL_SESSION_LAUNCH_STATE_KEY] === true;
+}
+
+function useSignedInCookieStatus(enabled: boolean): SignedInCookieStatus {
+  const [status, setStatus] = useState<SignedInCookieStatus>("pending");
+  const canReadCookie =
+    typeof window !== "undefined" && window.cookieStore != null;
+
+  useEffect(() => {
+    if (!enabled || window.cookieStore == null) {
+      return;
+    }
+
+    let ignore = false;
+    const readCookie = () => {
+      window.cookieStore.get(RENKU_USER_SIGNED_IN_COOKIE).then((cookie) => {
+        if (!ignore) {
+          setStatus(cookie?.value === "1" ? "present" : "absent");
+        }
+      });
+    };
+    readCookie();
+    window.cookieStore.addEventListener("change", readCookie);
+    return () => {
+      ignore = true;
+      window.cookieStore.removeEventListener("change", readCookie);
+    };
+  }, [enabled]);
+
+  if (!enabled || !canReadCookie) {
+    return "absent";
+  }
+  return status;
+}
+
+interface ExternalLaunchGateProps extends StartSessionFromLauncherProps {
+  authError: FetchBaseQueryError | SerializedError | undefined;
+  authFailed: boolean;
+  authPending: boolean;
+  isAnonymous: boolean;
+  launchConfirmed: boolean;
+  onContinue: () => void;
+  signedInCookie: SignedInCookieStatus;
+}
+
+function externalLaunchGate({
+  authError,
+  authFailed,
+  authPending,
+  isAnonymous,
+  launchConfirmed,
+  launcher,
+  onContinue,
+  project,
+  signedInCookie,
+}: ExternalLaunchGateProps): ReactNode {
+  if (authPending) {
+    return <PageLoader />;
+  }
+  if (authFailed) {
+    return (
+      <div>
+        <h3>Error: could not load session</h3>
+        <RtkOrDataServicesError error={authError} dismissible={false} />
+      </div>
+    );
+  }
+  if (!isAnonymous || launchConfirmed) {
+    return null;
+  }
+  if (signedInCookie !== "absent") {
+    return <PageLoader />;
+  }
+  return (
+    <SessionExternalStartConfirmModal
+      launcher={launcher}
+      onContinue={onContinue}
+      project={project}
+    />
+  );
+}
+
+function SessionStartContent({
+  launcher,
+  project,
+}: StartSessionFromLauncherProps) {
+  const location = useLocation();
+  const isInternalLaunch = isInternalSessionLaunch(location.state);
+  const [launchConfirmed, setLaunchConfirmed] = useState(false);
+  const { isLoggedIn, shouldBeLoggedIn } = useAppSelector(
+    ({ loginState }) => loginState,
+  );
+  const userQuery = useGetUserQueryState();
+  const signedInCookie = useSignedInCookieStatus(!isInternalLaunch);
+  const onContinue = useCallback(() => {
+    setLaunchConfirmed(true);
+  }, []);
+
+  //? We do not start the session while the logged out prompt is displayed.
+  if (!isLoggedIn && shouldBeLoggedIn) {
+    return <PageLoader />;
+  }
+
+  if (!isInternalLaunch) {
+    const gate = externalLaunchGate({
+      authError: userQuery.error,
+      authFailed: userQuery.isError && userQuery.data == null,
+      authPending: userQuery.data == null && !userQuery.isError,
+      isAnonymous: userQuery.data?.isLoggedIn !== true,
+      launchConfirmed,
+      launcher,
+      onContinue,
+      project,
+      signedInCookie,
+    });
+    if (gate != null) {
+      return gate;
+    }
+  }
+
+  return <StartSessionFromLauncher launcher={launcher} project={project} />;
+}
+
 export default function SessionStartPage() {
   const { launcherId, namespace, slug } = useParams<
     "launcherId" | "namespace" | "slug"
@@ -609,12 +751,6 @@ export default function SessionStartPage() {
     [launcherId, launchers],
   );
 
-  //? We do not start the session while the logged out prompt is displayed.
-  const { isLoggedIn, shouldBeLoggedIn } = useAppSelector(
-    ({ loginState }) => loginState,
-  );
-  const isShowingLoggedOutPrompt = !isLoggedIn && shouldBeLoggedIn;
-
   if (isLoading) {
     return <PageLoader />;
   }
@@ -628,11 +764,7 @@ export default function SessionStartPage() {
     );
   }
 
-  if (isShowingLoggedOutPrompt) {
-    return <PageLoader />;
-  }
-
-  return <StartSessionFromLauncher launcher={launcher} project={project} />;
+  return <SessionStartContent launcher={launcher} project={project} />;
 }
 
 interface StartSessionWithSessionSecretsModalProps extends StartSessionFromLauncherProps {
