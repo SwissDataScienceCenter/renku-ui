@@ -1,0 +1,16 @@
+{
+  "responseCode": 1,
+  "handle": "10.7910/DVN/DXH6FK",
+  "values": [
+    {
+      "index": 1,
+      "type": "URL",
+      "data": {
+        "format": "string",
+        "value": "https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DXH6FK"
+      },
+      "ttl": 86400,
+      "timestamp": "2025-04-29T11:02:50Z"
+    }
+  ]
+}

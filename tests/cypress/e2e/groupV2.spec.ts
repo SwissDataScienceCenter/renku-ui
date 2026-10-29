@@ -593,7 +593,15 @@ describe("Create projects in a group", () => {
 });
 
 describe("Display group's resource pools", () => {
-  beforeEach(() => {
+  beforeEach(function () {
+    const resourcePools =
+      this.currentTest.title === "show empty list of group resource pools"
+        ? { empty: true }
+        : this.currentTest.title ===
+            "show not visible message to user with no permissions"
+          ? { allowed: false }
+          : undefined;
+
     fixtures
       .config()
       .versions()
@@ -612,18 +620,18 @@ describe("Display group's resource pools", () => {
       .getGroupV2Permissions()
       .listGroupV2Members()
       .listProjectV2ByNamespace()
-      .listDataConnectors({ namespace: "test-2-group-v2" });
+      .listDataConnectors({ namespace: "test-2-group-v2" })
+      .listGroupV2ResourcePools(resourcePools);
 
     cy.visit("/");
     cy.contains("My groups").should("be.visible");
     cy.contains("test 2 group-v2").should("be.visible").click();
     cy.wait("@readGroupV2");
+    cy.wait("@listGroupV2ResourcePools");
     cy.contains("test 2 group-v2").should("be.visible");
   });
 
   it("show group resource pools to user with permissions", () => {
-    fixtures.listGroupV2ResourcePools();
-
     cy.getDataCy("group-resource-pools").should("be.visible");
     cy.getDataCy("group-resource-pools").within(() => {
       cy.contains("test private").should("be.visible");
@@ -632,20 +640,20 @@ describe("Display group's resource pools", () => {
   });
 
   it("show empty list of group resource pools", () => {
-    fixtures.listGroupV2ResourcePools({
-      empty: true,
-    });
-
     cy.getDataCy("group-resource-pools").should("be.visible");
-    cy.getDataCy("group-resource-pools-empty").should("be.visible");
+    cy.getDataCy("group-resource-pools-info").click();
+    cy.contains(
+      ".popover-body",
+      "There are no resource pools explicitly linked to this group.",
+    ).should("be.visible");
   });
 
   it("show not visible message to user with no permissions", () => {
-    fixtures.listGroupV2ResourcePools({
-      allowed: false,
-    });
-
     cy.getDataCy("group-resource-pools").should("be.visible");
-    cy.getDataCy("group-resource-pools-not-visible").should("be.visible");
+    cy.getDataCy("group-resource-pools-info").click();
+    cy.contains(
+      ".popover-body",
+      "This group has no visible resource pools.",
+    ).should("be.visible");
   });
 });
