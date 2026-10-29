@@ -36,9 +36,9 @@ import UpdateResourceFlavorButton from "./UpdateResourceFlavorButton";
 
 export default function ResourceFlavorsSection() {
   return (
-    <div className="mt-4">
-      <h3 className="fs-4">Resource Flavors</h3>
-      <p className="mb-2">
+    <div>
+      <h3>Resource Flavors</h3>
+      <p>
         A resource flavor is a named shape that resource classes across pools
         can link to. A linked class reports the flavor&apos;s CPU, memory, GPU
         and disk values, and keeps its own name.

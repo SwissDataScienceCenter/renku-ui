@@ -108,7 +108,9 @@ export default function ComputeResourcesSection() {
         .
       </p>
 
-      <ResourcePoolsList />
+      <div className="mb-4">
+        <ResourcePoolsList />
+      </div>
 
       <ResourceFlavorsSection />
     </section>
