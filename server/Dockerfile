@@ -1,4 +1,4 @@
-FROM node:22 AS builder
+FROM node:22.23.4 AS builder
 
 RUN apt-get update && \
 	apt-get upgrade --quiet --assume-yes && \
@@ -13,7 +13,7 @@ COPY src /app/src/
 RUN npm install --silent && \
     npm run-script build
 
-FROM node:22-slim
+FROM node:22.23.4-slim
 
 USER root
 RUN apt-get update && \

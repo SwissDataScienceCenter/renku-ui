@@ -47,13 +47,8 @@ export default function SessionSshInstructions({
         <CommandCopy command={sshCommand} noMargin />
       </div>
       <InfoAlert timeout={0} dismissible={false}>
-        <p className="mb-2">
-          If you need to add a new SSH key, you can do so in your{" "}
-          <Link to={ABSOLUTE_ROUTES.v2.ssh_keys}>SSH keys page</Link>.
-        </p>
-        <p className="mb-0">
-          You will need to restart your session after adding a new SSH key.
-        </p>
+        If you need to add a new SSH key, you can do so in your{" "}
+        <Link to={ABSOLUTE_ROUTES.v2.ssh_keys}>SSH keys page</Link>.
       </InfoAlert>
     </div>
   );

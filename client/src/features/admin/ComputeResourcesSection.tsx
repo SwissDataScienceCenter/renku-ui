@@ -25,6 +25,7 @@ import {
   PeopleFill,
   PersonFill,
   PersonFillX,
+  Tags,
   TrashFill,
   XLg,
 } from "react-bootstrap-icons";
@@ -55,6 +56,7 @@ import UpdateResourcePoolUsageLimitsButton from "../resourceUsage/UpdateResource
 import {
   useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation,
   useDeleteResourcePoolsByResourcePoolIdMutation,
+  useGetResourceFlavorsQuery,
   useGetResourcePoolsByResourcePoolIdMembersQuery,
   useGetResourcePoolsQuery,
   type PoolMemberResponse,
@@ -69,6 +71,7 @@ import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import AdminListFilter from "./AdminListFilter";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
+import ResourceFlavorsSection from "./ResourceFlavorsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import UpdateResourcePoolRemoteButton from "./UpdateResourcePoolRemoteButton";
@@ -106,6 +109,8 @@ export default function ComputeResourcesSection() {
       </p>
 
       <ResourcePoolsList />
+
+      <ResourceFlavorsSection />
     </section>
   );
 }
@@ -436,6 +441,38 @@ function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
   );
 }
 
+interface ResourceClassFlavorNameProps {
+  resourceFlavorId: string | undefined;
+}
+
+function ResourceClassFlavorName({
+  resourceFlavorId,
+}: ResourceClassFlavorNameProps) {
+  const { data: resourceFlavors } = useGetResourceFlavorsQuery(
+    {},
+    { skip: resourceFlavorId == null },
+  );
+
+  if (resourceFlavorId == null) {
+    return (
+      <span className="text-muted">
+        <Tags className={cx("bi", "me-1")} />
+        no flavor
+      </span>
+    );
+  }
+
+  const resourceFlavor = resourceFlavors?.find(
+    ({ id }) => id === resourceFlavorId,
+  );
+  return (
+    <span title="Resource flavor">
+      <Tags className={cx("bi", "me-1")} />
+      {resourceFlavor?.name ?? resourceFlavorId}
+    </span>
+  );
+}
+
 interface ResourceClassItemProps {
   resourceClass: ResourceClassWithId;
   resourcePool: ResourcePoolWithId;
@@ -479,6 +516,11 @@ function ResourceClassItem({
         </div>
         <div className={cx(columnClasses)}>
           node affinities: {node_affinities?.length ?? 0}
+        </div>
+        <div className={cx(columnClasses)}>
+          <ResourceClassFlavorName
+            resourceFlavorId={resourceClass.resource_flavor_id}
+          />
         </div>
         {requiresIntegerCpu && (
           <>
