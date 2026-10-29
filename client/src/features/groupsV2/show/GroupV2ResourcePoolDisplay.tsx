@@ -21,7 +21,6 @@ import { Cpu } from "react-bootstrap-icons";
 import { Badge } from "reactstrap";
 
 import ExternalLink from "~/components/ExternalLink";
-import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { MoreInfo } from "~/components/MoreInfo";
 import { useGetGroupsByGroupSlugResourcePoolsQuery } from "~/features/sessionsV2/api/computeResources.generated-api";
 import { NEW_DOCS_RESOURCE_POOLS_AND_CLASSES } from "~/utils/constants/NewDocs";
@@ -80,7 +79,7 @@ export default function GroupV2ResourcePoolDisplay({
 
       <span className="ms-1" data-cy="group-resource-pools-info">
         <MoreInfo trigger="legacy">
-          <LazyMarkdown>{errorMessage}</LazyMarkdown>
+          {errorMessage}
           <ExternalLink href={NEW_DOCS_RESOURCE_POOLS_AND_CLASSES}>
             Read more
           </ExternalLink>{" "}
