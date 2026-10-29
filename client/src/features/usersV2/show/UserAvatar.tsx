@@ -117,14 +117,13 @@ export default function UserAvatar({
   return (
     <div
       className={cx(
-        "align-items-center",
-        "d-flex",
-        "flex-shrink-0",
-        "rounded-circle",
-        "text-center",
-        "fw-medium",
         "border",
         "border-secondary-subtle",
+        "flex-shrink-0",
+        "fw-medium",
+        "rounded-circle",
+        "text-center",
+        "text-nowrap",
         styles.avatar,
         size === "xs" && styles.xSmall,
         size === "lg" && styles.large,
@@ -187,13 +186,13 @@ export function OverflowBadge({
       <div
         ref={ref}
         className={cx(
-          "align-content-center",
+          "bg-secondary-subtle",
           "border",
           "flex-shrink-0",
           "rounded-circle",
-          "text-center",
           "text-black",
-          "bg-secondary-subtle",
+          "text-center",
+          "text-nowrap",
           styles.avatar,
           size === "xs" && styles.xSmall,
           size === "lg" && styles.large,

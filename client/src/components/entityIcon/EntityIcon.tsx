@@ -95,6 +95,7 @@ export default function EntityIcon(props: EntityIconProps) {
             "px-md-2",
             "py-md-1",
             "small",
+            shape === "card" && "lh-sm",
             "text-truncate",
             "border-0",
             shape === "circle" && "rounded-pill",
