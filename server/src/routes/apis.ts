@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import fetch from "cross-fetch";
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 

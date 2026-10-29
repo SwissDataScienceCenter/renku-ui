@@ -1,5 +1,4 @@
 import config from "../config";
-import fetch, { Headers, Request } from "cross-fetch";
 import logger from "../logger";
 
 export const RETURN_TYPES = {
@@ -36,19 +35,6 @@ class APIClient {
    * Fetch session status
    *
    */
-  async getSessionStatus(authHeathers: HeadersInit): Promise<Response> {
-    const sessionsUrl = `${this.gatewayUrl}/notebooks/servers`;
-    logger.debug(`Fetching session status.`);
-    const options = {
-      headers: new Headers(authHeathers),
-    };
-    return this.clientFetch(sessionsUrl, options, RETURN_TYPES.json);
-  }
-
-  /**
-   * Fetch session status
-   *
-   */
   async getSessionStatusV2(authHeathers: HeadersInit): Promise<Response> {
     const sessionsUrl = `${this.gatewayUrl}/data/sessions`;
     logger.debug(`Fetching session status.`);
@@ -56,26 +42,6 @@ class APIClient {
       headers: new Headers(authHeathers),
     };
     return this.clientFetch(sessionsUrl, options, RETURN_TYPES.json);
-  }
-
-  /**
-   * Fetch kg activation status by projectId
-   *
-   * @param {number} projectId - Project Id
-   * @param {Headers} authHeaders - Authentication headers
-   */
-  async kgActivationStatus(
-    projectId: number,
-    authHeaders: HeadersInit,
-  ): Promise<Response> {
-    const headers = new Headers(authHeaders);
-    const activationStatusURL = `${this.gatewayUrl}/projects/${projectId}/graph/status`;
-    logger.info(`Fetching kg activation from ${projectId} project`);
-    return this.clientFetch(
-      activationStatusURL,
-      { headers },
-      RETURN_TYPES.json,
-    );
   }
 
   /**
@@ -123,8 +89,8 @@ class APIClient {
     }
 
     options["credentials"] = "same-origin";
-    // Add a custom header for protection against CSRF attacks.
-    options.headers.append("X-Requested-With", "XMLHttpRequest");
+    options.headers = options.headers ?? new Headers();
+    options.headers.set("Renku-Service", "renku-ui-server");
 
     const request = new Request(urlObject.toString());
 
