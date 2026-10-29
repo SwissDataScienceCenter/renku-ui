@@ -280,6 +280,230 @@
         }
       }
     },
+    "/resource_flavors": {
+      "get": {
+        "summary": "Get all resource flavors",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Filter for resource flavors based on the provided name as a prefix. Omitting this parameter returns all flavors.",
+            "name": "resource_flavor_params",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "$ref": "#/components/schemas/Name"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of resource flavors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceFlavorsList"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavors"]
+      },
+      "post": {
+        "summary": "Create a new resource flavor",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceFlavorPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The resource flavor was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceFlavor"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavors"]
+      }
+    },
+    "/resource_flavors/{resource_flavor_id}": {
+      "get": {
+        "summary": "Get a specific resource flavor",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_flavor_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource flavor that was requested",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceFlavor"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource flavor does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavors"]
+      },
+      "patch": {
+        "summary": "Partially update a resource flavor",
+        "description": "The new values take effect on every linked resource class when it is read. They are not\ncopied onto the linked classes.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_flavor_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceFlavorPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated resource flavor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceFlavor"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource flavor does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavors"]
+      },
+      "delete": {
+        "summary": "Remove a resource flavor",
+        "description": "Refused while any resource class is still linked to the flavor.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_flavor_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The resource flavor was removed or does not exist"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavors"]
+      }
+    },
+    "/resource_flavors/{resource_flavor_id}/resource_classes": {
+      "get": {
+        "summary": "Get the resource classes linked to a resource flavor",
+        "description": "Shows what an edit to the flavor will affect. A class is listed for as long as it is\nlinked, whether or not its own values still match the flavor.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "resource_flavor_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource classes linked to the resource flavor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedResourceClassesList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource flavor does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["resource_flavors"]
+      }
+    },
     "/resource_pools": {
       "get": {
         "summary": "Get all resource pool definitions",
@@ -2027,6 +2251,160 @@
           "$ref": "#/components/schemas/ClusterWithId"
         }
       },
+      "ResourceFlavorPost": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/ResourceFlavorName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/ResourceFlavorDescription"
+          },
+          "cpu": {
+            "$ref": "#/components/schemas/Cpu"
+          },
+          "memory": {
+            "$ref": "#/components/schemas/Memory"
+          },
+          "gpu": {
+            "$ref": "#/components/schemas/Gpu"
+          },
+          "max_storage": {
+            "$ref": "#/components/schemas/Storage"
+          },
+          "default_storage": {
+            "$ref": "#/components/schemas/Storage"
+          }
+        },
+        "required": [
+          "name",
+          "cpu",
+          "memory",
+          "gpu",
+          "max_storage",
+          "default_storage"
+        ],
+        "example": {
+          "name": "small",
+          "description": "Fits a standard node with room for the daemonset",
+          "cpu": 1.5,
+          "memory": 2,
+          "gpu": 0,
+          "max_storage": 100,
+          "default_storage": 10
+        }
+      },
+      "ResourceFlavor": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the resource flavor"
+          },
+          "description": {
+            "type": "string",
+            "description": "Why a resource flavor is sized the way it is"
+          },
+          "cpu": {
+            "$ref": "#/components/schemas/Cpu"
+          },
+          "memory": {
+            "$ref": "#/components/schemas/Memory"
+          },
+          "gpu": {
+            "$ref": "#/components/schemas/Gpu"
+          },
+          "max_storage": {
+            "$ref": "#/components/schemas/Storage"
+          },
+          "default_storage": {
+            "$ref": "#/components/schemas/Storage"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "cpu",
+          "memory",
+          "gpu",
+          "max_storage",
+          "default_storage"
+        ]
+      },
+      "ResourceFlavorPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/ResourceFlavorName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/ResourceFlavorDescription"
+          },
+          "cpu": {
+            "$ref": "#/components/schemas/Cpu"
+          },
+          "memory": {
+            "$ref": "#/components/schemas/Memory"
+          },
+          "gpu": {
+            "$ref": "#/components/schemas/Gpu"
+          },
+          "max_storage": {
+            "$ref": "#/components/schemas/Storage"
+          },
+          "default_storage": {
+            "$ref": "#/components/schemas/Storage"
+          }
+        },
+        "example": {
+          "cpu": 2
+        }
+      },
+      "ResourceFlavorsList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ResourceFlavor"
+        },
+        "uniqueItems": true
+      },
+      "LinkedResourceClass": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IntegerId"
+          },
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "resource_pool_id": {
+            "$ref": "#/components/schemas/IntegerId"
+          },
+          "resource_pool_name": {
+            "$ref": "#/components/schemas/Name"
+          }
+        },
+        "required": ["id", "name"],
+        "example": {
+          "id": 1,
+          "name": "small",
+          "resource_pool_id": 1,
+          "resource_pool_name": "default"
+        }
+      },
+      "LinkedResourceClassesList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/LinkedResourceClass"
+        },
+        "uniqueItems": true
+      },
       "ResourceClassProperties": {
         "type": "object",
         "additionalProperties": false,
@@ -2061,13 +2439,20 @@
           "quota_enforced": {
             "$ref": "#/components/schemas/QuotaEnforced"
           },
+          "preemptible": {
+            "$ref": "#/components/schemas/Preemptible"
+          },
           "remote": {
             "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
+          },
+          "resource_flavor_id": {
+            "$ref": "#/components/schemas/ResourceFlavorIdPatch"
           }
         }
       },
       "ResourceClass": {
         "type": "object",
+        "description": "A new resource class. Set `resource_flavor_id` to take cpu, memory, gpu and storage from a resource flavor, or set all of those values directly.",
         "additionalProperties": false,
         "properties": {
           "name": {
@@ -2105,19 +2490,22 @@
             ],
             "default": false
           },
+          "preemptible": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Preemptible"
+              }
+            ],
+            "default": false
+          },
           "remote": {
             "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
+          },
+          "resource_flavor_id": {
+            "$ref": "#/components/schemas/ResourceFlavorId"
           }
         },
-        "required": [
-          "name",
-          "default",
-          "cpu",
-          "memory",
-          "gpu",
-          "max_storage",
-          "default_storage"
-        ],
+        "required": ["name", "default"],
         "example": {
           "name": "resource class",
           "default": false,
@@ -2202,8 +2590,19 @@
             ],
             "default": false
           },
+          "preemptible": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Preemptible"
+              }
+            ],
+            "default": false
+          },
           "remote": {
             "$ref": "#/components/schemas/RemoteClassConfigurationFirecrest"
+          },
+          "resource_flavor_id": {
+            "$ref": "#/components/schemas/ResourceFlavorId"
           }
         },
         "required": [
@@ -3155,6 +3554,33 @@
         "minLength": 5,
         "example": "the name of a resource"
       },
+      "ResourceFlavorName": {
+        "type": "string",
+        "description": "A name for a resource flavor",
+        "minLength": 5,
+        "maxLength": 40,
+        "example": "standard"
+      },
+      "ResourceFlavorDescription": {
+        "type": "string",
+        "description": "Why a resource flavor is sized the way it is",
+        "maxLength": 500,
+        "example": "Fits a standard node with room for the daemonset"
+      },
+      "ResourceFlavorId": {
+        "description": "The resource flavor this resource class is linked to",
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      },
+      "ResourceFlavorIdPatch": {
+        "description": "The resource flavor to link this resource class to. An empty string unlinks the class from its resource flavor, and the class keeps its current values.",
+        "type": "string",
+        "minLength": 0,
+        "maxLength": 26,
+        "pattern": "^([0-7][0-9A-HJKMNP-TV-Z]{25})?$"
+      },
       "ConfigName": {
         "type": "string",
         "description": "The name of the Kubernetes configuration to use to connect to the remote cluster. This is currently used to find a file named `<KubeConfigRoot>/<config_name>`.\n\nThis configuration is expected to have a default namespace defined. It will be used for all remote operations requiring a namespace, as well for namespaced objects.\n",
@@ -3170,6 +3596,11 @@
         "type": "boolean",
         "description": "Whether sessions in this resource class should be hibernated when quota is exhausted",
         "example": true
+      },
+      "Preemptible": {
+        "type": "boolean",
+        "description": "Whether sessions and jobs in this resource class can be preempted by other workloads. The resource pool must have a quota",
+        "example": false
       },
       "PublicFlag": {
         "type": "boolean",
