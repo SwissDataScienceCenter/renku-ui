@@ -1,7 +1,8 @@
-import { data, type MetaDescriptor } from "react-router";
+import { data, matchPath, Outlet, type MetaDescriptor } from "react-router";
 
 import ContainerWrap from "~/components/container/ContainerWrap";
-import LazyAdminPageContent from "~/features/admin/LazyAdminPage";
+import AdminPageLayout from "~/features/admin/AdminPageLayout";
+import { ADMIN_TABS } from "~/features/admin/adminTabs.constants";
 import {
   useGetUserQueryState,
   usersApi,
@@ -10,7 +11,7 @@ import LazyNotFound from "~/not-found/LazyNotFound";
 import { store, type RootState } from "~/store/store";
 import { storeContext } from "~/store/store.utils.server";
 import { makeMeta, makeMetaTitle } from "~/utils/meta/meta";
-import type { Route } from "./+types/admin";
+import type { Route } from "./+types/root";
 
 export async function loader({ context }: Route.LoaderArgs) {
   const store = context.get(storeContext);
@@ -63,10 +64,6 @@ export async function clientLoader() {
   };
 }
 
-const meta_ = makeMeta({
-  title: makeMetaTitle(["Admin Panel", "Renku"]),
-});
-
 const metaNotFound = makeMeta({
   title: makeMetaTitle(["Page Not Found", "Renku"]),
 });
@@ -74,7 +71,10 @@ const metaError = makeMeta({
   title: makeMetaTitle(["Error", "Renku"]),
 });
 
-export function meta({ loaderData }: Route.MetaArgs): MetaDescriptor[] {
+export function meta({
+  loaderData,
+  location,
+}: Route.MetaArgs): MetaDescriptor[] {
   const { selfUser, error } = loaderData;
   if (error) {
     return metaError;
@@ -82,7 +82,10 @@ export function meta({ loaderData }: Route.MetaArgs): MetaDescriptor[] {
   if (selfUser == null || !selfUser.isLoggedIn || !selfUser.is_admin) {
     return metaNotFound;
   }
-  return meta_;
+  const tab = ADMIN_TABS.find(({ path }) => matchPath(path, location.pathname));
+  return makeMeta({
+    title: makeMetaTitle([...(tab ? [tab.title] : []), "Admin Panel", "Renku"]),
+  });
 }
 
 export default function AdminPage() {
@@ -96,7 +99,9 @@ export default function AdminPage() {
   }
   return (
     <ContainerWrap>
-      <LazyAdminPageContent />
+      <AdminPageLayout>
+        <Outlet />
+      </AdminPageLayout>
     </ContainerWrap>
   );
 }

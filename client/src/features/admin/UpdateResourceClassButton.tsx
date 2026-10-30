@@ -217,11 +217,7 @@ function UpdateResourceClassModal({
         Update {resourceClass.name}
       </ModalHeader>
       <ModalBody>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkOrDataServicesError error={result.error} />}
 
           <div className="mb-3">

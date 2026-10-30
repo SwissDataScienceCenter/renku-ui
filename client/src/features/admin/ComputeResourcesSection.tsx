@@ -17,9 +17,10 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   CheckLg,
+  Cpu,
   FolderFill,
   PeopleFill,
   PersonFill,
@@ -29,6 +30,7 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -39,13 +41,14 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-import { ErrorAlert } from "~/components/Alert";
+import { ErrorAlert, InfoAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import ExternalLink from "~/components/ExternalLink";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
+import { NEW_DOCS_ADMIN_OPERATIONS_RPS } from "~/utils/constants/NewDocs";
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
-import { isFetchBaseQueryError } from "~/utils/helpers/ApiErrors";
 import { toFullHumanDuration } from "~/utils/helpers/DurationUtils";
 import { useGetResourcePoolsByResourcePoolIdLimitsQuery } from "../resourceUsage/api/resourceUsage.api";
 import UpdateResourceClassCostButton from "../resourceUsage/UpdateResourceClassCostButton";
@@ -57,142 +60,117 @@ import {
   useGetResourcePoolsByResourcePoolIdMembersQuery,
   useGetResourcePoolsQuery,
   type PoolMemberResponse,
-  type RemoteConfiguration,
   type ResourceClassWithId,
   type ResourcePoolWithId,
   type ResourcePoolWithIdFiltered,
 } from "../sessionsV2/api/computeResources.api";
-import { useGetUsersQuery } from "../usersV2/api/users.api";
 import AddMemberToResourcePoolButton from "./AddMemberToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
-import AdminSection from "./AdminSection";
-import ConnectedServicesSection from "./ConnectedServicesSection";
+import AdminListFilter from "./AdminListFilter";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
-import IncidentsAndMaintenanceSection from "./IncidentsAndMaintenanceSection";
-import ProjectStorageAllowSection from "./ProjectStorageAllowSection";
 import ResourceFlavorsSection from "./ResourceFlavorsSection";
-import SessionEnvironmentsSection from "./SessionEnvironmentsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import UpdateResourcePoolRemoteButton from "./UpdateResourcePoolRemoteButton";
 import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsButton";
 import useKeycloakRealm from "./useKeycloakRealm.hook";
 
-export default function AdminPage() {
+export default function ComputeResourcesSection() {
+  const { data, error, isLoading } = useGetResourcePoolsQuery({});
+
   return (
-    <>
-      <h1 className="mb-3">Admin Panel</h1>
-      <IncidentsAndMaintenanceSection />
-      <ComputeResourcesSection />
-      <ConnectedServicesSection />
-      <SessionEnvironmentsSection />
-      <ProjectStorageAllowSection />
-    </>
+    <section>
+      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
+        <h2 className="mb-0">
+          <Cpu className="me-1" />
+          Resource pools
+        </h2>
+
+        {data && !isLoading && !error && <Badge>{data?.length}</Badge>}
+
+        <div className="ms-auto">
+          <AddResourcePoolButton />
+        </div>
+      </div>
+
+      <p className="mb-2">
+        Resource pools allow you to manage and allocate compute resources for
+        different groups and users.
+      </p>
+      <p className="mb-4">
+        Check out the{" "}
+        <ExternalLink href={NEW_DOCS_ADMIN_OPERATIONS_RPS}>
+          documentation for resource pools
+        </ExternalLink>
+        .
+      </p>
+
+      <div className="mb-4">
+        <ResourcePoolsList />
+      </div>
+
+      <ResourceFlavorsSection />
+    </section>
   );
 }
 
-function ComputeResourcesSection() {
-  return (
-    <AdminSection title="Compute Resources">
-      <AdminComputeResourcesOverview />
-    </AdminSection>
-  );
-}
-function AdminComputeResourcesOverview() {
-  const {
-    data: rawUsers,
-    error: rawUsersError,
-    isLoading: rawUsersIsLoading,
-  } = useGetUsersQuery({});
-  const {
-    data: resourcePools,
-    error: resourcePoolsError,
-    isLoading: resourcePoolsIsLoading,
-  } = useGetResourcePoolsQuery({});
+function ResourcePoolsList() {
+  const { data, error, isLoading } = useGetResourcePoolsQuery({});
 
-  const error = rawUsersError || resourcePoolsError;
-  const isLoading = rawUsersIsLoading || resourcePoolsIsLoading;
+  const [filter, setFilter] = useState("");
+
+  const filteredPools = useMemo(() => {
+    if (!data || !filter) return data;
+    const lowerCaseFilter = filter.toLowerCase();
+    return data.filter(({ name }) =>
+      name.toLowerCase().includes(lowerCaseFilter),
+    );
+  }, [data, filter]);
 
   if (isLoading) {
     return <Loader />;
   }
 
-  if (error && isFetchBaseQueryError(error) && error.status === 401) {
-    return (
-      <ErrorAlert dismissible={false}>
-        <h3>
-          Oops! It looks like you do not have the required permissions to
-          administer compute resources.
-        </h3>
-      </ErrorAlert>
-    );
-  }
-
   if (error) {
-    return <RtkOrDataServicesError dismissible={false} error={error} />;
-  }
-
-  if (!rawUsers || !resourcePools) {
+    return <RtkOrDataServicesError error={error} />;
+  } else if (!data || !filteredPools) {
     return (
       <ErrorAlert dismissible={false}>
-        <h3>Could not load the compute resources.</h3>
+        It looks like you do not have the required permissions to administer
+        compute resources.
       </ErrorAlert>
     );
   }
 
-  return (
-    <div>
-      <div className={cx("hstack", "gap-2")}>
-        <div>Users with special access: {rawUsers.length}</div>
-        <div className="vr"></div>
-        <div>Resource pools: {resourcePools.length}</div>
-      </div>
-
-      <ResourcePoolsList />
-
-      <ResourceFlavorsSection />
-    </div>
-  );
-}
-
-function ResourcePoolsList() {
-  const { data: resourcePools } = useGetResourcePoolsQuery({});
-
-  if (!resourcePools) {
-    return null;
+  // NOTE: This is unlikely to happen because a "default" resource pool should always be defined.
+  if (data.length === 0) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        No resource pool set up yet. Please define at least a{" "}
+        <code>default</code> pool.
+      </InfoAlert>
+    );
   }
 
   return (
-    <div className="mt-2">
-      <h3 className="fs-4">Resource Pools</h3>
+    <>
+      <AdminListFilter filter={filter} onFilterChange={setFilter} />
 
-      <AddResourcePoolButton />
-
-      {resourcePools.map((pool) => (
-        <ResourcePoolItem key={pool.id} resourcePool={pool} />
-      ))}
-    </div>
-  );
-}
-
-interface RemoteConfigurationSummaryProps {
-  remote: RemoteConfiguration;
-}
-
-function RemoteConfigurationSummary({
-  remote,
-}: RemoteConfigurationSummaryProps) {
-  return (
-    <span className={cx("d-inline-flex", "flex-wrap", "gap-3")}>
-      {Object.entries(remote).map(([key, value]) => (
-        <span key={key}>
-          {key.replace(/_/g, " ")}: <code>{`${value}`}</code>
-        </span>
-      ))}
-    </span>
+      {filteredPools.length === 0 ? (
+        <p className="fst-italic">
+          No resource pool matches the filter <code>{filter}</code>.
+        </p>
+      ) : (
+        <div className={cx("d-flex", "flex-column", "gap-3")}>
+          {filteredPools.map((pool) => (
+            <ResourcePoolItem key={pool.id} resourcePool={pool} />
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -223,10 +201,10 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
   });
 
   return (
-    <Card className="mt-2">
+    <Card>
       <CardHeader
         className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
-        tag="h4"
+        tag="h5"
       >
         <button
           className={cx(
@@ -341,8 +319,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
                 )}
               >
                 <div className={cx("col", "col-sm-10")}>
-                  Remote configuration:{" "}
-                  <RemoteConfigurationSummary remote={remote} />
+                  Remote configuration: <code>{JSON.stringify(remote)}</code>
                 </div>
                 <div className={cx("col", "col-sm-2", "ms-auto", "text-end")}>
                   <UpdateResourcePoolRemoteButton resourcePool={resourcePool} />
@@ -842,7 +819,7 @@ function RemoveMemberFromResourcePoolModal({
   }, [result.isError, result.isSuccess, toggle]);
 
   return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalBody>
         <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
           Are you sure?
@@ -853,9 +830,9 @@ function RemoveMemberFromResourcePoolModal({
         </p>
       </ModalBody>
       <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-danger" onClick={toggle}>
+        <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
-          Cancel, keep member
+          Cancel
         </Button>
         <Button className="ms-2" color="danger" onClick={onRemove}>
           {result.isLoading ? (

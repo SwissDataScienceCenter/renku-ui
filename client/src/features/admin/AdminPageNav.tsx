@@ -16,19 +16,26 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from "react";
+import cx from "classnames";
+import { Nav, NavItem } from "reactstrap";
 
-interface AdminSectionProps {
-  children: ReactNode;
-  title: string;
+import RenkuNavLinkV2 from "~/components/RenkuNavLinkV2";
+import { ADMIN_TABS } from "./adminTabs.constants";
+
+interface AdminPageNavProps {
+  className?: string;
 }
-
-/** A top-level section of the admin panel. */
-export default function AdminSection({ children, title }: AdminSectionProps) {
+export default function AdminPageNav({ className }: AdminPageNavProps) {
   return (
-    <section className="mt-4">
-      <h2>{title}</h2>
-      {children}
-    </section>
+    <Nav className={cx(className)} data-cy="admin-page-navigation" tabs>
+      {ADMIN_TABS.map(({ path, title, icon: Icon, dataCy }) => (
+        <NavItem key={path}>
+          <RenkuNavLinkV2 end to={path} title={title} data-cy={dataCy}>
+            <Icon className="me-1" />
+            {title}
+          </RenkuNavLinkV2>
+        </NavItem>
+      ))}
+    </Nav>
   );
 }
