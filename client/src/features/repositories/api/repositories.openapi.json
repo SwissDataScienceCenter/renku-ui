@@ -45,6 +45,49 @@
         },
         "tags": ["repositories"]
       }
+    },
+    "/repository/permissions": {
+      "get": {
+        "summary": "Get detailed permissions from a repository",
+        "description": "Get detailed permissions from a repository hosted on GitHub.\n\nWorks only for authenticated users: this endpoint is used\nto check that the OAuth2 client has access to the repository.\n",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "query parameters",
+            "name": "repository_permissions_params",
+            "style": "form",
+            "explode": true,
+            "required": true,
+            "schema": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "url": {
+                  "description": "Repository URL",
+                  "type": "string"
+                }
+              },
+              "required": ["url"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The repository permissions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoryPermissions"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["repositories"]
+      }
     }
   },
   "components": {
@@ -89,19 +132,7 @@
             "$ref": "#/components/schemas/Metadata"
           },
           "error_code": {
-            "type": "string",
-            "enum": [
-              "no_url_scheme",
-              "no_url_host",
-              "no_git_repo",
-              "no_url_path",
-              "invalid_url_scheme",
-              "invalid_git_url",
-              "metadata_unauthorized",
-              "metadata_oauth",
-              "metadata_unknown",
-              "metadata_validation"
-            ]
+            "$ref": "#/components/schemas/RepositoryErrorCode"
           }
         },
         "required": ["status"]
@@ -132,9 +163,30 @@
           },
           "url": {
             "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ProviderKind"
           }
         },
-        "required": ["id", "name", "url"]
+        "required": ["id", "name", "url", "kind"]
+      },
+      "RepositoryPermissions": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "error_code": {
+            "$ref": "#/components/schemas/RepositoryErrorCode"
+          },
+          "permissions": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "integration_access": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
       },
       "Ulid": {
         "description": "ULID identifier",
@@ -152,6 +204,34 @@
         "description": "The visibility of a repository:\n- public: the repository can be pulled without credentials\n- private: the repository requires credentials to be pulled\n",
         "type": "string",
         "enum": ["public", "private"]
+      },
+      "RepositoryErrorCode": {
+        "type": "string",
+        "enum": [
+          "no_url_scheme",
+          "no_url_host",
+          "no_git_repo",
+          "no_url_path",
+          "invalid_url_scheme",
+          "invalid_git_url",
+          "metadata_unauthorized",
+          "metadata_oauth",
+          "metadata_unknown",
+          "metadata_validation"
+        ]
+      },
+      "ProviderKind": {
+        "type": "string",
+        "enum": [
+          "dropbox",
+          "generic_oidc",
+          "github",
+          "gitlab",
+          "google",
+          "zenodo",
+          "scicat"
+        ],
+        "example": "gitlab"
       },
       "ErrorResponse": {
         "type": "object",
