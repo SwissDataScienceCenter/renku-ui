@@ -375,6 +375,7 @@ function StartSessionFromLauncher({
     isLoadingSessionImage,
     sessionImage,
     isFetchingRepositories,
+    launcherResourcesError,
   } = useSessionLaunchState({
     launcher,
     project,
@@ -408,14 +409,14 @@ function StartSessionFromLauncher({
 
   // set favicon during session launch
   useEffect(() => {
-    if (!allDataFetched || needsCredentials) {
+    if (!launcherResourcesError && (!allDataFetched || needsCredentials)) {
       dispatch(setFavicon("waiting"));
     }
     return () => {
       // cleanup and set favicon to default
       dispatch(resetFavicon());
     };
-  }, [allDataFetched, needsCredentials, dispatch]);
+  }, [allDataFetched, launcherResourcesError, needsCredentials, dispatch]);
 
   useEffect(() => {
     // Handle all data fetched and no credentials needed
@@ -435,6 +436,7 @@ function StartSessionFromLauncher({
     }
 
     if (
+      launcherResourcesError == null &&
       allDataFetched &&
       !needsCredentials &&
       !shouldSaveCredentials &&
@@ -450,6 +452,7 @@ function StartSessionFromLauncher({
     }
   }, [
     allDataFetched,
+    launcherResourcesError,
     needsCredentials,
     sessionStarted,
     shouldSaveCredentials,

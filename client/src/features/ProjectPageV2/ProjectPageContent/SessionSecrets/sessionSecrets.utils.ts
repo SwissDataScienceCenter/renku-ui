@@ -41,3 +41,13 @@ export function getSessionSecretSlotsWithSecrets({
     };
   });
 }
+
+export function getSecretSlotSessionPath(
+  secretsMountDirectory: string,
+  filename: string,
+): string {
+  const mountDir = secretsMountDirectory.startsWith("/")
+    ? secretsMountDirectory
+    : `<work-dir>/${secretsMountDirectory}`;
+  return `${mountDir}/${filename}`;
+}

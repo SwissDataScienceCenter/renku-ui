@@ -76,6 +76,7 @@ export default function SubmitJobFormModal({
     buildRequestError,
     handleSubmitAttempt,
     isCheckingLaunchPrerequisites,
+    isLauncherResourcesError,
     isPermissionsError,
     isSubmitting,
     permissionsError,
@@ -190,6 +191,7 @@ export default function SubmitJobFormModal({
 
   const isSubmitDisabled =
     isPermissionsError ||
+    isLauncherResourcesError ||
     !displayLaunchSession ||
     !watchResourceClass ||
     isFormLoading ||

@@ -43,6 +43,8 @@ describe("launch sessions with data connectors", () => {
       .sessionLaunchers({
         fixture: "projectV2/session-launchers.json",
       })
+      .sessionLauncherDataConnectors()
+      .sessionLauncherSecrets()
       .sessionServersEmptyV2()
       .sessionImage()
       .newLauncher()
@@ -863,6 +865,8 @@ describe("launch sessions with secrets", () => {
       .sessionLaunchers({
         fixture: "projectV2/session-launchers.json",
       })
+      .sessionLauncherDataConnectors()
+      .sessionLauncherSecrets()
       .sessionServersEmptyV2()
       .sessionImage()
       .newLauncher()
@@ -1070,6 +1074,8 @@ describe("view autostart link", () => {
       .sessionLaunchers({
         fixture: "projectV2/session-launchers.json",
       })
+      .sessionLauncherDataConnectors()
+      .sessionLauncherSecrets()
       .sessionServersEmptyV2()
       .sessionImage()
       .newLauncher()
@@ -1145,6 +1151,8 @@ describe("launch sessions with resource quotas", () => {
       .sessionLaunchers({
         fixture: "projectV2/session-launchers.json",
       })
+      .sessionLauncherDataConnectors()
+      .sessionLauncherSecrets()
       .sessionImage()
       .environments()
       .listProjectDataConnectors({
