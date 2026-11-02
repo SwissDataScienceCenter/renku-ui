@@ -20,6 +20,7 @@ import cx from "classnames";
 import { KeyboardEvent, MouseEvent, useCallback } from "react";
 import { Col, Row } from "reactstrap";
 
+import useClickableHostHandlers from "~/components/buttons/useClickableHostHandlers.hook";
 import {
   getLauncherCategoryDefinition,
   sessionLauncherKindToCategory,
@@ -49,6 +50,10 @@ export default function JobCard({ project, session, onOpen }: JobCardProps) {
     event.stopPropagation();
   }, []);
 
+  const hostHandlers = useClickableHostHandlers(
+    onOpen ? handleOpen : undefined,
+  );
+
   if (!session) return null;
 
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
@@ -68,7 +73,7 @@ export default function JobCard({ project, session, onOpen }: JobCardProps) {
         "border-bottom",
         onOpen && "cursor-pointer",
       )}
-      onClick={onOpen ? handleOpen : undefined}
+      onClick={hostHandlers.onClick}
       role={onOpen ? "button" : undefined}
       aria-label={
         onOpen ? `View details for job ${session.submission_id}` : undefined
