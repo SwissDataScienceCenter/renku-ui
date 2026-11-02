@@ -20,8 +20,20 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildResourceClassRemote,
+  buildResourceFlavor,
+  buildResourceFlavorPatch,
   poolRequiresIntegerCpu,
 } from "./adminComputeResources.utils";
+
+const FLAVOR_FORM = {
+  name: "  small  ",
+  description: "",
+  cpu: 1.5,
+  memory: 8,
+  gpu: 0,
+  default_storage: 20,
+  max_storage: 200,
+};
 
 describe("poolRequiresIntegerCpu", () => {
   it("returns true for a firecrest remote configuration", () => {
@@ -99,3 +111,44 @@ describe("buildResourceClassRemote", () => {
   });
 });
 /* eslint-enable spellcheck/spell-checker */
+
+describe("buildResourceFlavor", () => {
+  it("omits an empty description", () => {
+    expect(buildResourceFlavor(FLAVOR_FORM)).toEqual({
+      name: "small",
+      cpu: 1.5,
+      memory: 8,
+      gpu: 0,
+      default_storage: 20,
+      max_storage: 200,
+    });
+  });
+
+  it("keeps a trimmed description", () => {
+    expect(
+      buildResourceFlavor({ ...FLAVOR_FORM, description: " fits a node " }),
+    ).toEqual({
+      name: "small",
+      description: "fits a node",
+      cpu: 1.5,
+      memory: 8,
+      gpu: 0,
+      default_storage: 20,
+      max_storage: 200,
+    });
+  });
+});
+
+describe("buildResourceFlavorPatch", () => {
+  it("sends an empty description, which the API reads as a reset", () => {
+    expect(buildResourceFlavorPatch(FLAVOR_FORM)).toEqual({
+      name: "small",
+      description: "",
+      cpu: 1.5,
+      memory: 8,
+      gpu: 0,
+      default_storage: 20,
+      max_storage: 200,
+    });
+  });
+});
