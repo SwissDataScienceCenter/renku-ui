@@ -1,4 +1,4 @@
-FROM node:22 AS builder
+FROM node:22.23.4 AS builder
 
 RUN apt-get update && apt-get upgrade --quiet --assume-yes
 
@@ -22,7 +22,7 @@ COPY .storybook /app/.storybook
 
 RUN npm run storybook-build -- -o storybook-static
 
-FROM node:22 AS dependencies
+FROM node:22.23.4 AS dependencies
 
 RUN apt-get update && apt-get upgrade --quiet --assume-yes
 
@@ -32,7 +32,7 @@ WORKDIR /app
 COPY package.json package-lock.json /app/
 RUN npm ci --omit=dev
 
-FROM node:22-slim
+FROM node:22.23.4-slim
 
 RUN apt-get update && \
 	apt-get upgrade --quiet --assume-yes && \

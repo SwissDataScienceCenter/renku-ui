@@ -991,7 +991,8 @@
         "additionalProperties": false,
         "properties": {
           "public_key": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 10000
           },
           "name": {
             "type": "string",

@@ -392,7 +392,13 @@
             "$ref": "#/components/schemas/SessionStatus"
           },
           "url": {
-            "type": "string"
+            "type": "string",
+            "description": "The direct URL of a session"
+          },
+          "external_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "The URL to use for external access to a session (usually the UI page)"
           },
           "project_id": {
             "$ref": "#/components/schemas/Ulid"
