@@ -27,17 +27,9 @@ import { errorHandler } from "../utils/errorHandler";
 
 import { WsClientMessage, WsMessage, checkWsClientMessage } from "./WsMessages";
 import {
-  handlerRequestActivationKgStatus,
-  heartbeatRequestActivationKgStatus,
-} from "./handlers/activationKgStatus";
-import {
   handlerRequestServerVersion,
   heartbeatRequestServerVersion,
 } from "./handlers/clientVersion";
-import {
-  handlerRequestSessionStatus,
-  heartbeatRequestSessionStatus,
-} from "./handlers/sessions";
 import type { Channel, WebSocketHandler } from "./handlers/handlers.types";
 import {
   handlerRequestSessionStatusV2,
@@ -63,20 +55,6 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
       required: ["requestServerVersion"],
       optional: null,
       handler: handlerRequestServerVersion,
-    } as MessageData,
-  ],
-  pullKgActivationStatus: [
-    {
-      required: ["projects"],
-      optional: null,
-      handler: handlerRequestActivationKgStatus,
-    } as MessageData,
-  ],
-  pullSessionStatus: [
-    {
-      required: null,
-      optional: null,
-      handler: handlerRequestSessionStatus,
     } as MessageData,
   ],
   pullSessionStatusV2: [
@@ -107,8 +85,6 @@ const longLoopFunctions: Array<WebSocketHandler> = [
   heartbeatRequestServerVersion,
 ];
 const shortLoopFunctions: Array<WebSocketHandler> = [
-  heartbeatRequestSessionStatus,
-  heartbeatRequestActivationKgStatus,
   heartbeatRequestSessionStatusV2,
 ];
 
