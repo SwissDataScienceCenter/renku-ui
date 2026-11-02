@@ -32,7 +32,6 @@ import { useForm } from "react-hook-form";
 import {
   Button,
   Col,
-  DropdownItem,
   Form,
   Modal,
   ModalBody,
@@ -41,7 +40,10 @@ import {
 } from "reactstrap";
 
 import { useProject } from "~/routes/projects/root";
-import { ButtonWithMenuV2 } from "../../../../components/buttons/Button";
+import {
+  MenuButton,
+  MenuButtonItem,
+} from "../../../../components/buttons/MenuButton";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
@@ -207,7 +209,7 @@ export default function SessionSecretActions({
         sm="auto"
         className="ms-auto"
       >
-        <ButtonWithMenuV2
+        <MenuButton
           color="outline-primary"
           default={
             <Button
@@ -219,14 +221,14 @@ export default function SessionSecretActions({
               {actions[0].content}
             </Button>
           }
-          size="sm"
+          label={`More actions for ${secretSlot.secretSlot.name}`}
         >
           {actions.slice(1).map(({ key, dataCy, onClick, content }) => (
-            <DropdownItem data-cy={dataCy} key={key} onClick={onClick}>
+            <MenuButtonItem data-cy={dataCy} key={key} onClick={onClick}>
               {content}
-            </DropdownItem>
+            </MenuButtonItem>
           ))}
-        </ButtonWithMenuV2>
+        </MenuButton>
       </Col>
     );
 
@@ -585,7 +587,6 @@ function ReplaceSecretValueModalWrapped({
       isOpen={isOpen}
       secret={userSecret}
       toggle={toggle}
-      isV2
     />
   );
 }
