@@ -42,15 +42,15 @@ import type {
 import { useGetEnvironmentsQuery } from "../sessionsV2/api/sessionLaunchersV2.api";
 import { safeStringify } from "../sessionsV2/session.utils";
 import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
+import AdminSection from "./AdminSection";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
 
 export default function SessionEnvironmentsSection() {
   return (
-    <section className="mt-4">
-      <h2>Session Environments</h2>
+    <AdminSection title="Session Environments">
       <SessionEnvironments />
-    </section>
+    </AdminSection>
   );
 }
 
