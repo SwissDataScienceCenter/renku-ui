@@ -86,17 +86,53 @@ export const CUSTOM_LAUNCH_SEARCH_PARAM = "renku_custom_launch";
 export const ENV_VARIABLES_RESERVED_PREFIX = "RENKU";
 
 export const ENVIRONMENT_VALUES_DESCRIPTION = {
-  urlPath: `Specify a subpath for your Renku session. By default, the session opens at the path defined by the environment variable \`RENKU_SESSION_PATH\`. If you set a subpath (e.g., "foo"), the session will open at \`<RENKU_SESSION_PATH>/foo\`.`,
-  port: `The network port that your application will use to listen for incoming connections.  
-Default: \`8080\`.`,
+  urlPath: (
+    <>
+      Specify a subpath for your Renku session. By default, the session opens at
+      the path defined by the environment variable{" "}
+      <code>RENKU_SESSION_PATH</code>. If you set a subpath (e.g.,
+      &quot;foo&quot;), the session will open at{" "}
+      <code>{"<RENKU_SESSION_PATH>/foo"}</code>.
+    </>
+  ),
+  port: (
+    <>
+      The network port that your application will use to listen for incoming
+      connections.
+      <br />
+      Default: <code>8080</code>.
+    </>
+  ),
   workingDirectory: `Set the directory where your session will open. If not specified, Renku uses the Docker image setting. Renku will also create the project inside this directory including any data sources and repositories.`,
-  uid: `The identifier assigned to the user that will run the application. This determines file permissions and ownership.  
-Default: \`1000\`.`,
-  gid: `The identifier assigned to the group that will run the application. This helps manage group-based permissions.  
-Default: \`1000\`.`,
+  uid: (
+    <>
+      The identifier assigned to the user that will run the application. This
+      determines file permissions and ownership.
+      <br />
+      Default: <code>1000</code>.
+    </>
+  ),
+  gid: (
+    <>
+      The identifier assigned to the group that will run the application. This
+      helps manage group-based permissions.
+      <br />
+      Default: <code>1000</code>.
+    </>
+  ),
   mountDirectory: `Renku will provide persistent storage for your session even when you pause or resume it. Set the location where this storage should be mounted. It should be the same as or a parent of the working directory to avoid data loss. Defaults to the working directory if not specified.`,
-  command: `The command that will be run i.e. will overwrite the image Dockerfile \`ENTRYPOINT\`.`,
-  args: `The arguments that will follow the command, i.e. will overwrite the image Dockerfile \`CMD\`.`,
+  command: (
+    <>
+      The command that will be run i.e. will overwrite the image Dockerfile{" "}
+      <code>ENTRYPOINT</code>.
+    </>
+  ),
+  args: (
+    <>
+      The arguments that will follow the command, i.e. will overwrite the image
+      Dockerfile <code>CMD</code>.
+    </>
+  ),
   stripPathPrefix: `When this is activated then the server that is running in the session container will receive all requests with the path prefix stripped out. Note that this is an advanced feature which usually requires the server application running inside the session to be made aware that a proxy is rewriting the URL paths and also to be informed of the real path prefix that is being stripped.`,
 };
 
