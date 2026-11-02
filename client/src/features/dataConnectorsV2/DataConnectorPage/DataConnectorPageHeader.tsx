@@ -143,10 +143,9 @@ export default function DataConnectorPageHeader({
                 )}
               >
                 <FilePerson className={cx("bi", "me-1")} />
-                <span className={cx("text-muted", "me-1")}>
-                  Required credentials:
-                </span>
-                <span>{requiresCredentials ? "Yes" : "No"}</span>
+                {requiresCredentials
+                  ? "Credentials required"
+                  : "No credentials required"}
               </div>
             </div>
             {keywordsInline && (

@@ -13,17 +13,25 @@ interface DataConnectorIntegrationBoxProps {
   headerTag?: "h2" | "h3" | "h4";
 }
 
+export function useDataConnectorIntegrationSchema(
+  dataConnector: DataConnectorRead | null | undefined,
+) {
+  const { data: schemata } = useGetStorageSchemaQuery();
+  const storageType = dataConnector?.storage.storage_type;
+
+  return useMemo(
+    () => (schemata ? getSchema(schemata, storageType) : undefined),
+    [schemata, storageType],
+  );
+}
+
 export function DataConnectorIntegrationBox({
   dataConnector,
   headerTag = "h3",
 }: DataConnectorIntegrationBoxProps) {
-  const { data: schemata } = useGetStorageSchemaQuery();
-  const schema = useMemo(
-    () => schemata && getSchema(schemata, dataConnector.storage.storage_type),
-    [dataConnector.storage.storage_type, schemata],
-  );
+  const schema = useDataConnectorIntegrationSchema(dataConnector);
 
-  if (!schema || !schema.usesIntegration) {
+  if (!schema?.usesIntegration) {
     return null;
   }
 

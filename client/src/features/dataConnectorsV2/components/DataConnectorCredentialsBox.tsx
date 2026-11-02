@@ -13,6 +13,17 @@ import { useGetDataConnectorsByDataConnectorIdSecretsQuery } from "../api/data-c
 import { hasSensitiveFields } from "./dataConnector.utils";
 import { InfoEntry, type InfoEntryLayout } from "./DataConnectorInfoBox";
 
+export function getDataConnectorRequiredCredentials(
+  dataConnector: DataConnectorRead,
+) {
+  return (
+    getCredentialFieldDefinitions({
+      storage: dataConnector.storage,
+      sensitive_fields: dataConnector.storage.sensitive_fields,
+    })?.filter((field) => field.requiredCredential) ?? []
+  );
+}
+
 interface DataConnectorCredentialsBoxProps {
   dataConnector: DataConnectorRead;
   headerTag?: "h2" | "h3" | "h4";
@@ -27,19 +38,9 @@ export default function DataConnectorCredentialsBox({
 }: DataConnectorCredentialsBoxProps) {
   const anySensitiveField = hasSensitiveFields(dataConnector.storage);
 
-  // Fields requiring credentials and their status
-  const credentialFieldDefinitions = useMemo(
-    () =>
-      getCredentialFieldDefinitions({
-        storage: dataConnector.storage,
-        sensitive_fields: dataConnector.storage.sensitive_fields,
-      }),
-    [dataConnector.storage],
-  );
   const requiredCredentials = useMemo(
-    () =>
-      credentialFieldDefinitions?.filter((field) => field.requiredCredential),
-    [credentialFieldDefinitions],
+    () => getDataConnectorRequiredCredentials(dataConnector),
+    [dataConnector],
   );
   const { data: connectorSecrets } =
     useGetDataConnectorsByDataConnectorIdSecretsQuery({
@@ -51,7 +52,7 @@ export default function DataConnectorCredentialsBox({
       return acc;
     }, {}) ?? {};
 
-  const hasCredentialFields = !!requiredCredentials?.length;
+  const hasCredentialFields = requiredCredentials.length > 0;
 
   if (!hasCredentialFields && !showRequiresCredentials) return null;
 
@@ -82,7 +83,7 @@ export default function DataConnectorCredentialsBox({
           </Row>
         )}
         {hasCredentialFields &&
-          requiredCredentials?.map(({ name, help }) => {
+          requiredCredentials.map(({ name, help }) => {
             if (!name) return null;
             const title = (
               <>
