@@ -21,7 +21,7 @@ import { Fragment, useMemo, useRef } from "react";
 import { generatePath } from "react-router";
 import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
 
-import { ButtonWithMenuV2 } from "~/components/buttons/Button";
+import { MenuButton } from "~/components/buttons/MenuButton";
 import useProjectPermissions from "~/features/ProjectPageV2/utils/useProjectPermissions.hook";
 import { useGetResourcePoolsQuery } from "~/features/sessionsV2/api/computeResources.api";
 import { isTruthy } from "~/features/sessionsV2/session.utils";
@@ -234,14 +234,14 @@ export default function SessionLauncherActions({
   return !hasMenuItems ? (
     defaultAction
   ) : (
-    <ButtonWithMenuV2
+    <MenuButton
       color="primary"
       default={defaultAction}
       disabled={hasSession}
+      label={`More actions for ${launcher.name}`}
       preventPropagation
-      size="sm"
     >
       {menuItems}
-    </ButtonWithMenuV2>
+    </MenuButton>
   );
 }
