@@ -29,7 +29,6 @@ import {
 import { FormText, Input, Label } from "reactstrap";
 import { InputType } from "reactstrap/types/lib/Input";
 
-import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import { MoreInfo } from "../../../../components/MoreInfo";
 import { SessionEnvironmentForm } from "../../../admin/SessionEnvironmentFormContent";
 import {
@@ -52,7 +51,7 @@ function OptionalLabel() {
 }
 
 interface FormFieldLabelProps<T extends FieldValues> {
-  info?: string;
+  info?: ReactNode;
   isOptional?: boolean;
   label: ReactNode;
   name: Path<T>;
@@ -74,11 +73,7 @@ function FormFieldLabel<T extends FieldValues>({
       >
         {label}
       </Label>
-      {info && (
-        <MoreInfo>
-          <LazyMarkdown>{info}</LazyMarkdown>
-        </MoreInfo>
-      )}
+      {info && <MoreInfo>{info}</MoreInfo>}
       {isOptional && <OptionalLabel />}
     </div>
   );
@@ -168,7 +163,7 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
 }: {
   control: Control<T>;
   errors?: FieldErrors<T>;
-  info?: string;
+  info?: ReactNode;
   label: ReactNode;
   name: Path<T>;
   placeholder?: string;
@@ -201,11 +196,7 @@ function CheckboxOrRadioFormField<T extends FieldValues>({
         aria-required={isOptional ? "false" : "true"}
       >
         {label}
-        {info && (
-          <MoreInfo>
-            <LazyMarkdown>{info}</LazyMarkdown>
-          </MoreInfo>
-        )}
+        {info && <MoreInfo>{info}</MoreInfo>}
         {isOptional && <OptionalLabel />}
       </Label>
       {errors?.[name] && (
@@ -223,7 +214,7 @@ export interface JsonFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
   label: string;
-  info?: string;
+  info?: ReactNode;
   errors?: FieldErrors<T>;
   helpText: string;
   isOptional?: boolean;
