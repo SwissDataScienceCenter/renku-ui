@@ -24,42 +24,34 @@ import { Link } from "react-router";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import RenkuBadge from "../renkuBadge/RenkuBadge";
 
-interface KeywordBadgeProps {
+interface KeywordBadgeContentProps {
   children?: React.ReactNode;
   className?: string;
   "data-cy"?: string;
   highlighted?: boolean;
   remove?: () => void;
-  searchKeyword?: string;
 }
 
-export default function KeywordBadge({
+export function KeywordBadgeContent({
   children,
   className,
-  "data-cy": dataCy = "keyword",
+  "data-cy": dataCy,
   highlighted,
   remove,
-  searchKeyword,
-}: KeywordBadgeProps) {
+}: KeywordBadgeContentProps) {
   const removeButton = remove ? (
     <button
       aria-label="Remove keyword"
       className={cx("p-0", "border-0", "bg-transparent")}
-      data-cy={`${dataCy}-remove`}
+      data-cy={dataCy ? `${dataCy}-remove` : undefined}
       onClick={remove}
       type="button"
     >
       <XCircle className="bi" />
     </button>
   ) : null;
-  const search = useMemo(() => {
-    if (searchKeyword == null || searchKeyword.length < 1) return null;
-    return (
-      `?` + new URLSearchParams({ q: `keyword:"${searchKeyword}"` }).toString()
-    );
-  }, [searchKeyword]);
 
-  const badge = (
+  return (
     <RenkuBadge
       className={cx(
         "d-flex",
@@ -76,6 +68,37 @@ export default function KeywordBadge({
       {children}
       {removeButton}
     </RenkuBadge>
+  );
+}
+
+interface KeywordBadgeProps extends KeywordBadgeContentProps {
+  searchKeyword?: string;
+}
+
+export default function KeywordBadge({
+  children,
+  className,
+  "data-cy": dataCy = "keyword",
+  highlighted,
+  remove,
+  searchKeyword,
+}: KeywordBadgeProps) {
+  const search = useMemo(() => {
+    if (searchKeyword == null || searchKeyword.length < 1) return null;
+    return (
+      `?` + new URLSearchParams({ q: `keyword:"${searchKeyword}"` }).toString()
+    );
+  }, [searchKeyword]);
+
+  const badge = (
+    <KeywordBadgeContent
+      className={className}
+      data-cy={dataCy}
+      highlighted={highlighted}
+      remove={remove}
+    >
+      {children}
+    </KeywordBadgeContent>
   );
   if (search) {
     return (

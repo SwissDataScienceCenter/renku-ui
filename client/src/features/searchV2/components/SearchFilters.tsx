@@ -310,7 +310,7 @@ function SearchFilter({
       </UncontrolledAccordion>
       <ListGroup flush className={cx("d-none", "d-sm-block")}>
         <ListGroupItem
-          className={cx("border-bottom", "px-0", "pt-0")}
+          className={cx("border-bottom", "px-0", "pt-0", "bg-transparent")}
           data-cy="search-group-filter-content"
         >
           <h4 className="fw-semibold">{filter.label}</h4>

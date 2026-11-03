@@ -23,7 +23,7 @@ import { useNamespaceContext } from "~/features/searchV2/hooks/useNamespaceConte
 import { RELATIVE_ROUTES } from "~/routing/routes.constants";
 import DataConnectorsBox from "../../dataConnectorsV2/components/DataConnectorsBox";
 import ProjectV2ListDisplay from "../../projectsV2/list/ProjectV2ListDisplay";
-import GroupInformation from "./GroupV2Information";
+import GroupMembers from "./GroupMembers";
 
 export default function GroupV2Show() {
   const { namespace } = useNamespaceContext();
@@ -73,7 +73,7 @@ export default function GroupV2Show() {
         </Row>
       </Col>
       <Col xs={12} md={4} xl={3}>
-        <GroupInformation output="card" />
+        <GroupMembers />
       </Col>
     </Row>
   );

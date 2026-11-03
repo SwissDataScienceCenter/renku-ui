@@ -26,7 +26,7 @@ import { usersApi } from "../api/users.api";
 
 import styles from "./UserAvatar.module.scss";
 
-type AvatarSize = "sm" | "md" | "lg";
+type AvatarSize = "xs" | "sm" | "md" | "lg";
 
 interface UserAvatarProps {
   className?: string;
@@ -112,36 +112,52 @@ export default function UserAvatar({
   }, [group, namespaceSlug, user]);
   const initialsUpper = useMemo(() => initials.toUpperCase(), [initials]);
 
-  const randomPastelColor = generatePastelColor(namespaceSlug ?? "");
+  const avatarColors = generateAvatarColors(namespaceSlug ?? "");
 
   return (
     <div
       className={cx(
-        "align-content-center",
         "border",
+        "border-secondary-subtle",
         "flex-shrink-0",
+        "fw-medium",
         "rounded-circle",
         "text-center",
-        "text-black",
+        "text-nowrap",
         styles.avatar,
+        size === "xs" && styles.xSmall,
         size === "lg" && styles.large,
         size === "md" && styles.medium,
         className,
       )}
-      style={{ backgroundColor: randomPastelColor }}
+      style={{
+        backgroundColor: avatarColors.background,
+        color: avatarColors.text,
+      }}
     >
       {initialsUpper}
     </div>
   );
 }
 
-function generatePastelColor(input: string) {
+const BACKGROUND_SATURATION = 70;
+const BACKGROUND_LIGHTNESS = 94;
+const TEXT_SATURATION = 65;
+const TEXT_LIGHTNESS = 25;
+
+function generateAvatarColors(input: string) {
   const hash = hashStringToNumber(input);
-  const hue = hash % 360; // Map hash to a hue value (0-359)
-  const saturation = 70; // Pastel saturation
-  const lightness = 97; // Pastel lightness
+  const hue = hash % 360;
+  return {
+    background: hsl(hue, BACKGROUND_SATURATION, BACKGROUND_LIGHTNESS),
+    text: hsl(hue, TEXT_SATURATION, TEXT_LIGHTNESS),
+  };
+}
+
+function hsl(hue: number, saturation: number, lightness: number) {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
+
 function hashStringToNumber(str: string) {
   return str.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
 }
@@ -154,13 +170,15 @@ function truncateTooltipText(text: string) {
 
 interface OverflowBadgeProps {
   count: number;
-  hiddenMembers: {
-    first_name?: string;
-    last_name?: string;
-  }[];
+  tooltip: string;
+  size?: AvatarSize;
 }
 
-export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
+export function OverflowBadge({
+  count,
+  tooltip,
+  size = "sm",
+}: OverflowBadgeProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -168,24 +186,24 @@ export function OverflowBadge({ count, hiddenMembers }: OverflowBadgeProps) {
       <div
         ref={ref}
         className={cx(
-          "align-content-center",
+          "bg-secondary-subtle",
           "border",
           "flex-shrink-0",
           "rounded-circle",
-          "text-center",
           "text-black",
+          "text-center",
+          "text-nowrap",
           styles.avatar,
+          size === "xs" && styles.xSmall,
+          size === "lg" && styles.large,
+          size === "md" && styles.medium,
         )}
         data-cy="member-list-overflow"
       >
         +{count}
       </div>
       <UncontrolledTooltip target={ref}>
-        {truncateTooltipText(
-          hiddenMembers
-            .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
-            .join(", "),
-        )}
+        {truncateTooltipText(tooltip)}
       </UncontrolledTooltip>
     </>
   );
