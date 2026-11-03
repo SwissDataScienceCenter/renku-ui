@@ -137,13 +137,23 @@ export default function NewLauncherCreateModal({
   );
 
   const onNext = useCallback(async () => {
+    // eslint-disable-next-line no-console
+    console.debug("[launcher-debug] onNext start", {
+      watchEnvironmentSelect,
+      isEnvironmentDefined,
+      launcherCategory,
+    });
+
     const fieldsToValidate: (keyof SessionLauncherForm)[] = [
       "builder_variant",
       "container_image",
-      "environmentId",
       "frontend_variant",
       "repository",
     ];
+
+    if (watchEnvironmentSelect === "global") {
+      fieldsToValidate.push("environmentId");
+    }
 
     if (watchEnvironmentSelect === "custom + image") {
       fieldsToValidate.push("command", "args");
@@ -157,12 +167,30 @@ export default function NewLauncherCreateModal({
     }
 
     touchFields(fieldsToValidate);
-    const isValidStep = await trigger(fieldsToValidate, { shouldFocus: true });
+
+    let isValidStep: boolean;
+    try {
+      isValidStep = await trigger(fieldsToValidate, { shouldFocus: true });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("[launcher-debug] trigger() threw", e);
+      throw e;
+    }
+
+    // eslint-disable-next-line no-console
+    console.debug("[launcher-debug] onNext decision", {
+      fieldsToValidate,
+      isValidStep,
+      isEnvironmentDefined,
+      errorFields: Object.keys(errors ?? {}),
+      willAdvance: isEnvironmentDefined && isValidStep,
+    });
 
     if (isEnvironmentDefined && isValidStep) {
       setStep(LauncherStep.LauncherDetails);
     }
   }, [
+    errors,
     isEnvironmentDefined,
     launcherCategory,
     touchFields,
