@@ -6,6 +6,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ArrowClockwise,
   Folder,
+  Gear,
   Globe2,
   InfoCircle,
   Journals,
@@ -17,12 +18,15 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Col,
+  Row,
   UncontrolledTooltip,
 } from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
 import { Clipboard } from "~/components/clipboard/Clipboard";
 import ExternalLink from "~/components/ExternalLink";
+import { sortKeywords } from "~/components/keywords/EntityPageHeaderKeywords";
 import KeywordBadge from "~/components/keywords/KeywordBadge";
 import KeywordContainer from "~/components/keywords/KeywordContainer";
 import { Loader } from "~/components/Loader";
@@ -38,64 +42,490 @@ import { ensureDateTime } from "~/utils/helpers/DateTimeUtils";
 import { DataConnectorRead } from "../api/data-connectors.api";
 import {
   doiToUrl,
+  formatDataConnectorProviderType,
+  getDataConnectorAccessModeLabel,
+  getDataConnectorDoi,
+  getDataConnectorIdentifier,
   getDataConnectorScope,
-  parseDoi,
   useGetDataConnectorSource,
 } from "../components/dataConnector.utils";
+import type { DataConnectorScope } from "../dataConnectors.types";
 import { DATA_CONNECTORS_VISIBILITY_WARNING } from "./dataConnector.constants";
 import DataConnectorRefreshExpiredModal from "./DataConnectorRefreshExpiredModal";
 
+type DataConnectorHeaderTag = "h2" | "h3" | "h4";
+
 interface DataConnectorInfoBoxProps {
   dataConnector: DataConnectorRead;
-  headerTag?: "h2" | "h3" | "h4";
+  headerTag?: DataConnectorHeaderTag;
   visibilityWarning?: boolean;
-  internalId?: React.ReactNode;
+  layout?: InfoEntryLayout;
 }
-export default function DataConnectorInfoBox({
+
+interface DataConnectorSectionCardProps {
+  children: React.ReactNode;
+  headerTag: DataConnectorHeaderTag;
+  icon: React.ReactNode;
+  title: string;
+}
+function DataConnectorSectionCard({
+  children,
+  headerTag,
+  icon,
+  title,
+}: DataConnectorSectionCardProps) {
+  return (
+    <Card data-cy="data-connector-info-box">
+      <CardHeader tag={headerTag}>
+        <span className={cx("align-items-center", "d-flex")}>
+          {icon}
+          {title}
+        </span>
+      </CardHeader>
+      <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
+        {children}
+      </CardBody>
+    </Card>
+  );
+}
+
+interface DataConnectorEntryProps {
+  dataConnector: DataConnectorRead;
+  layout?: InfoEntryLayout;
+}
+
+function DataConnectorIdentityEntries({
   dataConnector,
-  headerTag = "h2",
-  visibilityWarning,
-  internalId,
-}: DataConnectorInfoBoxProps) {
-  // Get useful DC info
+  layout,
+}: DataConnectorEntryProps) {
+  return (
+    <>
+      <DataConnectorIdentifierEntry
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+      <DataConnectorDescriptionEntry
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+      <DataConnectorKeywordsEntry
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+      <DataConnectorOwnerEntry dataConnector={dataConnector} layout={layout} />
+    </>
+  );
+}
+
+function DataConnectorIdentifierEntry({
+  dataConnector,
+  layout,
+}: DataConnectorEntryProps) {
+  const identifier = useMemo(
+    () => getDataConnectorIdentifier(dataConnector),
+    [dataConnector],
+  );
+
+  return (
+    <InfoEntry title="Identifier" layout={layout}>
+      <div className={cx("align-items-center", "d-flex", "gap-2")}>
+        {identifier}
+        <Clipboard
+          className={cx("border-0", "btn", "p-0", "shadow-none")}
+          clipboardText={identifier}
+        />
+      </div>
+    </InfoEntry>
+  );
+}
+
+function DataConnectorDescriptionEntry({
+  dataConnector,
+  layout,
+}: DataConnectorEntryProps) {
+  if (!dataConnector.description) return null;
+
+  return (
+    <InfoEntry title="Description" layout={layout}>
+      <LazyMarkdown>{dataConnector.description}</LazyMarkdown>
+    </InfoEntry>
+  );
+}
+
+function DataConnectorKeywordsEntry({
+  dataConnector,
+  layout,
+}: DataConnectorEntryProps) {
+  const keywordsSorted = useMemo(
+    () => sortKeywords(dataConnector.keywords),
+    [dataConnector.keywords],
+  );
+
+  if (keywordsSorted.length === 0) return null;
+
+  return (
+    <InfoEntry title="Keywords" layout={layout}>
+      <KeywordContainer>
+        {keywordsSorted.map((keyword, index) => (
+          <KeywordBadge key={`keyword-${index}`} searchKeyword={keyword}>
+            {keyword}
+          </KeywordBadge>
+        ))}
+      </KeywordContainer>
+    </InfoEntry>
+  );
+}
+
+function dataConnectorNamespaceUrl(
+  namespace: string,
+  scope: DataConnectorScope,
+  namespaceKind?: string,
+) {
+  if (scope === "project") {
+    const [owner, slug] = namespace.split("/");
+    return generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
+      namespace: owner,
+      slug,
+    });
+  }
+  if (namespaceKind === "user") {
+    return generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
+      username: namespace,
+    });
+  }
+  return generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
+    slug: namespace,
+  });
+}
+
+function DataConnectorOwnerEntry({
+  dataConnector,
+  layout,
+}: DataConnectorEntryProps) {
   const scope = useMemo(
     () => getDataConnectorScope(dataConnector.namespace),
     [dataConnector.namespace],
   );
-  const identifier = useMemo(
+  const { data: referenceNamespace, isLoading: isLoadingReferenceNamespace } =
+    useGetNamespacesByNamespaceSlugQuery(
+      dataConnector.namespace
+        ? { namespaceSlug: dataConnector.namespace }
+        : skipToken,
+    );
+  const namespaceUrl = useMemo(
     () =>
-      scope === "global"
-        ? `${dataConnector.slug}`
-        : `${dataConnector.namespace}/${dataConnector.slug}`,
-    [dataConnector.namespace, dataConnector.slug, scope],
+      scope === "global" || !dataConnector.namespace
+        ? null
+        : dataConnectorNamespaceUrl(
+            dataConnector.namespace,
+            scope,
+            referenceNamespace?.namespace_kind,
+          ),
+    [dataConnector.namespace, referenceNamespace?.namespace_kind, scope],
   );
-  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
 
-  const sortedKeywords = useMemo(() => {
-    if (!dataConnector.keywords) return [];
-    return dataConnector.keywords
-      .map((keyword) => keyword.trim())
-      .sort((a, b) => a.localeCompare(b));
-  }, [dataConnector.keywords]);
+  if (scope === "global") return null;
 
-  // Global only
-  const doiReference = useMemo(() => {
-    if (!dataConnector) return null;
-    const doi =
-      scope === "global" &&
-      dataConnector.storage.configuration["doi"] &&
-      typeof dataConnector.storage.configuration["doi"] === "string"
-        ? parseDoi(dataConnector.storage.configuration["doi"])
-        : null;
-    if (doi) {
-      return doi;
-    }
-    if (dataConnector.doi) {
-      return parseDoi(dataConnector.doi);
-    }
-    return null;
-  }, [dataConnector, scope]);
+  return (
+    <InfoEntry title="Owner" layout={layout}>
+      <div className={cx("align-items-center", "d-flex", "gap-2")}>
+        {scope === "project" ? (
+          <>
+            <Folder className={cx("bi", "flex-shrink-0")} />
+            <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
+          </>
+        ) : (
+          <>
+            <UserAvatar namespace={dataConnector.namespace as string} />
+            <Link to={namespaceUrl ?? ""}>@{dataConnector.namespace}</Link>
+            {isLoadingReferenceNamespace ? (
+              <Loader inline size={16} />
+            ) : referenceNamespace?.namespace_kind === "user" ? (
+              <EntityPill
+                entityType="User"
+                size="sm"
+                tooltipPlacement="bottom"
+              />
+            ) : referenceNamespace?.namespace_kind === "group" ? (
+              <EntityPill
+                entityType="Group"
+                size="sm"
+                tooltipPlacement="bottom"
+              />
+            ) : null}
+          </>
+        )}
+      </div>
+    </InfoEntry>
+  );
+}
 
+export function DataConnectorVisibilityLabel({
+  visibility,
+}: {
+  visibility: DataConnectorRead["visibility"];
+}) {
+  if (visibility === "private") {
+    return (
+      <>
+        <Lock className={cx("bi", "me-1")} />
+        Private
+      </>
+    );
+  }
+  return (
+    <>
+      <Globe2 className={cx("bi", "me-1")} />
+      Public
+    </>
+  );
+}
+
+function DataConnectorVisibilityEntry({
+  dataConnector,
+  layout,
+  visibilityWarning,
+}: DataConnectorEntryProps & { visibilityWarning?: boolean }) {
+  return (
+    <InfoEntry title="Visibility" layout={layout}>
+      <DataConnectorVisibilityLabel visibility={dataConnector.visibility} />
+      {visibilityWarning && (
+        <WarnAlert
+          className={cx("mb-0", "mt-2")}
+          timeout={0}
+          dismissible={false}
+        >
+          {DATA_CONNECTORS_VISIBILITY_WARNING}
+        </WarnAlert>
+      )}
+    </InfoEntry>
+  );
+}
+
+function DataConnectorInternalIdEntry({
+  dataConnector,
+  layout,
+}: DataConnectorEntryProps) {
+  return (
+    <InfoEntry title="Internal ID" dataCy="internalId" layout={layout}>
+      <div className={cx("align-items-center", "d-flex", "gap-2")}>
+        <span className="text-truncate">{dataConnector.id}</span>
+        <Clipboard
+          className={cx("border-0", "btn", "p-0", "shadow-none")}
+          clipboardText={dataConnector.id}
+        />
+      </div>
+    </InfoEntry>
+  );
+}
+
+function DataConnectorStorageEntries({
+  dataConnector,
+  layout,
+}: DataConnectorEntryProps) {
+  const hasAccessMode = STORAGES_WITH_ACCESS_MODE.includes(
+    dataConnector.storage.storage_type,
+  );
+  const type = dataConnector.storage.configuration["type"]?.toString();
+  const provider = dataConnector.storage.configuration["provider"]?.toString();
+
+  return (
+    <>
+      <InfoEntry title="Access mode" layout={layout}>
+        {dataConnector.storage.readonly
+          ? "Force Read-only"
+          : "Allow Read-Write (requires adequate privileges on the storage)"}
+      </InfoEntry>
+      {type && (
+        <InfoEntry title="Type" layout={layout}>
+          {type}
+        </InfoEntry>
+      )}
+      {provider && (
+        <InfoEntry title={hasAccessMode ? "Mode" : "Provider"} layout={layout}>
+          {provider}
+        </InfoEntry>
+      )}
+    </>
+  );
+}
+
+export function DataConnectorCompleteInfoBox({
+  dataConnector,
+  headerTag = "h2",
+  layout = "one-column",
+  visibilityWarning,
+}: DataConnectorInfoBoxProps) {
+  const scope = useMemo(
+    () => getDataConnectorScope(dataConnector.namespace),
+    [dataConnector.namespace],
+  );
+
+  return (
+    <DataConnectorSectionCard
+      headerTag={headerTag}
+      icon={<InfoCircle className="me-1" />}
+      title="Info"
+    >
+      <DataConnectorIdentityEntries
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+      {scope === "global" && (
+        <DataConnectorDoiInfo dataConnector={dataConnector} layout={layout} />
+      )}
+      <DataConnectorVisibilityEntry
+        dataConnector={dataConnector}
+        layout={layout}
+        visibilityWarning={visibilityWarning}
+      />
+      <DataConnectorStorageEntries
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+      <DataConnectorConnectionContent
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+      <DataConnectorInternalIdEntry
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+    </DataConnectorSectionCard>
+  );
+}
+
+export function DataConnectorInfoBox({
+  dataConnector,
+  headerTag = "h2",
+  layout = "one-column",
+  visibilityWarning,
+}: DataConnectorInfoBoxProps) {
+  const provider =
+    dataConnector.storage.configuration["provider"]?.toString() ?? "";
+  const type = dataConnector.storage.configuration["type"]?.toString() ?? "";
+
+  return (
+    <DataConnectorSectionCard
+      headerTag={headerTag}
+      icon={<InfoCircle className="me-1" />}
+      title="Info"
+    >
+      <DataConnectorIdentityEntries
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+      <InfoEntry title="Provider" layout={layout}>
+        {formatDataConnectorProviderType(provider, type)}
+      </InfoEntry>
+      <InfoEntry title="Access mode" layout={layout}>
+        {getDataConnectorAccessModeLabel(dataConnector.storage.readonly)}
+      </InfoEntry>
+      <DataConnectorVisibilityEntry
+        dataConnector={dataConnector}
+        layout={layout}
+        visibilityWarning={visibilityWarning}
+      />
+      <DataConnectorInternalIdEntry
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+    </DataConnectorSectionCard>
+  );
+}
+
+interface DataConnectorConnectionBoxProps {
+  dataConnector: DataConnectorRead;
+  headerTag?: DataConnectorHeaderTag;
+  layout?: InfoEntryLayout;
+  showDescription?: boolean;
+}
+export function DataConnectorConnectionBox({
+  dataConnector,
+  headerTag = "h2",
+  layout = "one-column",
+  showDescription = true,
+}: DataConnectorConnectionBoxProps) {
+  const scope = useMemo(
+    () => getDataConnectorScope(dataConnector.namespace),
+    [dataConnector.namespace],
+  );
+  const isGlobal = scope === "global";
+
+  return (
+    <DataConnectorSectionCard
+      headerTag={headerTag}
+      icon={
+        isGlobal ? <InfoCircle className="me-1" /> : <Gear className="me-1" />
+      }
+      title={isGlobal ? "Info" : "Connection settings"}
+    >
+      {showDescription && (
+        <DataConnectorDescriptionEntry dataConnector={dataConnector} />
+      )}
+      {isGlobal && (
+        <DataConnectorDoiInfo dataConnector={dataConnector} layout={layout} />
+      )}
+      <DataConnectorConnectionContent
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+    </DataConnectorSectionCard>
+  );
+}
+
+interface DataConnectorDoiInfoProps {
+  dataConnector: DataConnectorRead;
+  layout: InfoEntryLayout;
+}
+function DataConnectorDoiInfo({
+  dataConnector,
+  layout,
+}: DataConnectorDoiInfoProps) {
+  const { source: dataConnectorSource } =
+    useGetDataConnectorSource(dataConnector);
+  const doiReference = useMemo(
+    () => getDataConnectorDoi(dataConnector),
+    [dataConnector],
+  );
+
+  return (
+    <>
+      <InfoEntry title="Source" layout={layout}>
+        <div className={cx("align-items-center", "d-flex", "gap-1")}>
+          <Journals className={cx("me-1", "flex-shrink-0")} />
+          DOI from {dataConnectorSource}
+        </div>
+      </InfoEntry>
+      <InfoEntry title="DOI" layout={layout}>
+        <div className={cx("align-items-center", "d-flex", "gap-2")}>
+          {doiReference ? (
+            <>
+              <ExternalLink href={doiToUrl(doiReference)}>
+                {doiReference}
+              </ExternalLink>
+              <Clipboard
+                className={cx("border-0", "btn", "p-0", "shadow-none")}
+                clipboardText={doiReference}
+              />
+            </>
+          ) : (
+            <p className="mb-0">N/A</p>
+          )}
+        </div>
+      </InfoEntry>
+    </>
+  );
+}
+
+interface DataConnectorConnectionContentProps {
+  dataConnector: DataConnectorRead;
+  layout: InfoEntryLayout;
+}
+function DataConnectorConnectionContent({
+  dataConnector,
+  layout,
+}: DataConnectorConnectionContentProps) {
   const expired = dataConnector.expires_at
     ? ensureDateTime(dataConnector.expires_at) < DateTime.now()
     : false;
@@ -105,209 +535,52 @@ export default function DataConnectorInfoBox({
     setRefreshExpiredOpen((open) => !open);
   }, []);
 
-  // Non-global only
-  const { data: referenceNamespace, isLoading: isLoadingReferenceNamespace } =
-    useGetNamespacesByNamespaceSlugQuery(
-      dataConnector.namespace
-        ? {
-            namespaceSlug: dataConnector.namespace,
-          }
-        : skipToken,
-    );
-  const namespaceUrl = useMemo(
-    () =>
-      scope === "global" || !dataConnector.namespace
-        ? null
-        : scope === "project"
-          ? generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-              namespace: dataConnector.namespace.split("/")[0],
-              slug: dataConnector.namespace.split("/")[1],
-            })
-          : referenceNamespace?.namespace_kind === "user"
-            ? generatePath(ABSOLUTE_ROUTES.v2.users.show.root, {
-                username: dataConnector.namespace,
-              })
-            : generatePath(ABSOLUTE_ROUTES.v2.groups.show.root, {
-                slug: dataConnector.namespace,
-              }),
-    [dataConnector.namespace, referenceNamespace, scope],
-  );
-
   return (
-    <Card data-cy="data-connector-info-box">
-      <CardHeader tag={headerTag}>
-        <span className={cx("align-items-center", "d-flex")}>
-          <InfoCircle className="me-1" />
-          Info
-        </span>
-      </CardHeader>
-      <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
-        {expired && (
-          <WarnAlert className={cx("mb-0")} timeout={0}>
-            <p className="mb-2">
-              This data connector has expired and should be refreshed by an
-              owner to use it in sessions, jobs or apps.
-            </p>
-            <Button
-              color="primary"
-              onClick={toggleRefreshExpired}
-              size="sm"
-              type="button"
-            >
-              <ArrowClockwise className={cx("bi", "me-1")} />
-              Refresh
-            </Button>
-          </WarnAlert>
-        )}
-
-        <InfoEntry title="Identifier">
-          <div className={cx("align-items-center", "d-flex", "gap-2")}>
-            {identifier}
-            <Clipboard
-              className={cx("border-0", "btn", "p-0", "shadow-none")}
-              clipboardText={identifier}
-            />
-          </div>
-        </InfoEntry>
-
-        {dataConnector.description && (
-          <InfoEntry title="Description">
-            <LazyMarkdown>{dataConnector.description}</LazyMarkdown>
-          </InfoEntry>
-        )}
-
-        {scope !== "global" && (
-          <InfoEntry title="Owner">
-            <div className={cx("align-items-center", "d-flex", "gap-2")}>
-              {scope === "project" ? (
-                <>
-                  <Folder className={cx("bi", "flex-shrink-0")} />
-                  <Link to={namespaceUrl ?? ""}>
-                    @{dataConnector.namespace}
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <UserAvatar namespace={dataConnector.namespace as string} />
-                  <Link to={namespaceUrl ?? ""}>
-                    @{dataConnector.namespace}
-                  </Link>
-                  {isLoadingReferenceNamespace ? (
-                    <Loader inline size={16} />
-                  ) : referenceNamespace?.namespace_kind === "user" ? (
-                    <EntityPill
-                      entityType="User"
-                      size="sm"
-                      tooltipPlacement="bottom"
-                    />
-                  ) : referenceNamespace?.namespace_kind === "group" ? (
-                    <EntityPill
-                      entityType="Group"
-                      size="sm"
-                      tooltipPlacement="bottom"
-                    />
-                  ) : null}
-                </>
-              )}
-            </div>
-          </InfoEntry>
-        )}
-
-        <InfoEntry title="Visibility">
-          {dataConnector.visibility === "private" ? (
-            <>
-              <Lock className={cx("bi", "me-1")} />
-              Private
-            </>
-          ) : (
-            <>
-              <Globe2 className={cx("bi", "me-1")} />
-              Public
-            </>
-          )}
-
-          {visibilityWarning && (
-            <WarnAlert
-              className={cx("mb-0", "mt-2")}
-              timeout={0}
-              dismissible={false}
-            >
-              {DATA_CONNECTORS_VISIBILITY_WARNING}
-            </WarnAlert>
-          )}
-        </InfoEntry>
-
-        {scope === "global" && (
-          <>
-            <InfoEntry title="Source">
-              <div className={cx("align-items-center", "d-flex", "gap-1")}>
-                <Journals className={cx("me-1", "flex-shrink-0")} />
-                DOI from {dataConnectorSource}
-              </div>
-            </InfoEntry>
-            <InfoEntry title="DOI">
-              <div className={cx("align-items-center", "d-flex", "gap-2")}>
-                {doiReference ? (
-                  <>
-                    <ExternalLink href={doiToUrl(doiReference)}>
-                      {doiReference}
-                    </ExternalLink>
-                    <Clipboard
-                      className={cx("border-0", "btn", "p-0", "shadow-none")}
-                      clipboardText={doiReference}
-                    />
-                  </>
-                ) : (
-                  <p className="mb-0">N/A</p>
-                )}
-              </div>
-            </InfoEntry>
-          </>
-        )}
-
-        {dataConnector.keywords && dataConnector.keywords.length > 0 && (
-          <InfoEntry title="Keywords">
-            <KeywordContainer>
-              {sortedKeywords.map((keyword, index) => (
-                <KeywordBadge key={index} searchKeyword={keyword}>
-                  {keyword}
-                </KeywordBadge>
-              ))}
-            </KeywordContainer>
-          </InfoEntry>
-        )}
-
-        {dataConnector.expires_at && (
-          <InfoEntry
-            title={<ExpiresAtTitle expiresAt={dataConnector.expires_at} />}
-            dataCy="expires-at"
+    <>
+      {expired && (
+        <WarnAlert className={cx("mb-0")} timeout={0}>
+          <p className="mb-2">
+            This data connector has expired and should be refreshed by an owner
+            to use it in sessions, jobs or apps.
+          </p>
+          <Button
+            color="primary"
+            onClick={toggleRefreshExpired}
+            size="sm"
+            type="button"
           >
-            <TimeCaption
-              datetime={dataConnector.expires_at}
-              enableTooltip
-              noCaption
-            />
-          </InfoEntry>
-        )}
+            <ArrowClockwise className={cx("bi", "me-1")} />
+            Refresh
+          </Button>
+        </WarnAlert>
+      )}
 
-        <InfoEntry title={<MountPointHead />} dataCy="mount-point">
-          {dataConnector.storage.target_path}
+      {dataConnector.expires_at && (
+        <InfoEntry
+          title={<ExpiresAtTitle expiresAt={dataConnector.expires_at} />}
+          dataCy="expires-at"
+          layout={layout}
+        >
+          <TimeCaption
+            datetime={dataConnector.expires_at}
+            enableTooltip
+            noCaption
+          />
         </InfoEntry>
+      )}
 
-        <InfoEntry title="Access mode">
-          {dataConnector.storage.readonly
-            ? "Force Read-only"
-            : "Allow Read-Write (requires adequate privileges on the storage)"}
-        </InfoEntry>
+      <InfoEntry
+        title={<MountPointHead />}
+        dataCy="mount-point"
+        layout={layout}
+      >
+        {dataConnector.storage.target_path}
+      </InfoEntry>
 
-        <InfoEntry title="Source path">
-          {dataConnector.storage.source_path}
-        </InfoEntry>
+      <InfoEntry title="Source path" layout={layout}>
+        {dataConnector.storage.source_path}
+      </InfoEntry>
 
-        <DataConnectorAdditionalFields dataConnector={dataConnector} />
-
-        {internalId}
-      </CardBody>
       {expired && (
         <DataConnectorRefreshExpiredModal
           dataConnector={dataConnector}
@@ -316,20 +589,47 @@ export default function DataConnectorInfoBox({
           toggleModal={toggleRefreshExpired}
         />
       )}
-    </Card>
+
+      <DataConnectorAdditionalFields
+        dataConnector={dataConnector}
+        layout={layout}
+      />
+    </>
   );
 }
+
+export type InfoEntryLayout = "one-column" | "two-columns";
 
 interface InfoEntryProps {
   children: React.ReactNode;
   dataCy?: string;
   title: string | React.ReactNode;
+  layout?: InfoEntryLayout;
 }
-export function InfoEntry({ children, title, dataCy }: InfoEntryProps) {
+export function InfoEntry({
+  children,
+  title,
+  dataCy,
+  layout = "one-column",
+}: InfoEntryProps) {
+  const sizeMd = layout == "one-column" ? 12 : 4;
+  const sizeLg = layout == "one-column" ? 12 : 3;
+
   return (
-    <div>
-      <p className={cx("mb-1", "fw-semibold")}>{title}</p>
-      <div
+    <Row>
+      <Col
+        xs={12}
+        md={sizeMd}
+        lg={sizeLg}
+        className={cx(
+          "fw-semibold",
+          "mb-1",
+          layout === "two-columns" && "mb-md-0",
+        )}
+      >
+        {title}
+      </Col>
+      <Col
         data-cy={
           dataCy
             ? `data-connector-${dataCy}`
@@ -339,8 +639,8 @@ export function InfoEntry({ children, title, dataCy }: InfoEntryProps) {
         }
       >
         {children}
-      </div>
-    </div>
+      </Col>
+    </Row>
   );
 }
 
@@ -383,34 +683,32 @@ function ExpiresAtTitle({ expiresAt: expiresAt_ }: ExpiresAtTitleProps) {
 
 interface DataConnectorAdditionalFieldsProps {
   dataConnector: DataConnectorRead;
+  layout: InfoEntryLayout;
 }
 function DataConnectorAdditionalFields({
   dataConnector,
+  layout,
 }: DataConnectorAdditionalFieldsProps) {
   const credentialFieldDefinitions =
     getCredentialFieldDefinitions(dataConnector);
 
   const nonCredentialFields = Object.keys(
     dataConnector.storage.configuration,
-  ).filter((k) => !credentialFieldDefinitions?.some((f) => f.name === k));
-
-  const hasAccessMode = useMemo(
-    () =>
-      STORAGES_WITH_ACCESS_MODE.includes(dataConnector.storage.storage_type),
-    [dataConnector.storage.storage_type],
+  ).filter(
+    (k) =>
+      k !== "provider" &&
+      k !== "type" &&
+      !credentialFieldDefinitions?.some((f) => f.name === k),
   );
 
   return (
     <>
       {nonCredentialFields.map((fieldName) => {
-        const title =
-          fieldName == "provider" && hasAccessMode
-            ? "Mode"
-            : capitalize(fieldName);
+        const title = capitalize(fieldName);
         const value =
           dataConnector.storage.configuration[fieldName]?.toString() ?? "";
         return (
-          <InfoEntry key={fieldName} title={title}>
+          <InfoEntry key={fieldName} title={title} layout={layout}>
             {value}
           </InfoEntry>
         );

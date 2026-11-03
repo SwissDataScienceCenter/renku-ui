@@ -4,8 +4,8 @@ import { generatePath } from "react-router";
 import { Col, Row } from "reactstrap";
 
 import ContainerWrap from "~/components/container/ContainerWrap";
-import { EntityWatermark } from "~/components/entityWatermark/EntityWatermark";
 import PageNav, { PageNavOptions } from "~/components/PageNav";
+import DataConnectorPageHeader from "~/features/dataConnectorsV2/DataConnectorPage/DataConnectorPageHeader";
 import GroupNew from "~/features/groupsV2/new/GroupNew";
 import ProjectV2New from "~/features/projectsV2/new/ProjectV2New";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
@@ -45,18 +45,8 @@ export default function DataConnectorPageLayout({
       <GroupNew />
 
       <Row className="my-3">
-        <Col xs={12}>
-          <Row>
-            <Col className={cx("d-block", "d-md-none")} xs={12}>
-              <span className="text-muted">Data connector</span>
-            </Col>
-            <Col className="mb-3">
-              <DataConnectorHeader name={dataConnector.name} />
-            </Col>
-            <Col className={cx("d-md-block", "d-none")} md="auto">
-              <EntityWatermark type="dataConnector" />
-            </Col>
-          </Row>
+        <Col className={cx("mb-3", "min-w-0")}>
+          <DataConnectorPageHeader dataConnector={dataConnector} />
         </Col>
         <Col xs={12} className="mb-3">
           <PageNav options={options} />
@@ -66,16 +56,5 @@ export default function DataConnectorPageLayout({
         </Col>
       </Row>
     </ContainerWrap>
-  );
-}
-
-interface DataConnectorHeaderProps {
-  name: string;
-}
-function DataConnectorHeader({ name }: DataConnectorHeaderProps) {
-  return (
-    <h1 className={cx("mb-0", "text-break")} data-cy="data-connector-name">
-      {name}
-    </h1>
   );
 }

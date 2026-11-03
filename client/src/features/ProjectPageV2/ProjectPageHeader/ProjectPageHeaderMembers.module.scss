@@ -1,0 +1,21 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.link,
+.link span {
+  text-decoration: none;
+  color: var(--bs-body-color) !important;
+
+  @include media-breakpoint-up(md) {
+    text-decoration: none;
+  }
+}
+
+.link span:hover,
+.link span:focus-visible {
+  color: var(--bs-link-hover-color) !important;
+  text-decoration: underline;
+}

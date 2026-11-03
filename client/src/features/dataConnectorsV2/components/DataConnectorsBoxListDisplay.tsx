@@ -108,7 +108,8 @@ export default function DataConnectorBoxListDisplay({
   }, []);
 
   // Data
-  const dataConnectorSource = useGetDataConnectorSource(dataConnector);
+  const { source: dataConnectorSource } =
+    useGetDataConnectorSource(dataConnector);
   const type = `${storage?.configuration?.type?.toString() ?? ""} ${
     storage?.configuration?.provider?.toString() ?? ""
   }`;

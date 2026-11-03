@@ -16,7 +16,7 @@ import {
   dataConnectorsApi,
   useGetDataConnectorsByDataConnectorIdQuery,
 } from "../api/data-connectors.enhanced-api";
-import { doiToUrl, parseDoi } from "./dataConnector.utils";
+import { doiToUrl, getDataConnectorDoi } from "./dataConnector.utils";
 
 interface DataConnectorRefreshExpiredModalProps {
   dataConnector: DataConnectorRead | null;
@@ -30,21 +30,10 @@ export default function DataConnectorRefreshExpiredModal({
   setOpen,
   isOpen,
 }: DataConnectorRefreshExpiredModalProps) {
-  const doiReference = useMemo(() => {
-    if (!dataConnector) return null;
-    const doi =
-      dataConnector.storage.configuration["doi"] &&
-      typeof dataConnector.storage.configuration["doi"] === "string"
-        ? parseDoi(dataConnector.storage.configuration["doi"])
-        : null;
-    if (doi) {
-      return doi;
-    }
-    if (dataConnector.doi) {
-      return parseDoi(dataConnector.doi);
-    }
-    return null;
-  }, [dataConnector]);
+  const doiReference = useMemo(
+    () => getDataConnectorDoi(dataConnector ?? undefined),
+    [dataConnector],
+  );
   const fullLink = doiReference ? doiToUrl(doiReference) : null;
 
   const {

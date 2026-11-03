@@ -124,6 +124,10 @@ export default function MemberListRow({ members }: MemberListRowProps) {
   }, [measureItemWidths, recalculate]);
 
   const hiddenCount = members.length - visibleCount;
+  const hiddenMembers = members.slice(visibleCount);
+  const tooltip = hiddenMembers
+    .map((m) => `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim())
+    .join(", ");
 
   return (
     <div
@@ -175,10 +179,7 @@ export default function MemberListRow({ members }: MemberListRowProps) {
         );
       })}
       {hiddenCount > 0 && (
-        <OverflowBadge
-          count={hiddenCount}
-          hiddenMembers={members.slice(visibleCount)}
-        />
+        <OverflowBadge count={hiddenCount} tooltip={tooltip} />
       )}
     </div>
   );

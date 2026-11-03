@@ -165,6 +165,7 @@ const jsRules = {
         "memoization",
         "mergerequests",
         "metadata_oauth",
+        "menuitem",
         "mongodb",
         "monospace",
         "morgan",
