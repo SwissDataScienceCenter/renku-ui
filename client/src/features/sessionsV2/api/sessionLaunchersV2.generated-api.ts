@@ -91,24 +91,6 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
-    getSessionLaunchersByLauncherIdRepositories: build.query<
-      GetSessionLaunchersByLauncherIdRepositoriesApiResponse,
-      GetSessionLaunchersByLauncherIdRepositoriesApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/session_launchers/${queryArg.launcherId}/repositories`,
-      }),
-    }),
-    patchSessionLaunchersByLauncherIdRepositories: build.mutation<
-      PatchSessionLaunchersByLauncherIdRepositoriesApiResponse,
-      PatchSessionLaunchersByLauncherIdRepositoriesApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/session_launchers/${queryArg.launcherId}/repositories`,
-        method: "PATCH",
-        body: queryArg.sessionLauncherRepositoryPatchList,
-      }),
-    }),
     getSessionLaunchersByLauncherIdDataConnectors: build.query<
       GetSessionLaunchersByLauncherIdDataConnectorsApiResponse,
       GetSessionLaunchersByLauncherIdDataConnectorsApiArg
@@ -251,17 +233,6 @@ export type PatchSessionLaunchersByLauncherIdApiArg = {
 export type DeleteSessionLaunchersByLauncherIdApiResponse = unknown;
 export type DeleteSessionLaunchersByLauncherIdApiArg = {
   launcherId: Ulid;
-};
-export type GetSessionLaunchersByLauncherIdRepositoriesApiResponse =
-  /** status 200 List of repository parameters */ SessionLauncherRepositoryList;
-export type GetSessionLaunchersByLauncherIdRepositoriesApiArg = {
-  launcherId: Ulid;
-};
-export type PatchSessionLaunchersByLauncherIdRepositoriesApiResponse =
-  /** status 200 The updated repository parameters */ SessionLauncherRepositoryList;
-export type PatchSessionLaunchersByLauncherIdRepositoriesApiArg = {
-  launcherId: Ulid;
-  sessionLauncherRepositoryPatchList: SessionLauncherRepositoryPatchList;
 };
 export type GetSessionLaunchersByLauncherIdDataConnectorsApiResponse =
   /** status 200 List of sessions launcher data connector parameters */ SessionLauncherDataConnectorList;
@@ -505,30 +476,6 @@ export type SessionLauncherPatch = {
   env_variables?: EnvVariables;
   environment?: EnvironmentPatchInLauncher | EnvironmentIdOnlyPatch;
 };
-export type ProjectRepositoryId = {
-  repository_id: number;
-};
-export type RepositoryUrl = {
-  url: Repository;
-};
-export type RepositoryCompositeKey = ProjectRepositoryId & RepositoryUrl;
-export type RepositoryAccessPolicyName =
-  | "excluded"
-  | "read_only"
-  | "read_write";
-export type GitReference = string;
-export type GitReferenceList = GitReference[] | null;
-export type RepositoryAccessPolicy = {
-  policy: RepositoryAccessPolicyName;
-  writable_references?: GitReferenceList;
-};
-export type SessionLauncherRepository = RepositoryCompositeKey &
-  RepositoryAccessPolicy;
-export type SessionLauncherRepositoryList = SessionLauncherRepository[];
-export type SessionLauncherRepositoryPatch = ProjectRepositoryId &
-  RepositoryAccessPolicy;
-export type SessionLauncherRepositoryPatchList =
-  SessionLauncherRepositoryPatch[];
 export type DataConnectorKey = {
   data_connector_link_id: Ulid;
 };
@@ -594,8 +541,6 @@ export const {
   useGetSessionLaunchersByLauncherIdQuery,
   usePatchSessionLaunchersByLauncherIdMutation,
   useDeleteSessionLaunchersByLauncherIdMutation,
-  useGetSessionLaunchersByLauncherIdRepositoriesQuery,
-  usePatchSessionLaunchersByLauncherIdRepositoriesMutation,
   useGetSessionLaunchersByLauncherIdDataConnectorsQuery,
   usePatchSessionLaunchersByLauncherIdDataConnectorsMutation,
   useGetSessionLaunchersByLauncherIdSecretsQuery,

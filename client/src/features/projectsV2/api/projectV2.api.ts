@@ -458,7 +458,7 @@ export type DiskStorage = number;
 export type MigrationSessionLauncherPost = {
   name: SessionName;
   container_image: ContainerImage;
-  default_url?: DefaultUrl & any;
+  default_url?: DefaultUrl;
   resource_class_id?: ResourceClassId;
   disk_storage?: DiskStorage;
 };
