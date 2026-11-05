@@ -24,6 +24,7 @@ import {
   getAppLobbyPath,
   getAppLobbyUrl,
   getAppTransition,
+  getNextRedeployStep,
   hasAppOnAnotherLauncher,
   hasPendingApp,
   hasReachedAppTarget,
@@ -266,5 +267,116 @@ describe("getAppLobbyUrl()", () => {
     ).toBe(
       "http://localhost:3000/p/my-group/my-project/apps/01AN4Z79ZS5XN0F25N3DB94T4R",
     );
+  });
+});
+
+describe("getAppTransition() while rebuilding", () => {
+  it("reports rebuilding before any other transition", () => {
+    expect(
+      getAppTransition(makeApp(), { isRebuilding: true, isStarting: true }),
+    ).toBe("rebuilding");
+  });
+});
+
+describe("getNextRedeployStep()", () => {
+  const idle = { isPending: false, isError: false };
+  const base = {
+    buildId: "build-1",
+    hasApp: true,
+    stop: idle,
+    start: { ...idle, isSuccess: false },
+  };
+
+  it("waits while the new build is not yet listed or still runs", () => {
+    const phase = "building" as const;
+    expect(getNextRedeployStep({ ...base, phase })).toBe("wait");
+    expect(
+      getNextRedeployStep({
+        ...base,
+        phase,
+        lastBuild: { id: "build-0", status: "succeeded" },
+      }),
+    ).toBe("wait");
+    expect(
+      getNextRedeployStep({
+        ...base,
+        phase,
+        lastBuild: { id: "build-1", status: "in_progress" },
+      }),
+    ).toBe("wait");
+  });
+
+  it("stops the app when the build succeeds, or starts it if it is gone", () => {
+    const lastBuild = { id: "build-1", status: "succeeded" } as const;
+    expect(getNextRedeployStep({ ...base, phase: "building", lastBuild })).toBe(
+      "stop",
+    );
+    expect(
+      getNextRedeployStep({
+        ...base,
+        phase: "building",
+        lastBuild,
+        hasApp: false,
+      }),
+    ).toBe("start");
+  });
+
+  it("fails when the build fails or is cancelled", () => {
+    for (const status of ["failed", "cancelled"] as const) {
+      expect(
+        getNextRedeployStep({
+          ...base,
+          phase: "building",
+          lastBuild: { id: "build-1", status },
+        }),
+      ).toBe("failed");
+    }
+  });
+
+  it("starts the app only after the old one is gone", () => {
+    const phase = "stopping" as const;
+    expect(
+      getNextRedeployStep({
+        ...base,
+        phase,
+        stop: { isPending: true, isError: false },
+      }),
+    ).toBe("wait");
+    expect(getNextRedeployStep({ ...base, phase })).toBe("wait");
+    expect(getNextRedeployStep({ ...base, phase, hasApp: false })).toBe(
+      "start",
+    );
+    expect(
+      getNextRedeployStep({
+        ...base,
+        phase,
+        stop: { isPending: false, isError: true },
+      }),
+    ).toBe("failed");
+  });
+
+  it("is done once the new app has settled", () => {
+    const phase = "starting" as const;
+    expect(
+      getNextRedeployStep({
+        ...base,
+        phase,
+        start: { isPending: true, isError: false, isSuccess: true },
+      }),
+    ).toBe("wait");
+    expect(
+      getNextRedeployStep({
+        ...base,
+        phase,
+        start: { isPending: false, isError: false, isSuccess: true },
+      }),
+    ).toBe("done");
+    expect(
+      getNextRedeployStep({
+        ...base,
+        phase,
+        start: { isPending: false, isError: true, isSuccess: false },
+      }),
+    ).toBe("failed");
   });
 });

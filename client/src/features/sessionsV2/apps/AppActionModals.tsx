@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
-import { StopCircle, XLg } from "react-bootstrap-icons";
+import { BootstrapReboot, StopCircle, XLg } from "react-bootstrap-icons";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
@@ -78,6 +78,55 @@ export function DeleteAppModal({
         >
           <StopCircle className={cx("bi", "me-1")} />
           Stop app
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+export function RedeployAppModal({
+  appName,
+  isOpen,
+  toggle,
+  onConfirm,
+}: AppActionModalProps) {
+  const onRedeploy = useCallback(() => {
+    onConfirm();
+    toggle();
+  }, [onConfirm, toggle]);
+
+  return (
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalHeader data-cy="redeploy-app-title" tag="h2" toggle={toggle}>
+        <BootstrapReboot className={cx("bi", "me-1")} />
+        Rebuild and redeploy app
+      </ModalHeader>
+      <ModalBody>
+        <p className="mb-3">
+          Do you want to rebuild and redeploy the <b>{appName}</b> app?
+        </p>
+        <WarnAlert dismissible={false}>
+          <p className="mb-0">
+            This builds a new image from the latest code. The app keeps running
+            during the build. When the build succeeds, the app stops and starts
+            again with the new image, and it is not available while it restarts.
+            Keep this page open until the app is running again.
+          </p>
+        </WarnAlert>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="outline-primary" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button
+          color="primary"
+          data-cy="redeploy-app-button"
+          onClick={onRedeploy}
+          type="button"
+        >
+          <BootstrapReboot className={cx("bi", "me-1")} />
+          Rebuild and redeploy
         </Button>
       </ModalFooter>
     </Modal>

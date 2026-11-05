@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import {
   Fragment,
@@ -27,6 +28,7 @@ import {
   useState,
 } from "react";
 import {
+  BootstrapReboot,
   BoxArrowUpRight,
   FileEarmarkText,
   Link45deg,
@@ -45,9 +47,19 @@ import {
   useDeleteAppsByAppNameMutation,
   usePostAppsMutation,
 } from "~/features/sessionsV2/api/apps.api";
-import { DeleteAppModal } from "~/features/sessionsV2/apps/AppActionModals";
+import {
+  sessionLaunchersV2Api,
+  usePostEnvironmentsByEnvironmentIdBuildsMutation as usePostBuildMutation,
+} from "~/features/sessionsV2/api/sessionLaunchersV2.api";
+import {
+  DeleteAppModal,
+  RedeployAppModal,
+} from "~/features/sessionsV2/apps/AppActionModals";
 import AppLiveIndicator from "~/features/sessionsV2/apps/AppLiveIndicator";
-import type { AppTransition } from "~/features/sessionsV2/apps/apps.utils";
+import type {
+  AppRedeployPhase,
+  AppTransition,
+} from "~/features/sessionsV2/apps/apps.utils";
 import {
   APP_ALREADY_EXISTS_MESSAGE,
   APP_PUBLIC_PROJECT_ONLY_MESSAGE,
@@ -55,6 +67,7 @@ import {
   getAppLobbyPath,
   getAppLobbyUrl,
   getAppTransition,
+  getNextRedeployStep,
   hasAppOnAnotherLauncher,
 } from "~/features/sessionsV2/apps/apps.utils";
 import useAppForLauncher from "~/features/sessionsV2/apps/useAppForLauncher.hook";
@@ -113,6 +126,7 @@ export default function AppLauncherActions({
     useOldImage: shouldUseOldImage,
     hasValidImage,
     imageStatus,
+    lastBuild: currentLastBuild,
   } = useLauncherEnvironmentReadiness({ builds, launcher, lastBuild });
 
   const [publishApp, publishResult] = usePostAppsMutation();
@@ -170,13 +184,88 @@ export default function AppLauncherActions({
     resetDelete,
   ]);
 
+  const [postBuild] = usePostBuildMutation();
+  const [redeploy, setRedeploy] = useState<{
+    phase: AppRedeployPhase;
+    buildId: string;
+    appName?: string;
+  } | null>(null);
+
+  const onRebuildAndRedeploy = useCallback(() => {
+    postBuild({ environmentId: launcher.environment.id })
+      .unwrap()
+      .then((build) => setRedeploy({ phase: "building", buildId: build.id }))
+      .catch(() =>
+        renkuToastDanger({
+          textHeader: "App",
+          textBody: "Unable to start the image build.",
+        }),
+      );
+  }, [launcher.environment.id, postBuild, renkuToastDanger]);
+
+  sessionLaunchersV2Api.endpoints.getEnvironmentsByEnvironmentIdBuilds.useQuerySubscription(
+    redeploy?.phase === "building"
+      ? { environmentId: launcher.environment.id }
+      : skipToken,
+    { pollingInterval: 1_000 },
+  );
+
+  const redeployStep = redeploy
+    ? getNextRedeployStep({
+        ...redeploy,
+        lastBuild: currentLastBuild,
+        hasApp: app != null,
+        stop: {
+          isPending: deleteResult.isLoading || isDeleting,
+          isError: deleteResult.isError,
+        },
+        start: {
+          isPending: publishResult.isLoading || isSpinningUp,
+          isError: publishResult.isError,
+          isSuccess: publishResult.isSuccess,
+        },
+      })
+    : null;
+
+  if (redeploy && redeployStep === "stop" && app) {
+    setRedeploy({ ...redeploy, phase: "stopping", appName: app.name });
+  } else if (redeploy && redeployStep === "start") {
+    setRedeploy({ ...redeploy, phase: "starting" });
+  } else if (redeployStep === "done" || redeployStep === "failed") {
+    setRedeploy(null);
+  }
+
+  const sentRedeployRequest = useRef<string | null>(null);
+  useEffect(() => {
+    if (redeploy == null || redeploy.phase === "building") {
+      return;
+    }
+    const request = `${redeploy.buildId}:${redeploy.phase}`;
+    if (sentRedeployRequest.current === request) {
+      return;
+    }
+    sentRedeployRequest.current = request;
+    if (redeploy.phase === "stopping" && redeploy.appName) {
+      deleteApp({ appName: redeploy.appName });
+    } else if (redeploy.phase === "starting") {
+      publishApp({ appPostRequest: { launcher_id: launcher.id } });
+    }
+  }, [deleteApp, launcher.id, publishApp, redeploy]);
+
   const transition = getAppTransition(app, {
+    isRebuilding: redeploy?.phase === "building",
     isStarting: publishResult.isLoading || isSpinningUp,
     isStopping: deleteResult.isLoading || isDeleting,
   });
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const toggleDelete = useCallback(() => setIsDeleteOpen((open) => !open), []);
+
+  const [isRedeployOpen, setIsRedeployOpen] = useState(false);
+  const toggleRedeploy = useCallback(
+    () => setIsRedeployOpen((open) => !open),
+    [],
+  );
 
   const [isLogsOpen, setIsLogsOpen] = useState(false);
   const toggleLogs = useCallback(() => setIsLogsOpen((open) => !open), []);
@@ -237,6 +326,21 @@ export default function AppLauncherActions({
         Stop app
       </MenuButtonItem>
     ),
+    write &&
+      app &&
+      !transition &&
+      isCodeEnvironment &&
+      !isBuildInProgress &&
+      launcher.environment.environment_image_source === "build" && (
+        <MenuButtonItem
+          key="rebuild-redeploy-app"
+          data-cy="app-menu-rebuild-redeploy"
+          onClick={toggleRedeploy}
+        >
+          <BootstrapReboot className={cx("bi", "me-1")} />
+          Rebuild and redeploy
+        </MenuButtonItem>
+      ),
     displayBuildActions && !applyDefaultBuildActions && (
       <RebuildLauncherDropdownItem key="rebuild-launcher" launcher={launcher} />
     ),
@@ -388,6 +492,12 @@ export default function AppLauncherActions({
             toggle={toggleDelete}
             onConfirm={onDelete}
           />
+          <RedeployAppModal
+            appName={app.name}
+            isOpen={isRedeployOpen}
+            toggle={toggleRedeploy}
+            onConfirm={onRebuildAndRedeploy}
+          />
           <AppLogsModal
             appName={app.name}
             isOpen={isLogsOpen}
@@ -400,6 +510,7 @@ export default function AppLauncherActions({
 }
 
 const TRANSITION_LABEL: Record<AppTransition, string> = {
+  rebuilding: "Rebuilding",
   starting: "Starting",
   stopping: "Stopping",
 };
