@@ -1170,9 +1170,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/DefaultUrl"
-              },
-              {
-                "default": "/lab"
               }
             ],
             "default": "/lab"
