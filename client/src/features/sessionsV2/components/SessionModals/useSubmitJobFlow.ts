@@ -49,6 +49,7 @@ export default function useSubmitJobFlow({
   project,
 }: UseSubmitJobFlowArgs) {
   const prerequisites = useSessionLaunchPrerequisites({
+    launcherId: launcher.id,
     project,
   });
 
@@ -221,7 +222,8 @@ export default function useSubmitJobFlow({
     (data: SubmitJobForm) => {
       if (
         isLoadingPrerequisitesForValidation ||
-        prerequisites.isPermissionsError
+        prerequisites.isPermissionsError ||
+        prerequisites.isLauncherResourcesError
       ) {
         return;
       }
@@ -251,6 +253,7 @@ export default function useSubmitJobFlow({
       isLoadingPrerequisitesForValidation,
       needsCredentials,
       prerequisites.hasExpiredDataConnectors,
+      prerequisites.isLauncherResourcesError,
       prerequisites.isPermissionsError,
       prerequisites.repositoriesNeedAttention,
       prerequisites.secretsNeedAttention,
@@ -317,7 +320,9 @@ export default function useSubmitJobFlow({
     expiredDataConnectorConfigs: prerequisites.expiredDataConnectorConfigs,
     handleSubmitAttempt,
     isCheckingLaunchPrerequisites: isLoadingPrerequisitesForValidation,
+    isLauncherResourcesError: prerequisites.isLauncherResourcesError,
     isPermissionsError: prerequisites.isPermissionsError,
+    launcherResourcesError: prerequisites.launcherResourcesError,
     isSubmitting,
     onDataConnectorsComplete,
     onDataConnectorsExpiredContinue,

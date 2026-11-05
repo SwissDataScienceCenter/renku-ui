@@ -402,7 +402,7 @@
             "$ref": "#/components/parameters/MinimumRole"
           },
           {
-            "$ref": "#/components/parameters/NamespaceKind"
+            "$ref": "#/components/parameters/NamespaceKinds"
           }
         ],
         "responses": {
@@ -815,7 +815,7 @@
         "minLength": 1,
         "maxLength": 256
       },
-      "NamespaceGetQueryKind": {
+      "NamespaceGetQueryKinds": {
         "type": "array",
         "description": "Which namespace kinds to include in the response",
         "items": {
@@ -918,14 +918,14 @@
           "$ref": "#/components/schemas/GroupRole"
         }
       },
-      "NamespaceKind": {
+      "NamespaceKinds": {
         "in": "query",
         "description": "environment kinds query parameter",
         "name": "kinds",
         "style": "form",
         "explode": true,
         "schema": {
-          "$ref": "#/components/schemas/NamespaceGetQueryKind"
+          "$ref": "#/components/schemas/NamespaceGetQueryKinds"
         }
       },
       "OnlyDirectMember": {

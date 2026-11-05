@@ -806,9 +806,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/SecretKind"
-              },
-              {
-                "default": "general"
               }
             ],
             "default": "general"
