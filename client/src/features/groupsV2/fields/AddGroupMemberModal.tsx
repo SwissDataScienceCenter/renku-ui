@@ -126,11 +126,7 @@ function AddGroupMemberAccessForm({
   return (
     <>
       <ModalBody>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkOrDataServicesError error={result.error} />}
           <div className="mb-3">
             <Label className="form-label" for="addProjectMember">
