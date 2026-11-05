@@ -123,6 +123,7 @@ export interface SessionLauncherForm
 
   // For "custom + build" environments
   platform: string;
+  ai_agents?: string[];
 }
 
 export interface SessionResources {

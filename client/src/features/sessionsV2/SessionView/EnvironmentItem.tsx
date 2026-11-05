@@ -50,7 +50,10 @@ import {
 import { EnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { getEnvironmentKindLabel } from "../launcherEnvironment.utils";
-import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
+import {
+  BUILDER_IMAGE_NOT_READY_VALUE,
+  formatCodingAgents,
+} from "../session.constants";
 import { getLauncherCategory, safeStringify } from "../session.utils";
 
 export default function EnvironmentItem({
@@ -476,6 +479,7 @@ function CustomBuildEnvironmentValues({
   const launcherCategory = getLauncherCategory(launcher);
   const { build_parameters, command, args } = environment;
   const {
+    ai_agents,
     builder_variant,
     context_dir,
     frontend_variant,
@@ -573,6 +577,13 @@ function CustomBuildEnvironmentValues({
         label="Environment type"
         value={builder_variant || ""}
       />
+      {(launcherCategory === "session" || launcherCategory === "job") && (
+        <EnvironmentRowWithLabel
+          label="Coding agents"
+          value={formatCodingAgents(ai_agents)}
+          dataCy="coding-agents"
+        />
+      )}
       {launcherCategory === "session" && (
         <EnvironmentRowWithLabel
           label="User interface"
