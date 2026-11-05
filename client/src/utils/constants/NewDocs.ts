@@ -130,3 +130,7 @@ export const NEW_DOCS_ADMIN_SESSION_ENVIRONMENTS = newDocsLinkPage(
 export const NEW_DOCS_USER_PROJECT_STORAGE = newDocsLinkPage(
   "docs/users/data/project-storage",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
+
+export const NEW_DOCS_CONFIG_AI_AGENTS = newDocsLinkPage(
+  "docs/users/compute/environment/guides/configure-ai-agents-for-a-session-environment",
+)(DEFAULT_NEW_DOC_LINK_ARGS);

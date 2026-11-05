@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo } from "react";
-import { ChevronDown, ChevronUp } from "react-bootstrap-icons";
+import { BoxArrowUpRight, ChevronDown, ChevronUp } from "react-bootstrap-icons";
 import {
   useController,
   type Control,
@@ -36,6 +36,8 @@ import Select, {
 } from "react-select";
 import { Label } from "reactstrap";
 
+import { ExternalLink } from "~/components/LegacyExternalLinks.tsx";
+import { NEW_DOCS_CONFIG_AI_AGENTS } from "~/utils/constants/NewDocs.ts";
 import { CODING_AGENTS, type CodingAgentOption } from "../../session.constants";
 
 import styles from "./Select.module.scss";
@@ -87,7 +89,15 @@ export default function BuilderAiAgentsSelector<T extends FieldValues>({
   return (
     <div>
       <Label for="builder-coding-agents-select-input">
-        Coding agents <span className="text-secondary">(optional)</span>
+        Coding agents{" "}
+        <span className={cx("small", "text-muted", "fw-normal")}>
+          (Optional)
+        </span>
+        {" - "}
+        <ExternalLink role="link" url={NEW_DOCS_CONFIG_AI_AGENTS}>
+          Learn more
+          <BoxArrowUpRight className={cx("bi", "ms-1")} />
+        </ExternalLink>
       </Label>
       <div className={cx(error && "is-invalid")} data-cy="coding-agents-select">
         <Select<CodingAgentOption, true>
@@ -128,23 +138,15 @@ function codingAgentOptions(selected: readonly string[]): CodingAgentOption[] {
 }
 
 const selectClassNames: ClassNamesConfig<CodingAgentOption, true> = {
-  control: () =>
-    cx("rounded", "border", "border-primary", "bg-white", styles.control),
-  dropdownIndicator: () => "pe-3",
+  control: () => cx("rounded", "border", "bg-white", styles.control),
+  dropdownIndicator: () => "px-3",
   menu: () =>
-    cx(
-      "bg-white",
-      "rounded-bottom",
-      "border",
-      "border-primary",
-      "shadow-sm",
-      styles.zDropdown,
-    ),
+    cx("bg-white", "rounded-bottom", "border", "shadow-sm", styles.zDropdown),
   menuList: () => "py-1",
   multiValue: () =>
     cx("rounded-pill", "bg-primary-subtle", "text-primary", "mx-1", "my-1"),
   multiValueLabel: () => cx("text-primary", "ps-2", "py-1"),
-  multiValueRemove: () => cx("text-primary", "pe-2", "rounded-pill"),
+  multiValueRemove: () => cx("text-primary", "px-2", "rounded-pill"),
   option: ({ isFocused, isSelected }) =>
     cx(
       "px-3",
@@ -152,7 +154,7 @@ const selectClassNames: ClassNamesConfig<CodingAgentOption, true> = {
       styles.codingAgentOption,
       (isFocused || isSelected) && "bg-primary-subtle",
     ),
-  placeholder: () => cx("px-3", "text-secondary"),
+  placeholder: () => cx("px-2", "text-secondary"),
   valueContainer: () =>
     cx("d-flex", "flex-wrap", "align-items-center", "py-1", "ps-2"),
 };

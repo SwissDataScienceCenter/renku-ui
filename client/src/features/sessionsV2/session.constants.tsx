@@ -248,7 +248,6 @@ export const BUILDER_PLATFORMS = [
 export interface CodingAgentOption {
   description?: string;
   label: string;
-  recommended?: boolean;
   value: string;
 }
 
@@ -257,8 +256,7 @@ export const CODING_AGENTS: readonly CodingAgentOption[] = [
   {
     value: "claude",
     label: "Claude Code",
-    description: "Anthropic · needs ANTHROPIC_API_KEY or sign-in",
-    recommended: true,
+    description: "Add your ANTHROPIC_API_KEY, or sign in yourself after launch",
   },
   {
     value: "pi",
@@ -268,7 +266,8 @@ export const CODING_AGENTS: readonly CodingAgentOption[] = [
   {
     value: "codex",
     label: "Codex",
-    description: "OpenAI · needs OPENAI_API_KEY or sign-in",
+    description:
+      "OpenAI · add your OPENAI_API_KEY, or sign in yourself after launch",
   },
 ];
 /* eslint-enable spellcheck/spell-checker */
