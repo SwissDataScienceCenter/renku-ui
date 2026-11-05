@@ -67,11 +67,12 @@ describe("admin page", () => {
     cy.visit("/admin");
 
     cy.get("h1").contains("Admin Panel").should("be.visible");
-    cy.get("h2").contains("Maintenance banners").should("be.visible");
-
-    cy.getDataCy("admin-compute-resources-link").click();
-    cy.location("pathname").should("eq", "/admin/compute-resources");
     cy.get("h2").contains("Resource pools").should("be.visible");
+    cy.location("pathname").should("eq", "/admin/compute-resources");
+
+    cy.getDataCy("admin-incidents-link").click();
+    cy.location("pathname").should("eq", "/admin/maintenance");
+    cy.get("h2").contains("Maintenance banners").should("be.visible");
   });
 
   it("should show the link to the admin page", () => {

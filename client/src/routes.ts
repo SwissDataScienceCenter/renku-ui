@@ -102,6 +102,7 @@ export default [
       RELATIVE_ROUTES.v2.admin.projectStorage,
       "routes/admin/projectStorage.tsx",
     ),
+    route(RELATIVE_ROUTES.v2.admin.maintenance, "routes/admin/maintenance.tsx"),
   ]),
   // SSH keys page
   route(RELATIVE_ROUTES.v2.ssh_keys, "routes/sshKeys.tsx"),

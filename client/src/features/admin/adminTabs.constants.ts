@@ -28,12 +28,6 @@ import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 
 export const ADMIN_TABS = [
   {
-    path: ABSOLUTE_ROUTES.v2.admin.root,
-    title: "Maintenance",
-    icon: WrenchAdjustableCircle,
-    dataCy: "admin-incidents-link",
-  },
-  {
     path: ABSOLUTE_ROUTES.v2.admin.computeResources,
     title: "Compute",
     icon: Cpu,
@@ -56,5 +50,11 @@ export const ADMIN_TABS = [
     title: "Storage",
     icon: Archive,
     dataCy: "admin-project-storage-link",
+  },
+  {
+    path: ABSOLUTE_ROUTES.v2.admin.maintenance,
+    title: "Maintenance",
+    icon: WrenchAdjustableCircle,
+    dataCy: "admin-incidents-link",
   },
 ];

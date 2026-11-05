@@ -16,8 +16,19 @@
  * limitations under the License.
  */
 
-import { LazyIncidentsAndMaintenanceSection } from "~/features/admin/LazyAdminSections";
+import { redirect } from "react-router";
 
-export default function AdminIncidentsPage() {
-  return <LazyIncidentsAndMaintenanceSection />;
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+
+//? The admin panel index redirects to the "Compute" tab
+export function loader() {
+  throw redirect(ABSOLUTE_ROUTES.v2.admin.computeResources);
+}
+
+export function clientLoader() {
+  throw redirect(ABSOLUTE_ROUTES.v2.admin.computeResources);
+}
+
+export default function AdminIndexPage() {
+  return null;
 }

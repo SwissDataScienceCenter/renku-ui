@@ -35,6 +35,7 @@ export const ABSOLUTE_ROUTES = {
       integrations: "/admin/integrations",
       sessionEnvironments: "/admin/session-environments",
       projectStorage: "/admin/project-storage",
+      maintenance: "/admin/maintenance",
     },
     dataConnectors: {
       root: "/d/:slug",
@@ -116,6 +117,7 @@ export const RELATIVE_ROUTES = {
       integrations: "integrations",
       sessionEnvironments: "session-environments",
       projectStorage: "project-storage",
+      maintenance: "maintenance",
     },
     betaRoot: "/v2/*",
     dataConnectors: {
