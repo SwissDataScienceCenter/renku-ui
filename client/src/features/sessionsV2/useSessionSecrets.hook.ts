@@ -31,11 +31,13 @@ import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 interface UseSessionSecretsArgs {
   projectId: string;
   autoMarkReady?: boolean;
+  excludedSecretSlotIds?: ReadonlySet<string>;
 }
 
 export default function useSessionSecrets({
   projectId,
   autoMarkReady = true,
+  excludedSecretSlotIds,
 }: UseSessionSecretsArgs) {
   const { data: user } = useGetUserQueryState();
   const isUserLoggedIn = !!user?.isLoggedIn;
@@ -59,14 +61,25 @@ export default function useSessionSecrets({
   const error = sessionSecretSlotsError ?? sessionSecretsError;
 
   const sessionSecretSlotsWithSecrets = useMemo(() => {
-    if (error || !sessionSecretSlots || (isUserLoggedIn && !sessionSecrets)) {
+    if (
+      error ||
+      !excludedSecretSlotIds ||
+      !sessionSecretSlots ||
+      (isUserLoggedIn && !sessionSecrets)
+    ) {
       return null;
     }
     return getSessionSecretSlotsWithSecrets({
       sessionSecretSlots,
       sessionSecrets: sessionSecrets ?? [],
-    });
-  }, [error, sessionSecretSlots, sessionSecrets, isUserLoggedIn]);
+    }).filter(({ secretSlot }) => !excludedSecretSlotIds.has(secretSlot.id));
+  }, [
+    error,
+    excludedSecretSlotIds,
+    sessionSecretSlots,
+    sessionSecrets,
+    isUserLoggedIn,
+  ]);
 
   const dispatch = useAppDispatch();
 

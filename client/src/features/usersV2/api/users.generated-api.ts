@@ -319,7 +319,7 @@ export type SecretValue = string;
 export type SecretPost = {
   name: SecretName;
   value: SecretValue;
-  kind?: SecretKind & any;
+  kind?: SecretKind;
   expiration_timestamp?: ExpirationTimestamp;
   default_filename?: SecretDefaultFilename;
 };

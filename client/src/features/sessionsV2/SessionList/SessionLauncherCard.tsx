@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import {
   Braces,
   ClockHistory,
@@ -26,8 +26,9 @@ import {
   Pencil,
   PlayCircle,
   Trash,
+  UiChecksGrid,
 } from "react-bootstrap-icons";
-import { Card, CardBody, Col, Row } from "reactstrap";
+import { Card, CardBody, Col, Row, UncontrolledTooltip } from "reactstrap";
 
 import { MenuButtonItem } from "~/components/buttons/MenuButton";
 import useClickableHostHandlers from "~/components/buttons/useClickableHostHandlers.hook";
@@ -58,6 +59,27 @@ import useLauncherEnvironmentReadiness from "../useLauncherEnvironmentReadiness.
 import SessionCard from "./SessionCard";
 
 import styles from "./Session.module.scss";
+
+function RestrictedBadge() {
+  const ref = useRef<HTMLDivElement>(null);
+  return (
+    <>
+      <RenkuBadge
+        ref={ref}
+        color="secondary"
+        className={cx("fw-normal", "d-inline-flex", "align-items-center")}
+        pill
+        tabIndex={0}
+      >
+        <UiChecksGrid className={cx("bi", "me-1")} />
+        Restricted
+      </RenkuBadge>
+      <UncontrolledTooltip target={ref}>
+        This launcher restricts data connectors or session secrets.
+      </UncontrolledTooltip>
+    </>
+  );
+}
 
 interface SessionLauncherCardProps {
   launcher?: SessionLauncher;
@@ -287,12 +309,17 @@ export default function SessionLauncherCard({
               ) : (
                 <Row>
                   <Col>
-                    <SessionImageBadge
-                      data={containerImage}
-                      isLoading={isLoadingContainerImage}
-                      resourcePool={resourcePool}
-                      isLoadingResourcePools={isLoadingResourcePools}
-                    />
+                    <div
+                      className={cx("d-flex", "align-items-center", "gap-2")}
+                    >
+                      {launcher?.is_restricted && <RestrictedBadge />}
+                      <SessionImageBadge
+                        data={containerImage}
+                        isLoading={isLoadingContainerImage}
+                        resourcePool={resourcePool}
+                        isLoadingResourcePools={isLoadingResourcePools}
+                      />
+                    </div>
                   </Col>
                 </Row>
               )}

@@ -168,7 +168,7 @@ export type GetNamespacesApiArg = {
   /** The minimum role the user should have in the resources returned */
   minimumRole?: GroupRole;
   /** environment kinds query parameter */
-  kinds?: NamespaceGetQueryKind;
+  kinds?: NamespaceGetQueryKinds;
 };
 export type GetNamespacesByNamespaceSlugApiResponse =
   /** status 200 The namespace */ NamespaceResponse;
@@ -253,7 +253,7 @@ export type NamespaceResponse = {
   path: SlugResponse;
 };
 export type NamespaceResponseList = NamespaceResponse[];
-export type NamespaceGetQueryKind = NamespaceKind[];
+export type NamespaceGetQueryKinds = NamespaceKind[];
 export const {
   useGetGroupsQuery,
   usePostGroupsMutation,
