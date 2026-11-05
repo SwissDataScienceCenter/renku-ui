@@ -114,3 +114,7 @@ export const NEW_DOCS_RENKU_EVENTS = newDocsLinkPage(
 export const NEW_DOCS_MARKDOWN_SYNTAX = newDocsLinkPage(
   "docs/users/knowledge-base/writing-documentation-in-renku",
 )(DEFAULT_NEW_DOC_LINK_ARGS);
+
+export const NEW_DOCS_CONFIG_AI_AGENTS = newDocsLinkPage(
+  "docs/users/compute/environment/guides/configure-ai-agents-for-a-session-environment",
+)(DEFAULT_NEW_DOC_LINK_ARGS);
