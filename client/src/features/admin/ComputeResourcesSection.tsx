@@ -82,38 +82,39 @@ export default function ComputeResourcesSection() {
   const { data, error, isLoading } = useGetResourcePoolsQuery({});
 
   return (
-    <section>
-      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
-        <h2 className="mb-0">
-          <Cpu className="me-1" />
-          Resource pools
-        </h2>
+    <>
+      <section>
+        <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
+          <h2 className="mb-0">
+            <Cpu className="me-1" />
+            Resource pools
+          </h2>
 
-        {data && !isLoading && !error && <Badge>{data?.length}</Badge>}
+          {data && !isLoading && !error && <Badge>{data?.length}</Badge>}
 
-        <div className="ms-auto">
-          <AddResourcePoolButton />
+          <div className="ms-auto">
+            <AddResourcePoolButton />
+          </div>
         </div>
-      </div>
 
-      <p className="mb-2">
-        Resource pools allow you to manage and allocate compute resources for
-        different groups and users.
-      </p>
-      <p className="mb-4">
-        Check out the{" "}
-        <ExternalLink href={NEW_DOCS_ADMIN_OPERATIONS_RPS}>
-          documentation for resource pools
-        </ExternalLink>
-        .
-      </p>
+        <p className="mb-2">
+          Resource pools allow you to manage and allocate compute resources for
+          different groups and users.
+        </p>
+        <p className="mb-4">
+          Check out the{" "}
+          <ExternalLink href={NEW_DOCS_ADMIN_OPERATIONS_RPS}>
+            documentation for resource pools
+          </ExternalLink>
+          .
+        </p>
 
-      <div className="mb-4">
-        <ResourcePoolsList />
-      </div>
-
+        <div className="mb-4">
+          <ResourcePoolsList />
+        </div>
+      </section>
       <ResourceFlavorsSection />
-    </section>
+    </>
   );
 }
 

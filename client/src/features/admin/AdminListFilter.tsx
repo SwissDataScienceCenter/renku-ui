@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
+import { useCallback, useId, useState } from "react";
 import { Funnel, XCircleFill } from "react-bootstrap-icons";
 import { Button, Form, Input, InputGroup } from "reactstrap";
 
@@ -33,6 +33,7 @@ export default function AdminListFilter({
   placeholder = "Filter by name...",
 }: AdminListFilterProps) {
   const [filterInput, setFilterInput] = useState(filter);
+  const id = useId();
 
   const onSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
@@ -51,7 +52,7 @@ export default function AdminListFilter({
       <InputGroup>
         <Input
           data-cy="filter-input"
-          id="filter-input"
+          id={`filter-input-${id}`}
           onChange={(event) => setFilterInput(event.target.value)}
           placeholder={placeholder}
           value={filterInput}
@@ -67,7 +68,7 @@ export default function AdminListFilter({
           data-cy="filter-clear"
           disabled={!filterInput && !filter}
           onClick={onClear}
-          id="filter-clear-button"
+          id={`filter-clear-button-${id}`}
           type="button"
         >
           <XCircleFill />
@@ -75,7 +76,7 @@ export default function AdminListFilter({
         <Button
           color="primary"
           data-cy="filter-button"
-          id="filter-button"
+          id={`filter-button-${id}`}
           type="submit"
         >
           <Funnel className="me-1" /> Filter
