@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { GetRepositoryApiResponse } from "~/features/repositories/api/repositories.api";
+import type { GetRepositoryApiResponse } from "~/features/repositories/api/repositories.api";
 import { safeNewUrl } from "../../../../utils/helpers/safeNewUrl.utils";
 
 /**
@@ -75,17 +75,22 @@ export function shouldInterrupt(
   repositoryData: GetRepositoryApiResponse,
   hasProjectWritePermission: boolean,
 ): boolean {
-  if (hasProjectWritePermission)
+  const pullPermission =
+    (repositoryData.metadata?.pull_permission &&
+      repositoryData.metadata.visibility === "public") ??
+    false;
+  const pushPermission = repositoryData.metadata?.push_permission ?? false;
+
+  if (hasProjectWritePermission) {
     return !!(
-      (!repositoryData?.metadata?.pull_permission &&
-        !(repositoryData?.connection?.status === "connected")) ||
-      (repositoryData?.metadata?.pull_permission &&
-        !repositoryData?.metadata?.push_permission &&
-        !(repositoryData?.connection?.status === "connected"))
+      (!pullPermission && repositoryData?.connection?.status !== "connected") ||
+      (pullPermission &&
+        !pushPermission &&
+        repositoryData?.connection?.status !== "connected")
     );
+  }
   return !!(
-    !repositoryData?.metadata?.pull_permission &&
-    !(repositoryData?.connection?.status === "connected")
+    !pullPermission && repositoryData?.connection?.status !== "connected"
   );
 }
 
