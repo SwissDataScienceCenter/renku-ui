@@ -1,4 +1,4 @@
-FROM node:22.23.4 AS builder
+FROM --platform=${BUILDPLATFORM} node:22.23.4 AS builder
 
 RUN apt-get update && apt-get upgrade --quiet --assume-yes
 
