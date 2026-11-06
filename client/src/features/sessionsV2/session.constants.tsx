@@ -245,6 +245,46 @@ export const BUILDER_PLATFORMS = [
   },
 ] as readonly BuilderSelectorOption<"linux/amd64" | "linux/arm64">[];
 
+export interface CodingAgentOption {
+  description?: string;
+  label: string;
+  value: string;
+}
+
+/* eslint-disable spellcheck/spell-checker */
+export const CODING_AGENTS: readonly CodingAgentOption[] = [
+  {
+    value: "claude",
+    label: "Claude Code",
+    description: "Add your ANTHROPIC_API_KEY, or sign in yourself after launch",
+  },
+  {
+    value: "pi",
+    label: "Pi",
+    description: "Minimal, extensible · bring your own model provider",
+  },
+  {
+    value: "codex",
+    label: "Codex",
+    description:
+      "OpenAI · add your OPENAI_API_KEY, or sign in yourself after launch",
+  },
+];
+/* eslint-enable spellcheck/spell-checker */
+
+export function codingAgentLabel(value: string): string {
+  return CODING_AGENTS.find((agent) => agent.value === value)?.label ?? value;
+}
+
+export function formatCodingAgents(
+  agents: readonly string[] | null | undefined,
+): string {
+  if (agents == null || agents.length === 0) {
+    return "project.toml";
+  }
+  return agents.map(codingAgentLabel).join(", ");
+}
+
 export const IMAGE_BUILD_DOCS = NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED;
 
 export const LAUNCHER_CONTAINER_IMAGE_VALIDATION_MESSAGE = {

@@ -1408,6 +1408,15 @@
         "minLength": 1,
         "maxLength": 99
       },
+      "AIAgents": {
+        "description": "The AI coding agents to install in the built environment. When not set, the agents requested by the repository's project.toml are installed.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "nullable": true,
+        "example": ["pi", "claude", "codex"]
+      },
       "RepositoryRevision": {
         "description": "A git revision",
         "type": "string",
@@ -1515,6 +1524,9 @@
               },
               "context_dir": {
                 "$ref": "#/components/schemas/BuildContextDir"
+              },
+              "ai_agents": {
+                "$ref": "#/components/schemas/AIAgents"
               }
             },
             "required": ["repository", "builder_variant", "frontend_variant"]
@@ -1561,6 +1573,9 @@
           },
           "context_dir": {
             "$ref": "#/components/schemas/BuildContextDirPatch"
+          },
+          "ai_agents": {
+            "$ref": "#/components/schemas/AIAgents"
           }
         }
       },
