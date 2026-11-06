@@ -21,11 +21,11 @@ import { useMemo } from "react";
 
 import {
   useGetClassesByClassIdQuery,
-  useGetResourcePoolsQuery,
   type ResourceClassWithId,
   type ResourceClassWithIdFiltered,
   type ResourcePoolWithIdFiltered,
 } from "./api/computeResources.api";
+import useResourcePoolByClassId from "./useResourcePoolByClassId.hook";
 
 export interface ResourceClassRequests {
   poolName?: string;
@@ -53,26 +53,15 @@ export default function useResourceClassDetails({
   resourceClassId,
   storage,
 }: UseResourceClassDetailsProps): UseResourceClassDetailsResult {
-  const { data: resourcePools } = useGetResourcePoolsQuery({});
+  const { resourcePool } = useResourcePoolByClassId(resourceClassId);
   const { data: resourceClass, isLoading: isLoadingResourceClass } =
     useGetClassesByClassIdQuery(
       resourceClassId ? { classId: `${resourceClassId}` } : skipToken,
     );
 
-  const resourcePool = useMemo(
-    () =>
-      resourcePools?.find((pool) =>
-        pool.classes.find((c) => c.id === resourceClassId),
-      ),
-    [resourceClassId, resourcePools],
-  );
-
   const userResourceClass = useMemo(
-    () =>
-      resourcePools
-        ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id === resourceClassId),
-    [resourceClassId, resourcePools],
+    () => resourcePool?.classes.find((c) => c.id === resourceClassId),
+    [resourceClassId, resourcePool],
   );
 
   const resourceRequests = useMemo(() => {
