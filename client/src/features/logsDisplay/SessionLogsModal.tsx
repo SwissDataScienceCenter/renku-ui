@@ -17,7 +17,7 @@
  */
 
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext } from "react";
 
 import AppContext from "~/utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
@@ -25,16 +25,14 @@ import {
   persistedLogsApi,
   useGetPersistedSessionLogsForModalQuery,
 } from "../persistedLogs/api/persistedLogs.api";
-import {
-  useGetResourcePoolsByResourcePoolIdQuery,
-  useGetResourcePoolsQuery,
-} from "../sessionsV2/api/computeResources.api";
+import { useGetResourcePoolsByResourcePoolIdQuery } from "../sessionsV2/api/computeResources.api";
 import {
   SessionResponse,
   sessionsV2Api,
   useGetSessionsBySessionIdLogsQuery,
   useGetSessionsBySessionIdQuery,
 } from "../sessionsV2/api/sessionsV2.api";
+import useResourcePoolByClassId from "../sessionsV2/useResourcePoolByClassId.hook";
 import LogsModal from "./LogsModal";
 
 const SESSION_LOGS_MAX_LINES = 250;
@@ -58,18 +56,7 @@ export default function SessionLogsModal({
     sessionName ? { sessionId: sessionName } : skipToken,
   );
 
-  const { data: resourcePools } = useGetResourcePoolsQuery(
-    session?.resource_class_id ? {} : skipToken,
-  );
-  const resourcePool = useMemo(
-    () =>
-      session?.resource_class_id
-        ? resourcePools?.find(({ classes }) =>
-            classes.some(({ id }) => id === session.resource_class_id),
-          )
-        : undefined,
-    [resourcePools, session],
-  );
+  const { resourcePool } = useResourcePoolByClassId(session?.resource_class_id);
   const { data: resourcePoolInfo } = useGetResourcePoolsByResourcePoolIdQuery(
     resourcePool ? { resourcePoolId: resourcePool.id } : skipToken,
   );

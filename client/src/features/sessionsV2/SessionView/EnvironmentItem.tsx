@@ -34,7 +34,6 @@ import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
-import { computeResourcesApi } from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import {
   sessionLaunchersV2Api,
@@ -52,6 +51,7 @@ import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { getEnvironmentKindLabel } from "../launcherEnvironment.utils";
 import { BUILDER_IMAGE_NOT_READY_VALUE } from "../session.constants";
 import { getLauncherCategory, safeStringify } from "../session.utils";
+import useResourcePoolByClassId from "../useResourcePoolByClassId.hook";
 
 export default function EnvironmentItem({
   launcher,
@@ -166,16 +166,8 @@ function GlobalEnvironmentSessionImageBadge({
       ? { imageUrl: environment.container_image }
       : skipToken,
   );
-  const { data: resourcePools, isLoading: isLoadingResourcePools } =
-    computeResourcesApi.endpoints.getResourcePools.useQueryState({});
-  const resourcePool = useMemo(() => {
-    if (launcher.resource_class_id == null || resourcePools == null) {
-      return undefined;
-    }
-    return resourcePools.find(({ classes }) =>
-      classes.some(({ id }) => id === launcher.resource_class_id),
-    );
-  }, [launcher.resource_class_id, resourcePools]);
+  const { resourcePool, isLoading: isLoadingResourcePools } =
+    useResourcePoolByClassId(launcher.resource_class_id);
 
   return (
     <div className="mb-2">
@@ -229,16 +221,8 @@ function CustomImageEnvironmentValues({
       ? { url: environment.build_parameters.repository }
       : skipToken,
   );
-  const { data: resourcePools, isLoading: isLoadingResourcePools } =
-    computeResourcesApi.endpoints.getResourcePools.useQueryState({});
-  const resourcePool = useMemo(() => {
-    if (launcher.resource_class_id == null || resourcePools == null) {
-      return undefined;
-    }
-    return resourcePools.find(({ classes }) =>
-      classes.some(({ id }) => id === launcher.resource_class_id),
-    );
-  }, [launcher.resource_class_id, resourcePools]);
+  const { resourcePool, isLoading: isLoadingResourcePools } =
+    useResourcePoolByClassId(launcher.resource_class_id);
   const search = useMemo(() => {
     return `?${new URLSearchParams({
       targetProvider: data?.provider?.id ?? "",
@@ -446,16 +430,8 @@ function CustomBuildEnvironmentValues({
         ? { imageUrl: environment.container_image }
         : skipToken,
     );
-  const { data: resourcePools, isLoading: isLoadingResourcePools } =
-    computeResourcesApi.endpoints.getResourcePools.useQueryState({});
-  const resourcePool = useMemo(() => {
-    if (launcher.resource_class_id == null || resourcePools == null) {
-      return undefined;
-    }
-    return resourcePools.find(({ classes }) =>
-      classes.some(({ id }) => id === launcher.resource_class_id),
-    );
-  }, [launcher.resource_class_id, resourcePools]);
+  const { resourcePool, isLoading: isLoadingResourcePools } =
+    useResourcePoolByClassId(launcher.resource_class_id);
 
   // Invalidate launchers if the container image is not the same as the
   // image from the last successful build
