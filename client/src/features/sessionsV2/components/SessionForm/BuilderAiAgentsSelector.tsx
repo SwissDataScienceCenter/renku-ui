@@ -143,18 +143,40 @@ const selectClassNames: ClassNamesConfig<CodingAgentOption, true> = {
   menu: () =>
     cx("bg-white", "rounded-bottom", "border", "shadow-sm", styles.zDropdown),
   menuList: () => "py-1",
+  // multiValue: () =>
+  //   cx("badge", "bg-primary-subtle", "border", "border-primary", "text-primary", "my-1", "mx-1", "d-flex", "align-items-center","gap-2", "fs-6", "p-1"),
+  // multiValueLabel: () => cx("text-primary", "fw-normal", "small"),
+  // multiValueRemove: () => cx("text-primary", "rounded-pill", "border", "border-primary", "small"),
   multiValue: () =>
-    cx("rounded-pill", "bg-primary-subtle", "text-primary", "mx-1", "my-1"),
-  multiValueLabel: () => cx("text-primary", "ps-2", "py-1"),
-  multiValueRemove: () => cx("text-primary", "px-2", "rounded-pill"),
-  option: ({ isFocused, isSelected }) =>
+    cx(
+      "badge",
+      "bg-light",
+      "border",
+      "border-secondary",
+      "text-black",
+      "my-1",
+      "mx-1",
+      "d-flex",
+      "align-items-center",
+      "gap-2",
+      "fs-6",
+      "p-1",
+    ),
+  multiValueLabel: () => cx("text-black", "fw-normal", "small"),
+  multiValueRemove: () =>
+    cx("text-secondary", "rounded-pill", "border", "border-secondary", "small"),
+
+  option: ({ isFocused, isSelected, isDisabled }) =>
     cx(
       "px-3",
       "py-2",
       styles.codingAgentOption,
-      (isFocused || isSelected) && "bg-primary-subtle",
+      styles.option,
+      isDisabled && styles.optionIsDisabled,
+      isFocused && !isDisabled && styles.optionIsFocused,
+      !isFocused && isSelected && !isDisabled && styles.optionIsSelected,
     ),
-  placeholder: () => cx("px-2", "text-secondary"),
+  placeholder: () => cx("px-2", "text-muted"),
   valueContainer: () =>
     cx("d-flex", "flex-wrap", "align-items-center", "py-1", "ps-2"),
 };
@@ -199,7 +221,7 @@ const selectComponents: SelectComponentsConfig<
             type="checkbox"
           />
           <div className="flex-grow-1">
-            <div className="fw-bold">{data.label}</div>
+            <div className={cx("text-black")}>{data.label}</div>
             {data.description && (
               <div className={cx("small", "text-secondary")}>
                 {data.description}
