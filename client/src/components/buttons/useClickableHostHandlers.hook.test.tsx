@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act } from "react";
 import { createPortal } from "react-dom";
+import { createRoot, type Root } from "react-dom/client";
 import { Modal, ModalBody } from "reactstrap";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import useClickableHostHandlers from "./useClickableHostHandlers.hook";
 
@@ -32,15 +33,21 @@ interface HostProps {
 function Host({ onActivate, withPortal, withModal }: HostProps) {
   const handlers = useClickableHostHandlers(onActivate);
   return (
-    <div data-testid="host" {...handlers}>
-      <span>Host content</span>
-      <button type="button">Nested button</button>
-      {withPortal && createPortal(<span>Portal content</span>, document.body)}
+    <div data-cy="host" {...handlers}>
+      <span data-cy="host-content">Host content</span>
+      <button type="button" data-cy="nested-button">
+        Nested button
+      </button>
+      {withPortal &&
+        createPortal(
+          <span data-cy="portal-content">Portal content</span>,
+          document.body,
+        )}
       {withModal && (
         <Modal isOpen fade={false} toggle={() => {}}>
-          <ModalBody data-testid="modal-body">
+          <ModalBody data-cy="modal-body">
             <pre>
-              <span>Log line</span>
+              <span data-cy="log-line">Log line</span>
             </pre>
           </ModalBody>
         </Modal>
@@ -49,39 +56,75 @@ function Host({ onActivate, withPortal, withModal }: HostProps) {
   );
 }
 
-describe("useClickableHostHandlers", () => {
-  afterEach(() => {
-    cleanup();
+function getByDataCy(dataCy: string): HTMLElement {
+  const element = document.querySelector<HTMLElement>(`[data-cy="${dataCy}"]`);
+  if (element == null) {
+    throw new Error(`Element with data-cy="${dataCy}" not found`);
+  }
+  return element;
+}
+
+function fireMouseEvent(
+  type: "click" | "mousedown" | "mouseup",
+  element: HTMLElement,
+) {
+  act(() => {
+    element.dispatchEvent(new MouseEvent(type, { bubbles: true }));
   });
+}
+
+describe("useClickableHostHandlers", () => {
+  let container: HTMLDivElement;
+  let root: Root;
+
+  beforeEach(() => {
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+  });
+
+  afterEach(() => {
+    act(() => {
+      root.unmount();
+    });
+    container.remove();
+  });
+
+  function renderHost(props: HostProps) {
+    act(() => {
+      root.render(<Host {...props} />);
+    });
+  }
 
   it("activates when clicking on the host content", () => {
     const onActivate = vi.fn();
-    render(<Host onActivate={onActivate} />);
-    fireEvent.click(screen.getByText("Host content"));
+    renderHost({ onActivate });
+    fireMouseEvent("click", getByDataCy("host-content"));
     expect(onActivate).toHaveBeenCalledTimes(1);
   });
 
   it("does not activate when clicking on a nested button", () => {
     const onActivate = vi.fn();
-    render(<Host onActivate={onActivate} />);
-    fireEvent.click(screen.getByRole("button", { name: "Nested button" }));
+    renderHost({ onActivate });
+    fireMouseEvent("click", getByDataCy("nested-button"));
     expect(onActivate).not.toHaveBeenCalled();
   });
 
   it("does not activate on clicks from content rendered in a portal", () => {
     const onActivate = vi.fn();
-    render(<Host onActivate={onActivate} withPortal />);
-    fireEvent.click(screen.getByText("Portal content"));
+    renderHost({ onActivate, withPortal: true });
+    fireMouseEvent("click", getByDataCy("portal-content"));
     expect(onActivate).not.toHaveBeenCalled();
   });
 
   it("does not activate when a text selection in a modal ends outside the text", () => {
     const onActivate = vi.fn();
-    render(<Host onActivate={onActivate} withModal />);
-    // Selecting text, pressing the mouse on the text and releasing it outside.
-    fireEvent.mouseDown(screen.getByText("Log line"));
-    fireEvent.mouseUp(screen.getByTestId("modal-body"));
-    fireEvent.click(screen.getByTestId("modal-body"));
+    renderHost({ onActivate, withModal: true });
+    // Selecting text: press the mouse on the text and release it outside. The
+    // browser then dispatches the click on the common ancestor.
+    fireMouseEvent("mousedown", getByDataCy("log-line"));
+    fireMouseEvent("mouseup", getByDataCy("modal-body"));
+    fireMouseEvent("click", getByDataCy("modal-body"));
     expect(onActivate).not.toHaveBeenCalled();
   });
 });
