@@ -17,7 +17,13 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useEffect, useMemo } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 import { ChevronDown, XLg } from "react-bootstrap-icons";
 import {
   Controller,
@@ -38,26 +44,41 @@ import Select, {
 import { Label } from "reactstrap";
 
 import { GetRepositoriesApiResponse } from "~/features/repositories/api/repositories.api";
-import AppContext from "../../../../utils/context/appContext";
-import { DEFAULT_APP_PARAMS } from "../../../../utils/context/appParams.constants";
 import { getRepositoryName } from "../../../ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
 
 import styles from "./Select.module.scss";
+
+interface PrivateRepositoryPolicy {
+  allowed: boolean;
+  message: string;
+}
+
+const PrivateRepositoryPolicyContext = createContext<PrivateRepositoryPolicy>({
+  allowed: true,
+  message: "",
+});
 
 interface CodeRepositorySelectorProps<
   T extends FieldValues,
 > extends UseControllerProps<T> {
   repositoriesDetails: GetRepositoriesApiResponse[];
+  privateRepositoriesAllowed: boolean;
+  privateRepositoryMessage: string;
 }
 
 export default function CodeRepositorySelector<T extends FieldValues>({
   repositoriesDetails,
+  privateRepositoriesAllowed,
+  privateRepositoryMessage,
   ...controllerProps
 }: CodeRepositorySelectorProps<T>) {
-  const { params } = useContext(AppContext);
-  const privateRepoBuildEnabled =
-    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
-    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
+  const privateRepositoryPolicy = useMemo(
+    () => ({
+      allowed: privateRepositoriesAllowed,
+      message: privateRepositoryMessage,
+    }),
+    [privateRepositoriesAllowed, privateRepositoryMessage],
+  );
   const defaultValue = useMemo(
     () =>
       controllerProps.defaultValue
@@ -66,59 +87,61 @@ export default function CodeRepositorySelector<T extends FieldValues>({
             (repo) =>
               repo.data?.status === "valid" &&
               repo.data.metadata?.pull_permission &&
-              (privateRepoBuildEnabled ||
+              (privateRepositoriesAllowed ||
                 repo.data.metadata.visibility === "public"),
           )?.url,
     [
       controllerProps.defaultValue,
-      privateRepoBuildEnabled,
+      privateRepositoriesAllowed,
       repositoriesDetails,
     ],
   );
 
   return (
-    <div>
-      <Label for="builder-environment-code-repository-select-input">
-        Code repository
-      </Label>
-      <Controller
-        {...controllerProps}
-        render={({
-          field: { onBlur, onChange, value, disabled },
-          fieldState: { error },
-        }) => (
-          <>
-            <div
-              className={cx(error && "is-invalid")}
-              data-cy="code-repository-select"
-            >
-              <CodeRepositorySelect
-                name={controllerProps.name}
-                defaultValue={defaultValue}
-                options={repositoriesDetails}
-                onBlur={onBlur}
-                onChange={onChange}
-                value={value ?? ""}
-                disabled={disabled}
-              />
-            </div>
-            <div className="invalid-feedback">
-              {error?.message ? (
-                <>{error.message}</>
-              ) : (
-                <>Please select a valid code repository.</>
-              )}
-            </div>
-          </>
-        )}
-        rules={
-          controllerProps.rules ?? {
-            required: "Please select a code repository.",
+    <PrivateRepositoryPolicyContext.Provider value={privateRepositoryPolicy}>
+      <div>
+        <Label for="builder-environment-code-repository-select-input">
+          Code repository
+        </Label>
+        <Controller
+          {...controllerProps}
+          render={({
+            field: { onBlur, onChange, value, disabled },
+            fieldState: { error },
+          }) => (
+            <>
+              <div
+                className={cx(error && "is-invalid")}
+                data-cy="code-repository-select"
+              >
+                <CodeRepositorySelect
+                  name={controllerProps.name}
+                  defaultValue={defaultValue}
+                  options={repositoriesDetails}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  value={value ?? ""}
+                  disabled={disabled}
+                />
+              </div>
+              <div className="invalid-feedback">
+                {error?.message ? (
+                  <>{error.message}</>
+                ) : (
+                  <>Please select a valid code repository.</>
+                )}
+              </div>
+            </>
+          )}
+          rules={
+            controllerProps.rules ?? {
+              required: "Please select a code repository.",
+            }
           }
-        }
-        defaultValue={defaultValue as PathValue<T, Path<T>>}
-      />
-    </div>
+          defaultValue={defaultValue as PathValue<T, Path<T>>}
+        />
+      </div>
+    </PrivateRepositoryPolicyContext.Provider>
   );
 }
 
@@ -141,10 +164,7 @@ function CodeRepositorySelect({
   value: value_,
   disabled,
 }: CodeRepositorySelectProps) {
-  const { params } = useContext(AppContext);
-  const privateRepoBuildEnabled =
-    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
-    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
+  const privateRepositoryPolicy = useContext(PrivateRepositoryPolicyContext);
 
   const defaultValue = useMemo(
     () => options.find((repository) => repository.url === defaultValue_),
@@ -184,7 +204,7 @@ function CodeRepositorySelect({
         option.data?.status !== "valid" ||
         !option.data.metadata?.pull_permission ||
         (option.data.metadata.visibility === "private" &&
-          !privateRepoBuildEnabled)
+          !privateRepositoryPolicy.allowed)
       }
       onChange={onChange}
       onBlur={onBlur}
@@ -226,10 +246,7 @@ interface OptionValueContentProps {
 
 function OptionValueContent({ option, isDisabled }: OptionValueContentProps) {
   const title = getRepositoryName(option.url);
-  const { params } = useContext(AppContext);
-  const privateRepoBuildEnabled =
-    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
-    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
+  const privateRepositoryPolicy = useContext(PrivateRepositoryPolicyContext);
 
   return (
     <>
@@ -244,10 +261,10 @@ function OptionValueContent({ option, isDisabled }: OptionValueContentProps) {
         </span>
         {isDisabled &&
           (option.data?.metadata?.visibility === "private" &&
-          !privateRepoBuildEnabled ? (
+          !privateRepositoryPolicy.allowed ? (
             <span className="ms-1">
               <XLg className={cx("bi", "me-1")} />
-              Private repository builds are not available
+              {privateRepositoryPolicy.message}
             </span>
           ) : (
             <span className="ms-1">
@@ -267,10 +284,7 @@ interface SingleValueContentProps {
 }
 
 function SingleValueContent({ option, isDisabled }: SingleValueContentProps) {
-  const { params } = useContext(AppContext);
-  const privateRepoBuildEnabled =
-    params?.BUILD_PRIVATE_REPO_BUILDS_ENABLED ??
-    DEFAULT_APP_PARAMS.BUILD_PRIVATE_REPO_BUILDS_ENABLED;
+  const privateRepositoryPolicy = useContext(PrivateRepositoryPolicyContext);
 
   return (
     <>
@@ -279,10 +293,10 @@ function SingleValueContent({ option, isDisabled }: SingleValueContentProps) {
       </span>
       {isDisabled &&
         (option.data?.metadata?.visibility == "private" &&
-        !privateRepoBuildEnabled ? (
+        !privateRepositoryPolicy.allowed ? (
           <span className="ms-1">
             <XLg className={cx("bi", "me-1")} />
-            Private repository builds are not available
+            {privateRepositoryPolicy.message}
           </span>
         ) : (
           <span className="ms-1">

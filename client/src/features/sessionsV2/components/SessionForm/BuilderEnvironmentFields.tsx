@@ -75,6 +75,11 @@ export default function BuilderEnvironmentFields({
     repositories.length > 0 ? repositories : skipToken,
   );
   const categoryDefinition = getLauncherCategoryDefinition(launcherCategory);
+  const isApp = launcherCategory === "app";
+  const privateRepositoriesAllowed = privateRepoBuildEnabled && !isApp;
+  const privateRepositoryMessage = isApp
+    ? "Apps can only be built from a public repository"
+    : "Private repository builds are not available";
 
   const selectedRepositoryUrl = useWatch({
     control,
@@ -110,10 +115,10 @@ export default function BuilderEnvironmentFields({
         (repo) =>
           repo.data?.status === "valid" &&
           repo.data.metadata?.pull_permission &&
-          (privateRepoBuildEnabled ||
+          (privateRepositoriesAllowed ||
             repo.data.metadata.visibility === "public"),
       ),
-    [data, privateRepoBuildEnabled],
+    [data, privateRepositoriesAllowed],
   );
 
   if (!imageBuildersEnabled) {
@@ -142,11 +147,13 @@ export default function BuilderEnvironmentFields({
       {error && <RtkOrDataServicesError error={error} dismissible={false} />}
     </>
   ) : (firstEligibleRepository == null || firstEligibleRepository < 0) &&
-    !privateRepoBuildEnabled &&
+    !privateRepositoriesAllowed &&
     hasPullRepository ? (
     <WarnAlert dismissible={false}>
-      No public code repositories found in this project. Please note that
-      building from private code repositories is not available.
+      No public code repositories found in this project.{" "}
+      {isApp
+        ? "Apps are public, so they can only be built from a public code repository."
+        : "Please note that building from private code repositories is not available."}
     </WarnAlert>
   ) : firstEligibleRepository == null || firstEligibleRepository < 0 ? (
     <WarnAlert dismissible={false}>
@@ -160,14 +167,22 @@ export default function BuilderEnvironmentFields({
           name="repository"
           control={control}
           repositoriesDetails={data}
+          privateRepositoriesAllowed={privateRepositoriesAllowed}
+          privateRepositoryMessage={privateRepositoryMessage}
         />
-        {selectedRepositoryIsPrivate && (
+        {selectedRepositoryIsPrivate && isApp ? (
+          <WarnAlert dismissible={false} timeout={0}>
+            This is a private code repository. Apps are public, so they can only
+            be built from a public code repository. Make the repository public,
+            or select another one.
+          </WarnAlert>
+        ) : selectedRepositoryIsPrivate ? (
           <InfoAlert dismissible={false} timeout={0}>
             This is a private code repository. Only users who have pull (read)
             access to this code repository will be able to launch{" "}
             {categoryDefinition.text.inline}.
           </InfoAlert>
-        )}
+        ) : null}
         <CodeRepositoryAdvancedSettings control={control} />
       </div>
       <BuilderTypeSelector name="builder_variant" control={control} />
