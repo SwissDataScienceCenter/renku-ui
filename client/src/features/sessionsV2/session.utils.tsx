@@ -164,6 +164,7 @@ export function getNewLauncherFormDefaultValues(
   | "args"
   | "gid"
   | "uid"
+  | "ai_agents"
 > {
   return {
     name: "",
@@ -181,7 +182,28 @@ export function getNewLauncherFormDefaultValues(
     args: "",
     gid: 1000,
     uid: 1000,
+    ai_agents: [],
   };
+}
+
+function codingAgentsForCreate(
+  launcherCategory: LauncherCategory,
+  aiAgents: string[] | undefined,
+): { ai_agents: string[] } | undefined {
+  if (launcherCategory === "app" || !aiAgents?.length) {
+    return undefined;
+  }
+  return { ai_agents: aiAgents };
+}
+
+function codingAgentsForEdit(
+  launcherCategory: LauncherCategory,
+  aiAgents: string[] | undefined,
+): { ai_agents: string[] | null } | undefined {
+  if (launcherCategory === "app") {
+    return undefined;
+  }
+  return { ai_agents: aiAgents?.length ? aiAgents : null };
 }
 
 export function getSessionFavicon(
@@ -257,6 +279,7 @@ export function getFormattedEnvironmentValues(
     default_url,
     environmentId,
     environmentSelect,
+    ai_agents,
     frontend_variant,
     gid,
     mount_directory,
@@ -295,6 +318,7 @@ export function getFormattedEnvironmentValues(
       platforms: [platform],
       ...(context_dir ? { context_dir } : {}),
       ...(repository_revision ? { repository_revision } : {}),
+      ...codingAgentsForCreate(launcherCategory, ai_agents),
     };
 
     if (launcherCategory === "job") {
@@ -394,6 +418,7 @@ export function getFormattedEnvironmentValuesForEdit(
   }
 
   const {
+    ai_agents,
     builder_variant,
     context_dir,
     frontend_variant,
@@ -424,6 +449,7 @@ export function getFormattedEnvironmentValuesForEdit(
         repository_revision: repository_revision ?? "",
         context_dir: context_dir ?? "",
         platforms: [platform],
+        ...codingAgentsForEdit(launcherCategory, ai_agents),
       },
     } as SessionLauncherEnvironmentPatchParams,
   };
@@ -487,6 +513,10 @@ export function getLauncherDefaultValues(
       launcher.environment.environment_image_source === "build"
         ? (launcher.environment.build_parameters?.platforms?.at(0) ?? "")
         : "",
+    ai_agents:
+      launcher.environment.environment_image_source === "build"
+        ? [...(launcher.environment.build_parameters?.ai_agents ?? [])]
+        : [],
   };
 }
 

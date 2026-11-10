@@ -21,13 +21,16 @@ import { describe, expect, it } from "vitest";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import {
   BUILDER_FRONTEND_COMBINATIONS,
+  formatCodingAgents,
   getCompatibleFrontends,
 } from "./session.constants";
 import {
   getFormattedEnvironmentValues,
+  getFormattedEnvironmentValuesForEdit,
   getLauncherApiType,
   getLauncherCategory,
   getLauncherChangeEffectMessage,
+  getLauncherDefaultValues,
   getNewLauncherFormDefaultValues,
   isAppLauncher,
   isJobLauncher,
@@ -203,3 +206,134 @@ describe("getLauncherChangeEffectMessage()", () => {
     },
   );
 });
+
+/* eslint-disable spellcheck/spell-checker */
+describe("coding agents", () => {
+  it("starts new launchers with no agents selected", () => {
+    expect(
+      getNewLauncherFormDefaultValues("custom + build", "session").ai_agents,
+    ).toEqual([]);
+    expect(
+      getNewLauncherFormDefaultValues("custom + build", "job").ai_agents,
+    ).toEqual([]);
+  });
+
+  it("includes selected agents for sessions and jobs on create", () => {
+    const session = getFormattedEnvironmentValues(
+      makeCustomBuildForm({ ai_agents: ["claude", "codex"] }),
+      "session",
+    );
+    const job = getFormattedEnvironmentValues(
+      makeCustomBuildForm({
+        ai_agents: ["pi"],
+        command: '["python", "main.py"]',
+      }),
+      "job",
+    );
+
+    expect(session.data).toMatchObject({ ai_agents: ["claude", "codex"] });
+    expect(job.data).toMatchObject({ ai_agents: ["pi"] });
+  });
+
+  it("omits an empty selection on create", () => {
+    const result = getFormattedEnvironmentValues(
+      makeCustomBuildForm({ ai_agents: [] }),
+      "session",
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.data).not.toHaveProperty("ai_agents");
+  });
+
+  it("omits agents for an app launcher", () => {
+    const result = getFormattedEnvironmentValues(
+      makeCustomBuildForm({ ai_agents: ["claude"] }),
+      "app",
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.data).not.toHaveProperty("ai_agents");
+  });
+
+  it("sends the selected agents when editing a session", () => {
+    const result = getFormattedEnvironmentValuesForEdit(
+      makeCustomBuildForm({ ai_agents: ["claude", "codex"] }),
+      "session",
+    );
+
+    expect(result.data).toMatchObject({
+      build_parameters: { ai_agents: ["claude", "codex"] },
+    });
+  });
+
+  it("clears a saved selection when editing with no agents", () => {
+    const result = getFormattedEnvironmentValuesForEdit(
+      makeCustomBuildForm({ ai_agents: [] }),
+      "session",
+    );
+
+    expect(result.data).toMatchObject({
+      build_parameters: { ai_agents: null },
+    });
+  });
+
+  it("does not send agents when editing an app", () => {
+    const result = getFormattedEnvironmentValuesForEdit(
+      makeCustomBuildForm({ ai_agents: ["pi"] }),
+      "app",
+    );
+    const parameters =
+      result.data && "build_parameters" in result.data
+        ? result.data.build_parameters
+        : undefined;
+
+    expect(parameters).not.toHaveProperty("ai_agents");
+  });
+
+  it("restores saved agents, including values outside the allow-list", () => {
+    const launcher = {
+      name: "launcher",
+      environment: {
+        environment_kind: "CUSTOM",
+        environment_image_source: "build",
+        build_parameters: {
+          repository: "https://example.com/owner/repo.git",
+          builder_variant: "python",
+          frontend_variant: "jupyterlab",
+          ai_agents: ["claude", "custom-agent"],
+        },
+      },
+    } as SessionLauncher;
+
+    expect(getLauncherDefaultValues(launcher).ai_agents).toEqual([
+      "claude",
+      "custom-agent",
+    ]);
+  });
+
+  it("treats a missing agent list as an empty selection", () => {
+    const launcher = {
+      name: "launcher",
+      environment: {
+        environment_kind: "CUSTOM",
+        environment_image_source: "build",
+        build_parameters: {
+          repository: "https://example.com/owner/repo.git",
+          builder_variant: "python",
+          frontend_variant: "jupyterlab",
+          ai_agents: null,
+        },
+      },
+    } as SessionLauncher;
+
+    expect(getLauncherDefaultValues(launcher).ai_agents).toEqual([]);
+  });
+
+  it("shows display labels, and project.toml when unset", () => {
+    expect(formatCodingAgents(["claude", "codex"])).toBe("Claude Code, Codex");
+    expect(formatCodingAgents(["custom-agent"])).toBe("custom-agent");
+    expect(formatCodingAgents(null)).toBe("project.toml");
+    expect(formatCodingAgents([])).toBe("project.toml");
+  });
+});
+/* eslint-enable spellcheck/spell-checker */

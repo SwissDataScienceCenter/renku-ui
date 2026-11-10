@@ -381,6 +381,7 @@ export type BuilderVariant = string;
 export type FrontendVariant = string;
 export type RepositoryRevision = string;
 export type BuildContextDir = string;
+export type AiAgents = string[] | null;
 export type BuildParameters = any & {
   repository: Repository;
   platforms?: BuildPlatforms;
@@ -388,6 +389,7 @@ export type BuildParameters = any & {
   frontend_variant: FrontendVariant;
   repository_revision?: RepositoryRevision;
   context_dir?: BuildContextDir;
+  ai_agents?: AiAgents;
 };
 export type EnvironmentImageSourceBuild = "build";
 export type EnvironmentWithBuildGet = EnvironmentWithoutContainerImage & {
@@ -459,6 +461,7 @@ export type BuildParametersPatch = {
   frontend_variant?: FrontendVariant;
   repository_revision?: RepositoryRevisionPatch;
   context_dir?: BuildContextDirPatch;
+  ai_agents?: AiAgents;
 };
 export type EnvironmentPatchInLauncher = EnvironmentPatch & {
   environment_kind?: EnvironmentKind;
