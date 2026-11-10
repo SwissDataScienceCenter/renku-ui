@@ -16,16 +16,8 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useRef } from "react";
-import {
-  Col,
-  PopoverBody,
-  PopoverHeader,
-  Row,
-  UncontrolledPopover,
-} from "reactstrap";
+import { Col, Row } from "reactstrap";
 
 import useClickableHostHandlers from "~/components/buttons/useClickableHostHandlers.hook";
 import {
@@ -33,8 +25,8 @@ import {
   sessionLauncherKindToCategory,
 } from "~/features/sessionsV2/session.utils";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { useGetResourcePoolsByResourcePoolIdQuery } from "../api/computeResources.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
+import SessionRemotePoolBadge from "../components/SessionRemotePoolBadge";
 import {
   getSessionStatusStyles,
   SessionStatusV2Description,
@@ -42,7 +34,6 @@ import {
 } from "../components/SessionStatus/SessionStatus";
 import { getShowSessionUrlByProject } from "../SessionsV2";
 import { SessionV2 } from "../sessionsV2.types";
-import useResourcePoolByClassId from "../useResourcePoolByClassId.hook";
 
 import styles from "./Session.module.scss";
 
@@ -109,19 +100,21 @@ export default function SessionCard({
               >
                 <span className={cx("small", "text-muted", "me-3")}>
                   {launcherDefinition.text.display}
-                  <RemotePoolLabel
-                    resourceClassId={session.resource_class_id}
-                    launcherInlineText={launcherDefinition.text.inline}
-                  />
                   {session.submission_id ? `: ${session.submission_id}` : ""}
                 </span>
               </Col>
               <Col
-                className={cx("align-items-center", "mt-0", "gap-2")}
+                className={cx("d-flex", "align-items-center", "mt-0", "gap-2")}
                 xs="12"
                 xl="auto"
               >
                 <SessionStatusV2Label session={session} variant="card" />
+                <div className="ms-auto">
+                  <SessionRemotePoolBadge
+                    resourceClassId={session.resource_class_id}
+                    launcherInlineText={launcherDefinition.text.inline}
+                  />
+                </div>
               </Col>
               <Col
                 xs="auto"
@@ -152,53 +145,5 @@ export default function SessionCard({
         </Row>
       </div>
     </div>
-  );
-}
-
-interface RemotePoolLabelProps {
-  resourceClassId: number;
-  launcherInlineText: string;
-}
-function RemotePoolLabel({
-  resourceClassId,
-  launcherInlineText,
-}: RemotePoolLabelProps) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const { resourcePool } = useResourcePoolByClassId(resourceClassId);
-
-  // TEMPORARY: `GET /resource_pools` never fills in `cluster_id`, so we fetch the single pool instead.
-  // Remove this query and the `cluster` check below, once/if the backend is updated.
-  const { data: resourcePoolDetails } =
-    useGetResourcePoolsByResourcePoolIdQuery(
-      resourcePool != null &&
-        resourcePool.cluster_id == null &&
-        resourcePool.remote == null
-        ? { resourcePoolId: resourcePool.id }
-        : skipToken,
-    );
-
-  if (
-    resourcePool == null ||
-    (resourcePool.cluster_id == null &&
-      resourcePool.remote == null &&
-      resourcePoolDetails?.cluster == null) // TEMPORARY, see above
-  ) {
-    return null;
-  }
-
-  return (
-    <>
-      {" "}
-      <span className="fw-bold" data-cy="session-remote-pool" ref={ref}>
-        on remote pool
-      </span>
-      <UncontrolledPopover placement="bottom" target={ref} trigger="hover">
-        <PopoverHeader>Remote resource pool</PopoverHeader>
-        <PopoverBody>
-          This {launcherInlineText} runs on the remote resource pool{" "}
-          <span className="fw-bold">{resourcePool.name}</span>.
-        </PopoverBody>
-      </UncontrolledPopover>
-    </>
   );
 }
