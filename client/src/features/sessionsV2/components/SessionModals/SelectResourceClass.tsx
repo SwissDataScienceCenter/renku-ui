@@ -44,6 +44,7 @@ import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../session.constants";
+import SessionClassRemoteAlert from "../SessionClassRemoteAlert";
 import SessionClassSelector from "../SessionClassSelector";
 import { SessionRowResourceRequests } from "../SessionsList";
 import {
@@ -190,6 +191,14 @@ export function SelectResourceClassModal({
           </p>
         )}
         <div className="field-group">{selector}</div>
+
+        {watchCurrentSessionClass?.id !== resourceClassId && (
+          <SessionClassRemoteAlert
+            className="mt-2"
+            resourceClassId={watchCurrentSessionClass?.id}
+          />
+        )}
+
         {watchCurrentSessionClass && (
           <div className={cx("field-group", "mt-3")}>
             <div>
