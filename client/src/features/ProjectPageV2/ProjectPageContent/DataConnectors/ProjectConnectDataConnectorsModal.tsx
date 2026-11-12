@@ -67,6 +67,7 @@ import {
   SearchDataConnector,
   useGetSearchQueryQuery,
 } from "~/features/searchV2/api/searchV2Api.api";
+import { useGetStorageQuotasQuery } from "~/features/sessionsV2/api/computeResources.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { NEW_DOCS_DATA_CONNECTORS } from "~/utils/constants/NewDocs";
@@ -128,6 +129,12 @@ export default function ProjectConnectDataConnectorsModal({
   );
   const canAddProjectStorage =
     canManageProjectStorage && storageAllowData && projectStorage?.length === 0;
+
+  // NEW
+  const { data: storageQuotas } = useGetStorageQuotasQuery();
+  useEffect(() => {
+    console.log({ storageQuotas });
+  }, [storageQuotas]);
 
   const switchMode = {
     callback: useCallback((mode: ProjectConnectDataConnectorMode) => {
