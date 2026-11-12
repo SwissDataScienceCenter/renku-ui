@@ -54,9 +54,9 @@ export default function AddResourcePoolButton() {
 
   return (
     <>
-      <Button color="primary" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
-        Add Resource Pool
+        Add resource pool
       </Button>
       <AddResourcePoolModal isOpen={isOpen} toggle={toggle} />
     </>
@@ -414,7 +414,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
           ) : (
             <PlusLg className={cx("bi", "me-1")} />
           )}
-          Add Resource Pool
+          Add resource pool
         </Button>
       </ModalFooter>
     </Modal>

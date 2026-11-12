@@ -29,7 +29,14 @@ export const ABSOLUTE_ROUTES = {
   v1: { splat: "/v1/*" },
   v2: {
     index: "/",
-    admin: "/admin",
+    admin: {
+      root: "/admin",
+      computeResources: "/admin/compute-resources",
+      integrations: "/admin/integrations",
+      sessionEnvironments: "/admin/session-environments",
+      projectStorage: "/admin/project-storage",
+      maintenance: "/admin/maintenance",
+    },
     dataConnectors: {
       root: "/d/:slug",
       show: {
@@ -104,7 +111,14 @@ export const RELATIVE_ROUTES = {
   v1: { splat: "v1/*" },
   v2: {
     index: "/",
-    admin: "admin",
+    admin: {
+      root: "admin",
+      computeResources: "compute-resources",
+      integrations: "integrations",
+      sessionEnvironments: "session-environments",
+      projectStorage: "project-storage",
+      maintenance: "maintenance",
+    },
     betaRoot: "/v2/*",
     dataConnectors: {
       root: "d",

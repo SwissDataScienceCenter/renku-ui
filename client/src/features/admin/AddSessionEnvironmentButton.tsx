@@ -45,9 +45,9 @@ export default function AddSessionEnvironmentButton() {
 
   return (
     <>
-      <Button color="primary" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
-        Add Session Environment
+        Add session environment
       </Button>
       <AddSessionEnvironmentModal isOpen={isOpen} toggle={toggle} />
     </>

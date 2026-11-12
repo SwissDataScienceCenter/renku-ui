@@ -17,8 +17,8 @@
  */
 
 import cx from "classnames";
-import { useCallback, useState } from "react";
-import { Tags } from "react-bootstrap-icons";
+import { useCallback, useMemo, useState } from "react";
+import { CupHot, Tags } from "react-bootstrap-icons";
 import { Card, CardBody, CardHeader, Collapse } from "reactstrap";
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
@@ -29,22 +29,34 @@ import {
   type ResourceFlavor,
 } from "../sessionsV2/api/computeResources.api";
 import AddResourceFlavorButton from "./AddResourceFlavorButton";
+import AdminListFilter from "./AdminListFilter";
+import AdminSectionHeader from "./AdminSectionHeader";
 import DeleteResourceFlavorButton from "./DeleteResourceFlavorButton";
 import { LinkedResourceClassesSummary } from "./LinkedResourceClasses";
 import ResourceFlavorValues from "./ResourceFlavorValues";
 import UpdateResourceFlavorButton from "./UpdateResourceFlavorButton";
 
 export default function ResourceFlavorsSection() {
+  const { data, error, isLoading } = useGetResourceFlavorsQuery({});
+
   return (
-    <div className="mt-4">
-      <h3 className="fs-4">Resource Flavors</h3>
-      <p className="mb-2">
+    <section>
+      <AdminSectionHeader
+        action={<AddResourceFlavorButton />}
+        count={!isLoading && !error ? data?.length : undefined}
+        headerTag="h3"
+        icon={CupHot}
+        title="Resource flavors"
+      />
+
+      <p>
         A resource flavor is a named shape that resource classes across pools
         can link to. A linked class reports the flavor&apos;s CPU, memory, GPU
         and disk values, and keeps its own name.
       </p>
+
       <ResourceFlavors />
-    </div>
+    </section>
   );
 }
 
@@ -55,6 +67,16 @@ function ResourceFlavors() {
     isLoading,
   } = useGetResourceFlavorsQuery({});
 
+  const [filter, setFilter] = useState("");
+
+  const filteredFlavors = useMemo(() => {
+    if (!resourceFlavors || !filter) return resourceFlavors;
+    const lowerCaseFilter = filter.toLowerCase();
+    return resourceFlavors.filter(({ name }) =>
+      name.toLowerCase().includes(lowerCaseFilter),
+    );
+  }, [resourceFlavors, filter]);
+
   if (isLoading) {
     return <Loader />;
   }
@@ -63,23 +85,29 @@ function ResourceFlavors() {
     return <RtkOrDataServicesError error={error} />;
   }
 
-  return (
-    <div>
-      <AddResourceFlavorButton />
+  if (!resourceFlavors || !filteredFlavors || resourceFlavors.length === 0) {
+    return <p className="mb-0">No resource flavor has been defined yet.</p>;
+  }
 
-      <div className="mt-2">
-        {!resourceFlavors || resourceFlavors.length === 0 ? (
-          <p className="mb-0">No resource flavor has been defined yet.</p>
-        ) : (
-          resourceFlavors.map((resourceFlavor) => (
+  return (
+    <>
+      <AdminListFilter filter={filter} onFilterChange={setFilter} />
+
+      {filteredFlavors.length === 0 ? (
+        <p className="fst-italic">
+          No resource flavor matches the filter <code>{filter}</code>.
+        </p>
+      ) : (
+        <div className={cx("d-flex", "flex-column", "gap-2", "mb-3")}>
+          {filteredFlavors.map((resourceFlavor) => (
             <ResourceFlavorItem
               key={resourceFlavor.id}
               resourceFlavor={resourceFlavor}
             />
-          ))
-        )}
-      </div>
-    </div>
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -96,7 +124,7 @@ function ResourceFlavorItem({ resourceFlavor }: ResourceFlavorItemProps) {
   }, []);
 
   return (
-    <Card className="mt-2">
+    <Card>
       <CardHeader
         className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
         tag="h4"
