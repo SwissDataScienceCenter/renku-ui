@@ -44,6 +44,7 @@ import {
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../components/BuildStatusComponents";
+import CscsSlurmAccountBadge from "../components/CscsSlurmAccountBadge";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
 import { LauncherEnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
@@ -256,7 +257,16 @@ export default function SessionLauncherCard({
               </Row>
               {isCodeEnvironment ? (
                 <Row className="g-2">
-                  <Col xs={12} xl={5}>
+                  <Col
+                    xs={12}
+                    xl={5}
+                    className={cx(
+                      "d-flex",
+                      "flex-wrap",
+                      "align-items-center",
+                      "gap-2",
+                    )}
+                  >
                     {isCodeEnvironment &&
                     (isLoadingBuilds ||
                       isLoadingContainerImage ||
@@ -277,6 +287,12 @@ export default function SessionLauncherCard({
                         isLoading={isLoadingContainerImage}
                         resourcePool={resourcePool}
                         isLoadingResourcePools={isLoadingResourcePools}
+                      />
+                    )}
+                    {launcher != null && (
+                      <CscsSlurmAccountBadge
+                        launcher={launcher}
+                        resourcePool={resourcePool}
                       />
                     )}
                   </Col>
@@ -300,7 +316,12 @@ export default function SessionLauncherCard({
                 <Row>
                   <Col>
                     <div
-                      className={cx("d-flex", "align-items-center", "gap-2")}
+                      className={cx(
+                        "d-flex",
+                        "flex-wrap",
+                        "align-items-center",
+                        "gap-2",
+                      )}
                     >
                       {launcher?.is_restricted && <RestrictedBadge />}
                       <SessionImageBadge
@@ -309,6 +330,12 @@ export default function SessionLauncherCard({
                         resourcePool={resourcePool}
                         isLoadingResourcePools={isLoadingResourcePools}
                       />
+                      {launcher != null && (
+                        <CscsSlurmAccountBadge
+                          launcher={launcher}
+                          resourcePool={resourcePool}
+                        />
+                      )}
                     </div>
                   </Col>
                 </Row>

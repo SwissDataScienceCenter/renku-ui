@@ -39,11 +39,13 @@ import type {
 import {
   BUILDER_FRONTEND_COMBINATIONS,
   BUILDER_PLATFORMS,
+  CSCS_DOMAIN,
   DEFAULT_PORT,
   DEFAULT_URL,
   ENV_VARIABLES_RESERVED_PREFIX,
   getCompatibleFrontends,
   LAUNCHER_BY_CATEGORY,
+  SLURM_ACCOUNT_ENV_VARIABLE,
   SUBMISSION_ID_PATTERN,
   SUBMISSION_ID_VALIDATION_MESSAGE,
 } from "./session.constants";
@@ -605,6 +607,32 @@ export function ensureHTTPS(url: string): string {
   } catch {
     throw new Error(`Invalid URL: ${url}`);
   }
+}
+
+/**
+ * Whether a resource pool runs sessions on CSCS, i.e. it has a `firecrest`
+ * remote whose API is hosted under `cscs.ch`.
+ */
+export function isCscsResourcePool(
+  resourcePool: Pick<ResourcePoolWithId, "remote"> | null | undefined,
+): boolean {
+  const remote = resourcePool?.remote;
+  if (remote?.kind !== "firecrest") return false;
+  try {
+    const { hostname } = new URL(remote.api_url);
+    return hostname === CSCS_DOMAIN || hostname.endsWith(`.${CSCS_DOMAIN}`);
+  } catch {
+    return false;
+  }
+}
+
+/** Whether the launcher sets a non-empty `SLURM_ACCOUNT` environment variable. */
+export function hasSlurmAccount(
+  launcher: Pick<SessionLauncher, "env_variables">,
+): boolean {
+  return (launcher.env_variables ?? []).some(
+    ({ name, value }) => name === SLURM_ACCOUNT_ENV_VARIABLE && !!value?.trim(),
+  );
 }
 
 /**
