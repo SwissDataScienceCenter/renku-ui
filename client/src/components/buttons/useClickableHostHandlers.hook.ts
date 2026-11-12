@@ -26,9 +26,14 @@ export default function useClickableHostHandlers(onActivate?: () => void) {
   const onClick = useCallback(
     (event: MouseEvent<HTMLElement>) => {
       if (!onActivate) return;
+      const { currentTarget, target } = event;
+      // Ignore clicks coming from content rendered in things like nested modals
+      if (!(target instanceof Node) || !currentTarget.contains(target)) {
+        return;
+      }
       if (
-        event.target instanceof Element &&
-        event.target.closest(MENU_HOST_IGNORE_SELECTOR)
+        target instanceof Element &&
+        target.closest(MENU_HOST_IGNORE_SELECTOR)
       ) {
         return;
       }
