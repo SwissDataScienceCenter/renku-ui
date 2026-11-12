@@ -384,7 +384,7 @@ function DataConnectorMount({ dataConnector }: AddOrEditDataConnectorProps) {
   const dataConnectorId = flatDataConnector.dataConnectorId;
   const parentPath = `/${flatDataConnector.namespace}/`;
   return (
-    <form className="form-rk-green" data-cy="data-connector-edit-mount">
+    <form data-cy="data-connector-edit-mount">
       {!dataConnectorId && <h3>Final details</h3>}
       <p>
         Set how your data connector displays in Renku and who can access it.

@@ -26,6 +26,7 @@ import {
 } from "~/features/sessionsV2/session.utils";
 import { Project } from "../../projectsV2/api/projectV2.api";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
+import SessionRemotePoolBadge from "../components/SessionRemotePoolBadge";
 import {
   getSessionStatusStyles,
   SessionStatusV2Description,
@@ -103,11 +104,17 @@ export default function SessionCard({
                 </span>
               </Col>
               <Col
-                className={cx("align-items-center", "mt-0", "gap-2")}
+                className={cx("d-flex", "align-items-center", "mt-0", "gap-2")}
                 xs="12"
                 xl="auto"
               >
                 <SessionStatusV2Label session={session} variant="card" />
+                <div className="ms-auto">
+                  <SessionRemotePoolBadge
+                    resourceClassId={session.resource_class_id}
+                    launcherInlineText={launcherDefinition.text.inline}
+                  />
+                </div>
               </Col>
               <Col
                 xs="auto"

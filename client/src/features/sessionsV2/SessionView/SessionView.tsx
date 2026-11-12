@@ -86,6 +86,7 @@ import { LauncherActions } from "../components/launcherActions/LauncherActions";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
+import SessionRemotePoolBadge from "../components/SessionRemotePoolBadge";
 import { SessionRowResourceRequests } from "../components/SessionsList";
 import {
   SessionStatusV2Badge,
@@ -161,10 +162,20 @@ function SessionCard({
   project: Project;
 }) {
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   return (
     <SessionCardContent
       color={getSessionColor(session.status.state, launcherCategory)}
-      contentDescription={<SessionStatusV2Description session={session} />}
+      contentDescription={
+        <div>
+          <SessionStatusV2Description session={session} />
+          <SessionRemotePoolBadge
+            className="mt-2"
+            launcherInlineText={launcherDefinition.text.inline}
+            resourceClassId={session.resource_class_id}
+          />
+        </div>
+      }
       contentLabel={<SessionStatusV2Badge session={session} />}
       contentSession={
         <ActiveSessionButton
