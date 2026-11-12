@@ -16,12 +16,7 @@
  * limitations under the License.
  */
 
-import { skipToken } from "@reduxjs/toolkit/query";
-
-import {
-  useGetResourcePoolsByResourcePoolIdQuery,
-  type ResourcePoolWithIdFiltered,
-} from "./api/computeResources.api";
+import type { ResourcePoolWithIdFiltered } from "./api/computeResources.api";
 
 export type RemoteKind = "firecrest" | "runai" | "cluster";
 
@@ -47,24 +42,8 @@ export const REMOTE_KIND_TEXT: Record<
 export default function useResourcePoolRemoteKind(
   resourcePool: ResourcePoolWithIdFiltered | undefined,
 ): RemoteKind | null {
-  // TEMPORARY: `GET /resource_pools` never fills in `cluster_id`, so we fetch the single pool instead.
-  // Remove this query and the `cluster` check below, once/if the backend is updated.
-  const { data: resourcePoolDetails } =
-    useGetResourcePoolsByResourcePoolIdQuery(
-      resourcePool != null &&
-        resourcePool.cluster_id == null &&
-        resourcePool.remote == null
-        ? { resourcePoolId: resourcePool.id }
-        : skipToken,
-    );
-
   if (resourcePool == null) return null;
   if (resourcePool.remote != null) return resourcePool.remote.kind;
-  if (
-    resourcePool.cluster_id != null ||
-    resourcePoolDetails?.cluster != null // TEMPORARY, see above
-  ) {
-    return "cluster";
-  }
+  if (resourcePool.cluster_id != null) return "cluster";
   return null;
 }
