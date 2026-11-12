@@ -180,6 +180,10 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
             ]
           : [{ id: "LIST", type: "StorageQuota" }],
     },
+    getStorageQuotasByStorageQuotaId: {
+      providesTags: (result) =>
+        result ? [{ id: result.id, type: "StorageQuota" }] : ["StorageQuota"],
+    },
   },
 });
 
@@ -215,6 +219,7 @@ export const {
 
   // "storage quotas" hooks
   useGetStorageQuotasQuery,
+  useGetStorageQuotasByStorageQuotaIdQuery,
 } = computeResourcesApi;
 
 export type * from "./computeResources.generated-api";
