@@ -42,6 +42,7 @@ import {
 } from "../../session.utils";
 import type { LauncherCategory } from "../../sessionsV2.types";
 import { SessionLauncherForm } from "../../sessionsV2.types";
+import SessionClassRemoteAlert from "../SessionClassRemoteAlert";
 import SessionClassSelector from "../SessionClassSelector";
 
 interface LauncherDetailsFieldsProps {
@@ -162,6 +163,12 @@ export function LauncherDetailsFields({
             {categoryDefinition.text.inline} launcher
           </WarnAlert>
         )}
+
+        <SessionClassRemoteAlert
+          className="mt-2"
+          launcherInlineText={categoryDefinition.text.inline}
+          resourceClassId={watchCurrentSessionClass?.id}
+        />
 
         {watchCurrentSessionClass && (
           <div className={cx("field-group", "mt-3")}>

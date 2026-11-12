@@ -29,28 +29,10 @@ import {
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
-import { useGetResourcePoolsByResourcePoolIdQuery } from "../api/computeResources.api";
 import useResourcePoolByClassId from "../useResourcePoolByClassId.hook";
-
-type RemoteKind = "firecrest" | "runai" | "cluster";
-
-const REMOTE_KIND_TEXT: Record<
-  RemoteKind,
-  { title: string; description: string }
-> = {
-  firecrest: {
-    title: "HPC resource pool",
-    description: "on a remote HPC system through FirecREST", // eslint-disable-line spellcheck/spell-checker
-  },
-  runai: {
-    title: "Run:ai resource pool",
-    description: "on a Run:ai cluster",
-  },
-  cluster: {
-    title: "Remote resource pool",
-    description: "on a remote cluster",
-  },
-};
+import useResourcePoolRemoteKind, {
+  REMOTE_KIND_TEXT,
+} from "../useResourcePoolRemoteKind.hook";
 
 interface SessionRemotePoolBadgeProps {
   className?: string;
@@ -69,25 +51,9 @@ export default function SessionRemotePoolBadge({
     ({ id }) => id === resourceClassId,
   );
 
-  // TEMPORARY: `GET /resource_pools` never fills in `cluster_id`, so we fetch the single pool instead.
-  // Remove this query and the `cluster` check below, once/if the backend is updated.
-  const { data: resourcePoolDetails } =
-    useGetResourcePoolsByResourcePoolIdQuery(
-      resourcePool != null &&
-        resourcePool.cluster_id == null &&
-        resourcePool.remote == null
-        ? { resourcePoolId: resourcePool.id }
-        : skipToken,
-    );
+  const kind = useResourcePoolRemoteKind(resourcePool);
 
   const remote = resourcePool?.remote;
-  const kind: RemoteKind | null =
-    remote != null
-      ? remote.kind
-      : resourcePool?.cluster_id != null || resourcePoolDetails?.cluster != null // TEMPORARY, see above
-        ? "cluster"
-        : null;
-
   const providerId = remote?.provider_id;
   const { data: providers } = useGetOauth2ProvidersQuery(
     providerId ? undefined : skipToken,

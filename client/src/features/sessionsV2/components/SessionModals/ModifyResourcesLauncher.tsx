@@ -49,6 +49,7 @@ import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../session.constants";
+import SessionClassRemoteAlert from "../SessionClassRemoteAlert";
 import SessionClassSelector from "../SessionClassSelector";
 import {
   ErrorOrNotAvailableResourcePools,
@@ -219,6 +220,11 @@ export function ModifyResourcesLauncherModal({
         )}
         {!result.isSuccess && changeEffect}
         <div className="field-group">{selector}</div>
+        <SessionClassRemoteAlert
+          className="mt-2"
+          launcherInlineText={categoryDefinition.text.inline}
+          resourceClassId={watchCurrentSessionClass?.id}
+        />
         {watchCurrentSessionClass && (
           <div className={cx("field-group", "mt-3")}>
             <div>
