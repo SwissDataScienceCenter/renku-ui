@@ -497,6 +497,184 @@
         },
         "tags": ["projects"]
       }
+    },
+    "/project_storage_v2": {
+      "get": {
+        "summary": "Get all visible project storages",
+        "responses": {
+          "200": {
+            "description": "The list of all visible project storages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStoragesV2"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["project_storage"]
+      },
+      "post": {
+        "summary": "Create a project storage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectStoragePostV2"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The newly created project storage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorageV2"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["project_storage"]
+      }
+    },
+    "/project_storage_v2/{storage_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "storage_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a project storage",
+        "responses": {
+          "200": {
+            "description": "The project storage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorageV2"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project storage does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["project_storage"]
+      },
+      "patch": {
+        "summary": "Update a project storage",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectStoragePatchV2"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated project storage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorageV2"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project storage does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["project_storage"]
+      },
+      "delete": {
+        "summary": "Delete a project storage",
+        "responses": {
+          "204": {
+            "description": "The project storage was deleted or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["project_storage"]
+      }
+    },
+    "/projects/{project_id}/storage_v2": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "project_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the project storage v2 for a given project",
+        "responses": {
+          "200": {
+            "description": "The list of project storages (currently either one or empty).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStoragesV2"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["projects"]
+      }
     }
   },
   "components": {
@@ -900,6 +1078,102 @@
           }
         },
         "required": ["enabled", "max_size"]
+      },
+      "ProjectStoragesV2": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ProjectStorageV2"
+        }
+      },
+      "ProjectStorageV2": {
+        "description": "Self-service storage for Renku projects\n",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "storage_quota_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "requested_size": {
+            "$ref": "#/components/schemas/MaxStorageSize"
+          },
+          "actual_size": {
+            "$ref": "#/components/schemas/MaxStorageSize"
+          },
+          "mount_path": {
+            "type": "string"
+          },
+          "k8s_pvc_name": {
+            "type": "string"
+          },
+          "k8s_pvc_status": {
+            "type": "string"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/UserId"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "storage_quota_id",
+          "requested_size",
+          "mount_path",
+          "created_by",
+          "creation_date",
+          "updated_at",
+          "etag"
+        ]
+      },
+      "ProjectStoragePostV2": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "storage_quota_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "requested_size": {
+            "$ref": "#/components/schemas/MaxStorageSize"
+          },
+          "mount_path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "project_id",
+          "storage_quota_id",
+          "requested_size",
+          "mount_path"
+        ]
+      },
+      "ProjectStoragePatchV2": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requested_size": {
+            "$ref": "#/components/schemas/MaxStorageSize"
+          },
+          "mount_path": {
+            "type": "string"
+          }
+        }
       },
       "Ulid": {
         "description": "ULID identifier",

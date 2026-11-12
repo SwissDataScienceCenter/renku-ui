@@ -423,6 +423,106 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/groups/${queryArg.groupSlug}/resource_pools`,
       }),
     }),
+    getStorageFlavors: build.query<
+      GetStorageFlavorsApiResponse,
+      GetStorageFlavorsApiArg
+    >({
+      query: () => ({ url: `/storage_flavors` }),
+    }),
+    postStorageFlavors: build.mutation<
+      PostStorageFlavorsApiResponse,
+      PostStorageFlavorsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage_flavors`,
+        method: "POST",
+        body: queryArg.storageFlavorPost,
+      }),
+    }),
+    getStorageFlavorsByStorageFlavorId: build.query<
+      GetStorageFlavorsByStorageFlavorIdApiResponse,
+      GetStorageFlavorsByStorageFlavorIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage_flavors/${queryArg.storageFlavorId}`,
+      }),
+    }),
+    patchStorageFlavorsByStorageFlavorId: build.mutation<
+      PatchStorageFlavorsByStorageFlavorIdApiResponse,
+      PatchStorageFlavorsByStorageFlavorIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage_flavors/${queryArg.storageFlavorId}`,
+        method: "PATCH",
+        body: queryArg.storageFlavorPatch,
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
+      }),
+    }),
+    deleteStorageFlavorsByStorageFlavorId: build.mutation<
+      DeleteStorageFlavorsByStorageFlavorIdApiResponse,
+      DeleteStorageFlavorsByStorageFlavorIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage_flavors/${queryArg.storageFlavorId}`,
+        method: "DELETE",
+      }),
+    }),
+    getStorageQuotas: build.query<
+      GetStorageQuotasApiResponse,
+      GetStorageQuotasApiArg
+    >({
+      query: () => ({ url: `/storage_quotas` }),
+    }),
+    postStorageQuotas: build.mutation<
+      PostStorageQuotasApiResponse,
+      PostStorageQuotasApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage_quotas`,
+        method: "POST",
+        body: queryArg.storageQuotaPost,
+      }),
+    }),
+    getStorageQuotasByStorageQuotaId: build.query<
+      GetStorageQuotasByStorageQuotaIdApiResponse,
+      GetStorageQuotasByStorageQuotaIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage_quotas/${queryArg.storageQuotaId}`,
+      }),
+    }),
+    patchStorageQuotasByStorageQuotaId: build.mutation<
+      PatchStorageQuotasByStorageQuotaIdApiResponse,
+      PatchStorageQuotasByStorageQuotaIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage_quotas/${queryArg.storageQuotaId}`,
+        method: "PATCH",
+        body: queryArg.storageQuotaPatch,
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
+      }),
+    }),
+    deleteStorageQuotasByStorageQuotaId: build.mutation<
+      DeleteStorageQuotasByStorageQuotaIdApiResponse,
+      DeleteStorageQuotasByStorageQuotaIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage_quotas/${queryArg.storageQuotaId}`,
+        method: "DELETE",
+      }),
+    }),
+    getResourcePoolsByResourcePoolIdStorageQuotas: build.query<
+      GetResourcePoolsByResourcePoolIdStorageQuotasApiResponse,
+      GetResourcePoolsByResourcePoolIdStorageQuotasApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/resource_pools/${queryArg.resourcePoolId}/storage_quotas`,
+      }),
+    }),
     getVersion: build.query<GetVersionApiResponse, GetVersionApiArg>({
       query: () => ({ url: `/version` }),
     }),
@@ -715,6 +815,61 @@ export type GetGroupsByGroupSlugResourcePoolsApiResponse =
   /** status 200 The resource pools that the group has access to */ ResourcePoolsWithIdFiltered;
 export type GetGroupsByGroupSlugResourcePoolsApiArg = {
   groupSlug: string;
+};
+export type GetStorageFlavorsApiResponse =
+  /** status 200 The list of storage flavors */ StorageFlavors;
+export type GetStorageFlavorsApiArg = void;
+export type PostStorageFlavorsApiResponse =
+  /** status 201 The newly created storage flavor */ StorageFlavor;
+export type PostStorageFlavorsApiArg = {
+  storageFlavorPost: StorageFlavorPost;
+};
+export type GetStorageFlavorsByStorageFlavorIdApiResponse =
+  /** status 200 The storage flavor */ StorageFlavor;
+export type GetStorageFlavorsByStorageFlavorIdApiArg = {
+  storageFlavorId: Ulid;
+};
+export type PatchStorageFlavorsByStorageFlavorIdApiResponse =
+  /** status 200 The updated storage flavor */ StorageFlavor;
+export type PatchStorageFlavorsByStorageFlavorIdApiArg = {
+  storageFlavorId: Ulid;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
+  storageFlavorPatch: StorageFlavorPatch;
+};
+export type DeleteStorageFlavorsByStorageFlavorIdApiResponse = unknown;
+export type DeleteStorageFlavorsByStorageFlavorIdApiArg = {
+  storageFlavorId: Ulid;
+};
+export type GetStorageQuotasApiResponse =
+  /** status 200 The list of all visible storage quotas */ StorageQuotas;
+export type GetStorageQuotasApiArg = void;
+export type PostStorageQuotasApiResponse =
+  /** status 201 The newly created storage quota */ StorageQuota;
+export type PostStorageQuotasApiArg = {
+  storageQuotaPost: StorageQuotaPost;
+};
+export type GetStorageQuotasByStorageQuotaIdApiResponse =
+  /** status 200 The storage quota */ StorageQuotas;
+export type GetStorageQuotasByStorageQuotaIdApiArg = {
+  storageQuotaId: Ulid;
+};
+export type PatchStorageQuotasByStorageQuotaIdApiResponse =
+  /** status 200 The updated storage quota */ StorageQuotas;
+export type PatchStorageQuotasByStorageQuotaIdApiArg = {
+  storageQuotaId: Ulid;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
+  storageQuotaPatch: StorageQuotaPatch;
+};
+export type DeleteStorageQuotasByStorageQuotaIdApiResponse = unknown;
+export type DeleteStorageQuotasByStorageQuotaIdApiArg = {
+  storageQuotaId: Ulid;
+};
+export type GetResourcePoolsByResourcePoolIdStorageQuotasApiResponse =
+  /** status 200 The list of storage quotas in the resource pool */ StorageQuotas;
+export type GetResourcePoolsByResourcePoolIdStorageQuotasApiArg = {
+  resourcePoolId: number;
 };
 export type GetVersionApiResponse = /** status 200 The error */ Version;
 export type GetVersionApiArg = void;
@@ -1108,6 +1263,61 @@ export type PoolMember = PoolMemberUser | PoolMemberGroup | PoolMemberProject;
 export type PoolMembers = PoolMember[];
 export type ResourcePoolsWithId = ResourcePoolWithId[];
 export type IntegerIds = IntegerId[];
+export type KubernetesStorageClassName = string;
+export type MinStorageSize = number;
+export type CreationDate = string;
+export type UpdatedAt = string;
+export type ETag = string;
+export type StorageFlavor = {
+  id: Ulid;
+  k8s_storage_class_name: KubernetesStorageClassName;
+  display_name: string;
+  min_size: MinStorageSize;
+  admin_documentation?: string;
+  documentation?: string;
+  creation_date: CreationDate;
+  updated_at: UpdatedAt;
+  etag: ETag;
+};
+export type StorageFlavors = StorageFlavor[];
+export type StorageFlavorPost = {
+  k8s_storage_class_name: KubernetesStorageClassName;
+  display_name: string;
+  min_size: MinStorageSize;
+  admin_documentation?: string;
+  documentation?: string;
+};
+export type StorageFlavorPatch = {
+  display_name?: string;
+  min_size?: MinStorageSize;
+  admin_documentation?: string;
+  documentation?: string;
+};
+export type MaxStorageSize = number;
+export type StorageQuota = {
+  id: Ulid;
+  resource_pool_id: IntegerId;
+  storage_flavor_id: Ulid;
+  storage_flavor_display_name: string;
+  storage_flavor_min_size: MinStorageSize;
+  storage_flavor_documentation?: string;
+  total_size: MaxStorageSize;
+  max_size: MaxStorageSize;
+  creation_date: CreationDate;
+  updated_at: UpdatedAt;
+  etag: ETag;
+};
+export type StorageQuotas = StorageQuota[];
+export type StorageQuotaPost = {
+  resource_pool_id: IntegerId;
+  storage_flavor_id: Ulid;
+  total_size: MaxStorageSize;
+  max_size: MaxStorageSize;
+};
+export type StorageQuotaPatch = {
+  total_size?: MaxStorageSize;
+  max_size?: MaxStorageSize;
+};
 export type Version = {
   version: string;
 };
@@ -1159,5 +1369,16 @@ export const {
   usePostUsersByUserIdResourcePoolsMutation,
   usePutUsersByUserIdResourcePoolsMutation,
   useGetGroupsByGroupSlugResourcePoolsQuery,
+  useGetStorageFlavorsQuery,
+  usePostStorageFlavorsMutation,
+  useGetStorageFlavorsByStorageFlavorIdQuery,
+  usePatchStorageFlavorsByStorageFlavorIdMutation,
+  useDeleteStorageFlavorsByStorageFlavorIdMutation,
+  useGetStorageQuotasQuery,
+  usePostStorageQuotasMutation,
+  useGetStorageQuotasByStorageQuotaIdQuery,
+  usePatchStorageQuotasByStorageQuotaIdMutation,
+  useDeleteStorageQuotasByStorageQuotaIdMutation,
+  useGetResourcePoolsByResourcePoolIdStorageQuotasQuery,
   useGetVersionQuery,
 } = injectedRtkApi;
