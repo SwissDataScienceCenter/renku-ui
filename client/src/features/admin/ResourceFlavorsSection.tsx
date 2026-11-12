@@ -19,7 +19,7 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { CupHot, Tags } from "react-bootstrap-icons";
-import { Badge, Card, CardBody, CardHeader, Collapse } from "reactstrap";
+import { Card, CardBody, CardHeader, Collapse } from "reactstrap";
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
@@ -30,6 +30,7 @@ import {
 } from "../sessionsV2/api/computeResources.api";
 import AddResourceFlavorButton from "./AddResourceFlavorButton";
 import AdminListFilter from "./AdminListFilter";
+import AdminSectionHeader from "./AdminSectionHeader";
 import DeleteResourceFlavorButton from "./DeleteResourceFlavorButton";
 import { LinkedResourceClassesSummary } from "./LinkedResourceClasses";
 import ResourceFlavorValues from "./ResourceFlavorValues";
@@ -40,18 +41,13 @@ export default function ResourceFlavorsSection() {
 
   return (
     <section>
-      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
-        <h3 className="mb-0">
-          <CupHot className="me-1" />
-          Resource Flavors
-        </h3>
-
-        {data && !isLoading && !error && <Badge>{data?.length}</Badge>}
-
-        <div className="ms-auto">
-          <AddResourceFlavorButton />
-        </div>
-      </div>
+      <AdminSectionHeader
+        action={<AddResourceFlavorButton />}
+        count={!isLoading && !error ? data?.length : undefined}
+        headerTag="h3"
+        icon={CupHot}
+        title="Resource flavors"
+      />
 
       <p>
         A resource flavor is a named shape that resource classes across pools

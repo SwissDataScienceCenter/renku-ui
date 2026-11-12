@@ -30,7 +30,6 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
@@ -70,6 +69,7 @@ import AddResourcePoolButton from "./AddResourcePoolButton";
 import { poolRequiresIntegerCpu } from "./adminComputeResources.utils";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import AdminListFilter from "./AdminListFilter";
+import AdminSectionHeader from "./AdminSectionHeader";
 import DeleteResourceClassButton from "./DeleteResourceClassButton";
 import ResourceFlavorsSection from "./ResourceFlavorsSection";
 import UpdateResourceClassButton from "./UpdateResourceClassButton";
@@ -84,18 +84,12 @@ export default function ComputeResourcesSection() {
   return (
     <>
       <section>
-        <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
-          <h2 className="mb-0">
-            <Cpu className="me-1" />
-            Resource pools
-          </h2>
-
-          {data && !isLoading && !error && <Badge>{data?.length}</Badge>}
-
-          <div className="ms-auto">
-            <AddResourcePoolButton />
-          </div>
-        </div>
+        <AdminSectionHeader
+          action={<AddResourcePoolButton />}
+          count={!isLoading && !error ? data?.length : undefined}
+          icon={Cpu}
+          title="Resource pools"
+        />
 
         <p className="mb-2">
           Resource pools allow you to manage and allocate compute resources for

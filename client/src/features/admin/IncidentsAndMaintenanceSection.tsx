@@ -51,6 +51,7 @@ import {
   usePatchPlatformConfigMutation,
 } from "../platform/api/platform.api";
 import { useGetSummaryQuery } from "../platform/statuspage-api/statuspage.api";
+import AdminSectionHeader from "./AdminSectionHeader";
 
 export default function IncidentsAndMaintenanceSection() {
   const { params } = useContext(AppContext);
@@ -59,10 +60,10 @@ export default function IncidentsAndMaintenanceSection() {
 
   return (
     <section>
-      <h2 className="mb-3">
-        <WrenchAdjustableCircle className="me-1" />
-        Maintenance banners
-      </h2>
+      <AdminSectionHeader
+        icon={WrenchAdjustableCircle}
+        title="Maintenance banners"
+      />
 
       <div className="mb-4">
         <p className="mb-2">

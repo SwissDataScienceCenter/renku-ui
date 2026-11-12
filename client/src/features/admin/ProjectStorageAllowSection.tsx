@@ -28,7 +28,6 @@ import {
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Badge,
   Button,
   Form,
   FormText,
@@ -66,6 +65,7 @@ import {
   PROJECT_STORAGE_STEP_GB,
 } from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants";
 import AdminListFilter from "./AdminListFilter";
+import AdminSectionHeader from "./AdminSectionHeader";
 
 export default function ProjectStorageAllowSection() {
   const { data, error, isLoading } = useGetStorageAllowQuery({});
@@ -83,18 +83,12 @@ export default function ProjectStorageAllowSection() {
 
   return (
     <section>
-      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
-        <h2 className="mb-0">
-          <Archive className="me-1" />
-          Project storage
-        </h2>
-
-        {data && !isLoading && !error && <Badge>{data?.length}</Badge>}
-
-        <div className="ms-auto">
-          <AddProjectStorageAllowButton />
-        </div>
-      </div>
+      <AdminSectionHeader
+        action={<AddProjectStorageAllowButton />}
+        count={!isLoading && !error ? data?.length : undefined}
+        icon={Archive}
+        title="Project storage"
+      />
 
       <p className="mb-2">
         Provide persistent storage for white-listed projects. Mind that only

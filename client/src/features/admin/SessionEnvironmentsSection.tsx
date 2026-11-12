@@ -19,14 +19,7 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { PlayCircle } from "react-bootstrap-icons";
-import {
-  Badge,
-  Card,
-  CardBody,
-  CardHeader,
-  CardText,
-  Collapse,
-} from "reactstrap";
+import { Card, CardBody, CardHeader, CardText, Collapse } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
 import { CommandCopy } from "~/components/commandCopy/CommandCopy";
@@ -42,6 +35,7 @@ import { useGetEnvironmentsQuery } from "../sessionsV2/api/sessionLaunchersV2.ap
 import { safeStringify } from "../sessionsV2/session.utils";
 import AddSessionEnvironmentButton from "./AddSessionEnvironmentButton";
 import AdminListFilter from "./AdminListFilter";
+import AdminSectionHeader from "./AdminSectionHeader";
 import DeleteSessionEnvironmentButton from "./DeleteSessionEnvironmentButton";
 import UpdateSessionEnvironmentButton from "./UpdateSessionEnvironmentButton";
 
@@ -50,20 +44,12 @@ export default function SessionEnvironmentsSection() {
 
   return (
     <section>
-      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
-        <h2 className="mb-0">
-          <PlayCircle className="me-1" />
-          Global session environments
-        </h2>
-
-        {environments && !isLoading && !error && (
-          <Badge>{environments?.length}</Badge>
-        )}
-
-        <div className="ms-auto">
-          <AddSessionEnvironmentButton />
-        </div>
-      </div>
+      <AdminSectionHeader
+        action={<AddSessionEnvironmentButton />}
+        count={!isLoading && !error ? environments?.length : undefined}
+        icon={PlayCircle}
+        title="Global session environments"
+      />
 
       <p className="mb-2">
         Global session environments are curated environments readily available

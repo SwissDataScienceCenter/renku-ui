@@ -19,14 +19,7 @@
 import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { Plugin } from "react-bootstrap-icons";
-import {
-  Badge,
-  Card,
-  CardBody,
-  CardHeader,
-  CardText,
-  Collapse,
-} from "reactstrap";
+import { Card, CardBody, CardHeader, CardText, Collapse } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
 import ExternalLink from "~/components/ExternalLink";
@@ -40,6 +33,7 @@ import {
 } from "../connectedServices/api/connectedServices.api";
 import AddConnectedServiceButton from "./AddIntegrationsButton";
 import AdminListFilter from "./AdminListFilter";
+import AdminSectionHeader from "./AdminSectionHeader";
 import DeleteConnectedServiceButton from "./DeleteIntegrationsButton";
 import UpdateConnectedServiceButton from "./UpdateIntegrationsButton";
 
@@ -48,20 +42,12 @@ export default function ConnectedServicesSection() {
 
   return (
     <section>
-      <div className={cx("align-items-center", "d-flex", "gap-2", "mb-3")}>
-        <h2 className="mb-0">
-          <Plugin className="me-1" />
-          Integrations
-        </h2>
-
-        {providers && !isLoading && !error && (
-          <Badge>{providers?.length}</Badge>
-        )}
-
-        <div className="ms-auto">
-          <AddConnectedServiceButton />
-        </div>
-      </div>
+      <AdminSectionHeader
+        action={<AddConnectedServiceButton />}
+        count={!isLoading && !error ? providers?.length : undefined}
+        icon={Plugin}
+        title="Integrations"
+      />
 
       <p className="mb-2">
         Integrations enable connecting external services to import/export data
