@@ -155,7 +155,7 @@ function AddProjectStorageAllowButton() {
 
   return (
     <div className="mb-2">
-      <Button color="primary" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
         White-list project for storage
       </Button>
