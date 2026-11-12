@@ -13,35 +13,21 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Pencil, Trash, TrashFill, XLg } from "react-bootstrap-icons";
+import { useCallback, useMemo, useState } from "react";
 import { Link, To, useLocation } from "react-router";
-import {
-  Button,
-  Col,
-  ListGroupItem,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Row,
-} from "reactstrap";
+import { Col, ListGroupItem, Row } from "reactstrap";
 
-import { WarnAlert } from "~/components/Alert";
-import { MenuButton, MenuButtonItem } from "~/components/buttons/MenuButton";
-import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
-import { useDeleteStorageByStorageIdMutation } from "~/features/cloudStorage/api/projectCloudStorage.api";
-import { type ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
 import { useGetStorageQuotasByStorageQuotaIdQuery } from "~/features/sessionsV2/api/computeResources.api";
-// import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
-import useProjectPermissions from "../../utils/useProjectPermissions.hook";
-import ProjectStorageForm from "./ProjectStorageForm";
+import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
+import ProjectStorageV2Actions from "./ProjectStorageV2Actions";
+import ProjectStorageV2EditModal from "./ProjectStorageV2EditModal";
+import ProjectStorageV2View from "./ProjectStorageV2View";
 
 interface ProjectStorageV2LinkDisplayProps {
   storage: ProjectStorageV2;
@@ -51,21 +37,21 @@ export default function ProjectStorageV2LinkDisplay({
   storage,
 }: ProjectStorageV2LinkDisplayProps) {
   // Handle hash
-  // const [hash, setHash] = useLocationHash();
+  const [hash, setHash] = useLocationHash();
   const storageHash = useMemo(
     () => `project-storage-v2-${storage.id}`,
     [storage.id],
   );
-  // const showOffCanvas = useMemo(
-  //   () => hash === storageHash,
-  //   [storageHash, hash],
-  // );
-  // const toggleOffCanvas = useCallback(() => {
-  //   setHash((prev) => {
-  //     const isOpen = prev === storageHash;
-  //     return isOpen ? "" : storageHash;
-  //   });
-  // }, [storageHash, setHash]);
+  const showOffCanvas = useMemo(
+    () => hash === storageHash,
+    [storageHash, hash],
+  );
+  const toggleOffCanvas = useCallback(() => {
+    setHash((prev) => {
+      const isOpen = prev === storageHash;
+      return isOpen ? "" : storageHash;
+    });
+  }, [storageHash, setHash]);
 
   // Handle url with Hash
   const location = useLocation();
@@ -75,10 +61,10 @@ export default function ProjectStorageV2LinkDisplay({
     hash: storageHash,
   };
 
-  // const [isEditOpen, setIsEditOpen] = useState(false);
-  // const toggleEdit = useCallback(() => {
-  //   setIsEditOpen((open) => !open);
-  // }, []);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const toggleEdit = useCallback(() => {
+    setIsEditOpen((open) => !open);
+  }, []);
 
   // Load storage quota
   const { data: storageQuota } = useGetStorageQuotasByStorageQuotaIdQuery({
@@ -157,208 +143,19 @@ export default function ProjectStorageV2LinkDisplay({
         <div
           className={cx("end-0", "mt-3", "position-absolute", "top-0", "z-5")}
         >
-          {/* <ProjectStorageActions
-            projectStorage={projectStorage}
-            toggleEdit={toggleEdit}
-          /> */}
+          <ProjectStorageV2Actions storage={storage} toggleEdit={toggleEdit} />
         </div>
       </ListGroupItem>
-      {/* <ProjectStorageView
-        projectStorage={projectStorage}
+      <ProjectStorageV2View
+        storage={storage}
         showView={showOffCanvas}
         toggleView={toggleOffCanvas}
       />
-      <EditProjectStorageModal
+      <ProjectStorageV2EditModal
+        storage={storage}
         isOpen={isEditOpen}
         toggle={toggleEdit}
-        projectStorage={projectStorage}
-      /> */}
-    </>
-  );
-}
-
-interface ProjectStorageActionsProps {
-  projectStorage: ProjectStorage;
-  toggleView?: () => void;
-  toggleEdit: () => void;
-}
-
-export function ProjectStorageActions({
-  projectStorage,
-  toggleView,
-  toggleEdit,
-}: ProjectStorageActionsProps) {
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const toggleDelete = useCallback(() => {
-    setIsDeleteOpen((open) => !open);
-  }, []);
-  const onDeleteSuccess = useCallback(() => {
-    if (toggleView) toggleView();
-    setIsDeleteOpen(false);
-  }, [toggleView]);
-
-  const permissions = useProjectPermissions({
-    projectId: projectStorage.project_id,
-  });
-
-  // Display actions only if user is project owner
-  if (!permissions.delete) {
-    return null;
-  }
-
-  const actions = [
-    {
-      key: "project-storage-edit",
-      onClick: toggleEdit,
-      content: (
-        <>
-          <Pencil className={cx("bi", "me-1")} />
-          Edit
-        </>
-      ),
-    },
-    {
-      key: "project-storage-delete",
-      onClick: toggleDelete,
-      content: (
-        <>
-          <Trash className={cx("bi", "me-1")} />
-          Delete
-        </>
-      ),
-    },
-  ];
-
-  const actionsContent =
-    actions.length === 0 ? null : actions.length === 1 ? (
-      <Button
-        color="outline-primary"
-        data-cy={actions[0].key}
-        onClick={actions[0].onClick}
-        size="sm"
-      >
-        {actions[0].content}
-      </Button>
-    ) : (
-      <MenuButton
-        color="outline-primary"
-        dataCy="project-storage-menu-dropdown"
-        default={
-          <Button
-            color="outline-primary"
-            data-cy={actions[0].key}
-            onClick={actions[0].onClick}
-            size="sm"
-          >
-            {actions[0].content}
-          </Button>
-        }
-      >
-        {actions.slice(1).map(({ key, onClick, content }) => (
-          <MenuButtonItem key={key} data-cy={key} onClick={onClick}>
-            {content}
-          </MenuButtonItem>
-        ))}
-      </MenuButton>
-    );
-
-  return (
-    <>
-      {actionsContent}
-      <DeleteProjectStorageModal
-        isOpen={isDeleteOpen}
-        storageId={projectStorage.id}
-        toggle={toggleDelete}
-        executeOnSuccess={onDeleteSuccess}
       />
     </>
-  );
-}
-
-interface DeleteProjectStorageModalProps {
-  isOpen: boolean;
-  storageId: string;
-  toggle: () => void;
-  executeOnSuccess: () => void;
-}
-
-function DeleteProjectStorageModal({
-  isOpen,
-  storageId,
-  toggle,
-  executeOnSuccess,
-}: DeleteProjectStorageModalProps) {
-  const [deleteStorage, result] = useDeleteStorageByStorageIdMutation();
-  const onDelete = useCallback(() => {
-    deleteStorage({ storageId });
-  }, [deleteStorage, storageId]);
-
-  useEffect(() => {
-    if (result.isSuccess) {
-      executeOnSuccess();
-    }
-  }, [result.isSuccess, executeOnSuccess]);
-
-  return (
-    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader tag="h2" toggle={toggle}>
-        Remove project storage permanently
-      </ModalHeader>
-      <ModalBody>
-        {result.error && <RtkOrDataServicesError error={result.error} />}
-
-        <p className="mb-0">
-          Please confirm that you want to remove this project storage.
-        </p>
-        <WarnAlert className={cx("mt-3")} dismissible={false} color="danger">
-          <p className="mb-0">
-            This action cannot be undone. All data stored in this project
-            storage will be permanently deleted.
-          </p>
-        </WarnAlert>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="outline-danger" onClick={toggle}>
-          <XLg className={cx("bi", "me-1")} />
-          Cancel
-        </Button>
-        <Button
-          data-cy="project-storage-delete-confirm-button"
-          color="danger"
-          disabled={result.isLoading}
-          onClick={onDelete}
-          type="button"
-          role="button"
-        >
-          <TrashFill className={cx("bi", "me-1")} />
-          Remove project storage
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-}
-
-interface EditProjectStorageModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  projectStorage: ProjectStorage;
-}
-
-export function EditProjectStorageModal({
-  isOpen,
-  toggle,
-  projectStorage,
-}: EditProjectStorageModalProps) {
-  return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggle} centered>
-      <ModalHeader toggle={toggle} tag="h2">
-        <RenkuStorageIcon className={cx("bi", "me-1")} /> Edit Project Storage
-      </ModalHeader>
-      <ProjectStorageForm
-        projectId={projectStorage.project_id}
-        projectStorage={projectStorage}
-        toggle={toggle}
-      />
-    </Modal>
   );
 }
