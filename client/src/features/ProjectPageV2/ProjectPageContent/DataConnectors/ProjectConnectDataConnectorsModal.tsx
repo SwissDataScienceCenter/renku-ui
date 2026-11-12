@@ -52,6 +52,7 @@ import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import {
   useGetProjectsByProjectIdStorageQuery,
+  useGetProjectStorageV2Query,
   useGetStorageAllowByProjectIdQuery,
 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
@@ -131,10 +132,29 @@ export default function ProjectConnectDataConnectorsModal({
     canManageProjectStorage && storageAllowData && projectStorage?.length === 0;
 
   // NEW
-  const { data: storageQuotas } = useGetStorageQuotasQuery();
+  const { data: projectStoragesV2, originalArgs } = useGetProjectStorageV2Query(
+    canManageProjectStorage
+      ? { params: { project_id: project.id } }
+      : skipToken,
+  );
+  useEffect(() => {
+    console.log({ projectStoragesV2, originalArgs });
+  }, [projectStoragesV2, originalArgs]);
+
+  const { data: storageQuotas } = useGetStorageQuotasQuery(
+    canManageProjectStorage ? undefined : skipToken,
+  );
   useEffect(() => {
     console.log({ storageQuotas });
   }, [storageQuotas]);
+
+  const canAddProjectStorageV2 =
+    canManageProjectStorage &&
+    projectStoragesV2?.length == 0 &&
+    (storageQuotas?.length ?? 0) > 0;
+  useEffect(() => {
+    console.log({ canAddProjectStorageV2 });
+  }, [canAddProjectStorageV2]);
 
   const switchMode = {
     callback: useCallback((mode: ProjectConnectDataConnectorMode) => {

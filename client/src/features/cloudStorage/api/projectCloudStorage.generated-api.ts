@@ -138,7 +138,12 @@ const injectedRtkApi = api.injectEndpoints({
       GetProjectStorageV2ApiResponse,
       GetProjectStorageV2ApiArg
     >({
-      query: () => ({ url: `/project_storage_v2` }),
+      query: (queryArg) => ({
+        url: `/project_storage_v2`,
+        params: {
+          params: queryArg.params,
+        },
+      }),
     }),
     postProjectStorageV2: build.mutation<
       PostProjectStorageV2ApiResponse,
@@ -178,14 +183,6 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/project_storage_v2/${queryArg.storageId}`,
         method: "DELETE",
-      }),
-    }),
-    getProjectsByProjectIdStorageV2: build.query<
-      GetProjectsByProjectIdStorageV2ApiResponse,
-      GetProjectsByProjectIdStorageV2ApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/projects/${queryArg.projectId}/storage_v2`,
       }),
     }),
   }),
@@ -273,7 +270,9 @@ export type GetProjectsByProjectIdStorageApiArg = {
 };
 export type GetProjectStorageV2ApiResponse =
   /** status 200 The list of all visible project storages */ ProjectStoragesV2;
-export type GetProjectStorageV2ApiArg = void;
+export type GetProjectStorageV2ApiArg = {
+  params?: ProjectStoragesGetQueryV2;
+};
 export type PostProjectStorageV2ApiResponse =
   /** status 201 The newly created project storage */ ProjectStorageV2;
 export type PostProjectStorageV2ApiArg = {
@@ -295,11 +294,6 @@ export type PatchProjectStorageV2ByStorageIdApiArg = {
 export type DeleteProjectStorageV2ByStorageIdApiResponse = unknown;
 export type DeleteProjectStorageV2ByStorageIdApiArg = {
   storageId: Ulid;
-};
-export type GetProjectsByProjectIdStorageV2ApiResponse =
-  /** status 200 The list of project storages (currently either one or empty). */ ProjectStoragesV2;
-export type GetProjectsByProjectIdStorageV2ApiArg = {
-  projectId: Ulid;
 };
 export type RCloneOption = {
   /** name of the option */
@@ -453,6 +447,10 @@ export type ProjectStorageV2 = {
   etag: ETag;
 };
 export type ProjectStoragesV2 = ProjectStorageV2[];
+export type ProjectStoragesGetQueryV2 = {
+  project_id?: Ulid;
+  storage_quota_id?: Ulid;
+};
 export type ProjectStoragePostV2 = {
   project_id: Ulid;
   storage_quota_id: Ulid;
@@ -484,5 +482,4 @@ export const {
   useGetProjectStorageV2ByStorageIdQuery,
   usePatchProjectStorageV2ByStorageIdMutation,
   useDeleteProjectStorageV2ByStorageIdMutation,
-  useGetProjectsByProjectIdStorageV2Query,
 } = injectedRtkApi;
