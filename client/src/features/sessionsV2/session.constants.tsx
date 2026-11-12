@@ -365,3 +365,6 @@ export const LAUNCHER_BY_CATEGORY: Record<
     allowedEnvironmentSelects: ["custom + build", "custom + image"],
   },
 };
+
+export const SLURM_ACCOUNT_ENV_VARIABLE = "SLURM_ACCOUNT";
+export const CSCS_DOMAIN = "cscs.ch";
