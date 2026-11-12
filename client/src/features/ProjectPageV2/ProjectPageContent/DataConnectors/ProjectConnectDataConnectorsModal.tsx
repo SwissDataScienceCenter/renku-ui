@@ -102,7 +102,8 @@ interface ProjectConnectDataConnectorsModalProps extends Omit<
 export type ProjectConnectDataConnectorMode =
   | "create"
   | "search"
-  | "add-storage";
+  | "add-storage"
+  | "add-storage-v2";
 
 export default function ProjectConnectDataConnectorsModal({
   isOpen,
