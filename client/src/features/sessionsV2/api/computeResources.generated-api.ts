@@ -850,7 +850,7 @@ export type PostStorageQuotasApiArg = {
   storageQuotaPost: StorageQuotaPost;
 };
 export type GetStorageQuotasByStorageQuotaIdApiResponse =
-  /** status 200 The storage quota */ StorageQuotas;
+  /** status 200 The storage quota */ StorageQuota;
 export type GetStorageQuotasByStorageQuotaIdApiArg = {
   storageQuotaId: Ulid;
 };
