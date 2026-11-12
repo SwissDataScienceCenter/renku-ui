@@ -1,0 +1,144 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+$circle-size: 1.375rem;
+$connector-width: 2px;
+$row-padding-y: $spacer * 0.5;
+// Centers the circle on the first line of the step label.
+$circle-top: calc(
+  #{$row-padding-y} + (1em * #{$line-height-base} - #{$circle-size}) / 2
+);
+$status-grey: var(--#{$prefix}border-color);
+$status-primary: var(--#{$prefix}primary);
+
+.body {
+  @include media-breakpoint-up(lg) {
+    min-height: 32rem;
+  }
+}
+
+.panel {
+  flex: 0 0 20rem;
+  max-width: 20rem;
+}
+
+.content {
+  @include media-breakpoint-down(lg) {
+    border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
+    border-radius: var(--#{$prefix}border-radius-lg);
+  }
+}
+
+.touchTarget {
+  @include media-breakpoint-down(lg) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+.stepButton {
+  background-color: transparent;
+  border: 0;
+  min-height: 44px;
+  width: 100%;
+
+  &:hover {
+    background-color: var(--#{$prefix}secondary-bg);
+  }
+
+  &:focus-visible {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.stepButtonCurrentInPanel {
+  background-color: var(--#{$prefix}body-bg);
+
+  &:hover {
+    background-color: var(--#{$prefix}secondary-bg);
+  }
+}
+
+.stepButtonCurrentInAccordion {
+  background-color: var(--#{$prefix}secondary-bg);
+}
+
+.indicator {
+  align-self: stretch;
+  flex: 0 0 $circle-size;
+  position: relative;
+}
+
+.circle {
+  border-radius: 50%;
+  height: $circle-size;
+  left: 0;
+  position: absolute;
+  top: $circle-top;
+  width: $circle-size;
+  z-index: 1;
+}
+
+.connectorAbove,
+.connectorBelow {
+  background-color: $status-grey;
+  color: $status-grey;
+  left: calc((#{$circle-size} - #{$connector-width}) / 2);
+  position: absolute;
+  width: $connector-width;
+}
+
+.connectorAbove {
+  height: $circle-top;
+  top: 0;
+}
+
+.connectorBelow {
+  bottom: 0;
+  top: calc(#{$circle-top} + #{$circle-size});
+}
+
+.connectorDone {
+  background-color: $status-primary;
+  color: $status-primary;
+  width: 3px;
+}
+
+.connectorDashed {
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    currentColor 0 4px,
+    transparent 3px 8px
+  );
+}
+
+.notVisited,
+.inProgress,
+.current,
+.done {
+  background-color: var(--#{$prefix}body-bg);
+  border: $connector-width solid $status-grey;
+}
+
+.notVisited {
+  border-style: dashed;
+}
+
+.current {
+  border-color: $status-primary;
+}
+
+.circle.current {
+  box-shadow: 0 0 0 var(--#{$prefix}focus-ring-width)
+    var(--#{$prefix}focus-ring-color);
+}
+
+.done {
+  background-color: $status-primary;
+  border-color: $status-primary;
+}
