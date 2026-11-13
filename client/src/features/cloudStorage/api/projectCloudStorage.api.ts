@@ -97,6 +97,30 @@ const projectCloudStorageApi = withFixedEndpoints.enhanceEndpoints({
               },
             ],
     },
+    postProjectStorageV2: {
+      invalidatesTags: (
+        _result,
+        _error,
+        { projectStoragePostV2: { project_id, storage_quota_id } },
+      ) => [
+        {
+          id: `LIST-${project_id}-${storage_quota_id}`,
+          type: "ProjectStorageV2",
+        },
+        {
+          id: `LIST-${undefined}-${storage_quota_id}`,
+          type: "ProjectStorageV2",
+        },
+        {
+          id: `LIST-${project_id}-${undefined}`,
+          type: "ProjectStorageV2",
+        },
+        {
+          id: `LIST-${undefined}-${undefined}`,
+          type: "ProjectStorageV2",
+        },
+      ],
+    },
   },
 });
 
@@ -115,6 +139,7 @@ export const {
 
   // "project storage v2" hooks
   useGetProjectStorageV2Query,
+  usePostProjectStorageV2Mutation,
 } = projectCloudStorageApi;
 
 export type * from "./projectCloudStorage.generated-api";

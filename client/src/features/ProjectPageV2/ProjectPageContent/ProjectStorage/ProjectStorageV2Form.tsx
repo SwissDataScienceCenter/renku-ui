@@ -13,13 +13,13 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
 import cx from "classnames";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { PlusLg, XLg } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   Button,
   FormText,
@@ -35,27 +35,21 @@ import {
 import { InfoAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
-import {
-  useGetStorageAllowByProjectIdQuery,
-  usePatchStorageByStorageIdMutation,
-  usePostStorageMutation,
-} from "~/features/cloudStorage/api/projectCloudStorage.api";
+import { usePostProjectStorageV2Mutation } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   ProjectConnectDataConnectorModeSwitch,
   type switchModeProps,
 } from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
 import {
-  useGetStorageQuotasQuery,
-  type StorageQuota,
-} from "~/features/sessionsV2/api/computeResources.api";
-import {
   PROJECT_STORAGE_DEFAULT_GB,
   PROJECT_STORAGE_DEFAULT_MOUNT_PATH,
-  PROJECT_STORAGE_MAX_GB,
-  PROJECT_STORAGE_MIN_GB,
   PROJECT_STORAGE_STEP_GB,
 } from "./projectStorage.constants";
+import StorageQuotaSelector from "./StorageQuotaSelector";
+import useGetStorageQuotasWithResourcePools, {
+  type ResourcePoolWithStorageQuotas,
+} from "./useGetStorageQuotasWithResourcePools.hook";
 
 interface ProjectStorageV2FormValues {
   storageQuotaId: string;
@@ -76,7 +70,8 @@ export default function ProjectStorageV2Form({
   switchMode,
   toggle,
 }: ProjectStorageV2FormProps) {
-  const { data: storageQuotas, isLoading, error } = useGetStorageQuotasQuery();
+  const { data, isLoading, error } = useGetStorageQuotasWithResourcePools();
+  const { resourcePoolsWithStorageQuotas } = data;
 
   if (isLoading) {
     return (
@@ -94,7 +89,7 @@ export default function ProjectStorageV2Form({
     );
   }
 
-  if (error || storageQuotas == null) {
+  if (error || resourcePoolsWithStorageQuotas == null) {
     return (
       <ModalBody data-cy="project-storage-body">
         {switchMode && (
@@ -111,7 +106,7 @@ export default function ProjectStorageV2Form({
     );
   }
 
-  if (storage == null && storageQuotas.length == 0) {
+  if (storage == null && resourcePoolsWithStorageQuotas.length == 0) {
     return (
       <ModalBody data-cy="project-storage-body">
         {switchMode && (
@@ -131,7 +126,7 @@ export default function ProjectStorageV2Form({
     <ProjectStorageV2FormInner
       projectId={projectId}
       storage={storage}
-      storageQuotas={storageQuotas}
+      resourcePoolsWithStorageQuotas={resourcePoolsWithStorageQuotas}
       switchMode={switchMode}
       toggle={toggle}
     />
@@ -141,11 +136,11 @@ export default function ProjectStorageV2Form({
 function ProjectStorageV2FormInner({
   projectId,
   storage,
-  storageQuotas,
+  resourcePoolsWithStorageQuotas,
   switchMode,
   toggle,
 }: ProjectStorageV2FormProps & {
-  storageQuotas: StorageQuota[];
+  resourcePoolsWithStorageQuotas: ResourcePoolWithStorageQuotas[];
 }) {
   const {
     control,
@@ -154,13 +149,7 @@ function ProjectStorageV2FormInner({
   } = useForm<ProjectStorageV2FormValues>({
     mode: "onChange",
     defaultValues: {
-      // TODO: handle edit
-      // size: projectStorage?.size ?? PROJECT_STORAGE_DEFAULT_GB,
-      // mountPath:
-      //   projectStorage?.mount_path ?? PROJECT_STORAGE_DEFAULT_MOUNT_PATH,
-
-      storageQuotaId:
-        storage?.storage_quota_id ?? storageQuotas.at(0)?.id ?? "",
+      storageQuotaId: storage?.storage_quota_id,
       size:
         storage?.actual_size ??
         storage?.requested_size ??
@@ -169,43 +158,85 @@ function ProjectStorageV2FormInner({
     },
   });
 
-  const [postStorageMutation, postStorageStatus] = usePostStorageMutation();
-  const [patchStorageByStorageIdMutation, patchStorageByStorageIdStatus] =
-    usePatchStorageByStorageIdMutation();
-  const { data: storageAllowData } = useGetStorageAllowByProjectIdQuery({
-    projectId: projectId,
-  });
-  const projectStorageMaxSize =
-    storageAllowData?.max_size ?? PROJECT_STORAGE_MAX_GB;
+  const selectedStorageQuotaId = useWatch({
+    control,
+    name: "storageQuotaId",
+  }) as string;
 
-  const onSubmit = async (values: ProjectStorageV2FormValues) => {
-    // if (!projectStorage) {
-    //   // Create new project storage
-    //   const result = await postStorageMutation({
-    //     projectStoragePost: {
-    //       namespace: namespace ?? "",
-    //       size: values.size,
-    //       mount_path: values.mountPath,
-    //     },
-    //   });
-    //   if (!result.error) {
-    //     toggle();
-    //   }
-    // } else {
-    //   // Update existing project storage
-    //   const result = await patchStorageByStorageIdMutation({
-    //     storageId: projectStorage.id,
-    //     "If-Match": projectStorage.etag ?? "",
-    //     projectStoragePatch: {
-    //       size: values.size,
-    //       mount_path: values.mountPath,
-    //     },
-    //   });
-    //   if (!result.error) {
-    //     toggle();
-    //   }
-    // }
-  };
+  const selectedStorageQuota = useMemo(
+    () =>
+      resourcePoolsWithStorageQuotas
+        .flatMap(({ storageQuotas }) => storageQuotas)
+        .find(({ id }) => id === selectedStorageQuotaId),
+    [resourcePoolsWithStorageQuotas, selectedStorageQuotaId],
+  );
+
+  // const [postStorageMutation, postStorageStatus] = usePostStorageMutation();
+  // const [patchStorageByStorageIdMutation, patchStorageByStorageIdStatus] =
+  //   usePatchStorageByStorageIdMutation();
+  // const { data: storageAllowData } = useGetStorageAllowByProjectIdQuery({
+  //   projectId: projectId,
+  // });
+  // const projectStorageMaxSize =
+  //   storageAllowData?.max_size ?? PROJECT_STORAGE_MAX_GB;
+
+  const [postStorage, postStorageStatus] = usePostProjectStorageV2Mutation();
+
+  const onSubmit = useCallback(
+    (values: ProjectStorageV2FormValues) => {
+      console.log({ values });
+      if (storage) {
+        console.log("TODO! edit storage");
+      } else {
+        postStorage({
+          projectStoragePostV2: {
+            project_id: projectId,
+            storage_quota_id: values.storageQuotaId,
+            requested_size: values.size,
+            mount_path: values.mountPath,
+          },
+        });
+      }
+    },
+    [postStorage, projectId, storage],
+  );
+
+  useEffect(() => {
+    if (postStorageStatus.isSuccess) {
+      toggle();
+    }
+  }, [postStorageStatus.isSuccess, toggle]);
+
+  // const onSubmit = async (values: ProjectStorageV2FormValues) => {
+  //   console.log({ values });
+
+  // if (!projectStorage) {
+  //   // Create new project storage
+  //   const result = await postStorageMutation({
+  //     projectStoragePost: {
+  //       namespace: namespace ?? "",
+  //       size: values.size,
+  //       mount_path: values.mountPath,
+  //     },
+  //   });
+  //   if (!result.error) {
+  //     toggle();
+  //   }
+  // } else {
+  //   // Update existing project storage
+  //   const result = await patchStorageByStorageIdMutation({
+  //     storageId: projectStorage.id,
+  //     "If-Match": projectStorage.etag ?? "",
+  //     projectStoragePatch: {
+  //       size: values.size,
+  //       mount_path: values.mountPath,
+  //     },
+  //   });
+  //   if (!result.error) {
+  //     toggle();
+  //   }
+  // }
+  // };
 
   return (
     <>
@@ -219,9 +250,10 @@ function ProjectStorageV2FormInner({
           </div>
         )}
 
-        <RtkOrDataServicesError
+        {/* <RtkOrDataServicesError
           error={postStorageStatus.error || patchStorageByStorageIdStatus.error}
-        />
+        /> */}
+        <RtkOrDataServicesError error={postStorageStatus.error} />
         {storage == null && (
           <InfoAlert dismissible={false} timeout={0}>
             You can add a project storage to this project. Project storage will
@@ -230,94 +262,82 @@ function ProjectStorageV2FormInner({
             will have read-only access to this storage.
           </InfoAlert>
         )}
-        <div className="mb-3">
-          <Controller
-            control={control}
-            name="storageQuotaId"
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <>
-                {/* <SessionClassSelector
-                  id="addSessionResourceClass"
-                  currentSessionClass={value}
-                  resourcePools={resourcePools}
-                  onChange={onChange}
-                />
-                {error && (
-                  <div className={cx("small", "text-danger")}>
-                    {error.message || "Please provide a valid resource class."}
+        {/* // ? NOTE: the storage quota cannot be edited */}
+        {storage == null && (
+          <div className="mb-3">
+            <StorageQuotaSelector
+              name="storageQuotaId"
+              control={control}
+              resourcePoolsWithStorageQuotas={resourcePoolsWithStorageQuotas}
+            />
+          </div>
+        )}
+        {selectedStorageQuota && (
+          <div className="mb-3">
+            <Label for="project-storage-size">Storage size</Label>
+            <Controller
+              control={control}
+              name="size"
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <InputGroup className={cx(error && "is-invalid")}>
+                    <Input
+                      id="project-storage-size"
+                      data-cy="project-storage-form-size-input"
+                      className={cx(error && "is-invalid")}
+                      type="number"
+                      min={selectedStorageQuota.storage_flavor_min_size}
+                      max={selectedStorageQuota.max_size}
+                      step={PROJECT_STORAGE_STEP_GB}
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(event) => {
+                        if (isNaN(event.target.valueAsNumber)) {
+                          field.onChange(event.target.value);
+                        } else {
+                          field.onChange(event.target.valueAsNumber);
+                        }
+                      }}
+                    />
+                    <InputGroupText id="configure-project-storage-addon">
+                      GB
+                    </InputGroupText>
+                    <UncontrolledTooltip target="configure-project-storage-addon">
+                      Gigabytes
+                    </UncontrolledTooltip>
+                  </InputGroup>
+                  <div className="invalid-feedback">
+                    {error?.message ||
+                      "Please provide a valid value for project storage."}
                   </div>
-                )} */}
-              </>
-            )}
-            rules={{ required: "Please provide a resource class." }}
-          />
-        </div>
-        <div className="mb-3">
-          <Label className="form-label" for="size">
-            Storage size
-          </Label>
-          <Controller
-            control={control}
-            name="size"
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <InputGroup className={cx(error && "is-invalid")}>
-                  <Input
-                    id="size"
-                    data-cy="project-storage-form-size-input"
-                    className={cx(error && "is-invalid")}
-                    type="number"
-                    min={PROJECT_STORAGE_MIN_GB}
-                    max={projectStorageMaxSize}
-                    step={PROJECT_STORAGE_STEP_GB}
-                    {...field}
-                    value={field.value ?? ""}
-                    onChange={(event) => {
-                      if (isNaN(event.target.valueAsNumber)) {
-                        field.onChange(event.target.value);
-                      } else {
-                        field.onChange(event.target.valueAsNumber);
-                      }
-                    }}
-                  />
-                  <InputGroupText id="configure-project-storage-addon">
-                    GB
-                  </InputGroupText>
-                  <UncontrolledTooltip target="configure-project-storage-addon">
-                    Gigabytes
-                  </UncontrolledTooltip>
-                </InputGroup>
-                <div className="invalid-feedback">
-                  {error?.message ||
-                    "Please provide a valid value for project storage."}
-                </div>
-                <FormText>
-                  Default: {PROJECT_STORAGE_DEFAULT_GB} GB, max:{" "}
-                  {projectStorageMaxSize} GB
-                </FormText>
-              </>
-            )}
-            rules={{
-              required: true,
-              min: {
-                value: PROJECT_STORAGE_MIN_GB,
-                message: `Please select a value greater than or equal to ${PROJECT_STORAGE_MIN_GB}.`,
-              },
-              max: {
-                value: projectStorageMaxSize,
-                message: `Selected project storage exceeds maximum allowed value (${projectStorageMaxSize} GB).`,
-              },
-              validate: {
-                integer: (value: unknown) =>
-                  Number.isInteger(Number(value)) ||
-                  "Please provide an integer value.",
-              },
-            }}
-          />
-        </div>
+                  <FormText>
+                    Minimum: {selectedStorageQuota.storage_flavor_min_size} GB,
+                    maximum: {selectedStorageQuota.max_size} GB
+                  </FormText>
+                </>
+              )}
+              rules={{
+                required: true,
+                min: {
+                  value: selectedStorageQuota.storage_flavor_min_size,
+                  message: `Please select a value greater than or equal to ${selectedStorageQuota.storage_flavor_min_size} GB.`,
+                },
+                max: {
+                  value: selectedStorageQuota.max_size,
+                  message: `Selected project storage exceeds maximum allowed value (${selectedStorageQuota.max_size} GB).`,
+                },
+                validate: {
+                  integer: (value: unknown) =>
+                    Number.isInteger(Number(value)) ||
+                    "Please provide an integer value.",
+                },
+              }}
+            />
+          </div>
+        )}
         <div className="mb-3">
           <div className={cx("d-flex", "align-items-center", "gap-2", "mb-1")}>
-            <Label className="form-label" for="mountPath">
+            <Label className="form-label" for="project-storage-mount-path">
               Mount point
             </Label>
           </div>
@@ -326,7 +346,7 @@ function ProjectStorageV2FormInner({
             control={control}
             render={({ field }) => (
               <input
-                id="mountPath"
+                id="project-storage-mount-path"
                 type="text"
                 {...field}
                 className={cx("form-control", errors.mountPath && "is-invalid")}
@@ -357,14 +377,14 @@ function ProjectStorageV2FormInner({
           data-cy="project-storage-form-submit-button"
           onClick={handleSubmit(onSubmit)}
         >
-          {/* {projectStorage ? (
+          {storage ? (
             "Update project storage"
           ) : (
             <>
               <PlusLg className={cx("bi", "me-1")} />
               Add project storage
             </>
-          )} */}
+          )}
         </Button>
       </ModalFooter>
     </>

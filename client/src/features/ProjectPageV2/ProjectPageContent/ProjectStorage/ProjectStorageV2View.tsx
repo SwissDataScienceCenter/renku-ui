@@ -30,6 +30,7 @@ import {
 } from "reactstrap";
 
 import { InfoAlert } from "~/components/Alert";
+import { Clipboard } from "~/components/clipboard/Clipboard";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
 import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
@@ -177,6 +178,15 @@ function ProjectStorageV2InfoBox({
             <code>{storage.k8s_pvc_status}</code>
           </InfoEntry>
         )}
+        <InfoEntry title="Internal ID">
+          <div className={cx("align-items-center", "d-flex", "gap-2")}>
+            {storage.id}
+            <Clipboard
+              className={cx("border-0", "btn", "p-0", "shadow-none")}
+              clipboardText={storage.id}
+            />
+          </div>
+        </InfoEntry>
       </CardBody>
     </Card>
   );
