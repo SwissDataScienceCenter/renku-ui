@@ -29,8 +29,12 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { useGetProjectsByProjectIdStorageQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
-import { type ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
+import {
+  useGetProjectsByProjectIdStorageQuery,
+  useGetProjectStorageV2Query,
+  type ProjectStorage,
+  type ProjectStorageV2,
+} from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   type DataConnectorToProjectLink,
   type GetProjectsByProjectIdDataConnectorLinksApiResponse,
@@ -50,6 +54,7 @@ import PermissionsGuard from "../../../permissionsV2/PermissionsGuard";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectStorageLinkDisplay from "../ProjectStorage/ProjectStorageLinkDisplay";
+import ProjectStorageV2LinkDisplay from "../ProjectStorage/ProjectStorageV2LinkDisplay";
 import ProjectConnectDataConnectorsModal from "./ProjectConnectDataConnectorsModal";
 
 interface DataConnectorListDisplayProps {
@@ -79,10 +84,20 @@ export default function ProjectDataConnectorsBox({
     projectId: project.id,
   });
 
+  // NEW
+  const {
+    data: projectStoragesV2,
+    error: projectStoragesV2Error,
+    isLoading: isLoadingProjectStoragesV2,
+  } = useGetProjectStorageV2Query({
+    params: { project_id: project.id },
+  });
+
   if (
     isLoading ||
     inaccessibleDataConnectorsIsLoading ||
-    projectStorageIsLoading
+    projectStorageIsLoading ||
+    isLoadingProjectStoragesV2
   )
     return <DataConnectorLoadingBoxContent />;
 
@@ -108,9 +123,16 @@ export default function ProjectDataConnectorsBox({
           inaccessibleDataConnectorsData?.count || 0
         }
         projectStorageData={projectStorageData}
+        projectStoragesV2={projectStoragesV2}
       />
       {projectStorageError && (
         <RtkOrDataServicesError className="mt-2" error={projectStorageError} />
+      )}
+      {projectStoragesV2Error && (
+        <RtkOrDataServicesError
+          className="mt-2"
+          error={projectStoragesV2Error}
+        />
       )}
     </>
   );
@@ -120,19 +142,23 @@ interface ProjectDataConnectorBoxContentProps extends DataConnectorListDisplayPr
   data: GetProjectsByProjectIdDataConnectorLinksApiResponse;
   inaccessibleDataConnectorsCount: number;
   projectStorageData?: ProjectStorage[];
+  projectStoragesV2: ProjectStorageV2[] | undefined;
 }
 function ProjectDataConnectorBoxContent({
   data,
   project,
   inaccessibleDataConnectorsCount,
   projectStorageData,
+  projectStoragesV2,
 }: ProjectDataConnectorBoxContentProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const toggleOpen = useCallback(() => {
     setModalOpen((open) => !open);
   }, []);
   const accessibleDataConnectorsCount =
-    data.length + (projectStorageData?.length ?? 0);
+    data.length +
+    (projectStorageData?.length ?? 0) +
+    (projectStoragesV2?.length ?? 0);
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -165,6 +191,16 @@ function ProjectDataConnectorBoxContent({
             <ListGroup flush>
               {projectStorageData.map((ps) => (
                 <ProjectStorageLinkDisplay key={ps.id} projectStorage={ps} />
+              ))}
+            </ListGroup>
+          )}
+          {projectStoragesV2 && projectStoragesV2.length > 0 && (
+            <ListGroup flush>
+              {projectStoragesV2.map((storage) => (
+                <ProjectStorageV2LinkDisplay
+                  key={storage.id}
+                  storage={storage}
+                />
               ))}
             </ListGroup>
           )}

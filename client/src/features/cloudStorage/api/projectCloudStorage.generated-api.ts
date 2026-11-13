@@ -134,6 +134,57 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({ url: `/projects/${queryArg.projectId}/storage` }),
     }),
+    getProjectStorageV2: build.query<
+      GetProjectStorageV2ApiResponse,
+      GetProjectStorageV2ApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/project_storage_v2`,
+        params: {
+          params: queryArg.params,
+        },
+      }),
+    }),
+    postProjectStorageV2: build.mutation<
+      PostProjectStorageV2ApiResponse,
+      PostProjectStorageV2ApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/project_storage_v2`,
+        method: "POST",
+        body: queryArg.projectStoragePostV2,
+      }),
+    }),
+    getProjectStorageV2ByStorageId: build.query<
+      GetProjectStorageV2ByStorageIdApiResponse,
+      GetProjectStorageV2ByStorageIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/project_storage_v2/${queryArg.storageId}`,
+      }),
+    }),
+    patchProjectStorageV2ByStorageId: build.mutation<
+      PatchProjectStorageV2ByStorageIdApiResponse,
+      PatchProjectStorageV2ByStorageIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/project_storage_v2/${queryArg.storageId}`,
+        method: "PATCH",
+        body: queryArg.projectStoragePatchV2,
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
+      }),
+    }),
+    deleteProjectStorageV2ByStorageId: build.mutation<
+      DeleteProjectStorageV2ByStorageIdApiResponse,
+      DeleteProjectStorageV2ByStorageIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/project_storage_v2/${queryArg.storageId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -216,6 +267,33 @@ export type GetProjectsByProjectIdStorageApiResponse =
   /** status 200 The list of project storages (currently either one or empty). */ ProjectStorageList;
 export type GetProjectsByProjectIdStorageApiArg = {
   projectId: Ulid;
+};
+export type GetProjectStorageV2ApiResponse =
+  /** status 200 The list of all visible project storages */ ProjectStoragesV2;
+export type GetProjectStorageV2ApiArg = {
+  params?: ProjectStoragesGetQueryV2;
+};
+export type PostProjectStorageV2ApiResponse =
+  /** status 201 The newly created project storage */ ProjectStorageV2;
+export type PostProjectStorageV2ApiArg = {
+  projectStoragePostV2: ProjectStoragePostV2;
+};
+export type GetProjectStorageV2ByStorageIdApiResponse =
+  /** status 200 The project storage */ ProjectStorageV2;
+export type GetProjectStorageV2ByStorageIdApiArg = {
+  storageId: Ulid;
+};
+export type PatchProjectStorageV2ByStorageIdApiResponse =
+  /** status 200 The updated project storage */ ProjectStorageV2;
+export type PatchProjectStorageV2ByStorageIdApiArg = {
+  storageId: Ulid;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
+  projectStoragePatchV2: ProjectStoragePatchV2;
+};
+export type DeleteProjectStorageV2ByStorageIdApiResponse = unknown;
+export type DeleteProjectStorageV2ByStorageIdApiArg = {
+  storageId: Ulid;
 };
 export type RCloneOption = {
   /** name of the option */
@@ -354,6 +432,35 @@ export type ProjectStoragePatch = {
   mount_path?: string;
 };
 export type ProjectStorageList = ProjectStorage[];
+export type ProjectStorageV2 = {
+  id: Ulid;
+  project_id: Ulid;
+  storage_quota_id: Ulid;
+  requested_size: MaxStorageSize;
+  actual_size?: MaxStorageSize;
+  mount_path: string;
+  k8s_pvc_name?: string;
+  k8s_pvc_status?: string;
+  created_by: UserId;
+  creation_date: CreationDate;
+  updated_at: CreationDate;
+  etag: ETag;
+};
+export type ProjectStoragesV2 = ProjectStorageV2[];
+export type ProjectStoragesGetQueryV2 = {
+  project_id?: Ulid;
+  storage_quota_id?: Ulid;
+};
+export type ProjectStoragePostV2 = {
+  project_id: Ulid;
+  storage_quota_id: Ulid;
+  requested_size: MaxStorageSize;
+  mount_path: string;
+};
+export type ProjectStoragePatchV2 = {
+  requested_size?: MaxStorageSize;
+  mount_path?: string;
+};
 export const {
   useGetStorageSchemaQuery,
   usePostStorageSchemaValidateMutation,
@@ -370,4 +477,9 @@ export const {
   usePatchStorageByStorageIdMutation,
   useDeleteStorageByStorageIdMutation,
   useGetProjectsByProjectIdStorageQuery,
+  useGetProjectStorageV2Query,
+  usePostProjectStorageV2Mutation,
+  useGetProjectStorageV2ByStorageIdQuery,
+  usePatchProjectStorageV2ByStorageIdMutation,
+  useDeleteProjectStorageV2ByStorageIdMutation,
 } = injectedRtkApi;

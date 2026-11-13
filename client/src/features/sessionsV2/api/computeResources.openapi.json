@@ -2068,6 +2068,351 @@
         "tags": ["groups"]
       }
     },
+    "/storage_flavors": {
+      "get": {
+        "summary": "Get the available storage flavors",
+        "description": "Admin only.\n",
+        "responses": {
+          "200": {
+            "description": "The list of storage flavors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageFlavors"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_flavors"]
+      },
+      "post": {
+        "summary": "Create a storage flavor",
+        "description": "Admin only.\n\nThe `k8s_storage_class_name` should correspond to the name\nof a `StorageClass` in Kubernetes.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StorageFlavorPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The newly created storage flavor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageFlavor"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_flavors"]
+      }
+    },
+    "/storage_flavors/{storage_flavor_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "storage_flavor_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a storage flavor",
+        "description": "Admin only.\n",
+        "responses": {
+          "200": {
+            "description": "The storage flavor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageFlavor"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The storage flavor does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_flavors"]
+      },
+      "patch": {
+        "summary": "Update a storage flavor",
+        "description": "Admin only.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StorageFlavorPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated storage flavor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageFlavor"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The storage flavor does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_flavors"]
+      },
+      "delete": {
+        "summary": "Delete a storage flavor",
+        "description": "Admin only.\n",
+        "responses": {
+          "204": {
+            "description": "The storage flavor was deleted or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_flavors"]
+      }
+    },
+    "/storage_quotas": {
+      "get": {
+        "summary": "Get all visible storage quotas",
+        "responses": {
+          "200": {
+            "description": "The list of all visible storage quotas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageQuotas"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_quotas"]
+      },
+      "post": {
+        "summary": "Create a storage quota",
+        "description": "Admin only.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StorageQuotaPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The newly created storage quota",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageQuota"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_quotas"]
+      }
+    },
+    "/storage_quotas/{storage_quota_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "storage_quota_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a storage quota",
+        "responses": {
+          "200": {
+            "description": "The storage quota",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageQuota"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The storage quota does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_quotas"]
+      },
+      "patch": {
+        "summary": "Update a storage quota",
+        "description": "Admin only.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StorageQuotaPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated storage quota",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageQuotas"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The storage quota does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_quotas"]
+      },
+      "delete": {
+        "summary": "Delete a storage quota",
+        "description": "Admin only.\n",
+        "responses": {
+          "204": {
+            "description": "The storage quota was deleted or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_quotas"]
+      }
+    },
+    "/resource_pools/{resource_pool_id}/storage_quotas": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "resource_pool_id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get all storage quotas in a resource pool",
+        "responses": {
+          "200": {
+            "description": "The list of storage quotas in the resource pool",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageQuotas"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource pool does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_quotas"]
+      }
+    },
     "/version": {
       "get": {
         "summary": "Get the version of the service",
@@ -3581,6 +3926,195 @@
         "maxLength": 26,
         "pattern": "^([0-7][0-9A-HJKMNP-TV-Z]{25})?$"
       },
+      "StorageFlavors": {
+        "description": "A list of storage flavors.",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/StorageFlavor"
+        }
+      },
+      "StorageFlavor": {
+        "description": "A storage flavor.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "k8s_storage_class_name": {
+            "$ref": "#/components/schemas/KubernetesStorageClassName"
+          },
+          "display_name": {
+            "type": "string",
+            "example": "Azure Files (SMB)"
+          },
+          "min_size": {
+            "$ref": "#/components/schemas/MinStorageSize"
+          },
+          "admin_documentation": {
+            "type": "string"
+          },
+          "documentation": {
+            "type": "string"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/UpdatedAt"
+          },
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
+          }
+        },
+        "required": [
+          "id",
+          "k8s_storage_class_name",
+          "display_name",
+          "min_size",
+          "creation_date",
+          "updated_at",
+          "etag"
+        ]
+      },
+      "StorageFlavorPost": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "k8s_storage_class_name": {
+            "$ref": "#/components/schemas/KubernetesStorageClassName"
+          },
+          "display_name": {
+            "type": "string",
+            "example": "Azure Files (SMB)"
+          },
+          "min_size": {
+            "$ref": "#/components/schemas/MinStorageSize"
+          },
+          "admin_documentation": {
+            "type": "string"
+          },
+          "documentation": {
+            "type": "string"
+          }
+        },
+        "required": ["k8s_storage_class_name", "display_name", "min_size"]
+      },
+      "StorageFlavorPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "display_name": {
+            "type": "string",
+            "example": "Azure Files (SMB)"
+          },
+          "min_size": {
+            "$ref": "#/components/schemas/MinStorageSize"
+          },
+          "admin_documentation": {
+            "type": "string"
+          },
+          "documentation": {
+            "type": "string"
+          }
+        }
+      },
+      "StorageQuotas": {
+        "description": "A list of storage quotas.",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/StorageQuota"
+        }
+      },
+      "StorageQuota": {
+        "description": "A storage quota.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "resource_pool_id": {
+            "$ref": "#/components/schemas/IntegerId"
+          },
+          "storage_flavor_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "storage_flavor_display_name": {
+            "type": "string",
+            "example": "Azure Files (SMB)"
+          },
+          "storage_flavor_min_size": {
+            "$ref": "#/components/schemas/MinStorageSize"
+          },
+          "storage_flavor_documentation": {
+            "type": "string"
+          },
+          "total_size": {
+            "$ref": "#/components/schemas/MaxStorageSize"
+          },
+          "max_size": {
+            "$ref": "#/components/schemas/MaxStorageSize"
+          },
+          "creation_date": {
+            "$ref": "#/components/schemas/CreationDate"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/UpdatedAt"
+          },
+          "etag": {
+            "$ref": "#/components/schemas/ETag"
+          }
+        },
+        "required": [
+          "id",
+          "resource_pool_id",
+          "storage_flavor_id",
+          "storage_flavor_display_name",
+          "storage_flavor_min_size",
+          "total_size",
+          "max_size",
+          "creation_date",
+          "updated_at",
+          "etag"
+        ]
+      },
+      "StorageQuotaPost": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "resource_pool_id": {
+            "$ref": "#/components/schemas/IntegerId"
+          },
+          "storage_flavor_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "total_size": {
+            "$ref": "#/components/schemas/MaxStorageSize"
+          },
+          "max_size": {
+            "$ref": "#/components/schemas/MaxStorageSize"
+          }
+        },
+        "required": [
+          "resource_pool_id",
+          "storage_flavor_id",
+          "total_size",
+          "max_size"
+        ]
+      },
+      "StorageQuotaPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "total_size": {
+            "$ref": "#/components/schemas/MaxStorageSize"
+          },
+          "max_size": {
+            "$ref": "#/components/schemas/MaxStorageSize"
+          }
+        }
+      },
       "ConfigName": {
         "type": "string",
         "description": "The name of the Kubernetes configuration to use to connect to the remote cluster. This is currently used to find a file named `<KubeConfigRoot>/<config_name>`.\n\nThis configuration is expected to have a default namespace defined. It will be used for all remote operations requiring a namespace, as well for namespaced objects.\n",
@@ -3880,6 +4414,20 @@
         "description": "A runtime platform, e.g. \"linux/amd64\" or \"linux/arm64\".\n",
         "enum": ["linux/amd64", "linux/arm64"]
       },
+      "MinStorageSize": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 0,
+        "exclusiveMinimum": true,
+        "description": "Minimum size in GB"
+      },
+      "MaxStorageSize": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 0,
+        "exclusiveMinimum": true,
+        "description": "Maximum size in GB"
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
@@ -3962,6 +4510,30 @@
         "maximum": 0,
         "description": "Indicates that the cpu limits should not be set and if a limit is set it should be removed",
         "format": "float"
+      },
+      "KubernetesStorageClassName": {
+        "description": "The name of a storage class in Kubernetes",
+        "type": "string",
+        "example": "azurefile-csi",
+        "minLength": 3,
+        "maxLength": 256
+      },
+      "CreationDate": {
+        "description": "The date and time the resource was created (in UTC and ISO-8601 format)",
+        "type": "string",
+        "format": "date-time",
+        "example": "2023-11-01T17:32:28Z"
+      },
+      "UpdatedAt": {
+        "description": "The date and time the resource was updated (in UTC and ISO-8601 format)",
+        "type": "string",
+        "format": "date-time",
+        "example": "2023-11-01T17:32:28Z"
+      },
+      "ETag": {
+        "type": "string",
+        "description": "Entity Tag",
+        "example": "9EE498F9D565D0C41E511377425F32F3"
       }
     },
     "responses": {
@@ -3973,6 +4545,17 @@
               "$ref": "#/components/schemas/ErrorResponse"
             }
           }
+        }
+      }
+    },
+    "parameters": {
+      "If-Match": {
+        "in": "header",
+        "name": "If-Match",
+        "description": "If-Match header, for avoiding mid-air collisions",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/ETag"
         }
       }
     }

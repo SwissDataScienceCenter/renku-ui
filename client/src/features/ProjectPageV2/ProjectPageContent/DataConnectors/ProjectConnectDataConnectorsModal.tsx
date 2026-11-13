@@ -52,6 +52,7 @@ import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import {
   useGetProjectsByProjectIdStorageQuery,
+  useGetProjectStorageV2Query,
   useGetStorageAllowByProjectIdQuery,
 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
@@ -67,6 +68,7 @@ import {
   SearchDataConnector,
   useGetSearchQueryQuery,
 } from "~/features/searchV2/api/searchV2Api.api";
+import { useGetStorageQuotasQuery } from "~/features/sessionsV2/api/computeResources.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { NEW_DOCS_DATA_CONNECTORS } from "~/utils/constants/NewDocs";
@@ -79,6 +81,7 @@ import type { Project } from "../../../projectsV2/api/projectV2.api";
 import { doiFromUrl } from "../../utils/dataConnectorUtils";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectStorageForm from "../ProjectStorage/ProjectStorageForm";
+import ProjectStorageV2Form from "../ProjectStorage/ProjectStorageV2Form";
 import {
   DC_LIKELY_DOI_ID,
   DC_SEARCH_DOI_PREFIX,
@@ -102,7 +105,8 @@ interface ProjectConnectDataConnectorsModalProps extends Omit<
 export type ProjectConnectDataConnectorMode =
   | "create"
   | "search"
-  | "add-storage";
+  | "add-storage"
+  | "add-storage-v2";
 
 export default function ProjectConnectDataConnectorsModal({
   isOpen,
@@ -128,11 +132,27 @@ export default function ProjectConnectDataConnectorsModal({
   const canAddProjectStorage =
     canManageProjectStorage && storageAllowData && projectStorage?.length === 0;
 
+  // NEW
+  const { data: projectStoragesV2 } = useGetProjectStorageV2Query(
+    canManageProjectStorage
+      ? { params: { project_id: project.id } }
+      : skipToken,
+  );
+  const { data: storageQuotas } = useGetStorageQuotasQuery(
+    canManageProjectStorage ? undefined : skipToken,
+  );
+  const canAddProjectStorageV2 =
+    canManageProjectStorage &&
+    projectStoragesV2 != undefined &&
+    projectStoragesV2?.length == 0 &&
+    (storageQuotas?.length ?? 0) > 0;
+
   const switchMode = {
     callback: useCallback((mode: ProjectConnectDataConnectorMode) => {
       setMode(mode);
     }, []),
     canAddProjectStorage,
+    canAddProjectStorageV2,
   };
 
   return (
@@ -174,6 +194,16 @@ export default function ProjectConnectDataConnectorsModal({
         />
       ) : mode === "add-storage" ? (
         <ProjectStorageDataConnectorBodyAndFooter
+          {...{
+            isOpen,
+            namespace,
+            project,
+            switchMode,
+            toggle,
+          }}
+        />
+      ) : mode === "add-storage-v2" ? (
+        <ProjectStorageV2DataConnectorBodyAndFooter
           {...{
             isOpen,
             namespace,
@@ -230,6 +260,7 @@ function ProjectCreateDataConnectorBodyAndFooter({
 export interface switchModeProps {
   callback: (mode: ProjectConnectDataConnectorMode) => void;
   canAddProjectStorage?: boolean;
+  canAddProjectStorageV2: boolean;
 }
 
 export function ProjectConnectDataConnectorModeSwitch({
@@ -312,6 +343,33 @@ export function ProjectConnectDataConnectorModeSwitch({
           </Label>
         </>
       )}
+
+      {switchMode.canAddProjectStorageV2 && (
+        <>
+          <Input
+            type="radio"
+            className="btn-check"
+            id="project-data-controller-mode-add-storage-v2"
+            value="add-storage-v2"
+            checked={mode === "add-storage-v2"}
+            onChange={() => switchMode.callback("add-storage-v2")}
+          />
+          <Label
+            data-cy="project-data-controller-mode-add-storage-v2"
+            for="project-data-controller-mode-add-storage-v2"
+            className={cx(
+              "align-items-center",
+              "btn-outline-primary",
+              "btn",
+              "d-flex",
+              "border-start-0",
+            )}
+          >
+            <RenkuStorageIcon className={cx("fs-3", "me-1")} />
+            Add project storage
+          </Label>
+        </>
+      )}
     </ButtonGroup>
   );
 }
@@ -332,6 +390,28 @@ function ProjectStorageDataConnectorBodyAndFooter({
     <ProjectStorageForm
       projectId={project.id}
       namespace={`${project.namespace}/${project.slug}`}
+      switchMode={switchMode}
+      toggle={toggle}
+    />
+  );
+}
+
+function ProjectStorageV2DataConnectorBodyAndFooter({
+  isOpen,
+  project,
+  switchMode,
+  toggle,
+}: ProjectConnectDataConnectorsModalProps) {
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+  }, [isOpen]);
+
+  return (
+    <ProjectStorageV2Form
+      projectId={project.id}
+      // namespace={`${project.namespace}/${project.slug}`}
       switchMode={switchMode}
       toggle={toggle}
     />

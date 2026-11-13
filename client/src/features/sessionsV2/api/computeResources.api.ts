@@ -56,6 +56,8 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
     "ResourceFlavor",
     "ResourcePool",
     "ResourcePoolMember",
+    "StorageFlavor",
+    "StorageQuota",
   ],
   endpoints: {
     getResourcePools: {
@@ -166,6 +168,22 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
         { id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" },
       ],
     },
+    getStorageQuotas: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                id,
+                type: "StorageQuota" as const,
+              })),
+              { id: "LIST", type: "StorageQuota" },
+            ]
+          : [{ id: "LIST", type: "StorageQuota" }],
+    },
+    getStorageQuotasByStorageQuotaId: {
+      providesTags: (result) =>
+        result ? [{ id: result.id, type: "StorageQuota" }] : ["StorageQuota"],
+    },
   },
 });
 
@@ -195,6 +213,13 @@ export const {
   useGetResourcePoolsByResourcePoolIdMembersQuery,
   usePostResourcePoolsByResourcePoolIdMembersMutation,
   useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation,
+
+  // "storage flavors" hooks
+  // TODO
+
+  // "storage quotas" hooks
+  useGetStorageQuotasQuery,
+  useGetStorageQuotasByStorageQuotaIdQuery,
 } = computeResourcesApi;
 
 export type * from "./computeResources.generated-api";
