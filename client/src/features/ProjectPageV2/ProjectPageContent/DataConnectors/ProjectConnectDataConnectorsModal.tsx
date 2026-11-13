@@ -152,8 +152,7 @@ export default function ProjectConnectDataConnectorsModal({
       setMode(mode);
     }, []),
     canAddProjectStorage,
-    // canAddProjectStorageV2,
-    canAddProjectStorageV2: true,
+    canAddProjectStorageV2,
   };
 
   return (
