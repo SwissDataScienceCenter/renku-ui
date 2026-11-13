@@ -17,10 +17,11 @@
  */
 
 import cx from "classnames";
-import { Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Modal, ModalHeader } from "reactstrap";
 
 import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import ProjectStorageV2Form from "./ProjectStorageV2Form";
 
 interface ProjectStorageV2EditModalProps {
   storage: ProjectStorageV2;
@@ -29,7 +30,7 @@ interface ProjectStorageV2EditModalProps {
 }
 
 export default function ProjectStorageV2EditModal({
-  // storage,
+  storage,
   isOpen,
   toggle,
 }: ProjectStorageV2EditModalProps) {
@@ -39,14 +40,11 @@ export default function ProjectStorageV2EditModal({
         <RenkuStorageIcon className={cx("bi", "me-1")} />
         Edit Project Storage
       </ModalHeader>
-      {/* <ProjectStorageForm
-        projectId={projectStorage.project_id}
-        projectStorage={projectStorage}
+      <ProjectStorageV2Form
+        projectId={storage.project_id}
+        storage={storage}
         toggle={toggle}
-      /> */}
-      <ModalBody data-cy="project-storage-body">
-        TODO: cannot edit project storage yet
-      </ModalBody>
+      />
     </Modal>
   );
 }
