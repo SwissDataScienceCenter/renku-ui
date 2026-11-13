@@ -16,7 +16,14 @@
  * limitations under the License.
  */
 
-import { Modal, ModalBody, ModalHeader } from "reactstrap";
+import cx from "classnames";
+import { useCallback, useEffect } from "react";
+import { TrashFill, XLg } from "react-bootstrap-icons";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
+import { WarnAlert } from "~/components/Alert";
+import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import { useDeleteProjectStorageV2ByStorageIdMutation } from "~/features/cloudStorage/api/projectCloudStorage.api";
 
 interface ProjectStorageV2DeleteModalProps {
   isOpen: boolean;
@@ -27,28 +34,28 @@ interface ProjectStorageV2DeleteModalProps {
 
 export default function ProjectStorageV2DeleteModal({
   isOpen,
-  // storageId,
+  storageId,
   toggle,
-  // executeOnSuccess,
+  executeOnSuccess,
 }: ProjectStorageV2DeleteModalProps) {
-  // const [deleteStorage, result] = useDeleteStorageByStorageIdMutation();
-  // const onDelete = useCallback(() => {
-  //   deleteStorage({ storageId });
-  // }, [deleteStorage, storageId]);
+  const [deleteStorage, result] =
+    useDeleteProjectStorageV2ByStorageIdMutation();
+  const onDelete = useCallback(() => {
+    deleteStorage({ storageId });
+  }, [deleteStorage, storageId]);
 
-  // useEffect(() => {
-  //   if (result.isSuccess) {
-  //     executeOnSuccess();
-  //   }
-  // }, [result.isSuccess, executeOnSuccess]);
+  useEffect(() => {
+    if (result.isSuccess) {
+      executeOnSuccess();
+    }
+  }, [result.isSuccess, executeOnSuccess]);
 
   return (
     <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader tag="h2" toggle={toggle}>
         Remove project storage permanently
       </ModalHeader>
-      <ModalBody>TODO: cannot delete project storage yet</ModalBody>
-      {/* <ModalBody>
+      <ModalBody>
         {result.error && <RtkOrDataServicesError error={result.error} />}
 
         <p className="mb-0">
@@ -77,7 +84,7 @@ export default function ProjectStorageV2DeleteModal({
           <TrashFill className={cx("bi", "me-1")} />
           Remove project storage
         </Button>
-      </ModalFooter> */}
+      </ModalFooter>
     </Modal>
   );
 }
