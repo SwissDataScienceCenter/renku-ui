@@ -21,14 +21,20 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Archive,
   CheckLg,
+  CupHot,
   Pencil,
   PlusLg,
+  Tags,
   TrashFill,
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Collapse,
   Form,
   FormText,
   Input,
@@ -47,7 +53,9 @@ import {
 import { InfoAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
+import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
 import { Loader } from "~/components/Loader";
+import LazyMarkdown from "~/components/markdown/LazyMarkdown";
 import {
   useDeleteStorageAllowByProjectIdMutation,
   useGetStorageAllowQuery,
@@ -64,10 +72,312 @@ import {
   PROJECT_STORAGE_MIN_GB,
   PROJECT_STORAGE_STEP_GB,
 } from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants";
+import {
+  computeResourcesApi,
+  useGetStorageFlavorsQuery,
+  type StorageFlavor,
+} from "../sessionsV2/api/computeResources.api";
 import AdminListFilter from "./AdminListFilter";
 import AdminSectionHeader from "./AdminSectionHeader";
+import StorageFlavorValues from "./StorageFlavorValues";
 
-export default function ProjectStorageAllowSection() {
+export default function StorageSections() {
+  return (
+    <>
+      <StorageFlavorsSection />
+      <ProjectStorageAllowSection />
+    </>
+  );
+}
+
+function StorageFlavorsSection() {
+  const { data, error, isLoading } = useGetStorageFlavorsQuery();
+
+  return (
+    <section>
+      <AdminSectionHeader
+        action={undefined /*<AddResourceFlavorButton />*/}
+        count={!isLoading && !error ? data?.length : undefined}
+        headerTag="h3"
+        icon={CupHot}
+        title="Storage flavors"
+      />
+
+      <p>Storage flavors are re-usable shapes used by storage quotas.</p>
+
+      <StorageFlavorsList />
+    </section>
+  );
+}
+
+function StorageFlavorsList() {
+  const {
+    data: storageFlavors,
+    error,
+    isLoading,
+  } = computeResourcesApi.endpoints.getStorageFlavors.useQueryState();
+
+  const [filter, setFilter] = useState("");
+
+  const filteredFlavors = useMemo(() => {
+    if (!storageFlavors || !filter) {
+      return storageFlavors;
+    }
+    const lowerCaseFilter = filter.toLowerCase();
+    return storageFlavors.filter(({ display_name }) =>
+      display_name.toLowerCase().includes(lowerCaseFilter),
+    );
+  }, [filter, storageFlavors]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <RtkOrDataServicesError dismissible={false} error={error} />;
+  }
+
+  if (!storageFlavors || !filteredFlavors || storageFlavors.length == 0) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        No storage flavor has been defined yet.
+      </InfoAlert>
+    );
+  }
+
+  return (
+    <>
+      <AdminListFilter filter={filter} onFilterChange={setFilter} />
+
+      {filteredFlavors.length === 0 ? (
+        <p className="fst-italic">
+          No resource flavor matches the filter <code>{filter}</code>.
+        </p>
+      ) : (
+        <div className={cx("d-flex", "flex-column", "gap-2", "mb-3")}>
+          {filteredFlavors.map((storageFlavor) => (
+            <StorageFlavorItem
+              key={storageFlavor.id}
+              storageFlavor={storageFlavor}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+interface StorageFlavorItemProps {
+  storageFlavor: StorageFlavor;
+}
+
+function StorageFlavorItem({ storageFlavor }: StorageFlavorItemProps) {
+  const {
+    display_name,
+    k8s_storage_class_name,
+    admin_documentation,
+    documentation,
+  } = storageFlavor;
+
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((isOpen) => !isOpen);
+  }, []);
+
+  return (
+    <Card>
+      <CardHeader
+        className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
+        tag="h4"
+      >
+        <button
+          className={cx(
+            "d-flex",
+            "gap-3",
+            "align-items-center",
+            "w-100",
+            "p-3",
+            "bg-transparent",
+            "border-0",
+            "fw-bold",
+          )}
+          onClick={toggle}
+          type="button"
+        >
+          <Tags className={cx("bi", "flex-shrink-0")} />
+          {display_name}
+          <div
+            className={cx("align-items-center", "d-flex", "gap-3", "ms-auto")}
+          >
+            <StorageFlavorValues
+              className={cx(
+                "d-none",
+                "d-lg-inline-flex",
+                "fw-normal",
+                "small",
+                "text-muted",
+              )}
+              compact
+              storageFlavor={storageFlavor}
+            />
+            <ChevronFlippedIcon flipped={isOpen} />
+          </div>
+        </button>
+      </CardHeader>
+      <Collapse isOpen={isOpen}>
+        <CardBody className="pt-0">
+          <div className={cx("border-bottom", "border-top", "py-2")}>
+            Kubernetes storage class name: <code>{k8s_storage_class_name}</code>
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            {documentation ? (
+              <>
+                <h4>User documentation</h4>
+                <LazyMarkdown fallback={<>Loading documentation...</>}>
+                  {documentation}
+                </LazyMarkdown>
+              </>
+            ) : (
+              <p className={cx("mb-0", "text-muted")}>No user documentation</p>
+            )}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            {admin_documentation ? (
+              <>
+                <h4>Admin documentation</h4>
+                <LazyMarkdown fallback={<>Loading admin documentation...</>}>
+                  {admin_documentation}
+                </LazyMarkdown>
+              </>
+            ) : (
+              <p className={cx("mb-0", "text-muted")}>No admin documentation</p>
+            )}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            <StorageFlavorValues storageFlavor={storageFlavor} />
+          </div>
+
+          {/* <div className={cx("border-bottom", "py-2")}>
+            <LinkedResourceClassesSummary
+              emptyMessage="No resource class links to this flavor."
+              intro="Linked resource classes:"
+              resourceFlavorId={resourceFlavor.id}
+              skip={!isOpen}
+            />
+          </div> */}
+        </CardBody>
+        <CardBody
+          className={cx(
+            "d-flex",
+            "flex-row",
+            "gap-2",
+            "justify-content-end",
+            "pt-0",
+          )}
+        >
+          {/* <UpdateResourceFlavorButton resourceFlavor={resourceFlavor} />
+          <DeleteResourceFlavorButton resourceFlavor={resourceFlavor} /> */}
+          TODO: Buttons
+        </CardBody>
+      </Collapse>
+    </Card>
+  );
+}
+
+// interface ResourceFlavorItemProps {
+//   resourceFlavor: ResourceFlavor;
+// }
+
+// function ResourceFlavorItem({ resourceFlavor }: ResourceFlavorItemProps) {
+//   const { description, name } = resourceFlavor;
+
+//   const [isOpen, setIsOpen] = useState(false);
+//   const toggle = useCallback(() => {
+//     setIsOpen((isOpen) => !isOpen);
+//   }, []);
+
+//   return (
+//     <Card>
+//       <CardHeader
+//         className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
+//         tag="h4"
+//       >
+//         <button
+//           className={cx(
+//             "d-flex",
+//             "gap-3",
+//             "align-items-center",
+//             "w-100",
+//             "p-3",
+//             "bg-transparent",
+//             "border-0",
+//             "fw-bold",
+//           )}
+//           onClick={toggle}
+//           type="button"
+//         >
+//           <Tags className={cx("bi", "flex-shrink-0")} />
+//           {name}
+//           <div
+//             className={cx("align-items-center", "d-flex", "gap-3", "ms-auto")}
+//           >
+//             <ResourceFlavorValues
+//               className={cx(
+//                 "d-none",
+//                 "d-lg-inline-flex",
+//                 "fw-normal",
+//                 "small",
+//                 "text-muted",
+//               )}
+//               compact
+//               resourceFlavor={resourceFlavor}
+//             />
+//             <ChevronFlippedIcon flipped={isOpen} />
+//           </div>
+//         </button>
+//       </CardHeader>
+//       <Collapse isOpen={isOpen}>
+//         <CardBody className="pt-0">
+//           <div className={cx("border-bottom", "border-top", "py-2")}>
+//             <p className={cx("mb-0", !description && "text-muted")}>
+//               {description ? description : "No description"}
+//             </p>
+//           </div>
+
+//           <div className={cx("border-bottom", "py-2")}>
+//             <ResourceFlavorValues resourceFlavor={resourceFlavor} />
+//           </div>
+
+//           <div className={cx("border-bottom", "py-2")}>
+//             <LinkedResourceClassesSummary
+//               emptyMessage="No resource class links to this flavor."
+//               intro="Linked resource classes:"
+//               resourceFlavorId={resourceFlavor.id}
+//               skip={!isOpen}
+//             />
+//           </div>
+//         </CardBody>
+//         <CardBody
+//           className={cx(
+//             "d-flex",
+//             "flex-row",
+//             "gap-2",
+//             "justify-content-end",
+//             "pt-0",
+//           )}
+//         >
+//           <UpdateResourceFlavorButton resourceFlavor={resourceFlavor} />
+//           <DeleteResourceFlavorButton resourceFlavor={resourceFlavor} />
+//         </CardBody>
+//       </Collapse>
+//     </Card>
+//   );
+// }
+
+function ProjectStorageAllowSection() {
   const { data, error, isLoading } = useGetStorageAllowQuery({});
 
   const [filter, setFilter] = useState("");
@@ -89,6 +399,11 @@ export default function ProjectStorageAllowSection() {
         icon={Archive}
         title="Project storage"
       />
+
+      <WarnAlert dismissible={false}>
+        <h3>Deprecated section</h3>
+        The section is deprecated.
+      </WarnAlert>
 
       <p className="mb-2">
         Provide persistent storage for white-listed projects. Mind that only
