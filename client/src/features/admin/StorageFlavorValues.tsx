@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import type { ReactNode } from "react";
-import { Cpu, GpuCard, Hdd, HddStack, Memory } from "react-bootstrap-icons";
+import { Hdd } from "react-bootstrap-icons";
 
 import type { StorageFlavor } from "../sessionsV2/api/computeResources.api";
 
@@ -53,30 +53,6 @@ export default function StorageFlavorValues({
       >
         {min_size}&nbsp;GB{compact ? "" : " min disk"}
       </StorageFlavorValue>
-      {/*   <ResourceFlavorValue
-        icon={<Memory className={iconClasses} />}
-        title="Memory"
-      >
-        {memory}&nbsp;GB{compact ? "" : " RAM"}
-      </ResourceFlavorValue>
-      <ResourceFlavorValue
-        icon={<GpuCard className={iconClasses} />}
-        title="GPUs"
-      >
-        {gpu}&nbsp;{compact ? "GPU" : "GPUs"}
-      </ResourceFlavorValue>
-      <ResourceFlavorValue
-        icon={<Hdd className={iconClasses} />}
-        title="Default disk size"
-      >
-        {default_storage}&nbsp;GB{compact ? "" : " default disk"}
-      </ResourceFlavorValue>
-      <ResourceFlavorValue
-        icon={<HddStack className={iconClasses} />}
-        title="Maximum disk size"
-      >
-        {max_storage}&nbsp;GB{compact ? "" : " max disk"}
-      </ResourceFlavorValue> */}
     </span>
   );
 }

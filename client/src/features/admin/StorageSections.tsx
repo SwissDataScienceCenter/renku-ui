@@ -29,6 +29,7 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
+import { Link } from "react-router";
 import {
   Button,
   Card,
@@ -66,6 +67,7 @@ import {
   useGetStorageConfigQuery,
   type ProjectStorageAllow,
 } from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { NEW_DOCS_USER_PROJECT_STORAGE } from "~/utils/constants/NewDocs";
 import {
   PROJECT_STORAGE_MAX_GB,
@@ -74,19 +76,221 @@ import {
 } from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants";
 import {
   computeResourcesApi,
+  useGetResourcePoolsQuery,
   useGetStorageFlavorsQuery,
+  useGetStorageQuotasQuery,
+  type ResourcePoolWithId,
   type StorageFlavor,
+  type StorageQuota,
 } from "../sessionsV2/api/computeResources.api";
 import AdminListFilter from "./AdminListFilter";
 import AdminSectionHeader from "./AdminSectionHeader";
 import StorageFlavorValues from "./StorageFlavorValues";
+import StorageQuotaValues from "./StorageQuotaValues";
 
 export default function StorageSections() {
   return (
     <>
+      <StorageQuotasSection />
       <StorageFlavorsSection />
       <ProjectStorageAllowSection />
     </>
+  );
+}
+
+function StorageQuotasSection() {
+  const { data, error, isLoading } = useGetStorageQuotasQuery();
+
+  return (
+    <section>
+      <AdminSectionHeader
+        action={undefined /*<AddResourceFlavorButton />*/}
+        count={!isLoading && !error ? data?.length : undefined}
+        icon={Archive}
+        title="Storage quotas"
+      />
+
+      <p>
+        Storage quotas allow you to manage and allocate storage resources for
+        different groups and users. Storage quotas are attached to a parent
+        resource pool.
+      </p>
+
+      <StorageQuotasList />
+    </section>
+  );
+}
+
+function StorageQuotasList() {
+  const {
+    data: storageQuotas,
+    isLoading: isLoadingStorageQuotas,
+    error: storageQuotasError,
+  } = computeResourcesApi.endpoints.getStorageQuotas.useQueryState();
+  const {
+    data: resourcePools,
+    isLoading: isLoadingResourcePools,
+    error: resourcePoolsError,
+  } = useGetResourcePoolsQuery({});
+
+  const isLoading = isLoadingStorageQuotas || isLoadingResourcePools;
+  const error = storageQuotasError ?? resourcePoolsError;
+
+  const sortedStorageQuotas = useMemo(
+    () =>
+      storageQuotas
+        ? [...storageQuotas].sort(
+            (sqA, sqB) => sqA.resource_pool_id - sqB.resource_pool_id,
+          )
+        : undefined,
+    [storageQuotas],
+  );
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <RtkOrDataServicesError dismissible={false} error={error} />;
+  }
+
+  if (!resourcePools || resourcePools.length == 0) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        No resource pool has been defined yet. Please check the{" "}
+        <Link to={ABSOLUTE_ROUTES.v2.admin.computeResources}>
+          compute section
+        </Link>
+        .
+      </InfoAlert>
+    );
+  }
+
+  if (!sortedStorageQuotas || sortedStorageQuotas.length == 0) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        No storage quota has been defined yet.
+      </InfoAlert>
+    );
+  }
+
+  return (
+    <div className={cx("d-flex", "flex-column", "gap-2", "mb-3")}>
+      {sortedStorageQuotas.map((storageQuota) => (
+        <StorageQuotaItem
+          key={storageQuota.id}
+          storageQuota={storageQuota}
+          resourcePools={resourcePools}
+        />
+      ))}
+    </div>
+  );
+}
+
+interface StorageQuotaItemProps {
+  storageQuota: StorageQuota;
+  resourcePools: ResourcePoolWithId[];
+}
+
+function StorageQuotaItem({
+  storageQuota,
+  resourcePools,
+}: StorageQuotaItemProps) {
+  const { resource_pool_id } = storageQuota;
+
+  const resourcePool = useMemo(
+    () => resourcePools.find(({ id }) => id === resource_pool_id),
+    [resourcePools, resource_pool_id],
+  );
+
+  const name = useMemo(
+    () =>
+      resourcePool
+        ? `${resourcePool.name} | ${storageQuota.storage_flavor_display_name}`
+        : storageQuota.id,
+    [resourcePool, storageQuota.id, storageQuota.storage_flavor_display_name],
+  );
+
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((isOpen) => !isOpen);
+  }, []);
+
+  return (
+    <Card>
+      <CardHeader
+        className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
+        tag="h4"
+      >
+        <button
+          className={cx(
+            "d-flex",
+            "gap-3",
+            "align-items-center",
+            "w-100",
+            "p-3",
+            "bg-transparent",
+            "border-0",
+            "fw-bold",
+          )}
+          onClick={toggle}
+          type="button"
+        >
+          {name}
+          <div
+            className={cx("align-items-center", "d-flex", "gap-3", "ms-auto")}
+          >
+            <StorageQuotaValues
+              className={cx(
+                "d-none",
+                "d-lg-inline-flex",
+                "fw-normal",
+                "small",
+                "text-muted",
+              )}
+              compact
+              storageQuota={storageQuota}
+            />
+            <ChevronFlippedIcon flipped={isOpen} />
+          </div>
+        </button>
+      </CardHeader>
+      <Collapse isOpen={isOpen}>
+        <CardBody className="pt-0">
+          <div className={cx("border-bottom", "border-top", "py-2")}>
+            {resourcePool ? (
+              <>Resource pool: {resourcePool?.name}</>
+            ) : (
+              <>
+                Error: could not load resource pool with ID{" "}
+                {storageQuota.resource_pool_id}
+              </>
+            )}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            Storage flavor: {storageQuota.storage_flavor_display_name}
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
+            <StorageQuotaValues storageQuota={storageQuota} />
+          </div>
+        </CardBody>
+        <CardBody
+          className={cx(
+            "d-flex",
+            "flex-row",
+            "gap-2",
+            "justify-content-end",
+            "pt-0",
+          )}
+        >
+          {/* <UpdateResourceFlavorButton resourceFlavor={resourceFlavor} />
+          <DeleteResourceFlavorButton resourceFlavor={resourceFlavor} /> */}
+          TODO: Buttons
+        </CardBody>
+      </Collapse>
+    </Card>
   );
 }
 
@@ -259,15 +463,6 @@ function StorageFlavorItem({ storageFlavor }: StorageFlavorItemProps) {
           <div className={cx("border-bottom", "py-2")}>
             <StorageFlavorValues storageFlavor={storageFlavor} />
           </div>
-
-          {/* <div className={cx("border-bottom", "py-2")}>
-            <LinkedResourceClassesSummary
-              emptyMessage="No resource class links to this flavor."
-              intro="Linked resource classes:"
-              resourceFlavorId={resourceFlavor.id}
-              skip={!isOpen}
-            />
-          </div> */}
         </CardBody>
         <CardBody
           className={cx(
@@ -286,96 +481,6 @@ function StorageFlavorItem({ storageFlavor }: StorageFlavorItemProps) {
     </Card>
   );
 }
-
-// interface ResourceFlavorItemProps {
-//   resourceFlavor: ResourceFlavor;
-// }
-
-// function ResourceFlavorItem({ resourceFlavor }: ResourceFlavorItemProps) {
-//   const { description, name } = resourceFlavor;
-
-//   const [isOpen, setIsOpen] = useState(false);
-//   const toggle = useCallback(() => {
-//     setIsOpen((isOpen) => !isOpen);
-//   }, []);
-
-//   return (
-//     <Card>
-//       <CardHeader
-//         className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
-//         tag="h4"
-//       >
-//         <button
-//           className={cx(
-//             "d-flex",
-//             "gap-3",
-//             "align-items-center",
-//             "w-100",
-//             "p-3",
-//             "bg-transparent",
-//             "border-0",
-//             "fw-bold",
-//           )}
-//           onClick={toggle}
-//           type="button"
-//         >
-//           <Tags className={cx("bi", "flex-shrink-0")} />
-//           {name}
-//           <div
-//             className={cx("align-items-center", "d-flex", "gap-3", "ms-auto")}
-//           >
-//             <ResourceFlavorValues
-//               className={cx(
-//                 "d-none",
-//                 "d-lg-inline-flex",
-//                 "fw-normal",
-//                 "small",
-//                 "text-muted",
-//               )}
-//               compact
-//               resourceFlavor={resourceFlavor}
-//             />
-//             <ChevronFlippedIcon flipped={isOpen} />
-//           </div>
-//         </button>
-//       </CardHeader>
-//       <Collapse isOpen={isOpen}>
-//         <CardBody className="pt-0">
-//           <div className={cx("border-bottom", "border-top", "py-2")}>
-//             <p className={cx("mb-0", !description && "text-muted")}>
-//               {description ? description : "No description"}
-//             </p>
-//           </div>
-
-//           <div className={cx("border-bottom", "py-2")}>
-//             <ResourceFlavorValues resourceFlavor={resourceFlavor} />
-//           </div>
-
-//           <div className={cx("border-bottom", "py-2")}>
-//             <LinkedResourceClassesSummary
-//               emptyMessage="No resource class links to this flavor."
-//               intro="Linked resource classes:"
-//               resourceFlavorId={resourceFlavor.id}
-//               skip={!isOpen}
-//             />
-//           </div>
-//         </CardBody>
-//         <CardBody
-//           className={cx(
-//             "d-flex",
-//             "flex-row",
-//             "gap-2",
-//             "justify-content-end",
-//             "pt-0",
-//           )}
-//         >
-//           <UpdateResourceFlavorButton resourceFlavor={resourceFlavor} />
-//           <DeleteResourceFlavorButton resourceFlavor={resourceFlavor} />
-//         </CardBody>
-//       </Collapse>
-//     </Card>
-//   );
-// }
 
 function ProjectStorageAllowSection() {
   const { data, error, isLoading } = useGetStorageAllowQuery({});
