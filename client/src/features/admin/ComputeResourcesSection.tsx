@@ -79,6 +79,7 @@ import UpdateResourcePoolThresholdsButton from "./UpdateResourcePoolThresholdsBu
 import useKeycloakRealm from "./useKeycloakRealm.hook";
 
 export default function ComputeResourcesSection() {
+  //TODO
   const { data, error, isLoading } = useGetResourcePoolsQuery({});
 
   return (
