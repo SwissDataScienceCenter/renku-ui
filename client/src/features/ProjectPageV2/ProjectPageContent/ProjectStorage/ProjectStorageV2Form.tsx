@@ -38,8 +38,8 @@ import { Loader } from "~/components/Loader";
 import {
   usePatchProjectStorageV2ByStorageIdMutation,
   usePostProjectStorageV2Mutation,
+  type ProjectStorageV2,
 } from "~/features/cloudStorage/api/projectCloudStorage.api";
-import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   ProjectConnectDataConnectorModeSwitch,
   type switchModeProps,

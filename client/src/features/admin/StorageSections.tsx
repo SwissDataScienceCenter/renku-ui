@@ -206,7 +206,7 @@ function StorageQuotaItem({
   const name = useMemo(
     () =>
       resourcePool
-        ? `${resourcePool.name} | ${storageQuota.storage_flavor_display_name}`
+        ? `${resourcePool.name} · ${storageQuota.storage_flavor_display_name}`
         : storageQuota.id,
     [resourcePool, storageQuota.id, storageQuota.storage_flavor_display_name],
   );
