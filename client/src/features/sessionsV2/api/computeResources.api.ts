@@ -168,6 +168,18 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
         { id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" },
       ],
     },
+    getStorageFlavors: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                id,
+                type: "StorageFlavor" as const,
+              })),
+              { id: "LIST", type: "StorageFlavor" },
+            ]
+          : ["StorageFlavor"],
+    },
     getStorageQuotas: {
       providesTags: (result) =>
         result
@@ -219,7 +231,7 @@ export const {
   useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation,
 
   // "storage flavors" hooks
-  // TODO
+  useGetStorageFlavorsQuery,
 
   // "storage quotas" hooks
   useGetStorageQuotasQuery,
