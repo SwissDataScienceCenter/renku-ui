@@ -38,6 +38,7 @@ import { InfoEntry } from "~/features/dataConnectorsV2/components/DataConnectorI
 import { computeResourcesApi } from "~/features/sessionsV2/api/computeResources.api";
 import ProjectStorageV2Actions from "./ProjectStorageV2Actions";
 import ProjectStorageV2EditModal from "./ProjectStorageV2EditModal";
+import StorageQuotaDocumentation from "./StorageQuotaDocumentation";
 
 interface ProjectStorageV2ViewProps {
   storage: ProjectStorageV2;
@@ -156,9 +157,13 @@ function ProjectStorageV2InfoBox({
       <CardBody className={cx("d-flex", "flex-column", "gap-3")}>
         {storageQuota && (
           <InfoEntry title="Storage type">
-            {storageQuota.storage_flavor_display_name}
+            <div>{storageQuota.storage_flavor_display_name}</div>
+            {storageQuota.storage_flavor_documentation && (
+              <StorageQuotaDocumentation storageQuota={storageQuota} />
+            )}
           </InfoEntry>
         )}
+
         {storage.actual_size && (
           <InfoEntry title="Actual size">{storage.actual_size} GB</InfoEntry>
         )}

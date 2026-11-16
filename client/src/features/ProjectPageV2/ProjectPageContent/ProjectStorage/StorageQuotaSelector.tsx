@@ -16,14 +16,18 @@
  * limitations under the License.
  */
 
-// import cx from "classnames";
-
 import { useCallback, useEffect, useMemo } from "react";
-import { Controller, FieldValues, UseControllerProps } from "react-hook-form";
+import {
+  Controller,
+  FieldValues,
+  UseControllerProps,
+  useWatch,
+} from "react-hook-form";
 import Select, { type GroupBase, type SingleValue } from "react-select";
 import { Label } from "reactstrap";
 
 import type { StorageQuota } from "~/features/sessionsV2/api/computeResources.api";
+import StorageQuotaDocumentation from "./StorageQuotaDocumentation";
 import type { ResourcePoolWithStorageQuotas } from "./useGetStorageQuotasWithResourcePools.hook";
 
 interface StorageQuotaSelectorProps<
@@ -44,6 +48,19 @@ export default function StorageQuotaSelector<T extends FieldValues>({
     [resourcePoolsWithStorageQuotas],
   );
 
+  const selectedStorageQuotaId = useWatch({
+    control: controllerProps.control,
+    name: controllerProps.name,
+  }) as string;
+
+  const selectedStorageQuota = useMemo(
+    () =>
+      resourcePoolsWithStorageQuotas
+        .flatMap(({ storageQuotas }) => storageQuotas)
+        .find(({ id }) => id === selectedStorageQuotaId),
+    [resourcePoolsWithStorageQuotas, selectedStorageQuotaId],
+  );
+
   return (
     <>
       <Label for="project-storage-quota-select-input">Storage Quota</Label>
@@ -54,10 +71,7 @@ export default function StorageQuotaSelector<T extends FieldValues>({
           fieldState: { error },
         }) => (
           <>
-            <div
-              //   className={cx(error && "is-invalid")}
-              data-cy="project-storage-quota-select"
-            >
+            <div data-cy="project-storage-quota-select">
               <StorageQuotaSelect
                 defaultValue={defaultValue}
                 disabled={disabled}
@@ -82,8 +96,10 @@ export default function StorageQuotaSelector<T extends FieldValues>({
             required: "Please select a storage quota.",
           }
         }
-        // defaultValue={defaultValue as PathValue<T, Path<T>>}
       />
+      {selectedStorageQuota?.storage_flavor_documentation && (
+        <StorageQuotaDocumentation storageQuota={selectedStorageQuota} />
+      )}
     </>
   );
 }

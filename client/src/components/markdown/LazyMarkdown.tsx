@@ -17,17 +17,19 @@
  */
 
 import { lazy, Suspense } from "react";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 import PageLoader from "../PageLoader";
 
-type Props = ComponentProps<typeof Markdown>;
+type Props = ComponentProps<typeof Markdown> & {
+  fallback?: ReactNode;
+};
 
 const Markdown = lazy(() => import("./Markdown"));
 
-export default function LazyMarkdown(props: Props) {
+export default function LazyMarkdown({ fallback, ...props }: Props) {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <Suspense fallback={fallback ?? <PageLoader />}>
       <Markdown {...props} />
     </Suspense>
   );
