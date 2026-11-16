@@ -97,6 +97,11 @@ const projectCloudStorageApi = withFixedEndpoints.enhanceEndpoints({
               },
             ],
     },
+    patchProjectStorageV2ByStorageId: {
+      invalidatesTags: (_result, _error, { storageId }) => [
+        { id: storageId, type: "ProjectStorageV2" },
+      ],
+    },
     postProjectStorageV2: {
       invalidatesTags: (
         _result,
@@ -143,6 +148,7 @@ export const {
   // "project storage v2" hooks
   useGetProjectStorageV2Query,
   usePostProjectStorageV2Mutation,
+  usePatchProjectStorageV2ByStorageIdMutation,
   useDeleteProjectStorageV2ByStorageIdMutation,
 } = projectCloudStorageApi;
 

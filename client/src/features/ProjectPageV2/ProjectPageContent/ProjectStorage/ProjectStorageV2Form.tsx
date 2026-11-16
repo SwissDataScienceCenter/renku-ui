@@ -35,7 +35,10 @@ import {
 import { InfoAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
-import { usePostProjectStorageV2Mutation } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import {
+  usePatchProjectStorageV2ByStorageIdMutation,
+  usePostProjectStorageV2Mutation,
+} from "~/features/cloudStorage/api/projectCloudStorage.api";
 import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   ProjectConnectDataConnectorModeSwitch,
@@ -144,7 +147,7 @@ function ProjectStorageV2FormInner({
 }) {
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
   } = useForm<ProjectStorageV2FormValues>({
     mode: "onChange",
@@ -171,22 +174,27 @@ function ProjectStorageV2FormInner({
     [resourcePoolsWithStorageQuotas, selectedStorageQuotaId],
   );
 
-  // const [postStorageMutation, postStorageStatus] = usePostStorageMutation();
-  // const [patchStorageByStorageIdMutation, patchStorageByStorageIdStatus] =
-  //   usePatchStorageByStorageIdMutation();
-  // const { data: storageAllowData } = useGetStorageAllowByProjectIdQuery({
-  //   projectId: projectId,
-  // });
-  // const projectStorageMaxSize =
-  //   storageAllowData?.max_size ?? PROJECT_STORAGE_MAX_GB;
-
   const [postStorage, postStorageStatus] = usePostProjectStorageV2Mutation();
+  const [patchStorage, patchStorageStatus] =
+    usePatchProjectStorageV2ByStorageIdMutation();
 
   const onSubmit = useCallback(
     (values: ProjectStorageV2FormValues) => {
       console.log({ values });
       if (storage) {
         console.log("TODO! edit storage");
+        const requestedSize =
+          values.size != storage.requested_size ? values.size : undefined;
+        const mountPath =
+          values.mountPath != storage.mount_path ? values.mountPath : undefined;
+        patchStorage({
+          "If-Match": storage.etag,
+          storageId: storage.id,
+          projectStoragePatchV2: {
+            requested_size: requestedSize,
+            mount_path: mountPath,
+          },
+        });
       } else {
         postStorage({
           projectStoragePostV2: {
@@ -198,45 +206,14 @@ function ProjectStorageV2FormInner({
         });
       }
     },
-    [postStorage, projectId, storage],
+    [patchStorage, postStorage, projectId, storage],
   );
 
   useEffect(() => {
-    if (postStorageStatus.isSuccess) {
+    if (postStorageStatus.isSuccess || patchStorageStatus.isSuccess) {
       toggle();
     }
-  }, [postStorageStatus.isSuccess, toggle]);
-
-  // const onSubmit = async (values: ProjectStorageV2FormValues) => {
-  //   console.log({ values });
-
-  // if (!projectStorage) {
-  //   // Create new project storage
-  //   const result = await postStorageMutation({
-  //     projectStoragePost: {
-  //       namespace: namespace ?? "",
-  //       size: values.size,
-  //       mount_path: values.mountPath,
-  //     },
-  //   });
-  //   if (!result.error) {
-  //     toggle();
-  //   }
-  // } else {
-  //   // Update existing project storage
-  //   const result = await patchStorageByStorageIdMutation({
-  //     storageId: projectStorage.id,
-  //     "If-Match": projectStorage.etag ?? "",
-  //     projectStoragePatch: {
-  //       size: values.size,
-  //       mount_path: values.mountPath,
-  //     },
-  //   });
-  //   if (!result.error) {
-  //     toggle();
-  //   }
-  // }
-  // };
+  }, [patchStorageStatus.isSuccess, postStorageStatus.isSuccess, toggle]);
 
   return (
     <>
@@ -250,10 +227,9 @@ function ProjectStorageV2FormInner({
           </div>
         )}
 
-        {/* <RtkOrDataServicesError
-          error={postStorageStatus.error || patchStorageByStorageIdStatus.error}
-        /> */}
-        <RtkOrDataServicesError error={postStorageStatus.error} />
+        <RtkOrDataServicesError
+          error={postStorageStatus.error ?? patchStorageStatus.error}
+        />
         {storage == null && (
           <InfoAlert dismissible={false} timeout={0}>
             You can add a project storage to this project. Project storage will
@@ -367,7 +343,7 @@ function ProjectStorageV2FormInner({
         <Button
           color="outline-primary"
           data-cy="project-storage-form-cancel-button"
-          onClick={() => toggle()}
+          onClick={toggle}
         >
           <XLg className={cx("bi", "me-1")} />
           Cancel
@@ -376,6 +352,11 @@ function ProjectStorageV2FormInner({
           color="primary"
           data-cy="project-storage-form-submit-button"
           onClick={handleSubmit(onSubmit)}
+          disabled={
+            postStorageStatus.isLoading ||
+            patchStorageStatus.isLoading ||
+            (storage != null && !isDirty)
+          }
         >
           {storage ? (
             "Update project storage"

@@ -35,7 +35,7 @@ export default function ProjectStorageV2EditModal({
   toggle,
 }: ProjectStorageV2EditModalProps) {
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggle} centered>
+    <Modal backdrop="static" centered isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader toggle={toggle} tag="h2">
         <RenkuStorageIcon className={cx("bi", "me-1")} />
         Edit Project Storage
