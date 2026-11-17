@@ -515,6 +515,14 @@ const injectedRtkApi = api.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    getStorageQuotasByStorageQuotaIdResources: build.query<
+      GetStorageQuotasByStorageQuotaIdResourcesApiResponse,
+      GetStorageQuotasByStorageQuotaIdResourcesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storage_quotas/${queryArg.storageQuotaId}/resources`,
+      }),
+    }),
     getResourcePoolsByResourcePoolIdStorageQuotas: build.query<
       GetResourcePoolsByResourcePoolIdStorageQuotasApiResponse,
       GetResourcePoolsByResourcePoolIdStorageQuotasApiArg
@@ -864,6 +872,11 @@ export type PatchStorageQuotasByStorageQuotaIdApiArg = {
 };
 export type DeleteStorageQuotasByStorageQuotaIdApiResponse = unknown;
 export type DeleteStorageQuotasByStorageQuotaIdApiArg = {
+  storageQuotaId: Ulid;
+};
+export type GetStorageQuotasByStorageQuotaIdResourcesApiResponse =
+  /** status 200 The resource usage of the storage quota */ StorageQuotaResources;
+export type GetStorageQuotasByStorageQuotaIdResourcesApiArg = {
   storageQuotaId: Ulid;
 };
 export type GetResourcePoolsByResourcePoolIdStorageQuotasApiResponse =
@@ -1318,6 +1331,13 @@ export type StorageQuotaPatch = {
   total_size?: MaxStorageSize;
   max_size?: MaxStorageSize;
 };
+export type FreeStorageSize = number;
+export type StorageQuotaResources = {
+  id: Ulid;
+  allocated_size: FreeStorageSize;
+  requested_size: FreeStorageSize;
+  free_size: FreeStorageSize;
+};
 export type Version = {
   version: string;
 };
@@ -1379,6 +1399,7 @@ export const {
   useGetStorageQuotasByStorageQuotaIdQuery,
   usePatchStorageQuotasByStorageQuotaIdMutation,
   useDeleteStorageQuotasByStorageQuotaIdMutation,
+  useGetStorageQuotasByStorageQuotaIdResourcesQuery,
   useGetResourcePoolsByResourcePoolIdStorageQuotasQuery,
   useGetVersionQuery,
 } = injectedRtkApi;

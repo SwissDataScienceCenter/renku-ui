@@ -2370,6 +2370,47 @@
         "tags": ["storage_quotas"]
       }
     },
+    "/storage_quotas/{storage_quota_id}/resources": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "storage_quota_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a report of free and used resources of a storage quota",
+        "responses": {
+          "200": {
+            "description": "The resource usage of the storage quota",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageQuotaResources"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The storage quota does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["storage_quotas"]
+      }
+    },
     "/resource_pools/{resource_pool_id}/storage_quotas": {
       "parameters": [
         {
@@ -4115,6 +4156,25 @@
           }
         }
       },
+      "StorageQuotaResources": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "allocated_size": {
+            "$ref": "#/components/schemas/FreeStorageSize"
+          },
+          "requested_size": {
+            "$ref": "#/components/schemas/FreeStorageSize"
+          },
+          "free_size": {
+            "$ref": "#/components/schemas/FreeStorageSize"
+          }
+        },
+        "required": ["id", "allocated_size", "requested_size", "free_size"]
+      },
       "ConfigName": {
         "type": "string",
         "description": "The name of the Kubernetes configuration to use to connect to the remote cluster. This is currently used to find a file named `<KubeConfigRoot>/<config_name>`.\n\nThis configuration is expected to have a default namespace defined. It will be used for all remote operations requiring a namespace, as well for namespaced objects.\n",
@@ -4427,6 +4487,12 @@
         "minimum": 0,
         "exclusiveMinimum": true,
         "description": "Maximum size in GB"
+      },
+      "FreeStorageSize": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 0,
+        "description": "Free size in GB"
       },
       "ErrorResponse": {
         "type": "object",

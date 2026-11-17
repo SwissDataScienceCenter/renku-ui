@@ -49,6 +49,7 @@ import {
   PROJECT_STORAGE_DEFAULT_MOUNT_PATH,
   PROJECT_STORAGE_STEP_GB,
 } from "./projectStorage.constants";
+import StorageQuotaResources from "./StorageQuotaResources";
 import StorageQuotaSelector from "./StorageQuotaSelector";
 import useGetStorageQuotasWithResourcePools, {
   type ResourcePoolWithStorageQuotas,
@@ -246,6 +247,9 @@ function ProjectStorageV2FormInner({
               control={control}
               resourcePoolsWithStorageQuotas={resourcePoolsWithStorageQuotas}
             />
+            {selectedStorageQuota && (
+              <StorageQuotaResources storageQuota={selectedStorageQuota} />
+            )}
           </div>
         )}
         {selectedStorageQuota && (
