@@ -24,10 +24,14 @@ import {
 } from "~/features/sessionsV2/api/computeResources.api";
 
 interface StorageQuotaResourcesProps {
+  className?: string;
+  detailed?: boolean;
   storageQuota: StorageQuota;
 }
 
 export default function StorageQuotaResources({
+  className,
+  detailed,
   storageQuota,
 }: StorageQuotaResourcesProps) {
   const {
@@ -40,7 +44,7 @@ export default function StorageQuotaResources({
 
   if (isLoading) {
     return (
-      <div className="ps-1">
+      <div className={className}>
         <Loader className="me-1" inline size={16} />
         Loading storage quota...
       </div>
@@ -49,10 +53,53 @@ export default function StorageQuotaResources({
 
   if (error || resources == null) {
     return (
-      <>
+      <div className={className}>
         <p className="mb-0">Error: could not load quota usage</p>
         <RtkOrDataServicesError dismissible={false} error={error} />
-      </>
+      </div>
+    );
+  }
+
+  if (detailed) {
+    const percentAllocated = Math.ceil(
+      (resources.allocated_size / storageQuota.total_size) * 100,
+    );
+    const percentRequested = Math.ceil(
+      (resources.requested_size / storageQuota.total_size) * 100,
+    );
+
+    return (
+      <div className={className}>
+        <div>
+          Free space: {resources.free_size}&nbsp;GB, allocated space:{" "}
+          {resources.allocated_size}&nbsp;GB, requested space:{" "}
+          {resources.requested_size}&nbsp;GB
+        </div>
+        <div className="progress-stacked">
+          <div
+            className="progress"
+            role="progressbar"
+            aria-label="Allocated storage"
+            aria-valuenow={percentAllocated}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            style={{ width: `${percentAllocated}%` }}
+          >
+            <div className="progress-bar"></div>
+          </div>
+          <div
+            className="progress"
+            role="progressbar"
+            aria-label="Requested storage"
+            aria-valuenow={percentRequested}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            style={{ width: `${percentRequested}%` }}
+          >
+            <div className="progress-bar progress-bar-striped bg-info"></div>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -60,7 +107,7 @@ export default function StorageQuotaResources({
   const percent = Math.ceil((used / storageQuota.total_size) * 100);
 
   return (
-    <div className="ps-1">
+    <div className={className}>
       <div>
         Free space: {resources.free_size}&nbsp;GB, used space: {used}&nbsp;GB
       </div>

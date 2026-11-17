@@ -74,6 +74,7 @@ import {
   PROJECT_STORAGE_MIN_GB,
   PROJECT_STORAGE_STEP_GB,
 } from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants";
+import StorageQuotaResources from "../ProjectPageV2/ProjectPageContent/ProjectStorage/StorageQuotaResources";
 import {
   computeResourcesApi,
   useGetResourcePoolsQuery,
@@ -274,6 +275,7 @@ function StorageQuotaItem({
 
           <div className={cx("border-bottom", "py-2")}>
             <StorageQuotaValues storageQuota={storageQuota} />
+            <StorageQuotaResources detailed storageQuota={storageQuota} />
           </div>
         </CardBody>
         <CardBody

@@ -263,7 +263,10 @@ function ProjectStorageV2FormInner({
               resourcePoolsWithStorageQuotas={resourcePoolsWithStorageQuotas}
             />
             {selectedStorageQuota && (
-              <StorageQuotaResources storageQuota={selectedStorageQuota} />
+              <StorageQuotaResources
+                className="ps-1"
+                storageQuota={selectedStorageQuota}
+              />
             )}
           </div>
         )}
