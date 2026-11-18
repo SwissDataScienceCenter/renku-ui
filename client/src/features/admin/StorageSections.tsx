@@ -84,10 +84,13 @@ import {
   type StorageFlavor,
   type StorageQuota,
 } from "../sessionsV2/api/computeResources.api";
+import AddStorageFlavorButton from "./AddStorageFlavorButton";
 import AdminListFilter from "./AdminListFilter";
 import AdminSectionHeader from "./AdminSectionHeader";
+import DeleteStorageFlavorButton from "./DeleteStorageFlavorButton";
 import StorageFlavorValues from "./StorageFlavorValues";
 import StorageQuotaValues from "./StorageQuotaValues";
+import UpdateStorageFlavorButton from "./UpdateStorageFlavorButton";
 
 export default function StorageSections() {
   return (
@@ -302,7 +305,7 @@ function StorageFlavorsSection() {
   return (
     <section>
       <AdminSectionHeader
-        action={undefined /*<AddResourceFlavorButton />*/}
+        action={<AddStorageFlavorButton />}
         count={!isLoading && !error ? data?.length : undefined}
         headerTag="h3"
         icon={CupHot}
@@ -475,9 +478,8 @@ function StorageFlavorItem({ storageFlavor }: StorageFlavorItemProps) {
             "pt-0",
           )}
         >
-          {/* <UpdateResourceFlavorButton resourceFlavor={resourceFlavor} />
-          <DeleteResourceFlavorButton resourceFlavor={resourceFlavor} /> */}
-          TODO: Buttons
+          <UpdateStorageFlavorButton storageFlavor={storageFlavor} />
+          <DeleteStorageFlavorButton storageFlavor={storageFlavor} />
         </CardBody>
       </Collapse>
     </Card>
