@@ -180,6 +180,20 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
             ]
           : ["StorageFlavor"],
     },
+    postStorageFlavors: {
+      invalidatesTags: [{ id: "LIST", type: "StorageFlavor" }],
+    },
+    patchStorageFlavorsByStorageFlavorId: {
+      invalidatesTags: (_result, _error, { storageFlavorId }) => [
+        { id: storageFlavorId, type: "StorageFlavor" },
+      ],
+    },
+    deleteStorageFlavorsByStorageFlavorId: {
+      invalidatesTags: (_result, _error, { storageFlavorId }) => [
+        { id: storageFlavorId, type: "StorageFlavor" },
+        { id: "LIST", type: "StorageFlavor" },
+      ],
+    },
     getStorageQuotas: {
       providesTags: (result) =>
         result
@@ -232,6 +246,9 @@ export const {
 
   // "storage flavors" hooks
   useGetStorageFlavorsQuery,
+  usePostStorageFlavorsMutation,
+  usePatchStorageFlavorsByStorageFlavorIdMutation,
+  useDeleteStorageFlavorsByStorageFlavorIdMutation,
 
   // "storage quotas" hooks
   useGetStorageQuotasQuery,
