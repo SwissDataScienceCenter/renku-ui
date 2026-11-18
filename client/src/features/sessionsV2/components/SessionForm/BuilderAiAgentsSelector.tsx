@@ -48,7 +48,7 @@ interface BuilderAiAgentsSelectorProps<
   control: Control<T>;
 }
 
-const EMPTY_PLACEHOLDER = "None - Add an agent";
+const EMPTY_PLACEHOLDER = "No agents selected";
 
 export default function BuilderAiAgentsSelector<T extends FieldValues>({
   control,
