@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { LazyComputeResourcesSection } from "~/features/admin/LazyAdminSections";
+import ComputeResourcesSection from "~/features/admin/ComputeResourcesSection";
 
 export default function AdminComputeResourcesPage() {
-  return <LazyComputeResourcesSection />;
+  return <ComputeResourcesSection />;
 }

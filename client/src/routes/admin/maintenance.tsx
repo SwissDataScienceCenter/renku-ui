@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { LazyIncidentsAndMaintenanceSection } from "~/features/admin/LazyAdminSections";
+import IncidentsAndMaintenanceSection from "~/features/admin/IncidentsAndMaintenanceSection";
 
 export default function AdminMaintenancePage() {
-  return <LazyIncidentsAndMaintenanceSection />;
+  return <IncidentsAndMaintenanceSection />;
 }

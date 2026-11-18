@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { LazySessionEnvironmentsSection } from "~/features/admin/LazyAdminSections";
+import SessionEnvironmentsSection from "~/features/admin/SessionEnvironmentsSection";
 
 export default function AdminSessionEnvironmentsPage() {
-  return <LazySessionEnvironmentsSection />;
+  return <SessionEnvironmentsSection />;
 }

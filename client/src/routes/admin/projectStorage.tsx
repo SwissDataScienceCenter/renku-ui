@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { LazyProjectStorageAllowSection } from "~/features/admin/LazyAdminSections";
+import ProjectStorageAllowSection from "~/features/admin/ProjectStorageAllowSection";
 
 export default function AdminProjectStoragePage() {
-  return <LazyProjectStorageAllowSection />;
+  return <ProjectStorageAllowSection />;
 }

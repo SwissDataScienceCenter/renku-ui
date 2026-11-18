@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { LazyConnectedServicesSection } from "~/features/admin/LazyAdminSections";
+import IntegrationsSection from "~/features/admin/IntegrationsSection";
 
 export default function AdminIntegrationsPage() {
-  return <LazyConnectedServicesSection />;
+  return <IntegrationsSection />;
 }
