@@ -54,7 +54,11 @@ import { SelectResourceClassModal } from "./components/SessionModals/SelectResou
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SaveCloudStorageCredentials from "./SaveCloudStorageCredentials";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
-import { UsageAvailable, validateEnvVariableName } from "./session.utils";
+import {
+  getLauncherImageToCheck,
+  UsageAvailable,
+  validateEnvVariableName,
+} from "./session.utils";
 import SessionExpiredDataConnectorsModal from "./SessionExpiredDataConnectorsModal";
 import SessionImageModal from "./SessionImageModal";
 import {
@@ -575,6 +579,7 @@ function StartSessionFromLauncher({
         }
       />
       <SelectResourceClassModal
+        image={getLauncherImageToCheck(launcher)}
         isOpen={isPendingResourceClass}
         resourceClassId={launcher.resource_class_id}
         onContinue={setResourceClass}

@@ -99,6 +99,7 @@ import {
   getJobAccordionTargetId,
   getLauncherCategory,
   getLauncherCategoryDefinition,
+  getLauncherImageToCheck,
   resolveOpenJobSubmissionId,
   safeStringify,
   sessionLauncherKindToCategory,
@@ -172,6 +173,7 @@ function SessionCard({
           <SessionStatusV2Description session={session} />
           <SessionRemotePoolBadge
             className="mt-2"
+            image={{ containerImage: session.image }}
             launcherInlineText={launcherDefinition.text.inline}
             resourceClassId={session.resource_class_id}
           />
@@ -676,6 +678,7 @@ export function SessionView({
                 )}
               {launcher && launcherCategory && (
                 <ModifyResourcesLauncherModal
+                  image={getLauncherImageToCheck(launcher)}
                   isOpen={isModifyResourcesOpen}
                   toggleModal={toggleModifyResources}
                   resourceClassId={userLauncherResourceClass?.id}

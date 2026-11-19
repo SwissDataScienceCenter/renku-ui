@@ -39,6 +39,7 @@ import type {
 } from "./api/sessionsV2.api";
 import {
   BUILDER_FRONTEND_COMBINATIONS,
+  BUILDER_IMAGE_NOT_READY_VALUE,
   BUILDER_PLATFORMS,
   DEFAULT_PORT,
   DEFAULT_URL,
@@ -55,6 +56,7 @@ import {
   ImageStatus,
   SESSION_LAUNCHER_KIND,
   type EnvironmentSelectOption,
+  type ImageToCheck,
   type LauncherCategory,
   type LauncherCategoryDefinition,
   type SessionLauncherForm,
@@ -782,6 +784,56 @@ export function isImageCompatibleWith(
     ({ os, architecture }) => `${os}/${architecture}`,
   );
   return imagePlatforms.some((p) => p === platform);
+}
+
+/**
+ * The image to check for platform compatibility for a launcher: the image
+ * itself when available, otherwise the platforms it will be built for.
+ */
+export function getLauncherImageToCheck(
+  launcher: Pick<SessionLauncher, "environment">,
+): ImageToCheck | undefined {
+  const { environment } = launcher;
+  const containerImage = environment.container_image;
+  if (containerImage && containerImage !== BUILDER_IMAGE_NOT_READY_VALUE) {
+    return { containerImage };
+  }
+  if (environment.environment_image_source === "build") {
+    const platforms = environment.build_parameters.platforms;
+    return platforms?.length ? { platforms } : undefined;
+  }
+  return undefined;
+}
+
+/**
+ * The image to check for platform compatibility for the environment chosen
+ * in the new launcher form.
+ */
+export function getLauncherFormImageToCheck(
+  form: Pick<
+    SessionLauncherForm,
+    "environmentSelect" | "environmentId" | "container_image" | "platform"
+  >,
+  globalEnvironments: SessionEnvironmentList | undefined,
+): ImageToCheck | undefined {
+  switch (form.environmentSelect) {
+    case "global": {
+      const environment = globalEnvironments?.find(
+        ({ id }) => id === form.environmentId,
+      );
+      return environment?.container_image
+        ? { containerImage: environment.container_image }
+        : undefined;
+    }
+    case "custom + image":
+      return form.container_image?.trim()
+        ? { containerImage: form.container_image.trim() }
+        : undefined;
+    case "custom + build":
+      return form.platform ? { platforms: [form.platform] } : undefined;
+    default:
+      return undefined;
+  }
 }
 
 export function usageAvailableString(

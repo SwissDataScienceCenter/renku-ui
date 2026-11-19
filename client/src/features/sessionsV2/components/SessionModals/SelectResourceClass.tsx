@@ -44,6 +44,7 @@ import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../session.constants";
+import type { ImageToCheck } from "../../sessionsV2.types";
 import SessionClassRemoteAlert from "../SessionClassRemoteAlert";
 import SessionClassSelector from "../SessionClassSelector";
 import { SessionRowResourceRequests } from "../SessionsList";
@@ -53,6 +54,7 @@ import {
 } from "./ResourceClassWarning";
 
 interface SelectResourceClassModalProps {
+  image?: ImageToCheck;
   isOpen: boolean;
   onContinue: (
     env: ResourceClassWithIdFiltered,
@@ -63,6 +65,7 @@ interface SelectResourceClassModalProps {
   isCustom: boolean;
 }
 export function SelectResourceClassModal({
+  image,
   isOpen,
   onContinue,
   projectUrl,
@@ -195,6 +198,7 @@ export function SelectResourceClassModal({
         {watchCurrentSessionClass?.id !== resourceClassId && (
           <SessionClassRemoteAlert
             className="mt-2"
+            image={image}
             resourceClassId={watchCurrentSessionClass?.id}
           />
         )}

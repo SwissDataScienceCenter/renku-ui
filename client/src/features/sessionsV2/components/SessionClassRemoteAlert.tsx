@@ -17,13 +17,17 @@
  */
 
 import { InfoAlert } from "~/components/Alert";
+import type { ImageToCheck } from "../sessionsV2.types";
+import useImagePlatformCompatibility from "../useImagePlatformCompatibility.hook";
 import useResourcePoolByClassId from "../useResourcePoolByClassId.hook";
 import useResourcePoolRemoteKind, {
   REMOTE_KIND_TEXT,
 } from "../useResourcePoolRemoteKind.hook";
+import ImagePlatformMismatchMessage from "./ImagePlatformMismatchMessage";
 
 interface SessionClassRemoteAlertProps {
   className?: string;
+  image?: ImageToCheck; // warns if this image platform does not match the pool
   launcherInlineText?: string;
   resourceClassId: number | null | undefined;
 }
@@ -34,11 +38,16 @@ interface SessionClassRemoteAlertProps {
  */
 export default function SessionClassRemoteAlert({
   className,
+  image,
   launcherInlineText = "session",
   resourceClassId,
 }: SessionClassRemoteAlertProps) {
   const { resourcePool } = useResourcePoolByClassId(resourceClassId);
   const kind = useResourcePoolRemoteKind(resourcePool);
+  const imageCompatibility = useImagePlatformCompatibility(
+    kind != null ? image : undefined,
+    resourcePool?.platform,
+  );
 
   if (resourcePool == null || kind == null) {
     return null;
@@ -61,6 +70,10 @@ export default function SessionClassRemoteAlert({
         It requires an image compatible with{" "}
         <code>{resourcePool.platform}</code>.
       </p>
+      <ImagePlatformMismatchMessage
+        className="mt-1"
+        compatibility={imageCompatibility}
+      />
     </InfoAlert>
   );
 }
