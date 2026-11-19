@@ -17,16 +17,18 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, type ReactNode } from "react";
 import { SkipForward, XLg } from "react-bootstrap-icons";
 import { generatePath, useNavigate } from "react-router";
 import {
+  AccordionBody,
+  AccordionHeader,
+  AccordionItem,
   Button,
-  ListGroup,
-  ListGroupItem,
   ModalBody,
   ModalFooter,
   ModalHeader,
+  UncontrolledAccordion,
 } from "reactstrap";
 
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
@@ -50,22 +52,33 @@ import {
 } from "../repositories/api/repositories.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
+interface VisibleItem {
+  id: string;
+  label: string;
+}
+
 interface SessionRepositoriesModalProps {
+  embedded?: boolean;
   isOpen: boolean;
   project: Project;
   onSkip?: () => void;
   onCancel?: () => void;
   continueLabel?: string;
+  repositoriesReady?: boolean;
   title?: string;
+  visibleItems?: VisibleItem[];
   warningIntro?: string;
 }
 export default function SessionRepositoriesModal({
+  embedded = false,
   isOpen,
   project,
   onSkip: onSkipProp,
   onCancel: onCancelProp,
   continueLabel = "Launch anyway",
+  repositoriesReady = false,
   title = "Session repositories not accessible",
+  visibleItems,
   warningIntro = "your attention before launching the session",
 }: SessionRepositoriesModalProps) {
   const navigate = useNavigate();
@@ -83,17 +96,32 @@ export default function SessionRepositoriesModal({
     project.repositories ?? [],
   );
 
+  const hasWriteAccess = !!projectPermissions?.write;
   const repoWithInterruptions = useMemo(() => {
     if (isLoading || !data) return [];
-    return (
-      data.filter(
-        (repo) =>
-          repo.error ||
-          (repo.data &&
-            shouldInterrupt(repo.data, !!projectPermissions?.write)),
-      ) ?? []
+    return data.filter((repo) =>
+      repositoryNeedsAttention(repo, hasWriteAccess),
     );
-  }, [data, isLoading, projectPermissions?.write]);
+  }, [data, hasWriteAccess, isLoading]);
+  const pinnedRepositories = useMemo(() => {
+    if (visibleItems == null || !data) {
+      return null;
+    }
+    const byUrl = new Map(
+      data.map((repository) => [repository.url, repository]),
+    );
+    return visibleItems.map((item) => {
+      const repository = byUrl.get(item.id);
+      return {
+        item,
+        pending: repositoryNeedsAttention(repository, hasWriteAccess),
+        repository,
+        skipped:
+          repositoriesReady &&
+          repositoryNeedsAttention(repository, hasWriteAccess),
+      };
+    });
+  }, [data, hasWriteAccess, repositoriesReady, visibleItems]);
 
   const dispatch = useAppDispatch();
   const defaultOnSkip = useCallback(() => {
@@ -112,6 +140,14 @@ export default function SessionRepositoriesModal({
         </p>
         <RtkOrDataServicesError error={error} />
       </div>
+    ) : pinnedRepositories != null ? (
+      <PinnedRepositoryList
+        hasWriteAccess={hasWriteAccess}
+        openInNewTab={embedded}
+        project={project}
+        rows={pinnedRepositories}
+        warningIntro={warningIntro}
+      />
     ) : (
       <>
         <p data-cy="session-repositories-warning">
@@ -119,20 +155,41 @@ export default function SessionRepositoriesModal({
           {repoWithInterruptions.length === 1
             ? `is ${repoWithInterruptions.length} repository that requires`
             : `are ${repoWithInterruptions.length} repositories that require`}{" "}
-          your attention {warningIntro}:
+          {warningIntro}:
         </p>
-        <ListGroup>
+        <RepositoryAccordion
+          openIds={repoWithInterruptions.map((repository) =>
+            repositoryAccordionId(repository.url),
+          )}
+        >
           {repoWithInterruptions.map((repository) => (
             <SessionRepositoryWarning
               key={repository.url}
-              hasWriteAccess={projectPermissions?.write}
+              accordionId={repositoryAccordionId(repository.url)}
+              hasWriteAccess={hasWriteAccess}
+              openInNewTab={embedded}
               repository={repository}
               project={project}
             />
           ))}
-        </ListGroup>
+        </RepositoryAccordion>
       </>
     );
+
+  const skipButton = (
+    <Button
+      color="outline-primary"
+      data-cy="session-repositories-modal-continue"
+      onClick={onSkip}
+    >
+      <SkipForward className={cx("bi", "me-1")} />
+      {continueLabel}
+    </Button>
+  );
+
+  if (embedded) {
+    return <div data-cy="session-repositories-modal">{content}</div>;
+  }
 
   return (
     <ScrollableModal
@@ -152,34 +209,179 @@ export default function SessionRepositoriesModal({
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
-        <Button
-          color="outline-primary"
-          data-cy="session-repositories-modal-continue"
-          onClick={onSkip}
-        >
-          <SkipForward className={cx("bi", "me-1")} />
-          {continueLabel}
-        </Button>
+        {skipButton}
       </ModalFooter>
     </ScrollableModal>
   );
 }
 
-interface SessionRepositoryWarningProps {
+function repositoryNeedsAttention(
+  repository: GetRepositoriesApiResponse | undefined,
+  hasWriteAccess: boolean,
+): boolean {
+  if (repository == null) {
+    return false;
+  }
+  return (
+    !!repository.error ||
+    (!!repository.data && shouldInterrupt(repository.data, hasWriteAccess))
+  );
+}
+
+function PinnedRepositoryList({
+  hasWriteAccess,
+  openInNewTab,
+  project,
+  rows,
+  warningIntro,
+}: {
   hasWriteAccess: boolean;
+  openInNewTab: boolean;
+  project: Project;
+  rows: {
+    item: VisibleItem;
+    pending: boolean;
+    repository?: GetRepositoriesApiResponse;
+    skipped: boolean;
+  }[];
+  warningIntro: string;
+}) {
+  const pendingCount = rows.filter((row) => row.pending && !row.skipped).length;
+  const openIds = rows
+    .filter((row) => repositoryStartsOpen(row))
+    .map((row) => repositoryAccordionId(row.item.id));
+  return (
+    <>
+      {pendingCount > 0 && (
+        <p data-cy="session-repositories-warning">
+          There{" "}
+          {pendingCount === 1
+            ? "is 1 repository that requires"
+            : `are ${pendingCount} repositories that require`}{" "}
+          {warningIntro}:
+        </p>
+      )}
+      <RepositoryAccordion key={openIds.join("|")} openIds={openIds}>
+        {rows.map((row) => {
+          const accordionId = repositoryAccordionId(row.item.id);
+          if (row.repository == null) {
+            return (
+              <RepositoryAccordionItem
+                key={row.item.id}
+                accordionId={accordionId}
+                title={row.item.label}
+              >
+                Unavailable
+              </RepositoryAccordionItem>
+            );
+          }
+          return (
+            <SessionRepositoryWarning
+              key={row.item.id}
+              accordionId={accordionId}
+              connected={!row.pending && isRepositoryConnected(row.repository)}
+              hasWriteAccess={hasWriteAccess}
+              openInNewTab={openInNewTab}
+              repository={row.repository}
+              project={project}
+              showActions={row.pending}
+              skipped={row.skipped}
+            />
+          );
+        })}
+      </RepositoryAccordion>
+    </>
+  );
+}
+
+function repositoryAccordionId(repositoryUrl: string): string {
+  return `repository-${encodeURIComponent(repositoryUrl)}`;
+}
+
+function RepositoryAccordion({
+  children,
+  openIds,
+}: {
+  children: ReactNode;
+  openIds: string[];
+}) {
+  const toggle = useCallback(() => {}, []);
+  return (
+    <UncontrolledAccordion
+      defaultOpen={openIds}
+      stayOpen={true}
+      toggle={toggle}
+    >
+      {children}
+    </UncontrolledAccordion>
+  );
+}
+
+function RepositoryAccordionItem({
+  accordionId,
+  children,
+  title,
+}: {
+  accordionId: string;
+  badge?: "skipped" | "connected";
+  children?: ReactNode;
+  title: string;
+}) {
+  return (
+    <AccordionItem data-cy={accordionId}>
+      <AccordionHeader targetId={accordionId}>
+        <span className="fw-bold">{title}</span>
+      </AccordionHeader>
+      <AccordionBody accordionId={accordionId}>{children}</AccordionBody>
+    </AccordionItem>
+  );
+}
+
+function isRepositoryConnected(
+  repository: GetRepositoriesApiResponse,
+): boolean {
+  return repository.data?.connection?.status === "connected";
+}
+
+function repositoryStartsOpen(row: {
+  pending: boolean;
+  repository?: GetRepositoriesApiResponse;
+  skipped: boolean;
+}): boolean {
+  if (row.skipped) {
+    return false;
+  }
+  if (
+    row.repository != null &&
+    !row.pending &&
+    isRepositoryConnected(row.repository)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+interface SessionRepositoryWarningProps {
+  accordionId: string;
+  connected?: boolean;
+  hasWriteAccess: boolean;
+  openInNewTab?: boolean;
   repository: GetRepositoriesApiResponse;
   project: Project;
+  showActions?: boolean;
+  skipped?: boolean;
 }
 function SessionRepositoryWarning({
+  accordionId,
   hasWriteAccess,
+  openInNewTab = false,
   repository,
   project,
+  showActions = true,
 }: SessionRepositoryWarningProps) {
   const title = getRepositoryName(repository.url);
-
   return (
-    <ListGroupItem>
-      <h3>{title}</h3>
+    <RepositoryAccordionItem accordionId={accordionId} title={title}>
       <p className="mb-2">URL: {repository.url}</p>
       <div className="mb-2">
         <RepositoryPermissionsBadge
@@ -187,11 +389,14 @@ function SessionRepositoryWarning({
           repositoryUrl={repository.url}
         />
       </div>
-      <RepositoryCallToActionAlert
-        hasWriteAccess={hasWriteAccess}
-        repositoryUrl={repository.url}
-        project={project}
-      />
-    </ListGroupItem>
+      {showActions && (
+        <RepositoryCallToActionAlert
+          hasWriteAccess={hasWriteAccess}
+          openInNewTab={openInNewTab}
+          repositoryUrl={repository.url}
+          project={project}
+        />
+      )}
+    </RepositoryAccordionItem>
   );
 }

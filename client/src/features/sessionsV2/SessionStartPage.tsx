@@ -51,7 +51,6 @@ import {
   type SessionPostRequest,
 } from "./api/sessionsV2.api";
 import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
-import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SaveCloudStorageCredentials from "./SaveCloudStorageCredentials";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
 import { UsageAvailable, validateEnvVariableName } from "./session.utils";
@@ -65,6 +64,7 @@ import {
 import SessionRepositoriesModal from "./SessionRepositoriesModal";
 import SessionSecretsModal from "./SessionSecretsModal";
 import SessionSshKeyRequiredModal from "./SessionSshKeyRequiredModal";
+import SessionStorageCredentials from "./SessionStorageCredentials";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type {
   SessionStartDataConnectorConfiguration,
@@ -328,11 +328,11 @@ function StartSessionWithCloudStorageModal({
           title={`Launching session ${launcher.name}`}
           status={steps}
         />
-        <DataConnectorSecretsModal
+        <SessionStorageCredentials
+          dataConnectorConfigs={configsNeedingCredentials}
           isOpen={showDataConnectorSecretsModal}
           onCancel={onCancel}
-          onStart={onStart}
-          dataConnectorConfigs={configsNeedingCredentials}
+          onFinished={onStart}
         />
       </div>
     </div>

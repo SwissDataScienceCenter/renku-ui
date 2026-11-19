@@ -17,10 +17,16 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   BoxArrowInLeft,
-  CheckCircleFill,
+  Check,
   PlusLg,
   SkipForward,
   XLg,
@@ -28,6 +34,10 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { generatePath, useNavigate } from "react-router";
 import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  AccordionItem,
   Button,
   ButtonGroup,
   Card,
@@ -36,11 +46,9 @@ import {
   Form,
   Input,
   Label,
-  ListGroup,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Row,
 } from "reactstrap";
 
 import { useLoginUrl } from "../../authentication/useLoginUrl.hook";
@@ -52,31 +60,45 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import SelectUserSecretField from "../ProjectPageV2/ProjectPageContent/SessionSecrets/fields/SelectUserSecretField";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
-import SessionSecretSlotItem from "../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionSecretSlotItem";
+import { getSecretSlotSessionPath } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.utils";
 import {
   usePatchProjectsByProjectIdSessionSecretsMutation,
   type Project,
   type SessionSecretSlot,
 } from "../projectsV2/api/projectV2.api";
-import { useGetUserQueryState } from "../usersV2/api/users.api";
+import {
+  useGetUserQueryState,
+  useGetUserSecretByIdQuery,
+} from "../usersV2/api/users.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
+interface VisibleItem {
+  id: string;
+  label: string;
+}
+
 interface SessionSecretsModalProps {
+  embedded?: boolean;
   isOpen: boolean;
   project: Project;
   sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[];
   onSkip?: () => void;
   onCancel?: () => void;
   title?: string;
+  userSecretsReady?: boolean;
+  visibleItems?: VisibleItem[];
 }
 
 export default function SessionSecretsModal({
+  embedded = false,
   isOpen,
   project,
   sessionSecretSlotsWithSecrets,
   onSkip: onSkipProp,
   onCancel: onCancelProp,
   title = "Session secrets",
+  userSecretsReady = false,
+  visibleItems,
 }: SessionSecretsModalProps) {
   const { data: user } = useGetUserQueryState();
 
@@ -96,17 +118,39 @@ export default function SessionSecretsModal({
     dispatch(startSessionOptionsV2Slice.actions.setUserSecretsReady(true));
   }, [dispatch]);
   const onSkip = onSkipProp ?? defaultOnSkip;
+  const pinnedSecrets = useMemo(() => {
+    if (visibleItems == null) {
+      return null;
+    }
+    const byId = new Map(
+      sessionSecretSlotsWithSecrets.map((slot) => [slot.secretSlot.id, slot]),
+    );
+    return visibleItems.map((item) => ({
+      item,
+      slot: byId.get(item.id),
+    }));
+  }, [sessionSecretSlotsWithSecrets, visibleItems]);
+  const loggedOutSlots =
+    pinnedSecrets == null
+      ? sessionSecretSlotsWithSecrets
+      : pinnedSecrets.flatMap((row) => (row.slot == null ? [] : [row.slot]));
 
   const loginUrl = useLoginUrl();
+  const secretRows = useMemo(() => {
+    if (pinnedSecrets != null) {
+      return pinnedSecrets;
+    }
+    return sessionSecretSlotsWithSecrets.map((slot) => ({
+      item: { id: slot.secretSlot.id, label: slot.secretSlot.name },
+      slot,
+    }));
+  }, [pinnedSecrets, sessionSecretSlotsWithSecrets]);
   const content = user?.isLoggedIn ? (
-    <>
-      <ReadySessionSecrets
-        sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
-      />
-      <UnreadySessionSecrets
-        sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
-      />
-    </>
+    <PinnedSessionSecrets
+      rows={secretRows}
+      secretsMountDirectory={project.secrets_mount_directory}
+      userSecretsReady={userSecretsReady}
+    />
   ) : (
     <>
       <WarnAlert dismissible={false} timeout={0}>
@@ -122,19 +166,28 @@ export default function SessionSecretsModal({
         </p>
       </WarnAlert>
 
-      <h3>Required secrets</h3>
-      <ListGroup>
-        {sessionSecretSlotsWithSecrets.map((secretSlot) => (
-          <SessionSecretSlotItem
-            key={secretSlot.secretSlot.id}
-            secretsMountDirectory={project.secrets_mount_directory}
-            secretSlot={secretSlot}
-            noActions
-          />
-        ))}
-      </ListGroup>
+      <LoggedOutSessionSecrets
+        secretsMountDirectory={project.secrets_mount_directory}
+        slots={loggedOutSlots}
+        userSecretsReady={userSecretsReady && pinnedSecrets != null}
+      />
     </>
   );
+
+  const skipButton = (
+    <Button
+      color="outline-primary"
+      data-cy="session-secrets-modal-skip-button"
+      onClick={onSkip}
+    >
+      <SkipForward className={cx("bi", "me-1")} />
+      Skip
+    </Button>
+  );
+
+  if (embedded) {
+    return <div data-cy="session-secrets-modal">{content}</div>;
+  }
 
   return (
     <ScrollableModal
@@ -154,114 +207,360 @@ export default function SessionSecretsModal({
           <XLg className={cx("bi", "me-1")} />
           Cancel
         </Button>
-        <Button
-          color="outline-primary"
-          data-cy="session-secrets-modal-skip-button"
-          onClick={onSkip}
-        >
-          <SkipForward className={cx("bi", "me-1")} />
-          Skip
-        </Button>
+        {skipButton}
       </ModalFooter>
     </ScrollableModal>
   );
 }
 
-interface ReadySessionSecretsProps {
-  sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[];
+function LoggedOutSessionSecrets({
+  secretsMountDirectory,
+  slots,
+  userSecretsReady,
+}: {
+  secretsMountDirectory: string;
+  slots: SessionSecretSlotWithSecret[];
+  userSecretsReady: boolean;
+}) {
+  const openIds = slots
+    .filter((slot) => slot.secretId == null && !userSecretsReady)
+    .map((slot) => sessionSecretAccordionId(slot.secretSlot.id));
+
+  return (
+    <SessionSecretAccordion openIds={openIds}>
+      {slots.map((slot) => {
+        const saved = slot.secretId != null;
+        const accordionId = sessionSecretAccordionId(slot.secretSlot.id);
+        if (saved) {
+          return (
+            <SavedSessionSecretItem
+              key={slot.secretSlot.id}
+              accordionId={accordionId}
+              description={slot.secretSlot.description}
+              filename={slot.secretSlot.filename}
+              name={slot.secretSlot.name}
+              saved
+              secretId={slot.secretId}
+              secretsMountDirectory={secretsMountDirectory}
+              skipped={false}
+            />
+          );
+        }
+        return (
+          <AccordionItem
+            key={slot.secretSlot.id}
+            data-cy={
+              userSecretsReady ? "session-wizard-skipped-item" : undefined
+            }
+          >
+            <AccordionHeader targetId={accordionId}>
+              <SessionSecretAccordionTitle
+                filename={slot.secretSlot.filename}
+                name={slot.secretSlot.name}
+              />
+            </AccordionHeader>
+            <AccordionBody accordionId={accordionId}>
+              {slot.secretSlot.description && (
+                <p>{slot.secretSlot.description}</p>
+              )}
+              <p className="mb-0">
+                Location in sessions:{" "}
+                <code>
+                  {getSecretSlotSessionPath(
+                    secretsMountDirectory,
+                    slot.secretSlot.filename,
+                  )}
+                </code>
+              </p>
+            </AccordionBody>
+          </AccordionItem>
+        );
+      })}
+    </SessionSecretAccordion>
+  );
 }
 
-function ReadySessionSecrets({
-  sessionSecretSlotsWithSecrets,
-}: ReadySessionSecretsProps) {
-  const readySessionSecrets = useMemo(
-    () => sessionSecretSlotsWithSecrets.filter(({ secretId }) => secretId),
-    [sessionSecretSlotsWithSecrets],
-  );
+function PinnedSessionSecrets({
+  rows,
+  secretsMountDirectory,
+  userSecretsReady,
+}: {
+  rows: {
+    item: VisibleItem;
+    slot: SessionSecretSlotWithSecret | undefined;
+  }[];
+  secretsMountDirectory: string;
+  userSecretsReady: boolean;
+}) {
+  const openIds = rows
+    .filter((row) => sessionSecretStartsOpen(row, userSecretsReady))
+    .map((row) => sessionSecretAccordionId(row.item.id));
 
-  if (readySessionSecrets.length == 0) {
-    return null;
+  return (
+    <SessionSecretAccordion openIds={openIds}>
+      {rows.map((row) => (
+        <PinnedSessionSecretItem
+          key={row.item.id}
+          row={row}
+          secretsMountDirectory={secretsMountDirectory}
+          userSecretsReady={userSecretsReady}
+        />
+      ))}
+    </SessionSecretAccordion>
+  );
+}
+
+function PinnedSessionSecretItem({
+  row,
+  secretsMountDirectory,
+  userSecretsReady,
+}: {
+  row: {
+    item: VisibleItem;
+    slot: SessionSecretSlotWithSecret | undefined;
+  };
+  secretsMountDirectory: string;
+  userSecretsReady: boolean;
+}) {
+  const accordionId = sessionSecretAccordionId(row.item.id);
+  const saved = row.slot != null && !!row.slot.secretId;
+  const skipped = userSecretsReady && !saved;
+  if (!saved && row.slot != null) {
+    return (
+      <UnreadySessionSecretItem
+        accordionId={accordionId}
+        secretSlot={row.slot.secretSlot}
+        skipped={skipped}
+      />
+    );
   }
-
   return (
-    <>
-      <h3>Ready</h3>
-      <div className="mb-3" data-cy="session-secrets-ready">
-        {readySessionSecrets.map(({ secretSlot }) => (
-          <ReadySessionSecretItem key={secretSlot.id} secretSlot={secretSlot} />
-        ))}
-      </div>
-    </>
+    <SavedSessionSecretItem
+      accordionId={accordionId}
+      description={row.slot?.secretSlot.description}
+      filename={row.slot?.secretSlot.filename}
+      name={row.slot?.secretSlot.name ?? row.item.label}
+      saved={saved}
+      secretId={row.slot?.secretId}
+      secretsMountDirectory={secretsMountDirectory}
+      skipped={skipped}
+    />
   );
 }
 
-interface ReadySessionSecretItemProps {
-  secretSlot: SessionSecretSlot;
-}
-
-function ReadySessionSecretItem({ secretSlot }: ReadySessionSecretItemProps) {
-  const { name, filename } = secretSlot;
-
-  return (
-    <div>
-      <span>
-        <CheckCircleFill className={cx("bi", "me-1", "text-success")} />
-        <span className="fw-bold">{name}</span>
-        {" (filename: "}
-        <code>{filename}</code>
-        {")"}
-      </span>
-    </div>
-  );
-}
-
-interface UnreadySessionSecretsProps {
-  sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[];
-}
-
-function UnreadySessionSecrets({
-  sessionSecretSlotsWithSecrets,
-}: UnreadySessionSecretsProps) {
-  const unreadySessionSecrets = useMemo(
-    () => sessionSecretSlotsWithSecrets.filter(({ secretId }) => !secretId),
-    [sessionSecretSlotsWithSecrets],
-  );
-
-  if (unreadySessionSecrets.length == 0) {
-    return null;
+function sessionSecretStartsOpen(
+  row: { slot: SessionSecretSlotWithSecret | undefined },
+  userSecretsReady: boolean,
+): boolean {
+  const saved = row.slot != null && !!row.slot.secretId;
+  if (saved || userSecretsReady) {
+    return false;
   }
+  return row.slot != null;
+}
+
+function sessionSecretAccordionId(slotId: string): string {
+  return `session-secret-${encodeURIComponent(slotId)}`;
+}
+
+function SessionSecretAccordion({
+  children,
+  openIds,
+}: {
+  children: ReactNode;
+  openIds: string[];
+}) {
+  const openIdsKey = openIds.join("|");
+  const [openState, setOpenState] = useState({
+    key: openIdsKey,
+    open: openIds,
+  });
+  if (openState.key !== openIdsKey) {
+    setOpenState({ key: openIdsKey, open: openIds });
+  }
+  const open = openState.key === openIdsKey ? openState.open : openIds;
+  const toggle = useCallback((targetId: string) => {
+    setOpenState((current) => ({
+      key: current.key,
+      open: current.open.includes(targetId)
+        ? current.open.filter((id) => id !== targetId)
+        : [...current.open, targetId],
+    }));
+  }, []);
 
   return (
-    <>
-      <h3>Required secrets</h3>
-      <Row className="gy-3">
-        {unreadySessionSecrets.map(({ secretSlot }) => (
-          <UnreadySessionSecretItem
-            key={secretSlot.id}
-            secretSlot={secretSlot}
+    <Accordion open={open} toggle={toggle}>
+      {children}
+    </Accordion>
+  );
+}
+
+function SessionSecretAccordionTitle({
+  filename,
+  name,
+}: {
+  filename?: string;
+  name: string;
+}) {
+  return (
+    <span className="fw-bold">
+      {name}
+      {filename != null && filename !== "" && (
+        <>
+          {" (filename: "}
+          <code>{filename}</code>
+          {")"}
+        </>
+      )}
+    </span>
+  );
+}
+
+function SecretStatusBadge() {
+  return (
+    <span
+      className={cx(
+        "ms-2",
+        "border",
+        "badge",
+        "fw-normal",
+        "border-success",
+        "bg-success-subtle",
+        "text-success-emphasis",
+      )}
+    >
+      <Check className="me-1" />
+      Added secret value
+    </span>
+  );
+}
+
+function SavedSessionSecretItem({
+  accordionId,
+  description,
+  filename,
+  name,
+  saved,
+  secretId,
+  secretsMountDirectory,
+  skipped,
+}: {
+  accordionId: string;
+  description?: string;
+  filename?: string;
+  name: string;
+  saved: boolean;
+  secretId?: string | null;
+  secretsMountDirectory: string;
+  skipped: boolean;
+}) {
+  const dataCy = skipped
+    ? "session-wizard-skipped-item"
+    : "session-wizard-resolved-item";
+  return (
+    <AccordionItem data-cy={dataCy}>
+      <AccordionHeader targetId={accordionId}>
+        <SessionSecretAccordionTitle filename={filename} name={name} />
+        {saved && <SecretStatusBadge />}
+      </AccordionHeader>
+      <AccordionBody accordionId={accordionId}>
+        {saved && secretId != null && (
+          <SavedSessionSecretDetails
+            description={description}
+            filename={filename}
+            secretId={secretId}
+            secretsMountDirectory={secretsMountDirectory}
           />
-        ))}
-      </Row>
+        )}
+      </AccordionBody>
+    </AccordionItem>
+  );
+}
+
+function SavedSessionSecretDetails({
+  description,
+  filename,
+  secretId,
+  secretsMountDirectory,
+}: {
+  description?: string;
+  filename?: string;
+  secretId: string;
+  secretsMountDirectory: string;
+}) {
+  const location =
+    filename != null && filename !== ""
+      ? getSecretSlotSessionPath(secretsMountDirectory, filename)
+      : undefined;
+  return (
+    <>
+      <p className="mb-2">
+        Secret name:{" "}
+        <span className="fw-bold">
+          <SessionSecretName secretId={secretId} />
+        </span>
+      </p>
+      {description && <p className="mb-2">{description}</p>}
+      {location != null && (
+        <p className="mb-0">
+          Location in sessions: <code>{location}</code>
+        </p>
+      )}
     </>
   );
+}
+
+function SessionSecretName({ secretId }: { secretId: string }) {
+  const { data: userSecret, error } = useGetUserSecretByIdQuery({ secretId });
+  if (error != null || userSecret == null) {
+    return null;
+  }
+  return <>{userSecret.name}</>;
 }
 
 interface UnreadySessionSecretItemProps {
+  accordionId?: string;
   secretSlot: SessionSecretSlot;
+  skipped?: boolean;
 }
 
 function UnreadySessionSecretItem({
+  accordionId,
   secretSlot,
+  skipped = false,
 }: UnreadySessionSecretItemProps) {
-  const { id: slotId, name, description, filename } = secretSlot;
+  const { name, description, filename } = secretSlot;
+  const editor = (
+    <SessionSecretValueEditor
+      plain={accordionId != null}
+      secretSlot={secretSlot}
+    />
+  );
 
-  const [mode, setMode] = useState<"new-value" | "existing">("new-value");
-
-  const newValueId = `provide-session-secret-mode-new-value-${slotId}`;
-  const existingId = `provide-session-secret-mode-existing-${slotId}`;
+  if (accordionId != null) {
+    return (
+      <AccordionItem
+        data-cy={
+          skipped
+            ? "session-wizard-skipped-item"
+            : "session-secrets-unready-item"
+        }
+      >
+        <AccordionHeader targetId={accordionId}>
+          <SessionSecretAccordionTitle filename={filename} name={name} />
+        </AccordionHeader>
+        <AccordionBody accordionId={accordionId}>
+          <div data-cy={skipped ? "session-secrets-unready-item" : undefined}>
+            {description && <p>{description}</p>}
+            {editor}
+          </div>
+        </AccordionBody>
+      </AccordionItem>
+    );
+  }
 
   return (
-    <Col xs={12}>
+    <Col xs={12} data-cy={skipped ? "session-wizard-skipped-item" : undefined}>
       <Card data-cy="session-secrets-unready-item">
         <CardBody className="pb-0">
           <div className="fw-bold">
@@ -272,56 +571,94 @@ function UnreadySessionSecretItem({
           </div>
           {description && <p className="mb-0">{description}</p>}
         </CardBody>
-        <CardBody>
-          <ButtonGroup>
-            <Input
-              type="radio"
-              className="btn-check"
-              id={newValueId}
-              value="new-value"
-              checked={mode == "new-value"}
-              onChange={() => setMode("new-value")}
-            />
-            <Label
-              for={newValueId}
-              className={cx("btn", "btn-outline-primary")}
-              data-cy="session-secrets-unready-new-value-tab"
-            >
-              <PlusLg className={cx("bi", "me-1")} />
-              Provide a new secret value
-            </Label>
-            <Input
-              type="radio"
-              className="btn-check"
-              id={existingId}
-              value="existing"
-              checked={mode == "existing"}
-              onChange={() => setMode("existing")}
-            />
-            <Label
-              for={existingId}
-              className={cx("btn", "btn-outline-primary")}
-              data-cy="session-secrets-unready-existing-tab"
-            >
-              <BoxArrowInLeft className={cx("bi", "me-1")} />
-              Use an existing secret value
-            </Label>
-          </ButtonGroup>
-        </CardBody>
-        {mode === "new-value" ? (
-          <ProvideNewValueContent secretSlot={secretSlot} />
-        ) : (
-          <ProvideExistingContent secretSlot={secretSlot} />
-        )}
+        {editor}
       </Card>
     </Col>
   );
 }
 
+function SessionSecretValueEditor({
+  plain,
+  secretSlot,
+}: {
+  plain: boolean;
+  secretSlot: SessionSecretSlot;
+}) {
+  const { id: slotId } = secretSlot;
+  const [mode, setMode] = useState<"new-value" | "existing">("new-value");
+  const newValueId = `provide-session-secret-mode-new-value-${slotId}`;
+  const existingId = `provide-session-secret-mode-existing-${slotId}`;
+
+  return (
+    <>
+      <SecretItemSurface plain={plain}>
+        <ButtonGroup>
+          <Input
+            type="radio"
+            className="btn-check"
+            id={newValueId}
+            value="new-value"
+            checked={mode == "new-value"}
+            onChange={() => setMode("new-value")}
+          />
+          <Label
+            for={newValueId}
+            className={cx("btn", "btn-outline-primary")}
+            data-cy="session-secrets-unready-new-value-tab"
+          >
+            <PlusLg className={cx("bi", "me-1")} />
+            Provide a new secret value
+          </Label>
+          <Input
+            type="radio"
+            className="btn-check"
+            id={existingId}
+            value="existing"
+            checked={mode == "existing"}
+            onChange={() => setMode("existing")}
+          />
+          <Label
+            for={existingId}
+            className={cx("btn", "btn-outline-primary")}
+            data-cy="session-secrets-unready-existing-tab"
+          >
+            <BoxArrowInLeft className={cx("bi", "me-1")} />
+            Use an existing secret value
+          </Label>
+        </ButtonGroup>
+      </SecretItemSurface>
+      {mode === "new-value" ? (
+        <ProvideNewValueContent plain={plain} secretSlot={secretSlot} />
+      ) : (
+        <ProvideExistingContent plain={plain} secretSlot={secretSlot} />
+      )}
+    </>
+  );
+}
+
+function SecretItemSurface({
+  children,
+  className,
+  plain,
+}: {
+  children: ReactNode;
+  className?: string;
+  plain: boolean;
+}) {
+  if (plain) {
+    return <div className={cx("mb-3", className)}>{children}</div>;
+  }
+  return <CardBody className={className}>{children}</CardBody>;
+}
+
 interface ProvideNewValueContentProps {
+  plain?: boolean;
   secretSlot: SessionSecretSlot;
 }
-function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
+function ProvideNewValueContent({
+  plain = false,
+  secretSlot,
+}: ProvideNewValueContentProps) {
   const { id: slotId, project_id: projectId } = secretSlot;
 
   const [patchSessionSecrets, result] =
@@ -362,7 +699,7 @@ function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
 
   return (
     <Form noValidate onSubmit={onSubmit}>
-      <CardBody className="py-0">
+      <SecretItemSurface className="py-0" plain={plain}>
         {result.error && (
           <RtkOrDataServicesError error={result.error} dismissible={false} />
         )}
@@ -392,8 +729,11 @@ function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
             )}
           </div>
         </div>
-      </CardBody>
-      <CardBody className={cx("d-flex", "flex-row", "justify-content-end")}>
+      </SecretItemSurface>
+      <SecretItemSurface
+        className={cx("d-flex", "flex-row", "justify-content-end")}
+        plain={plain}
+      >
         <Button
           color="primary"
           disabled={result.isLoading}
@@ -407,7 +747,7 @@ function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
           )}
           Save new secret
         </Button>
-      </CardBody>
+      </SecretItemSurface>
     </Form>
   );
 }
@@ -417,10 +757,14 @@ interface ProvideNewSecretValueForm {
 }
 
 interface ProvideExistingContentProps {
+  plain?: boolean;
   secretSlot: SessionSecretSlot;
 }
 
-function ProvideExistingContent({ secretSlot }: ProvideExistingContentProps) {
+function ProvideExistingContent({
+  plain = false,
+  secretSlot,
+}: ProvideExistingContentProps) {
   const { id: slotId, project_id: projectId } = secretSlot;
 
   const [patchSessionSecrets, result] =
@@ -463,7 +807,7 @@ function ProvideExistingContent({ secretSlot }: ProvideExistingContentProps) {
 
   return (
     <Form noValidate onSubmit={onSubmit}>
-      <CardBody className="py-0">
+      <SecretItemSurface className="py-0" plain={plain}>
         {result.error && (
           <RtkOrDataServicesError error={result.error} dismissible={false} />
         )}
@@ -474,8 +818,11 @@ function ProvideExistingContent({ secretSlot }: ProvideExistingContentProps) {
           formId={formId}
           name="secretId"
         />
-      </CardBody>
-      <CardBody className={cx("d-flex", "flex-row", "justify-content-end")}>
+      </SecretItemSurface>
+      <SecretItemSurface
+        className={cx("d-flex", "flex-row", "justify-content-end")}
+        plain={plain}
+      >
         <Button color="primary" disabled={result.isLoading} type="submit">
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
@@ -484,7 +831,7 @@ function ProvideExistingContent({ secretSlot }: ProvideExistingContentProps) {
           )}
           Use secret
         </Button>
-      </CardBody>
+      </SecretItemSurface>
     </Form>
   );
 }

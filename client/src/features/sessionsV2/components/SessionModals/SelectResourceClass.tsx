@@ -52,6 +52,7 @@ import {
 } from "./ResourceClassWarning";
 
 interface SelectResourceClassModalProps {
+  embedded?: boolean;
   isOpen: boolean;
   onContinue: (
     env: ResourceClassWithIdFiltered,
@@ -62,6 +63,7 @@ interface SelectResourceClassModalProps {
   isCustom: boolean;
 }
 export function SelectResourceClassModal({
+  embedded = false,
   isOpen,
   onContinue,
   projectUrl,
@@ -162,6 +164,119 @@ export function SelectResourceClassModal({
       <p>Resource class not available</p>
     );
 
+  const continueButton = (
+    <Button color="primary" disabled={!isDirty} onClick={onSubmit}>
+      Continue
+    </Button>
+  );
+  const form = (
+    <>
+      {isCustom ? (
+        <p>Please select one of your available resource classes to continue.</p>
+      ) : (
+        <p>
+          You do not have access to the default resource class of this session
+          launcher. Please select one of your available resource classes to
+          continue.
+        </p>
+      )}
+      {launcherClass && (
+        <p>
+          <span className={cx("fw-bold", "me-3")}>
+            Original requested resources:
+          </span>
+          <span>{resourceDetails}</span>
+        </p>
+      )}
+      <div className="field-group">{selector}</div>
+      {watchCurrentSessionClass && (
+        <div className={cx("field-group", "mt-3")}>
+          <div>
+            Disk Storage:{" "}
+            <span className="fw-bold">
+              {watchCurrentDiskStorage &&
+              watchCurrentDiskStorage !=
+                watchCurrentSessionClass.default_storage ? (
+                <>{watchCurrentDiskStorage} GB</>
+              ) : (
+                <>{watchCurrentSessionClass?.default_storage} GB (default)</>
+              )}
+            </span>
+          </div>
+          <Controller
+            control={control}
+            name="diskStorage"
+            render={({ field, fieldState: { error } }) => (
+              <>
+                <InputGroup className={cx(error && "is-invalid")}>
+                  <Input
+                    className={cx(error && "is-invalid")}
+                    type="number"
+                    min={MIN_SESSION_STORAGE_GB}
+                    max={watchCurrentSessionClass.max_storage}
+                    step={STEP_SESSION_STORAGE_GB}
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(event) => {
+                      if (isNaN(event.target.valueAsNumber)) {
+                        field.onChange(event.target.value);
+                      } else {
+                        field.onChange(event.target.valueAsNumber);
+                      }
+                    }}
+                  />
+                  <InputGroupText id="configure-disk-storage-addon">
+                    GB
+                  </InputGroupText>
+                  <UncontrolledTooltip target="configure-disk-storage-addon">
+                    Gigabytes
+                  </UncontrolledTooltip>
+                </InputGroup>
+                <div className="invalid-feedback">
+                  {error?.message ||
+                    "Please provide a valid value for disk storage."}
+                </div>
+                <FormText>
+                  Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
+                  {watchCurrentSessionClass.max_storage} GB
+                </FormText>
+              </>
+            )}
+            rules={{
+              min: {
+                value: MIN_SESSION_STORAGE_GB,
+                message: `Please select a value greater than or equal to ${MIN_SESSION_STORAGE_GB}.`,
+              },
+              max: {
+                value: watchCurrentSessionClass.max_storage,
+                message: `Selected disk storage exceeds maximum allowed value (${watchCurrentSessionClass.max_storage} GB).`,
+              },
+              validate: {
+                integer: (value: unknown) =>
+                  value == null ||
+                  value === "" ||
+                  (!isNaN(parseInt(`${value}`, 10)) &&
+                    parseInt(`${value}`, 10) == parseFloat(`${value}`)),
+              },
+              deps: ["resourceClass"],
+            }}
+          />
+        </div>
+      )}
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <div>
+        {form}
+        <div className={cx("d-flex", "justify-content-end", "mt-3")}>
+          {continueButton}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Modal centered isOpen={isOpen} size="lg">
       <ModalHeader tag="h2">
@@ -169,102 +284,7 @@ export function SelectResourceClassModal({
           ? "Modify session launch before start"
           : "Complete missing information for session launch"}
       </ModalHeader>
-      <ModalBody>
-        {isCustom ? (
-          <p>
-            Please select one of your available resource classes to continue.
-          </p>
-        ) : (
-          <p>
-            You do not have access to the default resource class of this session
-            launcher. Please select one of your available resource classes to
-            continue.
-          </p>
-        )}
-        {launcherClass && (
-          <p>
-            <span className={cx("fw-bold", "me-3")}>
-              Original requested resources:
-            </span>
-            <span>{resourceDetails}</span>
-          </p>
-        )}
-        <div className="field-group">{selector}</div>
-        {watchCurrentSessionClass && (
-          <div className={cx("field-group", "mt-3")}>
-            <div>
-              Disk Storage:{" "}
-              <span className="fw-bold">
-                {watchCurrentDiskStorage &&
-                watchCurrentDiskStorage !=
-                  watchCurrentSessionClass.default_storage ? (
-                  <>{watchCurrentDiskStorage} GB</>
-                ) : (
-                  <>{watchCurrentSessionClass?.default_storage} GB (default)</>
-                )}
-              </span>
-            </div>
-            <Controller
-              control={control}
-              name="diskStorage"
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <InputGroup className={cx(error && "is-invalid")}>
-                    <Input
-                      className={cx(error && "is-invalid")}
-                      type="number"
-                      min={MIN_SESSION_STORAGE_GB}
-                      max={watchCurrentSessionClass.max_storage}
-                      step={STEP_SESSION_STORAGE_GB}
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(event) => {
-                        if (isNaN(event.target.valueAsNumber)) {
-                          field.onChange(event.target.value);
-                        } else {
-                          field.onChange(event.target.valueAsNumber);
-                        }
-                      }}
-                    />
-                    <InputGroupText id="configure-disk-storage-addon">
-                      GB
-                    </InputGroupText>
-                    <UncontrolledTooltip target="configure-disk-storage-addon">
-                      Gigabytes
-                    </UncontrolledTooltip>
-                  </InputGroup>
-                  <div className="invalid-feedback">
-                    {error?.message ||
-                      "Please provide a valid value for disk storage."}
-                  </div>
-                  <FormText>
-                    Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
-                    {watchCurrentSessionClass.max_storage} GB
-                  </FormText>
-                </>
-              )}
-              rules={{
-                min: {
-                  value: MIN_SESSION_STORAGE_GB,
-                  message: `Please select a value greater than or equal to ${MIN_SESSION_STORAGE_GB}.`,
-                },
-                max: {
-                  value: watchCurrentSessionClass.max_storage,
-                  message: `Selected disk storage exceeds maximum allowed value (${watchCurrentSessionClass.max_storage} GB).`,
-                },
-                validate: {
-                  integer: (value: unknown) =>
-                    value == null ||
-                    value === "" ||
-                    (!isNaN(parseInt(`${value}`, 10)) &&
-                      parseInt(`${value}`, 10) == parseFloat(`${value}`)),
-                },
-                deps: ["resourceClass"],
-              }}
-            />
-          </div>
-        )}
-      </ModalBody>
+      <ModalBody>{form}</ModalBody>
       <ModalFooter className="gap-2">
         <Link
           className={cx("btn", "btn-outline-primary")}
@@ -274,9 +294,7 @@ export function SelectResourceClassModal({
           <XLg className={cx("bi", "me-1")} />
           Cancel launch
         </Link>
-        <Button color="primary" disabled={!isDirty} onClick={onSubmit}>
-          Continue
-        </Button>
+        {continueButton}
       </ModalFooter>
     </Modal>
   );

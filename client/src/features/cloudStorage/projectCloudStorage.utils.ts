@@ -319,6 +319,19 @@ export function storageDefinitionAfterSavingCredentialsFromConfig(
   return newCs;
 }
 
+// A failed save keeps the tested values and prevents the save screen from running again
+export function configsAfterCredentialSave(
+  dataConnectors: SessionStartDataConnectorConfiguration[],
+  failedDataConnectorIds: ReadonlySet<string>,
+): SessionStartDataConnectorConfiguration[] {
+  return dataConnectors.map((connector) => {
+    if (failedDataConnectorIds.has(connector.dataConnector.id)) {
+      return { ...connector, saveCredentials: false };
+    }
+    return storageDefinitionAfterSavingCredentialsFromConfig(connector);
+  });
+}
+
 export function dataConnectorsOverrideFromConfig(
   config: SessionStartDataConnectorConfiguration,
 ): SessionDataConnectorOverride[] {

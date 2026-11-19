@@ -26,7 +26,7 @@ import ProgressStepsIndicator, {
   StatusStepProgressBar,
   StepsProgressBar,
 } from "~/components/progress/ProgressSteps";
-import { storageDefinitionAfterSavingCredentialsFromConfig } from "../cloudStorage/projectCloudStorage.utils";
+import { configsAfterCredentialSave } from "../cloudStorage/projectCloudStorage.utils";
 import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import { shouldCloudStorageSaveCredentials } from "./sessionLaunchValidation.utils";
 import type { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
@@ -34,12 +34,19 @@ import type { SessionStartDataConnectorConfiguration } from "./startSessionOptio
 import progressBoxStyles from "~/components/progress/ProgressBox.module.scss";
 
 interface SaveCloudStorageCredentialsProps {
+  /**
+   * When set, a failed save still calls `onComplete`. The failed connector
+   * stays `touched` so this launch sends its tested values. Data-connector
+   * edit does not use this component and still stops on a failed save.
+   */
+  continueOnSaveError?: boolean;
   dataConnectors: SessionStartDataConnectorConfiguration[];
   onComplete: (configs: SessionStartDataConnectorConfiguration[]) => void;
   title?: string;
 }
 
 export default function SaveCloudStorageCredentials({
+  continueOnSaveError = false,
   dataConnectors,
   onComplete,
   title = "Saving credentials",
@@ -64,6 +71,7 @@ export default function SaveCloudStorageCredentials({
 
   const [index, setIndex] = useState(0);
   const [hasFailed, setHasFailed] = useState(false);
+  const [failedIds, setFailedIds] = useState<string[]>([]);
   const [failedError, setFailedError] =
     useState<typeof saveCredentialsResult.error>(undefined);
   const hasCompletedRef = useRef(false);
@@ -81,7 +89,7 @@ export default function SaveCloudStorageCredentials({
 
   useEffect(() => {
     if (
-      hasFailed ||
+      (hasFailed && !continueOnSaveError) ||
       credentialsToSave.length < 1 ||
       index >= credentialsToSave.length
     )
@@ -103,7 +111,13 @@ export default function SaveCloudStorageCredentials({
         }),
       ),
     });
-  }, [credentialsToSave, hasFailed, index, saveCredentials]);
+  }, [
+    continueOnSaveError,
+    credentialsToSave,
+    hasFailed,
+    index,
+    saveCredentials,
+  ]);
 
   useEffect(() => {
     if (
@@ -130,14 +144,24 @@ export default function SaveCloudStorageCredentials({
         return newResults;
       });
       setFailedError(saveCredentialsResult.error);
-      setHasFailed(true);
       saveCredentialsResult.reset();
+      if (continueOnSaveError) {
+        const failedId = credentialsToSave[index]?.storageId;
+        if (failedId != null) {
+          setFailedIds((prev) =>
+            prev.includes(failedId) ? prev : [...prev, failedId],
+          );
+        }
+        setIndex((prev) => prev + 1);
+        return;
+      }
+      setHasFailed(true);
     }
-  }, [index, saveCredentialsResult]);
+  }, [continueOnSaveError, credentialsToSave, index, saveCredentialsResult]);
 
   useEffect(() => {
     if (
-      hasFailed ||
+      (hasFailed && !continueOnSaveError) ||
       saveCredentialsResult.isLoading ||
       hasCompletedRef.current
     ) {
@@ -145,14 +169,15 @@ export default function SaveCloudStorageCredentials({
     }
     if (index >= credentialsToSave.length) {
       hasCompletedRef.current = true;
-      const cloudStorageConfigs = dataConnectors.map((cs) =>
-        storageDefinitionAfterSavingCredentialsFromConfig(cs),
+      onComplete(
+        configsAfterCredentialSave(dataConnectors, new Set(failedIds)),
       );
-      onComplete(cloudStorageConfigs);
     }
   }, [
+    continueOnSaveError,
     credentialsToSave.length,
     dataConnectors,
+    failedIds,
     hasFailed,
     index,
     onComplete,
@@ -166,7 +191,7 @@ export default function SaveCloudStorageCredentials({
         progressBoxStyles.progressBoxSmallSteps,
       )}
     >
-      {hasFailed && failedError != null && (
+      {failedError != null && (
         <RtkOrDataServicesError
           dismissible={false}
           error={failedError as never}
