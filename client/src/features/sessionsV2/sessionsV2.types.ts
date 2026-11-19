@@ -202,3 +202,6 @@ export type ImageStatus =
   | "only-old-image-available"
   | "no-available"
   | "available";
+
+// Either existing image (API inspected) or target build
+export type ImageToCheck = { containerImage: string } | { platforms: string[] };

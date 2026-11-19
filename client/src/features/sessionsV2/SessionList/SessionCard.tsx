@@ -111,6 +111,7 @@ export default function SessionCard({
                 <SessionStatusV2Label session={session} variant="card" />
                 <div className="ms-auto">
                   <SessionRemotePoolBadge
+                    image={{ containerImage: session.image }}
                     resourceClassId={session.resource_class_id}
                     launcherInlineText={launcherDefinition.text.inline}
                   />

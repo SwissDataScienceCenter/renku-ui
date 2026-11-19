@@ -39,7 +39,10 @@ import {
   getLauncherCategoryDefinition,
   getLauncherChangeEffectMessage,
 } from "~/features/sessionsV2/session.utils";
-import { LauncherCategory } from "~/features/sessionsV2/sessionsV2.types";
+import type {
+  ImageToCheck,
+  LauncherCategory,
+} from "~/features/sessionsV2/sessionsV2.types";
 import {
   useGetResourcePoolsQuery,
   type ResourceClassWithId,
@@ -57,6 +60,7 @@ import {
 } from "./ResourceClassWarning";
 
 interface ModifyResourcesLauncherModalProps {
+  image?: ImageToCheck;
   isOpen: boolean;
   toggleModal: () => void;
   resourceClassId?: number;
@@ -66,6 +70,7 @@ interface ModifyResourcesLauncherModalProps {
 }
 
 export function ModifyResourcesLauncherModal({
+  image,
   isOpen,
   sessionLauncherId,
   toggleModal,
@@ -222,6 +227,7 @@ export function ModifyResourcesLauncherModal({
         <div className="field-group">{selector}</div>
         <SessionClassRemoteAlert
           className="mt-2"
+          image={image}
           launcherInlineText={categoryDefinition.text.inline}
           resourceClassId={watchCurrentSessionClass?.id}
         />
