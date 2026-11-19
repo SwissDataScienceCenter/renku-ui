@@ -22,6 +22,7 @@ import { Alarm, Stopwatch } from "react-bootstrap-icons";
 import { dataConnectorsOverrideFromConfig } from "../cloudStorage/projectCloudStorage.utils";
 import { FaviconStatus } from "../display/display.types";
 import type {
+  RemoteConfiguration,
   ResourceClassWithId,
   ResourcePoolWithId,
 } from "./api/computeResources.api";
@@ -39,15 +40,16 @@ import type {
 import {
   BUILDER_FRONTEND_COMBINATIONS,
   BUILDER_PLATFORMS,
-  CSCS_DOMAIN,
   DEFAULT_PORT,
   DEFAULT_URL,
   ENV_VARIABLES_RESERVED_PREFIX,
   getCompatibleFrontends,
   LAUNCHER_BY_CATEGORY,
-  SLURM_ACCOUNT_ENV_VARIABLE,
+  REMOTE_POOL_REQUIRED_ENV_VARIABLES,
   SUBMISSION_ID_PATTERN,
   SUBMISSION_ID_VALIDATION_MESSAGE,
+  type RemotePoolMatcher,
+  type RemotePoolRequiredEnvVariable,
 } from "./session.constants";
 import {
   ImageStatus,
@@ -609,29 +611,58 @@ export function ensureHTTPS(url: string): string {
   }
 }
 
+function getRemoteApiUrl(remote: RemoteConfiguration): string {
+  return remote.kind === "firecrest" ? remote.api_url : remote.base_url;
+}
+
 /**
- * Whether a resource pool runs sessions on CSCS, i.e. it has a `firecrest`
- * remote whose API is hosted under `cscs.ch`.
+ * Whether a resource pool has a remote of the matcher's kind whose API is
+ * hosted on the matcher's domain (or any domain under it).
  */
-export function isCscsResourcePool(
+export function matchesRemotePool(
   resourcePool: Pick<ResourcePoolWithId, "remote"> | null | undefined,
+  match: RemotePoolMatcher,
 ): boolean {
   const remote = resourcePool?.remote;
-  if (remote?.kind !== "firecrest") return false;
+  if (remote == null || remote.kind !== match.kind) return false;
   try {
-    const { hostname } = new URL(remote.api_url);
-    return hostname === CSCS_DOMAIN || hostname.endsWith(`.${CSCS_DOMAIN}`);
+    const { hostname } = new URL(getRemoteApiUrl(remote));
+    return (
+      hostname === match.apiDomain || hostname.endsWith(`.${match.apiDomain}`)
+    );
   } catch {
     return false;
   }
 }
 
-/** Whether the launcher sets a non-empty `SLURM_ACCOUNT` environment variable. */
-export function hasSlurmAccount(
+/** Whether the launcher sets the environment variable to a non-empty value. */
+export function isEnvVariableSet(
   launcher: Pick<SessionLauncher, "env_variables">,
+  name: string,
 ): boolean {
   return (launcher.env_variables ?? []).some(
-    ({ name, value }) => name === SLURM_ACCOUNT_ENV_VARIABLE && !!value?.trim(),
+    (env) => env.name === name && !!env.value?.trim(),
+  );
+}
+
+/** The environment variables a resource pool requires launchers to set. */
+export function getRequiredEnvVariables(
+  resourcePool: Pick<ResourcePoolWithId, "remote"> | null | undefined,
+  requirements: RemotePoolRequiredEnvVariable[] = REMOTE_POOL_REQUIRED_ENV_VARIABLES,
+): RemotePoolRequiredEnvVariable[] {
+  return requirements.filter(({ match }) =>
+    matchesRemotePool(resourcePool, match),
+  );
+}
+
+/** The required environment variables that the launcher does not set. */
+export function getMissingRequiredEnvVariables(
+  launcher: Pick<SessionLauncher, "env_variables">,
+  resourcePool: Pick<ResourcePoolWithId, "remote"> | null | undefined,
+  requirements: RemotePoolRequiredEnvVariable[] = REMOTE_POOL_REQUIRED_ENV_VARIABLES,
+): RemotePoolRequiredEnvVariable[] {
+  return getRequiredEnvVariables(resourcePool, requirements).filter(
+    ({ name }) => !isEnvVariableSet(launcher, name),
   );
 }
 

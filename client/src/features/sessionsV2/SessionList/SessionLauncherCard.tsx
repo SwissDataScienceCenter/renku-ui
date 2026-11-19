@@ -44,8 +44,8 @@ import {
   BuildStatusBadge,
   BuildStatusDescription,
 } from "../components/BuildStatusComponents";
-import CscsSlurmAccountBadge from "../components/CscsSlurmAccountBadge";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
+import { RemotePoolEnvVariablesBadge } from "../components/RemotePoolEnvVariables";
 import { LauncherEnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { getEnvironmentKindLabel } from "../launcherEnvironment.utils";
@@ -290,7 +290,7 @@ export default function SessionLauncherCard({
                       />
                     )}
                     {launcher != null && (
-                      <CscsSlurmAccountBadge
+                      <RemotePoolEnvVariablesBadge
                         launcher={launcher}
                         resourcePool={resourcePool}
                       />
@@ -331,7 +331,7 @@ export default function SessionLauncherCard({
                         isLoadingResourcePools={isLoadingResourcePools}
                       />
                       {launcher != null && (
-                        <CscsSlurmAccountBadge
+                        <RemotePoolEnvVariablesBadge
                           launcher={launcher}
                           resourcePool={resourcePool}
                         />
