@@ -76,7 +76,7 @@ export default function useSessionLauncherState({
 
   const containerImage = launcher.environment?.container_image ?? "";
   const isExternalImageEnvironment =
-    containerImage &&
+    !!containerImage &&
     launcher.environment?.environment_kind === "CUSTOM" &&
     launcher.environment?.environment_image_source === "image";
   const { data: dataSessionImage, isLoading: isLoadingSessionImage } =

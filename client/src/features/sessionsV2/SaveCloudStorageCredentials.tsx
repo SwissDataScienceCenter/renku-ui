@@ -26,7 +26,7 @@ import ProgressStepsIndicator, {
   StatusStepProgressBar,
   StepsProgressBar,
 } from "~/components/progress/ProgressSteps";
-import { storageDefinitionAfterSavingCredentialsFromConfig } from "../cloudStorage/projectCloudStorage.utils";
+import { configsAfterCredentialSave } from "../cloudStorage/projectCloudStorage.utils";
 import { usePatchDataConnectorsByDataConnectorIdSecretsMutation } from "../dataConnectorsV2/api/data-connectors.enhanced-api";
 import { shouldCloudStorageSaveCredentials } from "./sessionLaunchValidation.utils";
 import type { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
@@ -63,7 +63,7 @@ export default function SaveCloudStorageCredentials({
   );
 
   const [index, setIndex] = useState(0);
-  const [hasFailed, setHasFailed] = useState(false);
+  const [failedIds, setFailedIds] = useState<string[]>([]);
   const [failedError, setFailedError] =
     useState<typeof saveCredentialsResult.error>(undefined);
   const hasCompletedRef = useRef(false);
@@ -80,11 +80,7 @@ export default function SaveCloudStorageCredentials({
   }, [credentialsToSave, results]);
 
   useEffect(() => {
-    if (
-      hasFailed ||
-      credentialsToSave.length < 1 ||
-      index >= credentialsToSave.length
-    )
+    if (credentialsToSave.length < 1 || index >= credentialsToSave.length)
       return;
     // TODO: fix react-hooks/set-state-in-effect
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -103,7 +99,7 @@ export default function SaveCloudStorageCredentials({
         }),
       ),
     });
-  }, [credentialsToSave, hasFailed, index, saveCredentials]);
+  }, [credentialsToSave, index, saveCredentials]);
 
   useEffect(() => {
     if (
@@ -130,30 +126,31 @@ export default function SaveCloudStorageCredentials({
         return newResults;
       });
       setFailedError(saveCredentialsResult.error);
-      setHasFailed(true);
       saveCredentialsResult.reset();
+      const failedId = credentialsToSave[index]?.storageId;
+      if (failedId != null) {
+        setFailedIds((prev) =>
+          prev.includes(failedId) ? prev : [...prev, failedId],
+        );
+      }
+      setIndex((prev) => prev + 1);
     }
-  }, [index, saveCredentialsResult]);
+  }, [credentialsToSave, index, saveCredentialsResult]);
 
   useEffect(() => {
-    if (
-      hasFailed ||
-      saveCredentialsResult.isLoading ||
-      hasCompletedRef.current
-    ) {
+    if (saveCredentialsResult.isLoading || hasCompletedRef.current) {
       return;
     }
     if (index >= credentialsToSave.length) {
       hasCompletedRef.current = true;
-      const cloudStorageConfigs = dataConnectors.map((cs) =>
-        storageDefinitionAfterSavingCredentialsFromConfig(cs),
+      onComplete(
+        configsAfterCredentialSave(dataConnectors, new Set(failedIds)),
       );
-      onComplete(cloudStorageConfigs);
     }
   }, [
     credentialsToSave.length,
     dataConnectors,
-    hasFailed,
+    failedIds,
     index,
     onComplete,
     saveCredentialsResult.isLoading,
@@ -166,7 +163,7 @@ export default function SaveCloudStorageCredentials({
         progressBoxStyles.progressBoxSmallSteps,
       )}
     >
-      {hasFailed && failedError != null && (
+      {failedError != null && (
         <RtkOrDataServicesError
           dismissible={false}
           error={failedError as never}

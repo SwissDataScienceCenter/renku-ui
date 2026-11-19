@@ -36,11 +36,13 @@ import SessionImageBadge from "./components/SessionStatus/SessionImageBadge";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
 interface SessionImageModalProps {
+  embedded?: boolean;
   isOpen: boolean;
   launcher: SessionLauncher;
   project: Project;
 }
 export default function SessionImageModal({
+  embedded = false,
   isOpen,
   launcher,
   project,
@@ -70,6 +72,9 @@ export default function SessionImageModal({
     }).toString()}`;
   }, [data, pathname, hash]);
 
+  const newTabProps = embedded
+    ? { target: "_blank" as const, rel: "noopener noreferrer" }
+    : {};
   const dispatch = useAppDispatch();
   const onSkip = useCallback(() => {
     dispatch(startSessionOptionsV2Slice.actions.setImageReady(true));
@@ -93,6 +98,7 @@ export default function SessionImageModal({
               Please verify the image and check if the registry is in the
               currently supported{" "}
               <Link
+                {...newTabProps}
                 to={{
                   pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                   search,
@@ -127,6 +133,7 @@ export default function SessionImageModal({
                   configuration.
                 </p>
                 <Link
+                  {...newTabProps}
                   className={cx("btn", "btn-primary", "btn-sm")}
                   to={{
                     pathname: ABSOLUTE_ROUTES.v2.integrations.root,
@@ -147,6 +154,7 @@ export default function SessionImageModal({
               integration to check if you have access to this image.
             </p>
             <Link
+              {...newTabProps}
               className={cx("btn", "btn-primary", "btn-sm")}
               to={{
                 pathname: ABSOLUTE_ROUTES.v2.integrations.root,
@@ -161,10 +169,14 @@ export default function SessionImageModal({
       </>
     );
 
+  if (embedded) {
+    return <div data-cy="session-image-modal">{content}</div>;
+  }
+
   return (
     <ScrollableModal
       centered
-      data-cy="session-secrets-modal"
+      data-cy="session-image-modal"
       isOpen={isOpen}
       size="lg"
     >

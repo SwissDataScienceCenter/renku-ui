@@ -193,7 +193,7 @@ function ProvideSessionSecretModalNewValueContent({
                 id="provide-session-secret-new-value"
                 className={cx("form-control", errors.value && "is-invalid")}
                 placeholder="Your secret value..."
-                rows={6}
+                rows={3}
                 data-cy="provide-session-secret-mode-new-value-input"
                 {...field}
               />

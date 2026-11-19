@@ -17,16 +17,18 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, type ReactNode } from "react";
 import { CalendarX, SkipForward, XLg } from "react-bootstrap-icons";
 import { generatePath, Link, useNavigate } from "react-router";
 import {
+  AccordionBody,
+  AccordionHeader,
+  AccordionItem,
   Button,
-  ListGroup,
-  ListGroupItem,
   ModalBody,
   ModalFooter,
   ModalHeader,
+  UncontrolledAccordion,
 } from "reactstrap";
 
 import ScrollableModal from "~/components/modal/ScrollableModal";
@@ -38,17 +40,19 @@ import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
 
 interface SessionExpiredDataConnectorsModalProps {
+  dataConnectors: SessionStartDataConnectorConfiguration[];
+  embedded?: boolean;
   isOpen: boolean;
   project: Project;
-  dataConnectors: SessionStartDataConnectorConfiguration[];
   onCancel?: () => void;
   onSkip?: () => void;
   continueLabel?: string;
 }
 export default function SessionExpiredDataConnectorsModal({
+  dataConnectors,
+  embedded = false,
   isOpen,
   project,
-  dataConnectors,
   onCancel: onCancelProp,
   onSkip: onSkipProp,
   continueLabel = "Launch anyway",
@@ -85,6 +89,33 @@ export default function SessionExpiredDataConnectorsModal({
     );
   }, [dispatch, dataConnectors]);
   const onSkip = onSkipProp ?? defaultOnSkip;
+  const openIds = expiredDataConnectors.map((config) =>
+    expiredConnectorAccordionId(config.dataConnector.id),
+  );
+  const list = (
+    <>
+      <p data-cy="session-expired-data-connectors-warning">
+        There{" "}
+        {expiredDataConnectors.length === 1
+          ? "is 1 data connector that has expired"
+          : `are ${expiredDataConnectors.length} data connectors that have expired`}{" "}
+        and <b>will not be mounted</b> until an owner refreshes it.
+      </p>
+      <ExpiredConnectorAccordion openIds={openIds}>
+        {expiredDataConnectors.map((config) => (
+          <ExpiredDataConnectorItem
+            key={config.dataConnector.id}
+            config={config}
+            openInNewTab={embedded}
+          />
+        ))}
+      </ExpiredConnectorAccordion>
+    </>
+  );
+
+  if (embedded) {
+    return <div data-cy="session-expired-data-connectors-modal">{list}</div>;
+  }
 
   return (
     <ScrollableModal
@@ -97,23 +128,7 @@ export default function SessionExpiredDataConnectorsModal({
         <CalendarX className={cx("bi", "me-1")} />
         Data connector{expiredDataConnectors.length > 1 && "s"} expired
       </ModalHeader>
-      <ModalBody>
-        <p data-cy="session-expired-data-connectors-warning">
-          There{" "}
-          {expiredDataConnectors.length === 1
-            ? "is 1 data connector that has expired"
-            : `are ${expiredDataConnectors.length} data connectors that have expired`}{" "}
-          and <b>will not be mounted</b> until an owner refreshes it.
-        </p>
-        <ListGroup>
-          {expiredDataConnectors.map((config) => (
-            <ExpiredDataConnectorWarning
-              key={config.dataConnector.id}
-              config={config}
-            />
-          ))}
-        </ListGroup>
-      </ModalBody>
+      <ModalBody>{list}</ModalBody>
       <ModalFooter>
         <Button
           color="outline-primary"
@@ -136,23 +151,70 @@ export default function SessionExpiredDataConnectorsModal({
   );
 }
 
-interface ExpiredDataConnectorWarningProps {
-  config: SessionStartDataConnectorConfiguration;
-}
-function ExpiredDataConnectorWarning({
-  config,
-}: ExpiredDataConnectorWarningProps) {
-  const { dataConnector } = config;
-  const url = generatePath(ABSOLUTE_ROUTES.v2.dataConnectors.show.root, {
-    slug: dataConnector.slug,
-  });
-
+function ExpiredConnectorAccordion({
+  children,
+  openIds,
+}: {
+  children: ReactNode;
+  openIds: string[];
+}) {
+  const toggle = useCallback(() => {}, []);
   return (
-    <ListGroupItem>
-      <h3>{dataConnector.name}</h3>
-      <p className="mb-0">
-        <Link to={url}>View data connector</Link>
-      </p>
-    </ListGroupItem>
+    <UncontrolledAccordion
+      defaultOpen={openIds}
+      stayOpen={true}
+      toggle={toggle}
+    >
+      {children}
+    </UncontrolledAccordion>
   );
+}
+
+function ExpiredDataConnectorItem({
+  config,
+  openInNewTab,
+}: {
+  config: SessionStartDataConnectorConfiguration;
+  openInNewTab: boolean;
+}) {
+  const accordionId = expiredConnectorAccordionId(config.dataConnector.id);
+  return (
+    <AccordionItem>
+      <AccordionHeader targetId={accordionId}>
+        <span className="fw-bold">{config.dataConnector.name}</span>
+      </AccordionHeader>
+      <AccordionBody accordionId={accordionId}>
+        <ExpiredConnectorLink
+          openInNewTab={openInNewTab}
+          slug={config.dataConnector.slug}
+        />
+      </AccordionBody>
+    </AccordionItem>
+  );
+}
+
+function ExpiredConnectorLink({
+  openInNewTab,
+  slug,
+}: {
+  openInNewTab: boolean;
+  slug: string;
+}) {
+  const url = generatePath(ABSOLUTE_ROUTES.v2.dataConnectors.show.root, {
+    slug,
+  });
+  const newTabProps = openInNewTab
+    ? { target: "_blank" as const, rel: "noopener noreferrer" }
+    : {};
+  return (
+    <p className="mb-0">
+      <Link {...newTabProps} to={url}>
+        View data connector
+      </Link>
+    </p>
+  );
+}
+
+function expiredConnectorAccordionId(id: string) {
+  return `expired-connector-${encodeURIComponent(id)}`;
 }

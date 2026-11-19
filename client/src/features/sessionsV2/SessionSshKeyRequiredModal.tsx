@@ -28,6 +28,7 @@ import type { Project } from "../projectsV2/api/projectV2.api";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 
 interface SessionSshKeyRequiredModalProps {
+  embedded?: boolean;
   isOpen: boolean;
   project: Project;
   onCancel?: () => void;
@@ -35,6 +36,7 @@ interface SessionSshKeyRequiredModalProps {
   continueLabel?: string;
 }
 export default function SessionSshKeyRequiredModal({
+  embedded = false,
   isOpen,
   project,
   onCancel: onCancelProp,
@@ -56,6 +58,37 @@ export default function SessionSshKeyRequiredModal({
     dispatch(startSessionOptionsV2Slice.actions.setSshKeysReady(true));
   }, [dispatch]);
   const onSkip = onSkipProp ?? defaultOnSkip;
+  const newTabProps = embedded
+    ? { target: "_blank" as const, rel: "noopener noreferrer" }
+    : {};
+  const setupButton = (
+    <Button
+      color="primary"
+      data-cy="session-ssh-key-required-setup"
+      tag={Link}
+      to={ABSOLUTE_ROUTES.v2.ssh_keys}
+      {...newTabProps}
+    >
+      <FiletypeKey className="me-1" />
+      Set up an SSH key
+    </Button>
+  );
+  const message = (
+    <p data-cy="session-ssh-key-required-warning">
+      This session is configured for SSH access, but you have not set up an SSH
+      key yet. Without one, you will not be able to connect to the session over
+      SSH.
+    </p>
+  );
+
+  if (embedded) {
+    return (
+      <div data-cy="session-ssh-key-required-modal">
+        {message}
+        <div className="d-flex justify-content-end mt-3">{setupButton}</div>
+      </div>
+    );
+  }
 
   return (
     <ScrollableModal
@@ -68,13 +101,7 @@ export default function SessionSshKeyRequiredModal({
         <FiletypeKey className="me-1" />
         SSH keys required
       </ModalHeader>
-      <ModalBody>
-        <p data-cy="session-ssh-key-required-warning">
-          This session is configured for SSH access, but you have not set up an
-          SSH key yet. Without one, you will not be able to connect to the
-          session over SSH.
-        </p>
-      </ModalBody>
+      <ModalBody>{message}</ModalBody>
       <ModalFooter>
         <Button
           color="outline-primary"
@@ -92,15 +119,7 @@ export default function SessionSshKeyRequiredModal({
           <SkipForward className="me-1" />
           {continueLabel}
         </Button>
-        <Button
-          color="primary"
-          data-cy="session-ssh-key-required-setup"
-          tag={Link}
-          to={ABSOLUTE_ROUTES.v2.ssh_keys}
-        >
-          <FiletypeKey className="me-1" />
-          Set up an SSH key
-        </Button>
+        {setupButton}
       </ModalFooter>
     </ScrollableModal>
   );
