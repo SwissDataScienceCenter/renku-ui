@@ -19,7 +19,7 @@
 import type { SerializedError } from "@reduxjs/toolkit";
 import { skipToken, type FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { ReactNode, useCallback, useMemo, useRef, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
   Box2,
   Braces,
@@ -82,8 +82,8 @@ import {
   type SessionLauncherDataConnector,
 } from "../api/sessionLaunchersV2.api";
 import AppRuntimeCard from "../apps/AppRuntimeCard";
-import CscsSlurmAccountAlert from "../components/CscsSlurmAccountAlert";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
+import { RemotePoolEnvVariablesAlert } from "../components/RemotePoolEnvVariables";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
@@ -301,13 +301,6 @@ export function SessionView({
   const toggleSessionSecrets = useCallback(() => {
     setIsSessionSecretsOpen((open) => !open);
   }, []);
-  const envVariablesRef = useRef<HTMLElement>(null);
-  const scrollToEnvVariables = useCallback(() => {
-    envVariablesRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, []);
   const permissions = useProjectPermissions({ projectId: project.id });
   const environment = launcher?.environment;
 
@@ -448,9 +441,11 @@ export function SessionView({
 
           {description && <p className="m-0">{description}</p>}
           {launcher != null && (
-            <CscsSlurmAccountAlert
+            <RemotePoolEnvVariablesAlert
               launcher={launcher}
-              onGoToEnvVariables={scrollToEnvVariables}
+              onEditEnvVariables={
+                permissions.write ? toggleEnvVariables : undefined
+              }
             />
           )}
           {isRestricted && (
@@ -796,7 +791,7 @@ export function SessionView({
 
           {launcher && (
             <>
-              <Card innerRef={envVariablesRef}>
+              <Card>
                 <CardHeader
                   className={cx(
                     "align-items-center",
