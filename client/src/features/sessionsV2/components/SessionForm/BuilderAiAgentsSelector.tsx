@@ -17,30 +17,21 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
-import { BoxArrowUpRight, ChevronDown, ChevronUp } from "react-bootstrap-icons";
+import { useMemo } from "react";
+import { BoxArrowUpRight } from "react-bootstrap-icons";
 import {
   useController,
   type Control,
   type FieldValues,
   type UseControllerProps,
 } from "react-hook-form";
-import Select, {
-  components,
-  type ClassNamesConfig,
-  type DropdownIndicatorProps,
-  type GroupBase,
-  type MultiValue,
-  type OptionProps,
-  type SelectComponentsConfig,
-} from "react-select";
 import { Label } from "reactstrap";
 
-import { ExternalLink } from "~/components/LegacyExternalLinks.tsx";
-import { NEW_DOCS_CONFIG_AI_AGENTS } from "~/utils/constants/NewDocs.ts";
-import { CODING_AGENTS, type CodingAgentOption } from "../../session.constants";
-
-import styles from "./Select.module.scss";
+import { ExternalLink } from "~/components/LegacyExternalLinks";
+import { NEW_DOCS_CONFIG_AI_AGENTS } from "~/utils/constants/NewDocs";
+import { CODING_AGENTS } from "../../session.constants";
+import type { BuilderSelectorOption } from "../../sessionsV2.types";
+import BuilderMultiSelectorCommon from "./BuilderMultiSelectorCommon";
 
 interface BuilderAiAgentsSelectorProps<
   T extends FieldValues,
@@ -67,24 +58,6 @@ export default function BuilderAiAgentsSelector<T extends FieldValues>({
     () => codingAgentOptions(selectedValues),
     [selectedValues],
   );
-  const selected = useMemo(
-    () =>
-      selectedValues.map(
-        (agent) =>
-          options.find((option) => option.value === agent) ?? {
-            label: agent,
-            value: agent,
-          },
-      ),
-    [options, selectedValues],
-  );
-
-  const handleChange = useCallback(
-    (next: MultiValue<CodingAgentOption>) => {
-      onChange(next.map((option) => option.value));
-    },
-    [onChange],
-  );
 
   return (
     <div>
@@ -100,26 +73,16 @@ export default function BuilderAiAgentsSelector<T extends FieldValues>({
         </ExternalLink>
       </Label>
       <div className={cx(error && "is-invalid")} data-cy="coding-agents-select">
-        <Select<CodingAgentOption, true>
-          classNames={selectClassNames}
-          closeMenuOnSelect={false}
-          components={selectComponents}
-          getOptionLabel={({ label }) => label}
-          getOptionValue={({ value: optionValue }) => optionValue}
-          hideSelectedOptions={false}
+        <BuilderMultiSelectorCommon
+          disabled={disabled}
           id="builder-coding-agents-select"
           inputId="builder-coding-agents-select-input"
-          isClearable={false}
-          isDisabled={disabled}
-          isMulti
-          isSearchable={false}
           name={controllerProps.name}
           onBlur={onBlur}
-          onChange={handleChange}
+          onChange={onChange}
           options={options}
           placeholder={EMPTY_PLACEHOLDER}
-          unstyled
-          value={selected}
+          value={selectedValues}
         />
       </div>
       {error?.message && (
@@ -129,107 +92,12 @@ export default function BuilderAiAgentsSelector<T extends FieldValues>({
   );
 }
 
-function codingAgentOptions(selected: readonly string[]): CodingAgentOption[] {
+function codingAgentOptions(
+  selected: readonly string[],
+): BuilderSelectorOption[] {
   const known = new Set(CODING_AGENTS.map((agent) => agent.value));
   const saved = selected
     .filter((agent) => !known.has(agent))
     .map((agent) => ({ label: agent, value: agent }));
   return [...CODING_AGENTS, ...saved];
 }
-
-const selectClassNames: ClassNamesConfig<CodingAgentOption, true> = {
-  control: () => cx("rounded", "border", "bg-white", styles.control),
-  dropdownIndicator: () => "px-3",
-  menu: () =>
-    cx("bg-white", "rounded-bottom", "border", "shadow-sm", styles.zDropdown),
-  menuList: () => "py-1",
-  // multiValue: () =>
-  //   cx("badge", "bg-primary-subtle", "border", "border-primary", "text-primary", "my-1", "mx-1", "d-flex", "align-items-center","gap-2", "fs-6", "p-1"),
-  // multiValueLabel: () => cx("text-primary", "fw-normal", "small"),
-  // multiValueRemove: () => cx("text-primary", "rounded-pill", "border", "border-primary", "small"),
-  multiValue: () =>
-    cx(
-      "badge",
-      "bg-light",
-      "border",
-      "border-secondary",
-      "text-black",
-      "my-1",
-      "mx-1",
-      "d-flex",
-      "align-items-center",
-      "gap-2",
-      "fs-6",
-      "p-1",
-    ),
-  multiValueLabel: () => cx("text-black", "fw-normal", "small"),
-  multiValueRemove: () =>
-    cx("text-secondary", "rounded-pill", "border", "border-secondary", "small"),
-
-  option: ({ isFocused, isSelected, isDisabled }) =>
-    cx(
-      "px-3",
-      "py-2",
-      styles.codingAgentOption,
-      styles.option,
-      isDisabled && styles.optionIsDisabled,
-      isFocused && !isDisabled && styles.optionIsFocused,
-      !isFocused && isSelected && !isDisabled && styles.optionIsSelected,
-    ),
-  placeholder: () => cx("px-2", "text-muted"),
-  valueContainer: () =>
-    cx("d-flex", "flex-wrap", "align-items-center", "py-1", "ps-2"),
-};
-
-const selectComponents: SelectComponentsConfig<
-  CodingAgentOption,
-  true,
-  GroupBase<CodingAgentOption>
-> = {
-  DropdownIndicator: (
-    props: DropdownIndicatorProps<
-      CodingAgentOption,
-      true,
-      GroupBase<CodingAgentOption>
-    >,
-  ) => {
-    const Icon = props.selectProps.menuIsOpen ? ChevronUp : ChevronDown;
-    return (
-      <components.DropdownIndicator {...props}>
-        <Icon className="bi" />
-      </components.DropdownIndicator>
-    );
-  },
-  Option: (
-    props: OptionProps<CodingAgentOption, true, GroupBase<CodingAgentOption>>,
-  ) => {
-    const { data, isSelected } = props;
-    return (
-      <components.Option {...props}>
-        <div className={cx("d-flex", "align-items-center", "gap-2")}>
-          <input
-            aria-hidden
-            checked={isSelected}
-            className={cx(
-              "form-check-input",
-              "mt-0",
-              "pe-none",
-              "flex-shrink-0",
-            )}
-            readOnly
-            tabIndex={-1}
-            type="checkbox"
-          />
-          <div className="flex-grow-1">
-            <div className={cx("text-black")}>{data.label}</div>
-            {data.description && (
-              <div className={cx("small", "text-secondary")}>
-                {data.description}
-              </div>
-            )}
-          </div>
-        </div>
-      </components.Option>
-    );
-  },
-};
