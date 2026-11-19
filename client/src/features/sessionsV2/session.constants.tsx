@@ -245,14 +245,8 @@ export const BUILDER_PLATFORMS = [
   },
 ] as readonly BuilderSelectorOption<"linux/amd64" | "linux/arm64">[];
 
-export interface CodingAgentOption {
-  description?: string;
-  label: string;
-  value: string;
-}
-
 /* eslint-disable spellcheck/spell-checker */
-export const CODING_AGENTS: readonly CodingAgentOption[] = [
+export const CODING_AGENTS: readonly BuilderSelectorOption[] = [
   {
     value: "claude",
     label: "Claude Code",
