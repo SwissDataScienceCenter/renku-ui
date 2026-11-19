@@ -93,26 +93,24 @@ function AddEnvVariableButton({
   onAddEnvVariable: () => void;
 }) {
   return (
-    <div>
-      <Button
-        data-cy="add-env-variable-button"
-        color="outline-secondary"
-        size="sm"
-        className="me-2"
-        onClick={onAddEnvVariable}
-      >
-        <Plus className="bi" />
-      </Button>
-      <span className="text-secondary">Add new environment variable</span>
-    </div>
+    <Button
+      data-cy="add-env-variable-button"
+      color="outline-primary"
+      size="sm"
+      className="me-2"
+      onClick={onAddEnvVariable}
+    >
+      <Plus className="me-1" />
+      Add new environment variable
+    </Button>
   );
 }
 
 function RStudioInfo() {
   return (
-    <span className="text-secondary">
+    <p className="text-muted">
       Note: Environment Variables are not visible in RStudio-based environments.
-    </span>
+    </p>
   );
 }
 
@@ -120,6 +118,8 @@ interface EnvVariablesFormContentProps {
   control: Control<EnvVariablesForm, unknown>;
   errors: FieldErrors<EnvVariablesForm>;
   index: number;
+  /** Called after any input in the row changes. */
+  onChange?: () => void;
   register: UseFormRegister<EnvVariablesForm>;
   remove: UseFieldArrayRemove;
 }
@@ -128,6 +128,7 @@ function EditEnvVariablesFormContent({
   control,
   errors,
   index,
+  onChange,
   remove,
 }: EnvVariablesFormContentProps) {
   const onRemove = useCallback(() => {
@@ -141,7 +142,7 @@ function EditEnvVariablesFormContent({
           control={control}
           name={`envVariables.${index}.name`}
           render={({ field }) => {
-            const { ref, ...fieldProps } = field;
+            const { ref, onChange: onFieldChange, ...fieldProps } = field;
             return (
               <Input
                 bsSize="sm"
@@ -151,6 +152,10 @@ function EditEnvVariablesFormContent({
                 data-cy={`env-variables-input_${index}-name`}
                 {...fieldProps}
                 innerRef={ref}
+                onChange={(event) => {
+                  onFieldChange(event);
+                  onChange?.();
+                }}
               />
             );
           }}
@@ -183,7 +188,7 @@ function EditEnvVariablesFormContent({
           control={control}
           name={`envVariables.${index}.value`}
           render={({ field }) => {
-            const { ref, ...fieldProps } = field;
+            const { ref, onChange: onFieldChange, ...fieldProps } = field;
             return (
               <Input
                 bsSize="sm"
@@ -193,6 +198,10 @@ function EditEnvVariablesFormContent({
                 data-cy={`env-variables-input_${index}-value`}
                 {...fieldProps}
                 innerRef={ref}
+                onChange={(event) => {
+                  onFieldChange(event);
+                  onChange?.();
+                }}
               />
             );
           }}
@@ -254,9 +263,16 @@ export default function EnvVariablesModal({
     name: "envVariables", // unique name for your Field Array
   });
 
+  // Clear any previous success or error message once the user edits again.
+  const { isUninitialized: isResultUninitialized, reset: resetResult } = result;
+  const onFormChange = useCallback(() => {
+    if (!isResultUninitialized) resetResult();
+  }, [isResultUninitialized, resetResult]);
+
   const onAddEnvVariable = useCallback(() => {
     append({ name: "", value: "" });
-  }, [append]);
+    onFormChange();
+  }, [append, onFormChange]);
 
   const onSubmit = useCallback(
     (data: EnvVariablesForm) => {
@@ -312,65 +328,65 @@ export default function EnvVariablesModal({
         Environment variables for {launcher.name}
       </ModalHeader>
       <ModalBody>
-        {result.isSuccess ? (
-          <ConfirmationUpdate launcherCategory={launcherCategory} />
-        ) : fields.length < 1 ? (
-          <>
-            <p className="fst-italic">
-              No environment variables have been defined.
-            </p>
-            <AddEnvVariableButton onAddEnvVariable={onAddEnvVariable} />
-          </>
-        ) : (
-          <>
-            <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-              {result.error && <RtkOrDataServicesError error={result.error} />}
-              {fields.map((field, index) => (
-                <EditEnvVariablesFormContent
-                  key={field.id} // important to include key with field's id
-                  errors={errors}
-                  index={index}
-                  control={control}
-                  register={register}
-                  remove={remove}
-                />
-              ))}
-            </Form>
-            <AddEnvVariableButton onAddEnvVariable={onAddEnvVariable} />
-          </>
-        )}
+        <>
+          <RStudioInfo />
+          {result.isSuccess && (
+            <ConfirmationUpdate launcherCategory={launcherCategory} />
+          )}
+          {fields.length < 1 ? (
+            <>
+              <p className="fst-italic">
+                No environment variables have been defined.
+              </p>
+              <AddEnvVariableButton onAddEnvVariable={onAddEnvVariable} />
+            </>
+          ) : (
+            <>
+              <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+                {result.error && (
+                  <RtkOrDataServicesError error={result.error} />
+                )}
+                {fields.map((field, index) => (
+                  <EditEnvVariablesFormContent
+                    key={field.id}
+                    errors={errors}
+                    index={index}
+                    control={control}
+                    onChange={onFormChange}
+                    register={register}
+                    remove={remove}
+                  />
+                ))}
+              </Form>
+
+              <AddEnvVariableButton onAddEnvVariable={onAddEnvVariable} />
+            </>
+          )}
+        </>
       </ModalBody>
       <ModalFooter>
-        <div className="flex-shrink-1" style={{ width: "20rem" }}>
-          <RStudioInfo />
-        </div>
-        <div className={cx("flex-grow-1", "flex-fill", "text-end")}>
-          <Button
-            className="me-2"
-            data-cy="close-cancel-button"
-            color="outline-primary"
-            onClick={toggle}
-          >
-            <XLg className={cx("bi", "me-1")} />
-            {result.isSuccess ? "Close" : "Cancel"}
-          </Button>
-          {!result.isSuccess && (
-            <Button
-              color="primary"
-              data-cy="edit-session-button"
-              disabled={result.isLoading || !isDirty}
-              onClick={handleSubmit(onSubmit)}
-              type="submit"
-            >
-              {result.isLoading ? (
-                <Loader className="me-1" inline size={16} />
-              ) : (
-                <CheckLg className={cx("bi", "me-1")} />
-              )}
-              Update {launcherDefinition.text.inline} launcher
-            </Button>
+        <Button
+          data-cy="close-cancel-button"
+          color="outline-primary"
+          onClick={toggle}
+        >
+          <XLg className="me-1" />
+          {result.isSuccess ? "Close" : "Cancel"}
+        </Button>
+        <Button
+          color="primary"
+          data-cy="edit-session-button"
+          disabled={result.isLoading || !isDirty}
+          onClick={handleSubmit(onSubmit)}
+          type="submit"
+        >
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <CheckLg className="me-1" />
           )}
-        </div>
+          Update {launcherDefinition.text.inline} launcher
+        </Button>
       </ModalFooter>
     </ScrollableModal>
   );
