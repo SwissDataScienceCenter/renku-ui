@@ -54,7 +54,7 @@ export default function AddResourceFlavorButton() {
 
   return (
     <>
-      <Button color="primary" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
         Add Resource Flavor
       </Button>

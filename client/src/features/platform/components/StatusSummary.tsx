@@ -30,6 +30,7 @@ import {
 import { Link } from "react-router";
 import { Col, Row } from "reactstrap";
 
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { WarnAlert } from "../../../components/Alert";
 import RtkOrDataServicesError from "../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../components/Loader";
@@ -76,7 +77,7 @@ function NoStatusPage() {
       {user?.isLoggedIn && user.is_admin && (
         <p className={cx("mb-0", "mt-1")}>
           As a Renku administrator, you can see the current configuration in the{" "}
-          <Link to="/admin">admin panel</Link>.
+          <Link to={ABSOLUTE_ROUTES.v2.admin.root}>admin panel</Link>.
         </p>
       )}
     </WarnAlert>
@@ -113,7 +114,7 @@ function StatuspageDisplay({ statusPageId }: StatuspageDisplayProps) {
         {user?.isLoggedIn && user.is_admin ? (
           <p>
             As a Renku administrator, you can see the current configuration in
-            the <Link to="/admin">admin panel</Link>.
+            the <Link to={ABSOLUTE_ROUTES.v2.admin.root}>admin panel</Link>.
           </p>
         ) : (
           <p>

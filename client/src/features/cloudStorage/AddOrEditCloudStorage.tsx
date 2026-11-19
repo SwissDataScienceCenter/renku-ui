@@ -187,7 +187,7 @@ export function AddStorageAdvanced({
   }, [storage.schema]);
 
   return (
-    <form className="form-rk-green" data-cy="cloud-storage-edit-advanced">
+    <form data-cy="cloud-storage-edit-advanced">
       <div className="mb-3">
         <Label className="form-label" for="sourcePath">
           {sourcePathHelp.label}
