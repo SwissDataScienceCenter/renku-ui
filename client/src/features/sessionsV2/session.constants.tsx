@@ -83,6 +83,8 @@ export const FAVICON_BY_SESSION_STATUS = {
 
 export const CUSTOM_LAUNCH_SEARCH_PARAM = "renku_custom_launch";
 
+export const INTERNAL_SESSION_LAUNCH_STATE_KEY = "internalSessionLaunch";
+
 export const ENV_VARIABLES_RESERVED_PREFIX = "RENKU";
 
 export const ENVIRONMENT_VALUES_DESCRIPTION = {

@@ -22,6 +22,7 @@ import { PlayCircle } from "react-bootstrap-icons";
 import { Link, type To } from "react-router";
 import { UncontrolledTooltip } from "reactstrap";
 
+import { INTERNAL_SESSION_LAUNCH_STATE_KEY } from "~/features/sessionsV2/session.constants";
 import { getLaunchActionTooltip } from "~/features/sessionsV2/session.utils";
 import { ImageStatus } from "~/features/sessionsV2/sessionsV2.types";
 
@@ -67,6 +68,7 @@ function SessionLaunchLink({
         ref={linkRef}
         aria-disabled={isDisabled || undefined}
         className={cx(className, isDisabled && "opacity-75")}
+        state={{ [INTERNAL_SESSION_LAUNCH_STATE_KEY]: true }}
         to={to}
         data-cy={
           isCustomLaunch
