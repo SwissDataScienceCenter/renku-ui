@@ -1,5 +1,5 @@
 /*!
- * Copyright 2024 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,30 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense } from "react";
+import { ReactNode } from "react";
+import { Col, Row } from "reactstrap";
 
-import PageLoader from "../../components/PageLoader";
+import AdminPageNav from "./AdminPageNav";
 
-const AdminPage = lazy(() => import("./AdminPage"));
-
-export default function LazyAdminPage() {
+interface AdminPageLayoutProps {
+  children?: ReactNode;
+}
+export default function AdminPageLayout({ children }: AdminPageLayoutProps) {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <AdminPage />
-    </Suspense>
+    <Row>
+      <Col xs={12}>
+        <h1>Admin Panel</h1>
+        <p>
+          Manage platform configuration, including incidents, compute resources,
+          integrations, session environments, and project storage.
+        </p>
+      </Col>
+      <Col xs={12}>
+        <AdminPageNav className="mb-3" />
+      </Col>
+      <Col xs={12}>
+        <main>{children}</main>
+      </Col>
+    </Row>
   );
 }

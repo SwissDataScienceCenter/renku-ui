@@ -17,8 +17,15 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
-import { CheckLg, Pencil, PlusLg, TrashFill, XLg } from "react-bootstrap-icons";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Archive,
+  CheckLg,
+  Pencil,
+  PlusLg,
+  TrashFill,
+  XLg,
+} from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import {
   Button,
@@ -37,8 +44,9 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { WarnAlert } from "~/components/Alert";
+import { InfoAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
+import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
 import {
   useDeleteStorageAllowByProjectIdMutation,
@@ -50,48 +58,92 @@ import {
   useGetStorageConfigQuery,
   type ProjectStorageAllow,
 } from "~/features/cloudStorage/api/projectCloudStorage.generated-api";
+import { NEW_DOCS_USER_PROJECT_STORAGE } from "~/utils/constants/NewDocs";
 import {
   PROJECT_STORAGE_MAX_GB,
   PROJECT_STORAGE_MIN_GB,
   PROJECT_STORAGE_STEP_GB,
 } from "../ProjectPageV2/ProjectPageContent/ProjectStorage/projectStorage.constants";
-import AdminSection from "./AdminSection";
+import AdminListFilter from "./AdminListFilter";
+import AdminSectionHeader from "./AdminSectionHeader";
 
 export default function ProjectStorageAllowSection() {
   const { data, error, isLoading } = useGetStorageAllowQuery({});
 
+  const [filter, setFilter] = useState("");
+  const filteredProjects = useMemo(() => {
+    if (!data || !filter) return data;
+    const lowerCaseFilter = filter.toLowerCase();
+    return data.filter(
+      ({ name, namespace }) =>
+        name.toLowerCase().includes(lowerCaseFilter) ||
+        namespace.toLowerCase().includes(lowerCaseFilter),
+    );
+  }, [data, filter]);
+
   return (
-    <AdminSection title="Project Storage Allow List">
-      <AddProjectStorageAllowButton />
+    <section>
+      <AdminSectionHeader
+        action={<AddProjectStorageAllowButton />}
+        count={!isLoading && !error ? data?.length : undefined}
+        icon={Archive}
+        title="Project storage"
+      />
+
+      <p className="mb-2">
+        Provide persistent storage for white-listed projects. Mind that only
+        projects listed here are allowed to use local storage on the platform.
+      </p>
+      <p className="mb-4">
+        Check out the{" "}
+        <ExternalLink href={NEW_DOCS_USER_PROJECT_STORAGE}>
+          documentation for project storage
+        </ExternalLink>
+        .
+      </p>
+
       {isLoading ? (
         <Loader />
       ) : error ? (
         <RtkOrDataServicesError error={error} dismissible={false} />
-      ) : data ? (
+      ) : !data || !filteredProjects || data.length === 0 ? (
+        <InfoAlert dismissible={false} timeout={0}>
+          No projects have been white-listed for storage yet.
+        </InfoAlert>
+      ) : (
         <>
-          <ListGroup>
-            {data.map((e) => (
-              <ListGroupItem
-                key={e.project_id}
-                className={cx(
-                  "d-flex",
-                  "justify-content-between",
-                  "align-items-center",
-                )}
-              >
-                <div>
-                  <strong>{e.namespace}</strong> (max {e.max_size} GB)
-                </div>
-                <div className={cx("d-flex", "gap-2")}>
-                  <EditProjectStorageAllowButton project={e} />
-                  <DeleteProjectStorageAllowButton project={e} />
-                </div>
-              </ListGroupItem>
-            ))}
-          </ListGroup>
+          <AdminListFilter filter={filter} onFilterChange={setFilter} />
+
+          {filteredProjects.length === 0 ? (
+            <p className="fst-italic">
+              No project matches the filter <code>{filter}</code>.
+            </p>
+          ) : (
+            <ListGroup>
+              {filteredProjects.map((project) => (
+                <ListGroupItem
+                  key={project.project_id}
+                  className={cx(
+                    "align-items-center",
+                    "d-flex",
+                    "justify-content-between",
+                  )}
+                >
+                  <div>
+                    <strong>{project.namespace}</strong> (max {project.max_size}{" "}
+                    GB)
+                  </div>
+                  <div className={cx("align-items-center", "d-flex", "gap-2")}>
+                    <EditProjectStorageAllowButton project={project} />
+                    <DeleteProjectStorageAllowButton project={project} />
+                  </div>
+                </ListGroupItem>
+              ))}
+            </ListGroup>
+          )}
         </>
-      ) : null}
-    </AdminSection>
+      )}
+    </section>
   );
 }
 
@@ -103,9 +155,9 @@ function AddProjectStorageAllowButton() {
 
   return (
     <div className="mb-2">
-      <Button color="primary" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
-        Add Project to Storage Allow List
+        White-list project for storage
       </Button>
       <AddOrEditProjectStorageAllowModal isOpen={isOpen} toggle={toggle} />
     </div>
@@ -124,7 +176,7 @@ function EditProjectStorageAllowButton({
 
   return (
     <>
-      <Button color="primary" onClick={toggle}>
+      <Button color="outline-primary" onClick={toggle} size="sm">
         <Pencil className={cx("bi", "me-1")} />
         Edit
       </Button>
@@ -345,7 +397,7 @@ function DeleteProjectStorageAllowButton({
 
   return (
     <>
-      <Button color="outline-danger" onClick={toggle}>
+      <Button color="outline-danger" onClick={toggle} size="sm">
         <TrashFill className={cx("bi", "me-1")} />
         Remove
       </Button>

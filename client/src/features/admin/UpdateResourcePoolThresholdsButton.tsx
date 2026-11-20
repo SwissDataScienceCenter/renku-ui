@@ -161,11 +161,7 @@ function UpdateResourcePoolThresholdsModal({
           Please note that changes only affect new sessions, not already running
           ones.
         </p>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <Form noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkOrDataServicesError error={result.error} />}
 
           <div className="mb-3">

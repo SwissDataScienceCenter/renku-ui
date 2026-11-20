@@ -33,7 +33,7 @@ export default function AdminDropdownItem() {
   return (
     <>
       <DropdownItem divider />
-      <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.admin}>
+      <DropdownItemTag tag={Link} to={ABSOLUTE_ROUTES.v2.admin.root}>
         Admin Panel
       </DropdownItemTag>
     </>

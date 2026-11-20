@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2026 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,15 +16,19 @@
  * limitations under the License.
  */
 
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import { redirect } from "react-router";
 
-export const isFetchBaseQueryError = (
-  error: FetchBaseQueryError | unknown,
-): error is FetchBaseQueryError => {
-  if (error != null && typeof error === "object") {
-    const error_ = error as { status?: unknown };
-    const statusType = typeof error_.status;
-    return statusType === "number" || statusType === "string";
-  }
-  return false;
-};
+import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+
+//? The admin panel index redirects to the "Compute" tab
+export function loader() {
+  throw redirect(ABSOLUTE_ROUTES.v2.admin.computeResources);
+}
+
+export function clientLoader() {
+  throw redirect(ABSOLUTE_ROUTES.v2.admin.computeResources);
+}
+
+export default function AdminIndexPage() {
+  return null;
+}
