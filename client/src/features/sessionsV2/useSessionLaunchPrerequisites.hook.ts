@@ -28,10 +28,15 @@ import useDataConnectorConfiguration from "../dataConnectorsV2/components/useDat
 import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetRepositoriesQuery } from "../repositories/api/repositories.api";
-import { useGetUserSshKeysQuery } from "../usersV2/api/users.api";
+import {
+  useGetUserQueryState,
+  useGetUserSshKeysQuery,
+} from "../usersV2/api/users.api";
 import {
   useGetSessionLaunchersByLauncherIdDataConnectorsQuery,
   useGetSessionLaunchersByLauncherIdSecretsQuery,
+  type SessionLauncherDataConnector,
+  type SessionLauncherSecret,
 } from "./api/sessionLaunchersV2.api";
 import {
   dataConnectorsNeedCredentials,
@@ -46,6 +51,9 @@ import {
 } from "./SessionView/launcherResources.constants";
 import type { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
 import useSessionSecrets from "./useSessionSecrets.hook";
+
+const NO_DATA_CONNECTOR: SessionLauncherDataConnector[] = [];
+const NO_SECRET: SessionLauncherSecret[] = [];
 
 interface UseSessionLaunchPrerequisitesArgs {
   launcherId: string;
@@ -68,24 +76,33 @@ export default function useSessionLaunchPrerequisites({
   } = useGetProjectsByProjectIdDataConnectorLinksQuery(
     projectId ? { projectId } : skipToken,
   );
+  const { data: user } = useGetUserQueryState();
+  const isUserLoggedIn = !!user?.isLoggedIn;
+  // TODO: anonymous users should be able to access these endpoints.
+  const launcherResourcesArgs =
+    launcherId && isUserLoggedIn ? { launcherId } : skipToken;
+
   const {
-    data: launcherDataConnectors,
+    data: launcherDataConnectorsData,
     error: launcherDataConnectorsError,
     isError: isLauncherDataConnectorsError,
     isFetching: isFetchingLauncherDataConnectors,
     isLoading: isLoadingLauncherDataConnectors,
   } = useGetSessionLaunchersByLauncherIdDataConnectorsQuery(
-    launcherId ? { launcherId } : skipToken,
+    launcherResourcesArgs,
   );
   const {
-    data: launcherSecrets,
+    data: launcherSecretsData,
     error: launcherSecretsError,
     isError: isLauncherSecretsError,
     isFetching: isFetchingLauncherSecrets,
     isLoading: isLoadingLauncherSecrets,
-  } = useGetSessionLaunchersByLauncherIdSecretsQuery(
-    launcherId ? { launcherId } : skipToken,
-  );
+  } = useGetSessionLaunchersByLauncherIdSecretsQuery(launcherResourcesArgs);
+
+  const launcherDataConnectors = !isUserLoggedIn
+    ? NO_DATA_CONNECTOR
+    : launcherDataConnectorsData;
+  const launcherSecrets = !isUserLoggedIn ? NO_SECRET : launcherSecretsData;
   const isLauncherResourcesError =
     isLauncherDataConnectorsError || isLauncherSecretsError;
   const launcherResourcesError:
@@ -139,7 +156,7 @@ export default function useSessionLaunchPrerequisites({
   });
 
   const { data: sshKeys, isFetching: isFetchingSshKeys } =
-    useGetUserSshKeysQuery();
+    useGetUserSshKeysQuery(isUserLoggedIn ? undefined : skipToken);
 
   const isFetchingOrLoadingDataConnectors =
     isFetchingDataConnectorLinks ||
