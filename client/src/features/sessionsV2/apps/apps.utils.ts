@@ -20,6 +20,7 @@ import { generatePath } from "react-router";
 
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import type { AppResponse, AppStatus } from "../api/apps.api";
+import type { Build } from "../api/sessionLaunchersV2.api";
 
 export const APP_PUBLIC_PROJECT_ONLY_MESSAGE =
   "An app launcher can only be created in a public project.";
@@ -32,7 +33,20 @@ export const APP_STARTING_MESSAGE =
 
 export const APP_STATUS_POLLING_INTERVAL_MS = 5_000;
 
-export type AppTransition = "starting" | "stopping";
+export type AppTransition = "rebuilding" | "starting" | "stopping";
+
+export type AppRedeployPhase = "building" | "stopping" | "starting";
+
+export type AppRedeployStep = "wait" | "stop" | "start" | "done" | "failed";
+
+interface AppRedeployState {
+  phase: AppRedeployPhase;
+  buildId: string;
+  lastBuild?: Pick<Build, "id" | "status">;
+  hasApp: boolean;
+  stop: { isPending: boolean; isError: boolean };
+  start: { isPending: boolean; isError: boolean; isSuccess: boolean };
+}
 
 export type AppWaitTarget = { desiredStatus: AppStatus[] } | { deletion: true };
 
@@ -59,10 +73,18 @@ export function hasAppOnAnotherLauncher(
 export function getAppTransition(
   app: AppResponse | undefined,
   {
+    isRebuilding = false,
     isStarting = false,
     isStopping = false,
-  }: { isStarting?: boolean; isStopping?: boolean } = {},
+  }: {
+    isRebuilding?: boolean;
+    isStarting?: boolean;
+    isStopping?: boolean;
+  } = {},
 ): AppTransition | null {
+  if (isRebuilding) {
+    return "rebuilding";
+  }
   if (isStopping) {
     return "stopping";
   }
@@ -70,6 +92,36 @@ export function getAppTransition(
     return "starting";
   }
   return null;
+}
+
+/** The next step of a rebuild and redeploy: build, then stop the app, then start it again. */
+export function getNextRedeployStep({
+  phase,
+  buildId,
+  lastBuild,
+  hasApp,
+  stop,
+  start,
+}: AppRedeployState): AppRedeployStep {
+  if (phase === "building") {
+    if (lastBuild?.id !== buildId || lastBuild.status === "in_progress") {
+      return "wait";
+    }
+    if (lastBuild.status !== "succeeded") {
+      return "failed";
+    }
+    return hasApp ? "stop" : "start";
+  }
+  if (phase === "stopping") {
+    if (stop.isError) {
+      return "failed";
+    }
+    return stop.isPending || hasApp ? "wait" : "start";
+  }
+  if (start.isError) {
+    return "failed";
+  }
+  return start.isSuccess && !start.isPending ? "done" : "wait";
 }
 
 export function hasPendingApp(apps: AppResponse[] | undefined): boolean {
