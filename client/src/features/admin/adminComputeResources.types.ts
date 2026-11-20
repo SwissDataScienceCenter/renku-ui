@@ -79,6 +79,21 @@ export interface ResourceFlavorForm {
   max_storage: number;
 }
 
+export interface StorageFlavorForm {
+  k8s_storage_class_name: string;
+  display_name: string;
+  min_size: number;
+  admin_documentation: string;
+  documentation: string;
+}
+
+export interface StorageQuotaForm {
+  resource_pool_id: number;
+  storage_flavor_id: string;
+  total_size: number;
+  max_size: number;
+}
+
 export interface ResourceClassFormToleration {
   label: string;
 }
