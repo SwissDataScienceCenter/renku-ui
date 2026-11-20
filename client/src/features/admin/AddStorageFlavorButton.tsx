@@ -53,7 +53,7 @@ export default function AddStorageFlavorButton() {
     <>
       <Button color="outline-primary" onClick={toggle}>
         <PlusLg className={cx("bi", "me-1")} />
-        Add Storage Flavor
+        Add storage flavor
       </Button>
       <AddStorageFlavorModal isOpen={isOpen} toggle={toggle} />
     </>
@@ -119,12 +119,7 @@ function AddStorageFlavorModal({ isOpen, toggle }: AddStorageFlavorModalProps) {
         Add storage flavor
       </ModalHeader>
       <ModalBody>
-        <Form
-          id={formId}
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <Form id={formId} noValidate onSubmit={handleSubmit(onSubmit)}>
           {result.error && <RtkOrDataServicesError error={result.error} />}
           <p>Storage flavors are re-usable shapes used by storage quotas.</p>
 

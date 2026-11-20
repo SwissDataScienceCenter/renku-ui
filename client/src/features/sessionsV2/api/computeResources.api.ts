@@ -206,9 +206,23 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
             ]
           : [{ id: "LIST", type: "StorageQuota" }],
     },
+    postStorageQuotas: {
+      invalidatesTags: [{ id: "LIST", type: "StorageQuota" }],
+    },
     getStorageQuotasByStorageQuotaId: {
       providesTags: (result) =>
         result ? [{ id: result.id, type: "StorageQuota" }] : ["StorageQuota"],
+    },
+    patchStorageQuotasByStorageQuotaId: {
+      invalidatesTags: (_result, _error, { storageQuotaId }) => [
+        { id: storageQuotaId, type: "StorageQuota" },
+      ],
+    },
+    deleteStorageQuotasByStorageQuotaId: {
+      invalidatesTags: (_result, _error, { storageQuotaId }) => [
+        { id: storageQuotaId, type: "StorageQuota" },
+        { id: "LIST", type: "StorageQuota" },
+      ],
     },
     getStorageQuotasByStorageQuotaIdResources: {
       providesTags: (result) =>
@@ -252,7 +266,9 @@ export const {
 
   // "storage quotas" hooks
   useGetStorageQuotasQuery,
+  usePostStorageQuotasMutation,
   useGetStorageQuotasByStorageQuotaIdQuery,
+  useDeleteStorageQuotasByStorageQuotaIdMutation,
   useGetStorageQuotasByStorageQuotaIdResourcesQuery,
 } = computeResourcesApi;
 
