@@ -78,6 +78,7 @@ export default function useSessionLaunchPrerequisites({
   );
   const { data: user } = useGetUserQueryState();
   const isUserLoggedIn = !!user?.isLoggedIn;
+  // TODO: anonymous users should be able to access these endpoints.
   const launcherResourcesArgs =
     launcherId && isUserLoggedIn ? { launcherId } : skipToken;
 
