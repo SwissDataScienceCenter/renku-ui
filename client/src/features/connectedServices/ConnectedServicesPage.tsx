@@ -946,10 +946,7 @@ export function GitHubStatusCheckModal({
   }, [isOpen, setSearch]);
 
   const settingsUrl = provider.app_slug
-    ? safeNewUrl(
-        `apps/${provider.app_slug}/installations/select_target`,
-        provider.url,
-      )
+    ? safeNewUrl(`apps/${provider.app_slug}/installations/new`, provider.url)
     : null;
 
   return (
