@@ -33,6 +33,7 @@ const initialState: StartSessionOptionsV2 = {
   environmentVariables: [],
   imageReady: false,
   lfsAutoFetch: false,
+  remotePoolReady: false,
   repositories: [],
   repositoriesReady: false,
   sessionClass: 0,
@@ -89,6 +90,9 @@ const startSessionOptionsV2Slice = createSlice({
     },
     setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
       state.lfsAutoFetch = action.payload;
+    },
+    setRemotePoolReady: (state, action: PayloadAction<boolean>) => {
+      state.remotePoolReady = action.payload;
     },
     setRepositories: (state, action: PayloadAction<SessionRepository[]>) => {
       state.repositories.splice(0, Infinity, ...action.payload);

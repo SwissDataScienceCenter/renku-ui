@@ -21,11 +21,14 @@ import { describe, expect, it } from "vitest";
 import type { ResourcePoolWithId } from "./api/computeResources.api";
 import type { RemotePoolRequiredEnvVariable } from "./session.constants";
 import {
+  applyEnvVariableOverrides,
+  getEnvVariableOverridesFromSearchParams,
   getMissingRequiredEnvVariables,
   getRequiredEnvVariables,
   isEnvVariableSet,
   matchesRemotePool,
 } from "./session.utils";
+import { remotePoolNeedsAttention } from "./sessionLaunchValidation.utils";
 
 type Pool = Pick<ResourcePoolWithId, "remote">;
 
@@ -152,5 +155,54 @@ describe("required environment variables", () => {
         ({ name }) => name,
       ),
     ).toEqual(["SLURM_ACCOUNT"]);
+  });
+});
+
+describe("launch-time environment variable overrides", () => {
+  it("reads valid variable names from the launch URL", () => {
+    expect(
+      getEnvVariableOverridesFromSearchParams(
+        new URLSearchParams("SLURM_ACCOUNT=g159&RENKU_FOO=bar"),
+      ),
+    ).toEqual([{ name: "SLURM_ACCOUNT", value: "g159" }]);
+  });
+
+  it("lets overrides replace or add to the launcher variables", () => {
+    expect(
+      applyEnvVariableOverrides(
+        [
+          { name: "SLURM_ACCOUNT", value: "" },
+          { name: "OTHER", value: "1" },
+        ],
+        [{ name: "SLURM_ACCOUNT", value: "g159" }],
+      ),
+    ).toEqual([
+      { name: "OTHER", value: "1" },
+      { name: "SLURM_ACCOUNT", value: "g159" },
+    ]);
+    expect(
+      applyEnvVariableOverrides(undefined, [{ name: "A", value: "1" }]),
+    ).toEqual([{ name: "A", value: "1" }]);
+  });
+});
+
+describe("remotePoolNeedsAttention", () => {
+  const missing: RemotePoolRequiredEnvVariable[] = [
+    {
+      match: CSCS_MATCH,
+      platformName: "CSCS",
+      name: "SLURM_ACCOUNT",
+      valueDescription: "your CSCS project",
+    },
+  ];
+
+  it("needs attention for missing variables or a confirmed image mismatch", () => {
+    expect(remotePoolNeedsAttention(missing, true)).toBe(true);
+    expect(remotePoolNeedsAttention([], false)).toBe(true);
+  });
+
+  it("does not block when everything matches or the image is unknown", () => {
+    expect(remotePoolNeedsAttention([], true)).toBe(false);
+    expect(remotePoolNeedsAttention([], undefined)).toBe(false);
   });
 });
