@@ -22,11 +22,11 @@ import type { DataConnectorConfiguration } from "../../../dataConnectorsV2/compo
 import type { SessionSecretSlotWithSecret } from "../../../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { Project } from "../../../projectsV2/api/projectV2.api";
 import type { SessionLauncher } from "../../api/sessionLaunchersV2.api";
-import DataConnectorSecretsModal from "../../DataConnectorSecretsModal";
 import SaveCloudStorageCredentials from "../../SaveCloudStorageCredentials";
 import SessionExpiredDataConnectorsModal from "../../SessionExpiredDataConnectorsModal";
 import SessionRepositoriesModal from "../../SessionRepositoriesModal";
 import SessionSecretsModal from "../../SessionSecretsModal";
+import SessionStorageCredentials from "../../SessionStorageCredentials";
 import type { SessionStartDataConnectorConfiguration } from "../../startSessionOptionsV2.types";
 import type { SubmitJobValidationStep } from "./submitJobValidation.utils";
 
@@ -100,12 +100,12 @@ export default function SubmitJobPrerequisiteModals({
       )}
 
       {validationStep === "dataConnectors" && (
-        <DataConnectorSecretsModal
+        <SessionStorageCredentials
           context="job"
           dataConnectorConfigs={configsNeedingCredentials}
           isOpen
           onCancel={onCancel}
-          onStart={onDataConnectorsComplete}
+          onFinished={onDataConnectorsComplete}
         />
       )}
 
@@ -120,6 +120,7 @@ export default function SubmitJobPrerequisiteModals({
           <ModalHeader tag="h2">Saving credentials</ModalHeader>
           <ModalBody>
             <SaveCloudStorageCredentials
+              continueOnSaveError
               dataConnectors={dataConnectorConfigs}
               onComplete={onSaveCredentialsComplete}
               title={`Submitting job ${launcher.name}`}

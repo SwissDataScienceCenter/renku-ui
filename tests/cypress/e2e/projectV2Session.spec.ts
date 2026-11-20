@@ -197,22 +197,22 @@ describe("launch sessions with data connectors", () => {
       .should("not.be.visible");
 
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
+      .contains("button:visible", "Test connection")
       .click();
     cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Please provide")
       .should("be.visible");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
+      .find('[name="access_key_id"]')
       .type("access key");
     cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Secret Access Key (password)")
       .should("be.visible");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
+      .find('[name="secret_access_key"]')
       .type("secret key");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
+      .contains("button:visible", "Test connection")
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@createSession");
@@ -276,21 +276,21 @@ describe("launch sessions with data connectors", () => {
       .should("not.be.visible");
 
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
+      .contains("button:visible", "Test connection")
       .click();
     cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Please provide")
       .should("be.visible");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
+      .find('[name="access_key_id"]')
       .type("access key");
     cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Secret Access Key (password)")
       .should("be.visible");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
+      .find('[name="secret_access_key"]')
       .type("secret key");
-    cy.get("#saveCredentials").click();
+    cy.get('[name="saveCredentials"]:visible').first().click();
 
     fixtures.dataConnectorSecrets({
       dataConnectorId: "ULID-1",
@@ -299,7 +299,7 @@ describe("launch sessions with data connectors", () => {
     });
 
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
+      .contains("button:visible", "Test connection")
       .click();
     cy.wait("@testCloudStorage");
     cy.contains("Saving credentials").should("be.visible");
@@ -363,17 +363,17 @@ describe("launch sessions with data connectors", () => {
       });
     fixtures.testCloudStorage({ success: false });
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
+      .find('[name="access_key_id"]')
       .type("access key");
     cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Secret Access Key (password)")
       .should("be.visible");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
+      .find('[name="secret_access_key"]')
       .type("secret key");
-    cy.get("#saveCredentials").click();
+    cy.get('[name="saveCredentials"]:visible').first().click();
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
+      .contains("button:visible", "Test connection")
       .click();
     cy.wait("@testCloudStorage");
     fixtures.dataConnectorSecrets({
@@ -382,7 +382,7 @@ describe("launch sessions with data connectors", () => {
       name: "getDataConnectorSecretsAfterSaving",
     });
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Skip")
+      .contains("button:visible", "Skip")
       .click();
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
@@ -469,16 +469,16 @@ describe("launch sessions with data connectors", () => {
         cy.getDataCy("start-session-button").click();
       });
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
+      .find('[name="access_key_id"]')
       .type("access key");
     cy.getDataCy("session-data-connector-credentials-modal")
       .contains("Secret Access Key (password)")
       .should("be.visible");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
+      .find('[name="secret_access_key"]')
       .type("secret key");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
+      .contains("button:visible", "Test connection")
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@createSession");
@@ -627,22 +627,22 @@ describe("launch sessions with data connectors", () => {
         cy.getDataCy("start-session-button").click();
       });
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
+      .find('[name="access_key_id"]')
       .type("access key");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
+      .find('[name="secret_access_key"]')
       .type("secret key");
-    cy.get("#saveCredentials").click();
+    cy.get('[name="saveCredentials"]:visible').first().click();
     fixtures.testCloudStorage({ success: true });
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
+      .contains("button:visible", "Test connection")
       .click();
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#pass")
+      .find('[name="pass"]')
       .type("webDav pass");
-    cy.get("#saveCredentials").click();
+    cy.get('[name="saveCredentials"]:visible').first().click();
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
+      .contains("button:visible", "Test connection")
       .click();
     cy.wait("@testCloudStorage");
     cy.wait("@getResourceClass");
@@ -684,66 +684,47 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(3);
-        const s3Storage = csConfig[0];
-        expect(s3Storage.configuration).to.not.have.property("access_key_id");
-        expect(s3Storage.configuration).to.not.have.property(
-          "secret_access_key",
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(2);
+        const skippedIds = dcOverrides.map(
+          (override) => override.data_connector_id,
         );
-
-        const s3Storage1 = csConfig[1];
-        expect(s3Storage1.configuration).to.have.property("access_key_id");
-        expect(s3Storage1.configuration).to.have.property("secret_access_key");
-        expect(s3Storage1.configuration["access_key_id"]).to.equal(
-          "access key",
-        );
-        expect(s3Storage1.configuration["secret_access_key"]).to.equal(
-          "secret key",
-        );
-        const webDavStorage = csConfig[2];
-        expect(webDavStorage.configuration).to.have.property("pass");
-        expect(webDavStorage.configuration["pass"]).to.equal("webDav pass");
+        expect(skippedIds).to.have.members(["ULID-2", "ULID-3"]);
+        dcOverrides.forEach((override) => {
+          expect(override.skip).to.equal(true);
+        });
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
 
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
     cy.getDataCy("session-launcher-item")
       .first()
       .within(() => {
         cy.getDataCy("start-session-button").click();
       });
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
+      .find('[name="access_key_id"]')
       .type("access key");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
+      .find('[name="secret_access_key"]')
       .type("secret key");
     fixtures.testCloudStorage({ success: false });
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
+      .contains("button:visible", "Test connection")
       .click();
     cy.getDataCy("session-data-connector-credentials-modal")
       .contains("could not be mounted")
       .should("be.visible");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Retry")
+      .contains("button:visible", "Retry")
       .click();
     cy.getDataCy("session-data-connector-credentials-modal")
       .contains("could not be mounted")
       .should("be.visible");
     cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Skip")
+      .contains("button:visible", "Skip")
       .click();
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#pass")
-      .type("webDav pass");
-    fixtures.testCloudStorage({ success: true });
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.wait("@testCloudStorage");
-    cy.wait("@getResourceClass");
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
@@ -782,26 +763,15 @@ describe("launch sessions with data connectors", () => {
     cy.fixture("sessions/sessionV2.json").then((session) => {
       // eslint-disable-next-line max-nested-callbacks
       cy.intercept("POST", "/api/data/sessions", (req) => {
-        const csConfig = req.body.cloudstorage;
-        expect(csConfig.length).equal(3);
-        const s3Storage = csConfig[0];
-        expect(s3Storage.configuration).to.not.have.property("access_key_id");
-        expect(s3Storage.configuration).to.not.have.property(
-          "secret_access_key",
+        const dcOverrides = req.body.data_connectors_overrides;
+        expect(dcOverrides).to.have.length(2);
+        const skippedIds = dcOverrides.map(
+          (override) => override.data_connector_id,
         );
-
-        const s3Storage1 = csConfig[1];
-        expect(s3Storage1.configuration).to.have.property("access_key_id");
-        expect(s3Storage1.configuration).to.have.property("secret_access_key");
-        expect(s3Storage1.configuration["access_key_id"]).to.equal(
-          "access key",
-        );
-        expect(s3Storage1.configuration["secret_access_key"]).to.equal(
-          "secret key",
-        );
-        const webDavStorage = csConfig[2];
-        expect(webDavStorage.configuration).to.have.property("pass");
-        expect(webDavStorage.configuration["pass"]).to.equal("webDav pass");
+        expect(skippedIds).to.have.members(["ULID-2", "ULID-3"]);
+        dcOverrides.forEach((override) => {
+          expect(override.skip).to.equal(true);
+        });
         req.reply({ body: session, delay: 2000 });
       }).as("createSession");
     });
@@ -813,29 +783,8 @@ describe("launch sessions with data connectors", () => {
         cy.getDataCy("start-session-button").click();
       });
     cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#access_key_id")
-      .type("access key");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#secret_access_key")
-      .type("secret key");
-
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
+      .contains("button:visible", "Skip")
       .click();
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Skip")
-      .click();
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .find("#pass")
-      .type("webDav pass");
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Continue")
-      .click();
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("Skip")
-      .click();
-    cy.wait("@testCloudStorage");
-    cy.wait("@getResourceClass");
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
@@ -963,7 +912,7 @@ describe("launch sessions with secrets", () => {
       .contains("Session secrets")
       .should("be.visible");
     cy.getDataCy("session-secrets-modal").contains(
-      "[data-cy=session-secrets-ready]",
+      "[data-cy=session-wizard-resolved-item]",
       "A Secret",
     );
     cy.getDataCy("session-secrets-modal").contains("button", "Skip").click();
@@ -1010,7 +959,7 @@ describe("launch sessions with secrets", () => {
       .contains("Session secrets")
       .should("be.visible");
     cy.getDataCy("session-secrets-modal").contains(
-      "[data-cy=session-secrets-ready]",
+      "[data-cy=session-wizard-resolved-item]",
       "A Secret",
     );
     cy.getDataCy("session-secrets-modal")
@@ -1291,6 +1240,156 @@ describe("launch sessions with resource quotas", () => {
         // cy.getDataCy("resume-session-button").should("be.disabled");
         cy.getDataCy("resume-session-button").should("be.enabled");
       });
+  });
+});
+
+describe("launch session prerequisites", () => {
+  beforeEach(() => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .dataServicesUser({
+        response: {
+          id: "user1-uuid",
+          username: "user-1",
+          email: "user1@email.com",
+        },
+      })
+      .projects()
+      .readGroupV2Namespace({ groupSlug: "user1-uuid" })
+      .landingUserProjects()
+      .readProjectV2()
+      .getStorageSchema({ fixture: "cloudStorage/storage-schema-s3.json" })
+      .resourcePoolsTest()
+      .getResourceClass()
+      .listProjectV2Members()
+      .sessionLaunchers({
+        fixture: "projectV2/session-launchers.json",
+      })
+      .sessionLauncherDataConnectors()
+      .sessionLauncherSecrets()
+      .sessionServersEmptyV2()
+      .sessionImage()
+      .environments()
+      .listProjectDataConnectors({
+        fixture: "dataConnector/empty-list.json",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo1.git",
+      })
+      .getRepositoryMetadata({
+        repositoryUrl: "https://domain.name/repo2.git",
+      })
+      .sessionSecretSlots({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      })
+      .sessionSecrets({
+        fixture: "projectV2SessionSecrets/empty_list.json",
+      });
+    cy.intercept("GET", "/api/data/user/ssh_keys", { body: [] }).as(
+      "getUserSshKeys",
+    );
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+  });
+
+  it("launch session requiring an SSH key", () => {
+    fixtures.sessionLaunchers({
+      fixture: "projectV2/session-launchers-ssh.json",
+    });
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/api/data/sessions", (req) => {
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").click();
+      });
+    cy.wait("@getResourceClass");
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
+    cy.getDataCy("session-ssh-key-required-modal").should("be.visible");
+    cy.getDataCy("session-ssh-key-required-warning").should(
+      "contain.text",
+      "you have not set up an SSH key",
+    );
+    cy.getDataCy("session-ssh-key-required-continue").click();
+    cy.wait("@createSession");
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  });
+
+  it("launch session with an expired data connector", () => {
+    fixtures
+      .listProjectDataConnectors()
+      .getDataConnector({
+        fixture: "dataConnector/data-connector-expired.json",
+      })
+      .dataConnectorSecrets({
+        fixture: "dataConnector/data-connector-secrets-empty.json",
+      });
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    cy.fixture("sessions/sessionV2.json").then((session) => {
+      // eslint-disable-next-line max-nested-callbacks
+      cy.intercept("POST", "/api/data/sessions", (req) => {
+        const override = req.body.data_connectors_overrides[0];
+        expect(override.skip).to.equal(true);
+        expect(override.data_connector_id).to.equal("ULID-1");
+        req.reply({ body: session, delay: 2000 });
+      }).as("createSession");
+    });
+    fixtures.getSessionsV2({ fixture: "sessions/sessionsV2.json" });
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").click();
+      });
+    cy.wait("@getResourceClass");
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
+    cy.getDataCy("session-expired-data-connectors-modal").should("be.visible");
+    cy.getDataCy("session-expired-data-connectors-warning").should(
+      "contain.text",
+      "1 data connector that has expired",
+    );
+    cy.getDataCy("session-expired-data-connectors-continue").click();
+    cy.wait("@createSession");
+    cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
+  });
+
+  it("launch session with no available resource pool", () => {
+    cy.intercept("GET", "/api/data/resource_pools*", { body: [] }).as(
+      "getResourcePools",
+    );
+    cy.visit("/p/user1-uuid/test-2-v2-project");
+    cy.wait("@readProjectV2");
+    cy.wait("@sessionServersEmptyV2");
+    cy.wait("@sessionLaunchers");
+    cy.wait("@listProjectDataConnectors");
+
+    cy.getDataCy("session-launcher-item")
+      .first()
+      .within(() => {
+        cy.getDataCy("start-session-button").click();
+      });
+    cy.wait("@getResourceClass");
+    cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
+    cy.contains("Error on loading available session resource pools").should(
+      "be.visible",
+    );
   });
 });
 

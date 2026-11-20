@@ -18,23 +18,11 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  ArrowRepeat,
-  ChevronRight,
-  Eraser,
-  EyeFill,
-  EyeSlashFill,
-  KeyFill,
-  SkipForward,
-  XLg,
-} from "react-bootstrap-icons";
-import { Control, Controller, FieldValues, useForm } from "react-hook-form";
+import { Eraser, SkipForward, XLg } from "react-bootstrap-icons";
+import { Control, FieldValues, useForm } from "react-hook-form";
 import {
   Button,
   Form,
-  Input,
-  InputGroup,
-  Label,
   Modal,
   ModalBody,
   ModalFooter,
@@ -42,38 +30,21 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
 import { usePostStorageSchemaTestConnectionMutation } from "../cloudStorage/api/projectCloudStorage.api";
-import { CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE } from "../cloudStorage/projectCloudStorage.constants";
 import type { CloudStorageDetailsOptions } from "../cloudStorage/projectCloudStorage.types";
 import { validationParametersFromDataConnectorConfiguration } from "../dataConnectorsV2/components/dataConnector.utils";
 import { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import { useGetUserQueryState } from "../usersV2/api/users.api";
-
-const CONTEXT_STRINGS = {
-  session: {
-    continueButton: "Continue",
-    dataCy: "session-data-connector-credentials-modal",
-    header: "Session Storage Credentials",
-    testError:
-      "The data connector could not be mounted. Please retry with different credentials, or skip the data connector. If you skip, the data connector will not be mounted in the session.",
-  },
-  job: {
-    continueButton: "Continue",
-    dataCy: "job-data-connector-credentials-modal",
-    header: "Job Storage Credentials",
-    testError:
-      "The data connector could not be mounted. Please retry with different credentials, or skip the data connector. If you skip, the data connector will not be mounted in the job.",
-  },
-  storage: {
-    continueButton: "Test and Save",
-    dataCy: "data-connector-credentials-modal",
-    header: "Data Connector Credentials",
-    testError:
-      "The data connector could not be mounted. Please try different credentials or rely on providing credentials at session launch time.",
-  },
-};
+import {
+  ConnectionTestButton,
+  DATA_CONNECTOR_CREDENTIAL_STRINGS as CONTEXT_STRINGS,
+  credentialConfigAfterSubmit,
+  CredentialsTestError,
+  SaveCredentialsInput,
+  SensitiveFieldWidget,
+  type DataConnectorCredentialContext,
+} from "./dataConnectorCredentialFields";
 
 function ClearCredentialsButton({
   onSkip,
@@ -101,8 +72,8 @@ function ClearCredentialsButton({
 
 interface DataConnectorConfigurationSecretsProps {
   dataConnectorConfig: DataConnectorConfiguration;
-  context: Required<DataConnectorSecretsModalProps["context"]>;
-  control: SensitiveFieldInputProps["control"];
+  context: DataConnectorCredentialContext;
+  control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 function DataConnectorSecrets({
@@ -133,48 +104,88 @@ function DataConnectorSecrets({
   return (
     <>
       <div className={cx("d-flex", "align-items-baseline", "mt-1")}>
-        <h3>{dataConnector.name}</h3>
+        <h3
+          data-cy={
+            dataConnectorConfig.skip ? "session-wizard-skipped-item" : undefined
+          }
+        >
+          {dataConnectorConfig.skip && <SkippedIcon />}
+          {dataConnector.name}
+        </h3>
         <div className="ms-2">({storage.source_path})</div>
       </div>
-      <div>
-        {dataConnectorConfig.sensitiveFieldDefinitions.map((field) => {
-          return (
-            <SensitiveFieldWidget
-              key={field.name}
-              dataConnectorConfig={dataConnectorConfig}
-              context={context}
-              credentialFieldDict={credentialFieldDict}
-              control={control}
-              field={field}
-              hasIncompleteSavedCredentials={hasIncompleteSavedCredentials}
-            />
-          );
-        })}
-      </div>
-      {(context === "session" || context === "job") && user?.isLoggedIn && (
-        <SaveCredentialsInput context={context} control={control} />
-      )}
-      {context === "storage" && hasIncompleteSavedCredentials && (
-        <div className={cx("text-danger", "mb-3")}>
-          The saved credentials for this data connector are incomplete so they
-          will be ignored at session launch.
-        </div>
+      {isCredentialTested(dataConnectorConfig) ? (
+        <p
+          className="text-body-secondary"
+          data-cy="session-wizard-resolved-item"
+        >
+          Tested
+        </p>
+      ) : (
+        <>
+          <div>
+            {dataConnectorConfig.sensitiveFieldDefinitions.map((field) => {
+              return (
+                <SensitiveFieldWidget
+                  key={field.name}
+                  dataConnectorConfig={dataConnectorConfig}
+                  context={context}
+                  credentialFieldDict={credentialFieldDict}
+                  control={control}
+                  field={field}
+                />
+              );
+            })}
+          </div>
+          {(context === "session" || context === "job") && user?.isLoggedIn && (
+            <SaveCredentialsInput context={context} control={control} />
+          )}
+          {context === "storage" && hasIncompleteSavedCredentials && (
+            <div className={cx("text-danger", "mb-3")}>
+              The saved credentials for this data connector are incomplete so
+              they will be ignored at session launch.
+            </div>
+          )}
+        </>
       )}
     </>
   );
 }
 
+function isCredentialTested(config: DataConnectorConfiguration): boolean {
+  if (!config.touched || config.skip) {
+    return false;
+  }
+  const values = Object.values(config.sensitiveFieldValues);
+  return values.length > 0 && values.every((value) => value !== "");
+}
+
+function SkippedIcon() {
+  return (
+    <span className="me-1" title="Skipped">
+      <SkipForward aria-hidden="true" className="bi" />
+      <span className="visually-hidden">Skipped. </span>
+    </span>
+  );
+}
+
 interface DataConnectorSecretsModalProps {
-  context?: "session" | "job" | "storage";
+  context?: DataConnectorCredentialContext;
+  embedded?: boolean;
   isOpen: boolean;
   onCancel: () => void;
+  onCredentialResolved?: (
+    dataConnectorConfigs: DataConnectorConfiguration[],
+  ) => void;
   onStart: (dataConnectorConfigs: DataConnectorConfiguration[]) => void;
   dataConnectorConfigs: DataConnectorConfiguration[] | undefined;
 }
 export default function DataConnectorSecretsModal({
   context = "session",
+  embedded = false,
   isOpen,
   onCancel,
+  onCredentialResolved,
   onStart,
   dataConnectorConfigs: initialDataConnectorConfigs,
 }: DataConnectorSecretsModalProps) {
@@ -202,6 +213,7 @@ export default function DataConnectorSecretsModal({
 
   const onNext = useCallback(
     (csConfigs: DataConnectorConfiguration[]) => {
+      onCredentialResolved?.(csConfigs);
       if (index < csConfigs.length - 1) {
         if (!validationResult.isUninitialized) validationResult.reset();
         resetForm();
@@ -211,12 +223,21 @@ export default function DataConnectorSecretsModal({
         onStart([...noCredentialsConfigs, ...csConfigs]);
       }
     },
-    [index, noCredentialsConfigs, onStart, resetForm, validationResult],
+    [
+      index,
+      noCredentialsConfigs,
+      onCredentialResolved,
+      onStart,
+      resetForm,
+      validationResult,
+    ],
   );
 
   const onSkip = useCallback(() => {
     if (dataConnectorConfigs.length < 1) {
-      onStart([...noCredentialsConfigs]);
+      const configs = [...noCredentialsConfigs];
+      onCredentialResolved?.(configs);
+      onStart(configs);
       return;
     }
 
@@ -229,32 +250,24 @@ export default function DataConnectorSecretsModal({
     };
     setDataConnectorConfigs(newCloudStorageConfigs);
     onNext(newCloudStorageConfigs);
-  }, [dataConnectorConfigs, index, noCredentialsConfigs, onNext, onStart]);
+  }, [
+    dataConnectorConfigs,
+    index,
+    noCredentialsConfigs,
+    onCredentialResolved,
+    onNext,
+    onStart,
+  ]);
 
   const onContinue = useCallback(
     (options: CloudStorageDetailsOptions) => {
       if (dataConnectorConfigs == null || dataConnectorConfigs.length < 1)
         return;
 
-      const config: DataConnectorConfiguration = {
-        ...dataConnectorConfigs[index],
-        touched: true,
-      };
-      const sensitiveFieldValues = { ...config.sensitiveFieldValues };
-      const { saveCredentials } = options;
-      if (saveCredentials === true || saveCredentials === false) {
-        config.saveCredentials = saveCredentials;
-        delete options.saveCredentials;
-      }
-      if (options && Object.keys(options).length > 0) {
-        Object.entries(options).forEach(([key, value]) => {
-          if (value != undefined && value !== "") {
-            sensitiveFieldValues[key] = "" + value;
-          }
-        });
-        config.sensitiveFieldValues = sensitiveFieldValues;
-      }
-
+      const config = credentialConfigAfterSubmit(
+        dataConnectorConfigs[index],
+        options,
+      );
       const validateParameters =
         validationParametersFromDataConnectorConfiguration(config);
       validateCloudStorageConnection({ body: validateParameters });
@@ -294,6 +307,55 @@ export default function DataConnectorSecretsModal({
     ? `${CONTEXT_STRINGS[context].header} ${index + 1} of ${total}`
     : CONTEXT_STRINGS[context].header;
 
+  const form = (
+    <Form
+      noValidate
+      data-cy="data-connector-edit-options"
+      onSubmit={handleSubmit(onContinue)}
+    >
+      <ModalBody>
+        <DataConnectorSecrets
+          dataConnectorConfig={dataConnectorConfigs[index]}
+          context={context}
+          control={control}
+        />
+        <CredentialsTestError
+          context={context}
+          validationResult={validationResult}
+        />
+      </ModalBody>
+      <ModalFooter className="gap-2">
+        <div className="flex-grow-1">
+          <ProgressBreadcrumbs
+            dataConnectorConfigs={dataConnectorConfigs}
+            index={index}
+            onOpen={() => {
+              if (!validationResult.isUninitialized) {
+                validationResult.reset();
+              }
+            }}
+            setDataConnectorConfigs={setDataConnectorConfigs}
+            setIndex={setIndex}
+          />
+        </div>
+        {!isCredentialTested(dataConnectorConfigs[index]) && (
+          <CredentialsButtons
+            context={context}
+            embedded={embedded}
+            hasSavedCredentials={hasSavedCredentials}
+            onCancel={onCancel}
+            onSkip={onSkip}
+            validationResult={validationResult}
+          />
+        )}
+      </ModalFooter>
+    </Form>
+  );
+
+  if (embedded) {
+    return <div data-cy={CONTEXT_STRINGS[context].dataCy}>{form}</div>;
+  }
+
   return (
     <Modal
       centered
@@ -302,40 +364,7 @@ export default function DataConnectorSecretsModal({
       size="lg"
     >
       <ModalHeader tag="h2">{modalTitle}</ModalHeader>
-      <Form
-        noValidate
-        data-cy="data-connector-edit-options"
-        onSubmit={handleSubmit(onContinue)}
-      >
-        <ModalBody>
-          <DataConnectorSecrets
-            dataConnectorConfig={dataConnectorConfigs[index]}
-            context={context}
-            control={control}
-          />
-          <CredentialsTestError
-            context={context}
-            validationResult={validationResult}
-          />
-        </ModalBody>
-        <ModalFooter className="gap-2">
-          <div className="flex-grow-1">
-            <ProgressBreadcrumbs
-              dataConnectorConfigs={dataConnectorConfigs}
-              index={index}
-              setDataConnectorConfigs={setDataConnectorConfigs}
-              setIndex={setIndex}
-            />
-          </div>
-          <CredentialsButtons
-            context={context}
-            hasSavedCredentials={hasSavedCredentials}
-            onCancel={onCancel}
-            onSkip={onSkip}
-            validationResult={validationResult}
-          />
-        </ModalFooter>
-      </Form>
+      {form}
     </Modal>
   );
 }
@@ -346,6 +375,7 @@ interface CredentialsButtonsProps extends Pick<
 > {
   context: NonNullable<DataConnectorSecretsModalProps["context"]>;
   hasSavedCredentials: boolean;
+  embedded?: boolean;
   onSkip: () => void;
   validationResult: ReturnType<
     typeof usePostStorageSchemaTestConnectionMutation
@@ -354,6 +384,7 @@ interface CredentialsButtonsProps extends Pick<
 
 function CredentialsButtons({
   context,
+  embedded = false,
   hasSavedCredentials,
   onCancel,
   onSkip,
@@ -361,10 +392,12 @@ function CredentialsButtons({
 }: CredentialsButtonsProps) {
   return (
     <div>
-      <Button color="outline-danger" onClick={onCancel}>
-        <XLg className={cx("bi", "me-1")} />
-        Cancel
-      </Button>
+      {!embedded && (
+        <Button color="outline-danger" onClick={onCancel}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+      )}
       {(context === "session" || context === "job") && (
         <SkipConnectionTestButton context={context} onSkip={onSkip} />
       )}
@@ -374,47 +407,11 @@ function CredentialsButtons({
           hasSavedCredentials={hasSavedCredentials}
         />
       )}
-      <Button
-        color={
-          validationResult == null
-            ? "primary"
-            : validationResult.isSuccess
-              ? "primary"
-              : validationResult.isError
-                ? "danger"
-                : "primary"
-        }
-        className={cx("ms-2")}
-        disabled={validationResult.isLoading}
-        type="submit"
-      >
-        {validationResult.isLoading ? (
-          <span>
-            Testing <Loader inline size={16} />
-          </span>
-        ) : validationResult.isError ? (
-          <span>
-            <ArrowRepeat className="bi" /> Retry
-          </span>
-        ) : (
-          <span>
-            {CONTEXT_STRINGS[context].continueButton}{" "}
-            <ChevronRight className={cx("bi", "ms-1")} />
-          </span>
-        )}
-      </Button>
-    </div>
-  );
-}
-
-function CredentialsTestError({
-  context,
-  validationResult,
-}: Pick<CredentialsButtonsProps, "context" | "validationResult">) {
-  if (!validationResult.isError) return null;
-  return (
-    <div className="mt-3">
-      <div className="text-danger">{CONTEXT_STRINGS[context].testError}</div>
+      <ConnectionTestButton
+        className="ms-2"
+        context={context}
+        validationResult={validationResult}
+      />
     </div>
   );
 }
@@ -422,12 +419,14 @@ function CredentialsTestError({
 interface ProgressBreadcrumbsProps {
   dataConnectorConfigs: DataConnectorConfiguration[];
   index: number;
+  onOpen?: () => void;
   setDataConnectorConfigs: (configs: DataConnectorConfiguration[]) => void;
   setIndex: (index: number) => void;
 }
 function ProgressBreadcrumbs({
   dataConnectorConfigs,
   index,
+  onOpen,
   setDataConnectorConfigs,
   setIndex,
 }: ProgressBreadcrumbsProps) {
@@ -454,10 +453,10 @@ function ProgressBreadcrumbs({
                 newCloudStorageConfigs[idx] = {
                   ...dataConnectorConfigs[idx],
                   active: true,
-                  skip: false,
                 };
                 setDataConnectorConfigs(newCloudStorageConfigs);
                 setIndex(idx);
+                onOpen?.();
               }}
             >
               {dataConnectorConfig.dataConnector.name}
@@ -466,165 +465,6 @@ function ProgressBreadcrumbs({
         ))}
       </ol>
     </nav>
-  );
-}
-
-function SaveCredentialsInput({
-  context,
-  control,
-}: Pick<SensitiveFieldWidgetProps, "context" | "control">) {
-  const targetLabel = context === "job" ? "jobs" : "sessions";
-  return (
-    <div className="mb-3">
-      <Controller
-        name="saveCredentials"
-        control={control}
-        defaultValue={false}
-        render={({ field }) => (
-          <Input
-            id="saveCredentials"
-            className="form-check-input"
-            checked={field.value}
-            innerRef={field.ref}
-            onBlur={field.onBlur}
-            onChange={field.onChange}
-            type="checkbox"
-          />
-        )}
-      />
-      <Label
-        className={cx("form-check-label", "ms-2")}
-        htmlFor="saveCredentials"
-      >
-        Save credentials for future {targetLabel}
-      </Label>
-    </div>
-  );
-}
-
-interface SensitiveFieldWidgetProps extends DataConnectorConfigurationSecretsProps {
-  credentialFieldDict: Record<string, string>;
-  field: {
-    name: string;
-    friendlyName: string;
-  };
-  hasIncompleteSavedCredentials: boolean;
-}
-
-function SensitiveFieldWidget({
-  dataConnectorConfig,
-  credentialFieldDict,
-  context,
-  control,
-  field,
-}: SensitiveFieldWidgetProps) {
-  const savedValue = credentialFieldDict[field.name];
-  if (context === "storage") {
-    if (savedValue != null) {
-      return (
-        <SensitiveFieldInput
-          key={field.name}
-          control={control}
-          defaultValue={CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE}
-          friendlyName={field.friendlyName}
-          name={field.name}
-          showPasswordInitially={true}
-        />
-      );
-    }
-  }
-  const defaultValue =
-    dataConnectorConfig.sensitiveFieldValues[field.name] ?? "";
-  return (
-    <SensitiveFieldInput
-      key={field.name}
-      control={control}
-      defaultValue={defaultValue}
-      friendlyName={field.friendlyName}
-      name={field.name}
-    />
-  );
-}
-
-interface SensitiveFieldInputProps {
-  control: Control<FieldValues, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  friendlyName: string;
-  defaultValue: string | undefined;
-  name: string;
-  showPasswordInitially?: boolean;
-}
-
-function SensitiveFieldInput({
-  control,
-  defaultValue,
-  friendlyName,
-  name,
-  showPasswordInitially = false,
-}: SensitiveFieldInputProps) {
-  const [showPassword, setShowPassword] = useState(showPasswordInitially);
-  const toggleShowPassword = useCallback(() => {
-    setShowPassword((showPassword) => !showPassword);
-  }, []);
-
-  const tooltipContainerId = `option-is-secret-${name}`;
-  return (
-    <div className="mb-3">
-      <Label htmlFor={name}>
-        {friendlyName ?? name}
-        <div id={tooltipContainerId} className="d-inline">
-          <KeyFill className={cx("bi", "ms-1")} />
-        </div>
-      </Label>
-
-      <Controller
-        name={name}
-        control={control}
-        defaultValue={defaultValue}
-        render={({ field, fieldState }) => (
-          <>
-            <InputGroup className={cx(fieldState.error && "is-invalid")}>
-              <Input
-                id={name}
-                type={showPassword ? "text" : "password"}
-                className={cx(
-                  "form-control",
-                  "rounded-0",
-                  "rounded-start",
-                  fieldState.error && "is-invalid",
-                )}
-                placeholder={""}
-                {...field}
-              />
-              <Button
-                className="rounded-end"
-                id={`show-password-${name}`}
-                onClick={() => toggleShowPassword()}
-              >
-                {showPassword ? (
-                  <EyeFill className="bi" />
-                ) : (
-                  <EyeSlashFill className="bi" />
-                )}
-                <UncontrolledTooltip
-                  placement="top"
-                  target={`show-password-${name}`}
-                >
-                  Hide/show sensitive data
-                </UncontrolledTooltip>
-              </Button>
-            </InputGroup>
-          </>
-        )}
-        rules={{
-          required: true,
-          validate: {
-            nonEmpty: (v) => v.trim().length > 0,
-            provided: (v) => v !== CLOUD_STORAGE_SAVED_SECRET_DISPLAY_VALUE,
-          },
-        }}
-      />
-      <div className="invalid-feedback">Please provide a value for {name}</div>
-    </div>
   );
 }
 
