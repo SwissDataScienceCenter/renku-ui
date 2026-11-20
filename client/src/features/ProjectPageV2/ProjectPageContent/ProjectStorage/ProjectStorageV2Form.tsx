@@ -181,9 +181,7 @@ function ProjectStorageV2FormInner({
 
   const onSubmit = useCallback(
     (values: ProjectStorageV2FormValues) => {
-      console.log({ values });
       if (storage) {
-        console.log("TODO! edit storage");
         const requestedSize =
           values.size != storage.requested_size ? values.size : undefined;
         const mountPath =
