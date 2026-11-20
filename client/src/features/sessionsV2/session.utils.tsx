@@ -647,6 +647,29 @@ export function isEnvVariableSet(
   );
 }
 
+type EnvVariables = NonNullable<SessionLauncher["env_variables"]>;
+
+/** The environment variable overrides passed in the launch URL's query. */
+export function getEnvVariableOverridesFromSearchParams(
+  searchParams: URLSearchParams,
+): { name: string; value: string }[] {
+  return Array.from(searchParams)
+    .filter(([name]) => validateEnvVariableName(name) === true)
+    .map(([name, value]) => ({ name, value }));
+}
+
+/** The launcher's environment variables, with the overrides taking precedence. */
+export function applyEnvVariableOverrides(
+  envVariables: EnvVariables | undefined,
+  overrides: EnvVariables,
+): EnvVariables {
+  const overridden = new Set(overrides.map(({ name }) => name));
+  return [
+    ...(envVariables ?? []).filter(({ name }) => !overridden.has(name)),
+    ...overrides,
+  ];
+}
+
 /** The environment variables a resource pool requires launchers to set. */
 export function getRequiredEnvVariables(
   resourcePool: Pick<ResourcePoolWithId, "remote"> | null | undefined,

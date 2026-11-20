@@ -41,7 +41,7 @@ function getTitle(missing: RemotePoolRequiredEnvVariable[]): string {
     : "Environment variables required";
 }
 
-function MissingEnvVariablesDetails({
+export function MissingEnvVariablesDetails({
   missing,
   resourcePoolName,
 }: {

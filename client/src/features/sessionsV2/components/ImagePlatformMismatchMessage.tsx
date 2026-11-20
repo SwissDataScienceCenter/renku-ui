@@ -38,7 +38,8 @@ export default function ImagePlatformMismatchMessage({
     <p className={cx("mb-0", className)} data-cy="image-platform-mismatch">
       <ExclamationTriangleFill className={cx("bi", "me-1")} />
       The launcher image supports <code>{imagePlatforms.join(", ")}</code>, so
-      it cannot run on this resource pool.
+      it cannot run on this resource pool. Please choose a compatible image or
+      change the resource pool.
     </p>
   );
 }
