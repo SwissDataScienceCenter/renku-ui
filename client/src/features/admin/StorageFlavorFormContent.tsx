@@ -109,6 +109,13 @@ export default function StorageFlavorFormContent({
                 step={1}
                 type="number"
                 {...field}
+                onChange={(event) => {
+                  if (isNaN(event.target.valueAsNumber)) {
+                    field.onChange(event.target.value);
+                  } else {
+                    field.onChange(event.target.valueAsNumber);
+                  }
+                }}
               />
               <div className="invalid-feedback">
                 {error?.message ||

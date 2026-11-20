@@ -87,6 +87,13 @@ export interface StorageFlavorForm {
   documentation: string;
 }
 
+export interface StorageQuotaForm {
+  resource_pool_id: number;
+  storage_flavor_id: string;
+  total_size: number;
+  max_size: number;
+}
+
 export interface ResourceClassFormToleration {
   label: string;
 }

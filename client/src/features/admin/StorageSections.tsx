@@ -85,9 +85,11 @@ import {
   type StorageQuota,
 } from "../sessionsV2/api/computeResources.api";
 import AddStorageFlavorButton from "./AddStorageFlavorButton";
+import AddStorageQuotaButton from "./AddStorageQuotaButton";
 import AdminListFilter from "./AdminListFilter";
 import AdminSectionHeader from "./AdminSectionHeader";
 import DeleteStorageFlavorButton from "./DeleteStorageFlavorButton";
+import DeleteStorageQuotaButton from "./DeleteStorageQuotaButton";
 import StorageFlavorValues from "./StorageFlavorValues";
 import StorageQuotaValues from "./StorageQuotaValues";
 import UpdateStorageFlavorButton from "./UpdateStorageFlavorButton";
@@ -108,7 +110,7 @@ function StorageQuotasSection() {
   return (
     <section>
       <AdminSectionHeader
-        action={undefined /*<AddResourceFlavorButton />*/}
+        action={<AddStorageQuotaButton />}
         count={!isLoading && !error ? data?.length : undefined}
         icon={Archive}
         title="Storage quotas"
@@ -290,9 +292,8 @@ function StorageQuotaItem({
             "pt-0",
           )}
         >
-          {/* <UpdateResourceFlavorButton resourceFlavor={resourceFlavor} />
-          <DeleteResourceFlavorButton resourceFlavor={resourceFlavor} /> */}
-          TODO: Buttons
+          {/* <UpdateResourceFlavorButton resourceFlavor={resourceFlavor} /> */}
+          <DeleteStorageQuotaButton storageQuota={storageQuota} />
         </CardBody>
       </Collapse>
     </Card>
