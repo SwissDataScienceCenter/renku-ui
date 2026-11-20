@@ -18,7 +18,10 @@
 
 import { CircleSquare, Gear, PlayCircle } from "react-bootstrap-icons";
 
-import { NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED } from "~/utils/constants/NewDocs";
+import {
+  NEW_DOCS_CREATE_ENV_CUSTOM_PACKAGES_INSTALLED,
+  NEW_DOCS_CSCS_INTEGRATION,
+} from "~/utils/constants/NewDocs";
 import faviconICO from "../../styles/assets/favicon/Favicon.ico";
 import faviconSVG from "../../styles/assets/favicon/Favicon.svg";
 import favicon16px from "../../styles/assets/favicon/Favicon16px.png";
@@ -39,6 +42,7 @@ import faviconWaitingICO from "../../styles/assets/favicon/FaviconWaiting.ico";
 import faviconWaitingSVG from "../../styles/assets/favicon/FaviconWaiting.svg";
 import faviconWaiting16px from "../../styles/assets/favicon/FaviconWaiting16px.png";
 import faviconWaiting32px from "../../styles/assets/favicon/FaviconWaiting32px.png";
+import type { RemoteConfiguration } from "./api/computeResources.api";
 import {
   SESSION_LAUNCHER_KIND,
   type BuilderSelectorOption,
@@ -365,3 +369,33 @@ export const LAUNCHER_BY_CATEGORY: Record<
     allowedEnvironmentSelects: ["custom + build", "custom + image"],
   },
 };
+
+/** Identifies remote resource pools by remote kind and the domain hosting their API. */
+export interface RemotePoolMatcher {
+  kind: RemoteConfiguration["kind"];
+  apiDomain: string;
+}
+
+/** An environment variable that launchers must set to run on matching remote resource pools. */
+export interface RemotePoolRequiredEnvVariable {
+  match: RemotePoolMatcher;
+  platformName: string;
+  name: string;
+  valueDescription: string; // What the value should be, e.g. "your CSCS project".
+  example?: string;
+  docsUrl?: string;
+}
+
+// NOTE: Matching the API domain is hard-coded for now. Ideally we should get
+// resource pool requirements.
+export const REMOTE_POOL_REQUIRED_ENV_VARIABLES: RemotePoolRequiredEnvVariable[] =
+  [
+    {
+      match: { kind: "firecrest", apiDomain: "cscs.ch" },
+      platformName: "CSCS",
+      name: "SLURM_ACCOUNT",
+      valueDescription: "your CSCS project",
+      example: "g159",
+      docsUrl: NEW_DOCS_CSCS_INTEGRATION,
+    },
+  ];

@@ -32,12 +32,14 @@ import { WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import { useGetResourcePoolsQuery } from "../../api/computeResources.api";
+import { useGetEnvironmentsQuery as useGetSessionEnvironmentsQuery } from "../../api/sessionLaunchersV2.api";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../session.constants";
 import {
   getLauncherCategoryDefinition,
+  getLauncherFormImageToCheck,
   showsSessionLauncherFields,
 } from "../../session.utils";
 import type { LauncherCategory } from "../../sessionsV2.types";
@@ -78,6 +80,38 @@ export function LauncherDetailsFields({
     defaultValue: defaultSessionClass,
   });
   const watchCurrentDiskStorage = useWatch({ control, name: "disk_storage" });
+
+  // The image chosen in the previous step, to check it against the pool.
+  const { data: globalEnvironments } = useGetSessionEnvironmentsQuery({});
+  const [environmentSelect, environmentId, containerImage, buildPlatform] =
+    useWatch({
+      control,
+      name: [
+        "environmentSelect",
+        "environmentId",
+        "container_image",
+        "platform",
+      ],
+    });
+  const image = useMemo(
+    () =>
+      getLauncherFormImageToCheck(
+        {
+          environmentSelect,
+          environmentId,
+          container_image: containerImage,
+          platform: buildPlatform,
+        },
+        globalEnvironments,
+      ),
+    [
+      buildPlatform,
+      containerImage,
+      environmentId,
+      environmentSelect,
+      globalEnvironments,
+    ],
+  );
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
@@ -166,6 +200,7 @@ export function LauncherDetailsFields({
 
         <SessionClassRemoteAlert
           className="mt-2"
+          image={image}
           launcherInlineText={categoryDefinition.text.inline}
           resourceClassId={watchCurrentSessionClass?.id}
         />

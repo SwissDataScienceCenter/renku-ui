@@ -22,6 +22,7 @@ import { Alarm, Stopwatch } from "react-bootstrap-icons";
 import { dataConnectorsOverrideFromConfig } from "../cloudStorage/projectCloudStorage.utils";
 import { FaviconStatus } from "../display/display.types";
 import type {
+  RemoteConfiguration,
   ResourceClassWithId,
   ResourcePoolWithId,
 } from "./api/computeResources.api";
@@ -38,19 +39,24 @@ import type {
 } from "./api/sessionsV2.api";
 import {
   BUILDER_FRONTEND_COMBINATIONS,
+  BUILDER_IMAGE_NOT_READY_VALUE,
   BUILDER_PLATFORMS,
   DEFAULT_PORT,
   DEFAULT_URL,
   ENV_VARIABLES_RESERVED_PREFIX,
   getCompatibleFrontends,
   LAUNCHER_BY_CATEGORY,
+  REMOTE_POOL_REQUIRED_ENV_VARIABLES,
   SUBMISSION_ID_PATTERN,
   SUBMISSION_ID_VALIDATION_MESSAGE,
+  type RemotePoolMatcher,
+  type RemotePoolRequiredEnvVariable,
 } from "./session.constants";
 import {
   ImageStatus,
   SESSION_LAUNCHER_KIND,
   type EnvironmentSelectOption,
+  type ImageToCheck,
   type LauncherCategory,
   type LauncherCategoryDefinition,
   type SessionLauncherForm,
@@ -607,6 +613,84 @@ export function ensureHTTPS(url: string): string {
   }
 }
 
+function getRemoteApiUrl(remote: RemoteConfiguration): string {
+  return remote.kind === "firecrest" ? remote.api_url : remote.base_url;
+}
+
+/**
+ * Whether a resource pool has a remote of the matcher's kind whose API is
+ * hosted on the matcher's domain (or any domain under it).
+ */
+export function matchesRemotePool(
+  resourcePool: Pick<ResourcePoolWithId, "remote"> | null | undefined,
+  match: RemotePoolMatcher,
+): boolean {
+  const remote = resourcePool?.remote;
+  if (remote == null || remote.kind !== match.kind) return false;
+  try {
+    const { hostname } = new URL(getRemoteApiUrl(remote));
+    return (
+      hostname === match.apiDomain || hostname.endsWith(`.${match.apiDomain}`)
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** Whether the launcher sets the environment variable to a non-empty value. */
+export function isEnvVariableSet(
+  launcher: Pick<SessionLauncher, "env_variables">,
+  name: string,
+): boolean {
+  return (launcher.env_variables ?? []).some(
+    (env) => env.name === name && !!env.value?.trim(),
+  );
+}
+
+type EnvVariables = NonNullable<SessionLauncher["env_variables"]>;
+
+/** The environment variable overrides passed in the launch URL's query. */
+export function getEnvVariableOverridesFromSearchParams(
+  searchParams: URLSearchParams,
+): { name: string; value: string }[] {
+  return Array.from(searchParams)
+    .filter(([name]) => validateEnvVariableName(name) === true)
+    .map(([name, value]) => ({ name, value }));
+}
+
+/** The launcher's environment variables, with the overrides taking precedence. */
+export function applyEnvVariableOverrides(
+  envVariables: EnvVariables | undefined,
+  overrides: EnvVariables,
+): EnvVariables {
+  const overridden = new Set(overrides.map(({ name }) => name));
+  return [
+    ...(envVariables ?? []).filter(({ name }) => !overridden.has(name)),
+    ...overrides,
+  ];
+}
+
+/** The environment variables a resource pool requires launchers to set. */
+export function getRequiredEnvVariables(
+  resourcePool: Pick<ResourcePoolWithId, "remote"> | null | undefined,
+  requirements: RemotePoolRequiredEnvVariable[] = REMOTE_POOL_REQUIRED_ENV_VARIABLES,
+): RemotePoolRequiredEnvVariable[] {
+  return requirements.filter(({ match }) =>
+    matchesRemotePool(resourcePool, match),
+  );
+}
+
+/** The required environment variables that the launcher does not set. */
+export function getMissingRequiredEnvVariables(
+  launcher: Pick<SessionLauncher, "env_variables">,
+  resourcePool: Pick<ResourcePoolWithId, "remote"> | null | undefined,
+  requirements: RemotePoolRequiredEnvVariable[] = REMOTE_POOL_REQUIRED_ENV_VARIABLES,
+): RemotePoolRequiredEnvVariable[] {
+  return getRequiredEnvVariables(resourcePool, requirements).filter(
+    ({ name }) => !isEnvVariableSet(launcher, name),
+  );
+}
+
 /**
  * Validation method for environment variable names
  *
@@ -723,6 +807,56 @@ export function isImageCompatibleWith(
     ({ os, architecture }) => `${os}/${architecture}`,
   );
   return imagePlatforms.some((p) => p === platform);
+}
+
+/**
+ * The image to check for platform compatibility for a launcher: the image
+ * itself when available, otherwise the platforms it will be built for.
+ */
+export function getLauncherImageToCheck(
+  launcher: Pick<SessionLauncher, "environment">,
+): ImageToCheck | undefined {
+  const { environment } = launcher;
+  const containerImage = environment.container_image;
+  if (containerImage && containerImage !== BUILDER_IMAGE_NOT_READY_VALUE) {
+    return { containerImage };
+  }
+  if (environment.environment_image_source === "build") {
+    const platforms = environment.build_parameters.platforms;
+    return platforms?.length ? { platforms } : undefined;
+  }
+  return undefined;
+}
+
+/**
+ * The image to check for platform compatibility for the environment chosen
+ * in the new launcher form.
+ */
+export function getLauncherFormImageToCheck(
+  form: Pick<
+    SessionLauncherForm,
+    "environmentSelect" | "environmentId" | "container_image" | "platform"
+  >,
+  globalEnvironments: SessionEnvironmentList | undefined,
+): ImageToCheck | undefined {
+  switch (form.environmentSelect) {
+    case "global": {
+      const environment = globalEnvironments?.find(
+        ({ id }) => id === form.environmentId,
+      );
+      return environment?.container_image
+        ? { containerImage: environment.container_image }
+        : undefined;
+    }
+    case "custom + image":
+      return form.container_image?.trim()
+        ? { containerImage: form.container_image.trim() }
+        : undefined;
+    case "custom + build":
+      return form.platform ? { platforms: [form.platform] } : undefined;
+    default:
+      return undefined;
+  }
 }
 
 export function usageAvailableString(

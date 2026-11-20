@@ -29,19 +29,25 @@ import {
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import type { ImageToCheck } from "../sessionsV2.types";
+import useImagePlatformCompatibility from "../useImagePlatformCompatibility.hook";
 import useResourcePoolByClassId from "../useResourcePoolByClassId.hook";
 import useResourcePoolRemoteKind, {
   REMOTE_KIND_TEXT,
 } from "../useResourcePoolRemoteKind.hook";
+import ImagePlatformMismatchMessage from "./ImagePlatformMismatchMessage";
 
 interface SessionRemotePoolBadgeProps {
   className?: string;
+  /** When set, the badge also warns if this image does not match the pool. */
+  image?: ImageToCheck;
   resourceClassId: number;
   launcherInlineText: string;
 }
 
 export default function SessionRemotePoolBadge({
   className,
+  image,
   resourceClassId,
   launcherInlineText,
 }: SessionRemotePoolBadgeProps) {
@@ -52,6 +58,10 @@ export default function SessionRemotePoolBadge({
   );
 
   const kind = useResourcePoolRemoteKind(resourcePool);
+  const imageCompatibility = useImagePlatformCompatibility(
+    kind != null ? image : undefined,
+    resourcePool?.platform,
+  );
 
   const remote = resourcePool?.remote;
   const providerId = remote?.provider_id;
@@ -71,6 +81,8 @@ export default function SessionRemotePoolBadge({
             connection.status === "connected",
         );
   const needsConnection = providerId != null && isProviderConnected === false;
+  const hasWarning =
+    needsConnection || imageCompatibility.isCompatible === false;
 
   if (resourcePool == null || kind == null) {
     return null;
@@ -83,7 +95,7 @@ export default function SessionRemotePoolBadge({
     <>
       <RenkuBadge
         ref={ref}
-        color={needsConnection ? "warning" : "light"}
+        color={hasWarning ? "warning" : "light"}
         className={cx(
           "fw-normal",
           "d-inline-flex",
@@ -94,7 +106,7 @@ export default function SessionRemotePoolBadge({
         pill
         tabIndex={0}
       >
-        {needsConnection ? (
+        {hasWarning ? (
           <ExclamationTriangleFill className={cx("bi", "me-1")} />
         ) : (
           <HddNetwork className={cx("bi", "me-1")} />
@@ -119,6 +131,10 @@ export default function SessionRemotePoolBadge({
             It requires an image compatible with{" "}
             <code>{resourcePool.platform}</code>.
           </p>
+          <ImagePlatformMismatchMessage
+            className="mt-2"
+            compatibility={imageCompatibility}
+          />
           {resourceClass?.preemptible && (
             <p className={cx("mb-0", "mt-2")}>
               This {launcherInlineText} can be preempted by other workloads.

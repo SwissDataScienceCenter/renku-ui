@@ -83,6 +83,7 @@ import {
 } from "../api/sessionLaunchersV2.api";
 import AppRuntimeCard from "../apps/AppRuntimeCard";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
+import { RemotePoolEnvVariablesAlert } from "../components/RemotePoolEnvVariables";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
@@ -98,6 +99,7 @@ import {
   getJobAccordionTargetId,
   getLauncherCategory,
   getLauncherCategoryDefinition,
+  getLauncherImageToCheck,
   resolveOpenJobSubmissionId,
   safeStringify,
   sessionLauncherKindToCategory,
@@ -171,6 +173,7 @@ function SessionCard({
           <SessionStatusV2Description session={session} />
           <SessionRemotePoolBadge
             className="mt-2"
+            image={{ containerImage: session.image }}
             launcherInlineText={launcherDefinition.text.inline}
             resourceClassId={session.resource_class_id}
           />
@@ -439,6 +442,14 @@ export function SessionView({
           </OffcanvasHeaderWithType>
 
           {description && <p className="m-0">{description}</p>}
+          {launcher != null && (
+            <RemotePoolEnvVariablesAlert
+              launcher={launcher}
+              onEditEnvVariables={
+                permissions.write ? toggleEnvVariables : undefined
+              }
+            />
+          )}
           {isRestricted && (
             <Card>
               <CardBody className={cx("d-flex", "flex-row", "gap-2")}>
@@ -667,6 +678,7 @@ export function SessionView({
                 )}
               {launcher && launcherCategory && (
                 <ModifyResourcesLauncherModal
+                  image={getLauncherImageToCheck(launcher)}
                   isOpen={isModifyResourcesOpen}
                   toggleModal={toggleModifyResources}
                   resourceClassId={userLauncherResourceClass?.id}
