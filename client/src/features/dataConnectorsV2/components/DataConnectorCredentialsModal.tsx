@@ -223,7 +223,6 @@ export default function DataConnectorCredentialsModal({
   return (
     <DataConnectorSecretsModal
       dataConnectorConfigs={dataConnectorConfigs}
-      context="storage"
       isOpen={isOpen}
       onCancel={() => setOpen(false)}
       onStart={onSave}

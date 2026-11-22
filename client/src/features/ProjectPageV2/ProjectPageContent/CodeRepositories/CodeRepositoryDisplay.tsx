@@ -753,11 +753,13 @@ function LogInWarning() {
 
 interface RepositoryCallToActionAlertProps {
   hasWriteAccess: boolean;
+  openInNewTab?: boolean;
   repositoryUrl: string;
   project: Project;
 }
 export function RepositoryCallToActionAlert({
   hasWriteAccess,
+  openInNewTab = false,
   repositoryUrl,
   project,
 }: RepositoryCallToActionAlertProps) {
@@ -801,6 +803,10 @@ export function RepositoryCallToActionAlert({
     }).toString()}`;
   }, [data, pathname, hash]);
 
+  const integrationLinkProps = openInNewTab
+    ? { target: "_blank" as const, rel: "noopener noreferrer" }
+    : {};
+
   if (isLoading) return null;
 
   if (error)
@@ -838,6 +844,7 @@ export function RepositoryCallToActionAlert({
                   />
                 )}
                 <Link
+                  {...integrationLinkProps}
                   className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
                   to={{
                     pathname: ABSOLUTE_ROUTES.v2.integrations.root,
@@ -860,6 +867,7 @@ export function RepositoryCallToActionAlert({
                   Please verify the URL and check if the platform is in the
                   currently supported{" "}
                   <Link
+                    {...integrationLinkProps}
                     to={{
                       pathname: ABSOLUTE_ROUTES.v2.integrations.root,
                     }}
@@ -954,6 +962,7 @@ export function RepositoryCallToActionAlert({
           />
         )}
         <Link
+          {...integrationLinkProps}
           className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
           to={{
             pathname: ABSOLUTE_ROUTES.v2.integrations.root,
@@ -1012,6 +1021,7 @@ export function RepositoryCallToActionAlert({
           )
         )}
         <Link
+          {...integrationLinkProps}
           className={cx("btn", "btn-outline-primary", "btn-sm", "ms-2")}
           to={{
             pathname: ABSOLUTE_ROUTES.v2.integrations.root,
