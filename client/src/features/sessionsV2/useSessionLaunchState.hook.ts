@@ -53,6 +53,7 @@ export default function useSessionLauncherState({
     hasWritePermission,
     isFetchingOrLoadingDataConnectors: isFetchingOrLoadingStorages,
     isFetchingRepositories,
+    isLoadingPermissions,
     isFetchingSessionSecrets,
     isLauncherResourcesError,
     isFetchingSshKeys,
@@ -68,7 +69,12 @@ export default function useSessionLauncherState({
   });
 
   const { data: resourcePools } = useGetResourcePoolsQuery({});
-  const { isPendingResourceClass, setResourceClass } = useSessionResourceClass({
+  const {
+    isPendingResourceClass,
+    isResourceClassSettled,
+    launcherClassAvailable,
+    setResourceClass,
+  } = useSessionResourceClass({
     launcher,
     isCustomLaunch,
     resourcePools,
@@ -190,10 +196,16 @@ export default function useSessionLauncherState({
       repositories,
       hasWritePermission,
     );
-    if (!isFetchingRepositories && !interrupt) {
+    if (!isFetchingRepositories && !isLoadingPermissions && !interrupt) {
       dispatch(startSessionOptionsV2Slice.actions.setRepositoriesReady(true));
     }
-  }, [dispatch, hasWritePermission, isFetchingRepositories, repositories]);
+  }, [
+    dispatch,
+    hasWritePermission,
+    isFetchingRepositories,
+    isLoadingPermissions,
+    repositories,
+  ]);
 
   // Check for an SSH key -- only block if the frontend requires it
   useEffect(() => {
@@ -204,19 +216,26 @@ export default function useSessionLauncherState({
 
   return {
     containerImage,
-    sessionImage,
+    dataConnectorConfigs: initialDataConnectorConfigs,
     defaultSessionClass,
+    hasWritePermission,
+    isExternalImageEnvironment,
     isFetchingOrLoadingStorages,
     isFetchingRepositories,
     isFetchingSessionSecrets,
-    isLauncherResourcesError,
     isFetchingSshKeys,
+    isLoadingPermissions,
+    isLauncherResourcesError,
     isLoadingSessionImage,
-    launcherResourcesError,
     isPendingResourceClass,
+    isResourceClassSettled,
+    launcherClassAvailable,
+    launcherResourcesError,
     repositories,
     resourcePools,
+    sessionImage,
     sessionSecretSlotsWithSecrets,
     setResourceClass,
+    sshKeys,
   };
 }

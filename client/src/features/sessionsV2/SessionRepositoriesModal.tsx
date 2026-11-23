@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo, type ReactNode } from "react";
-import { SkipForward, XLg } from "react-bootstrap-icons";
+import { Ban, Check, SkipForward, XLg } from "react-bootstrap-icons";
 import { generatePath, useNavigate } from "react-router";
 import {
   AccordionBody,
@@ -319,6 +319,7 @@ function RepositoryAccordion({
 
 function RepositoryAccordionItem({
   accordionId,
+  badge,
   children,
   title,
 }: {
@@ -331,9 +332,27 @@ function RepositoryAccordionItem({
     <AccordionItem data-cy={accordionId}>
       <AccordionHeader targetId={accordionId}>
         <span className="fw-bold">{title}</span>
+        {badge != null && <RepositoryStatusBadge status={badge} />}
       </AccordionHeader>
       <AccordionBody accordionId={accordionId}>{children}</AccordionBody>
     </AccordionItem>
+  );
+}
+
+function RepositoryStatusBadge({
+  status,
+}: {
+  status: "skipped" | "connected";
+}) {
+  const connected = status === "connected";
+  const colorClass = connected
+    ? ["border-success", "bg-success-subtle", "text-success-emphasis"]
+    : ["border-secondary", "bg-secondary-subtle", "text-secondary-emphasis"];
+  return (
+    <span className={cx("ms-2", "border", "badge", "fw-normal", colorClass)}>
+      {connected ? <Check className="me-1" /> : <Ban className="me-1" />}
+      {connected ? "Connected" : "Skipped"}
+    </span>
   );
 }
 
@@ -371,17 +390,37 @@ interface SessionRepositoryWarningProps {
   showActions?: boolean;
   skipped?: boolean;
 }
+function repositoryBadge(
+  skipped: boolean,
+  connected: boolean,
+): "skipped" | "connected" | undefined {
+  if (skipped) {
+    return "skipped";
+  }
+  if (connected) {
+    return "connected";
+  }
+  return undefined;
+}
+
 function SessionRepositoryWarning({
   accordionId,
+  connected = false,
   hasWriteAccess,
   openInNewTab = false,
   repository,
   project,
   showActions = true,
+  skipped = false,
 }: SessionRepositoryWarningProps) {
   const title = getRepositoryName(repository.url);
+  const badge = repositoryBadge(skipped, connected);
   return (
-    <RepositoryAccordionItem accordionId={accordionId} title={title}>
+    <RepositoryAccordionItem
+      accordionId={accordionId}
+      badge={badge}
+      title={title}
+    >
       <p className="mb-2">URL: {repository.url}</p>
       <div className="mb-2">
         <RepositoryPermissionsBadge

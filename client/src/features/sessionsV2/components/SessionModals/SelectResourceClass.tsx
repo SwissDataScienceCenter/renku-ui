@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, type ReactNode } from "react";
 import { XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { Link } from "react-router";
@@ -35,10 +35,12 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
 import {
   useGetClassesByClassIdQuery,
   useGetResourcePoolsQuery,
   type ResourceClassWithIdFiltered,
+  type ResourcePoolWithIdFiltered,
 } from "../../api/computeResources.api";
 import {
   MIN_SESSION_STORAGE_GB,
@@ -58,6 +60,7 @@ interface SelectResourceClassModalProps {
     env: ResourceClassWithIdFiltered,
     diskStorage: number | undefined,
   ) => void;
+  onDiskValidChange?: (valid: boolean) => void;
   projectUrl: string;
   resourceClassId?: number | null;
   isCustom: boolean;
@@ -66,6 +69,7 @@ export function SelectResourceClassModal({
   embedded = false,
   isOpen,
   onContinue,
+  onDiskValidChange,
   projectUrl,
   resourceClassId,
   isCustom,
@@ -80,63 +84,10 @@ export function SelectResourceClassModal({
     useGetClassesByClassIdQuery(
       resourceClassId ? { classId: `${resourceClassId}` } : skipToken,
     );
-
-  const {
-    control,
-    formState: { isDirty },
-    handleSubmit,
-    watch,
-  } = useForm<SelectResourceClassForm>();
-
-  const onSubmitInner = useCallback(
-    (data: SelectResourceClassForm) => {
-      if (data.resourceClass) {
-        const diskStorage =
-          data.diskStorage != null &&
-          data.diskStorage != data.resourceClass.default_storage
-            ? data.diskStorage
-            : undefined;
-        onContinue(data.resourceClass, diskStorage);
-      }
-    },
-    [onContinue],
-  );
-  const onSubmit = useMemo(
-    () => handleSubmit(onSubmitInner),
-    [handleSubmit, onSubmitInner],
-  );
-
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const watchCurrentSessionClass = watch("resourceClass");
-
-  const watchCurrentDiskStorage = watch("diskStorage");
-
-  const selector = isLoading ? (
-    <FetchingResourcePools />
-  ) : !resourcePools || resourcePools.length == 0 || isError ? (
-    <ErrorOrNotAvailableResourcePools />
-  ) : (
-    <Controller
-      control={control}
-      name="resourceClass"
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <>
-          <SessionClassSelector
-            id="addSessionResourceClass"
-            currentSessionClass={value}
-            resourcePools={resourcePools}
-            onChange={onChange}
-          />
-          {error && (
-            <div className={cx("small", "text-danger")}>
-              {error.message || "Please provide a valid resource class."}
-            </div>
-          )}
-        </>
-      )}
-      rules={{ required: "Please provide a resource class." }}
-    />
-  );
+  const { sessionClass: savedSessionClassId, storage: savedStorage } =
+    useAppSelector(({ startSessionOptionsV2 }) => startSessionOptionsV2);
+  const poolsReady =
+    !isLoading && resourcePools != null && resourcePools.length > 0 && !isError;
 
   const userLauncherClass = useMemo(
     () =>
@@ -164,12 +115,7 @@ export function SelectResourceClassModal({
       <p>Resource class not available</p>
     );
 
-  const continueButton = (
-    <Button color="primary" disabled={!isDirty} onClick={onSubmit}>
-      Continue
-    </Button>
-  );
-  const form = (
+  const intro = (
     <>
       {isCustom ? (
         <p>Please select one of your available resource classes to continue.</p>
@@ -188,119 +134,323 @@ export function SelectResourceClassModal({
           <span>{resourceDetails}</span>
         </p>
       )}
-      <div className="field-group">{selector}</div>
-      {watchCurrentSessionClass && (
-        <div className={cx("field-group", "mt-3")}>
-          <div>
-            Disk Storage:{" "}
-            <span className="fw-bold">
-              {watchCurrentDiskStorage &&
-              watchCurrentDiskStorage !=
-                watchCurrentSessionClass.default_storage ? (
-                <>{watchCurrentDiskStorage} GB</>
-              ) : (
-                <>{watchCurrentSessionClass?.default_storage} GB (default)</>
-              )}
-            </span>
-          </div>
-          <Controller
-            control={control}
-            name="diskStorage"
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <InputGroup className={cx(error && "is-invalid")}>
-                  <Input
-                    className={cx(error && "is-invalid")}
-                    type="number"
-                    min={MIN_SESSION_STORAGE_GB}
-                    max={watchCurrentSessionClass.max_storage}
-                    step={STEP_SESSION_STORAGE_GB}
-                    {...field}
-                    value={field.value ?? ""}
-                    onChange={(event) => {
-                      if (isNaN(event.target.valueAsNumber)) {
-                        field.onChange(event.target.value);
-                      } else {
-                        field.onChange(event.target.valueAsNumber);
-                      }
-                    }}
-                  />
-                  <InputGroupText id="configure-disk-storage-addon">
-                    GB
-                  </InputGroupText>
-                  <UncontrolledTooltip target="configure-disk-storage-addon">
-                    Gigabytes
-                  </UncontrolledTooltip>
-                </InputGroup>
-                <div className="invalid-feedback">
-                  {error?.message ||
-                    "Please provide a valid value for disk storage."}
-                </div>
-                <FormText>
-                  Default: {watchCurrentSessionClass.default_storage} GB, max:{" "}
-                  {watchCurrentSessionClass.max_storage} GB
-                </FormText>
-              </>
-            )}
-            rules={{
-              min: {
-                value: MIN_SESSION_STORAGE_GB,
-                message: `Please select a value greater than or equal to ${MIN_SESSION_STORAGE_GB}.`,
-              },
-              max: {
-                value: watchCurrentSessionClass.max_storage,
-                message: `Selected disk storage exceeds maximum allowed value (${watchCurrentSessionClass.max_storage} GB).`,
-              },
-              validate: {
-                integer: (value: unknown) =>
-                  value == null ||
-                  value === "" ||
-                  (!isNaN(parseInt(`${value}`, 10)) &&
-                    parseInt(`${value}`, 10) == parseFloat(`${value}`)),
-              },
-              deps: ["resourceClass"],
-            }}
-          />
-        </div>
-      )}
     </>
   );
-
-  if (embedded) {
+  const layout = (fields: ReactNode, continueButton: ReactNode) => {
+    const form = (
+      <>
+        {intro}
+        {fields}
+      </>
+    );
+    if (embedded) {
+      return <div>{form}</div>;
+    }
     return (
-      <div>
-        {form}
-        <div className={cx("d-flex", "justify-content-end", "mt-3")}>
+      <Modal centered isOpen={isOpen} size="lg">
+        <ModalHeader tag="h2">
+          {isCustom
+            ? "Modify session launch before start"
+            : "Complete missing information for session launch"}
+        </ModalHeader>
+        <ModalBody>{form}</ModalBody>
+        <ModalFooter className="gap-2">
+          <Link
+            className={cx("btn", "btn-outline-primary")}
+            to={projectUrl}
+            data-cy="cancel-start-session-button"
+          >
+            <XLg className={cx("bi", "me-1")} />
+            Cancel launch
+          </Link>
           {continueButton}
-        </div>
-      </div>
+        </ModalFooter>
+      </Modal>
+    );
+  };
+
+  if (!poolsReady || resourcePools == null) {
+    return layout(
+      isLoading ? (
+        <FetchingResourcePools />
+      ) : (
+        <ErrorOrNotAvailableResourcePools />
+      ),
+      <Button color="primary" disabled>
+        Continue
+      </Button>,
     );
   }
 
   return (
-    <Modal centered isOpen={isOpen} size="lg">
-      <ModalHeader tag="h2">
-        {isCustom
-          ? "Modify session launch before start"
-          : "Complete missing information for session launch"}
-      </ModalHeader>
-      <ModalBody>{form}</ModalBody>
-      <ModalFooter className="gap-2">
-        <Link
-          className={cx("btn", "btn-outline-primary")}
-          to={projectUrl}
-          data-cy="cancel-start-session-button"
-        >
-          <XLg className={cx("bi", "me-1")} />
-          Cancel launch
-        </Link>
-        {continueButton}
-      </ModalFooter>
-    </Modal>
+    <ResourceClassFields
+      embedded={embedded}
+      layout={layout}
+      onContinue={onContinue}
+      onDiskValidChange={onDiskValidChange}
+      resourcePools={resourcePools}
+      savedSessionClassId={savedSessionClassId}
+      savedStorage={savedStorage}
+    />
+  );
+}
+
+function ResourceClassFields({
+  embedded,
+  layout,
+  onContinue,
+  onDiskValidChange,
+  resourcePools,
+  savedSessionClassId,
+  savedStorage,
+}: {
+  embedded: boolean;
+  layout: (fields: ReactNode, continueButton: ReactNode) => ReactNode;
+  onContinue: SelectResourceClassModalProps["onContinue"];
+  onDiskValidChange?: (valid: boolean) => void;
+  resourcePools: ResourcePoolWithIdFiltered[];
+  savedSessionClassId: number;
+  savedStorage: number;
+}) {
+  const savedClass =
+    savedSessionClassId === 0
+      ? undefined
+      : resourcePools
+          .flatMap((pool) => pool.classes)
+          .find((resourceClass) => resourceClass.id == savedSessionClassId);
+  const {
+    control,
+    formState: { isDirty },
+    getValues,
+    handleSubmit,
+    setValue,
+    watch,
+  } = useForm<SelectResourceClassForm>({
+    defaultValues: {
+      resourceClass: savedClass,
+      diskStorage: diskStorageOrDefault(savedClass, savedStorage),
+    },
+  });
+  const publish = useCallback(
+    (
+      resourceClass: ResourceClassWithIdFiltered | undefined,
+      diskStorage: number | "" | undefined,
+    ) => {
+      if (!embedded || resourceClass == null) {
+        return;
+      }
+      onContinue(
+        resourceClass,
+        diskStorageOrDefault(resourceClass, diskStorage),
+      );
+    },
+    [embedded, onContinue],
+  );
+  const commitDisk = useCallback(
+    (
+      resourceClass: ResourceClassWithIdFiltered | undefined,
+      diskStorage: number | "" | undefined,
+    ) => {
+      const valid = isDiskChoiceValid(resourceClass, diskStorage);
+      onDiskValidChange?.(valid);
+      if (!valid || resourceClass == null) {
+        return;
+      }
+      publish(resourceClass, diskStorage);
+    },
+    [onDiskValidChange, publish],
+  );
+  const onSubmit = useCallback(() => {
+    void handleSubmit((data) => {
+      if (data.resourceClass == null) {
+        return;
+      }
+      onContinue(
+        data.resourceClass,
+        diskStorageOrDefault(data.resourceClass, data.diskStorage),
+      );
+    })();
+  }, [handleSubmit, onContinue]);
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const watchCurrentSessionClass = watch("resourceClass");
+  const watchCurrentDiskStorage = watch("diskStorage");
+  const fields = (
+    <>
+      <div className="field-group">
+        <Controller
+          control={control}
+          name="resourceClass"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <>
+              <SessionClassSelector
+                id="addSessionResourceClass"
+                currentSessionClass={value}
+                resourcePools={resourcePools}
+                onChange={(next) => {
+                  const resourceClass = next ?? undefined;
+                  onChange(resourceClass);
+                  setValue("diskStorage", undefined);
+                  commitDisk(resourceClass, undefined);
+                }}
+              />
+              {error && (
+                <div className={cx("small", "text-danger")}>
+                  {error.message || "Please provide a valid resource class."}
+                </div>
+              )}
+            </>
+          )}
+          rules={{ required: "Please provide a resource class." }}
+        />
+      </div>
+      {watchCurrentSessionClass && (
+        <DiskStorageField
+          control={control}
+          maxStorage={watchCurrentSessionClass.max_storage}
+          defaultStorage={watchCurrentSessionClass.default_storage}
+          value={watchCurrentDiskStorage}
+          onCommit={(diskStorage) =>
+            commitDisk(getValues("resourceClass"), diskStorage)
+          }
+        />
+      )}
+    </>
+  );
+  const continueButton = (
+    <Button color="primary" disabled={!isDirty} onClick={onSubmit}>
+      Continue
+    </Button>
+  );
+  return layout(fields, continueButton);
+}
+
+function DiskStorageField({
+  control,
+  defaultStorage,
+  maxStorage,
+  onCommit,
+  value,
+}: {
+  control: ReturnType<typeof useForm<SelectResourceClassForm>>["control"];
+  defaultStorage: number;
+  maxStorage: number;
+  onCommit: (diskStorage: number | "" | undefined) => void;
+  value: number | "" | undefined;
+}) {
+  return (
+    <div className={cx("field-group", "mt-3")}>
+      <div>
+        Disk Storage:{" "}
+        <span className="fw-bold">
+          {typeof value === "number" && value != defaultStorage ? (
+            <>{value} GB</>
+          ) : (
+            <>{defaultStorage} GB (default)</>
+          )}
+        </span>
+      </div>
+      <Controller
+        control={control}
+        name="diskStorage"
+        render={({ field, fieldState: { error } }) => (
+          <>
+            <InputGroup className={cx(error && "is-invalid")}>
+              <Input
+                className={cx(error && "is-invalid")}
+                type="number"
+                min={MIN_SESSION_STORAGE_GB}
+                max={maxStorage}
+                step={STEP_SESSION_STORAGE_GB}
+                {...field}
+                value={field.value ?? ""}
+                onChange={(event) => {
+                  const raw = event.target.value;
+                  const next = event.target.valueAsNumber;
+                  if (raw === "" || isNaN(next)) {
+                    field.onChange(raw);
+                    onCommit(raw === "" ? "" : Number.NaN);
+                    return;
+                  }
+                  field.onChange(next);
+                  onCommit(next);
+                }}
+              />
+              <InputGroupText id="configure-disk-storage-addon">
+                GB
+              </InputGroupText>
+              <UncontrolledTooltip target="configure-disk-storage-addon">
+                Gigabytes
+              </UncontrolledTooltip>
+            </InputGroup>
+            <div className="invalid-feedback">
+              {error?.message ||
+                "Please provide a valid value for disk storage."}
+            </div>
+            <FormText>
+              Default: {defaultStorage} GB, max: {maxStorage} GB
+            </FormText>
+          </>
+        )}
+        rules={{
+          min: {
+            value: MIN_SESSION_STORAGE_GB,
+            message: `Please select a value greater than or equal to ${MIN_SESSION_STORAGE_GB}.`,
+          },
+          max: {
+            value: maxStorage,
+            message: `Selected disk storage exceeds maximum allowed value (${maxStorage} GB).`,
+          },
+          validate: {
+            integer: (fieldValue: unknown) =>
+              fieldValue == null ||
+              fieldValue === "" ||
+              (!isNaN(parseInt(`${fieldValue}`, 10)) &&
+                parseInt(`${fieldValue}`, 10) == parseFloat(`${fieldValue}`)),
+          },
+          deps: ["resourceClass"],
+        }}
+      />
+    </div>
   );
 }
 
 interface SelectResourceClassForm {
   resourceClass: ResourceClassWithIdFiltered | undefined;
-  diskStorage: number | undefined;
+  diskStorage: number | "" | undefined;
+}
+
+function diskStorageOrDefault(
+  resourceClass: ResourceClassWithIdFiltered | undefined,
+  diskStorage: number | "" | undefined,
+): number | undefined {
+  if (
+    resourceClass == null ||
+    diskStorage == null ||
+    diskStorage === "" ||
+    diskStorage === resourceClass.default_storage
+  ) {
+    return undefined;
+  }
+  return diskStorage;
+}
+
+function isDiskChoiceValid(
+  resourceClass: ResourceClassWithIdFiltered | undefined,
+  diskStorage: number | "" | undefined,
+): boolean {
+  if (resourceClass == null) {
+    return false;
+  }
+  if (diskStorage == null || diskStorage === "") {
+    return true;
+  }
+  return isValidDiskStorage(diskStorage, resourceClass.max_storage);
+}
+
+function isValidDiskStorage(value: number, maxStorage: number): boolean {
+  return (
+    Number.isInteger(value) &&
+    value >= MIN_SESSION_STORAGE_GB &&
+    value <= maxStorage
+  );
 }

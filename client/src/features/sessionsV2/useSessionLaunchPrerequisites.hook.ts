@@ -200,6 +200,7 @@ export default function useSessionLaunchPrerequisites({
     hasExpiredDataConnectors,
     hasWritePermission,
     isFetchingOrLoadingDataConnectors,
+    isLoadingPermissions: projectPermissions.isLoadingPermissions,
     isFetchingRepositories,
     isFetchingSessionSecrets:
       isFetchingSessionSecrets ||
