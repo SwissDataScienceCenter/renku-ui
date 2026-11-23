@@ -43,6 +43,7 @@ import type {
 } from "../../sessionsV2.types";
 import { JsonField } from "./AdvancedSettingsFields";
 import BuilderAdvancedSettings from "./BuilderAdvancedSettings";
+import BuilderAiAgentsSelector from "./BuilderAiAgentsSelector";
 import BuilderFrontendSelector from "./BuilderFrontendSelector";
 import BuilderTypeSelector from "./BuilderTypeSelector";
 import CodeRepositoryAdvancedSettings from "./CodeRepositoryAdvancedSettings";
@@ -173,6 +174,9 @@ export default function BuilderEnvironmentFields({
       <BuilderTypeSelector name="builder_variant" control={control} />
       {launcherCategory === "session" && (
         <BuilderFrontendSelector name="frontend_variant" control={control} />
+      )}
+      {(launcherCategory === "session" || launcherCategory === "job") && (
+        <BuilderAiAgentsSelector name="ai_agents" control={control} />
       )}
       {(launcherCategory === "app" ||
         (showsSessionLauncherFields(launcherCategory) &&
