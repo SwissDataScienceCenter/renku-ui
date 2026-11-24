@@ -36,7 +36,7 @@ import {
   NavItem,
 } from "reactstrap";
 
-import { HomeHeader } from "~/features/landing/AnonymousHome";
+import { TopNav } from "~/features/landing/components/anonymousHomeNav";
 import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import { ExternalLink } from "../../components/LegacyExternalLinks";
 import { RenkuToolbarItemUser } from "../../components/navbar/NavBarItems";
@@ -173,7 +173,7 @@ export default function NavbarV2() {
         data-bs-theme="navy"
       >
         {isUnauthenticatedHomePage ? (
-          <HomeHeader />
+          <TopNav />
         ) : (
           <div className={cx("navbar", "px-2", "px-sm-3", "py-2")}>
             <div
