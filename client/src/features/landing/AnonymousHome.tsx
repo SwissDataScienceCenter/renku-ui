@@ -30,7 +30,7 @@ import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import VisualHead from "./assets/Visual_Head.svg";
-import { BottomNav, TopNav } from "./components/anonymousHomeNav";
+import { BottomNav } from "./components/anonymousHomeNav";
 import { RenkuBenefits } from "./components/Benefits/Benefits";
 import DividerLandingPage from "./components/Dividier/Divider";
 import { GetStarted } from "./components/GetStarted/GetStarted";
@@ -53,10 +53,6 @@ export default function AnonymousHome() {
       }}
     />
   );
-}
-
-export function HomeHeader() {
-  return <TopNav />;
 }
 
 function StandardHome() {
