@@ -48,7 +48,7 @@ export default defineConfig(({ command }) => ({
   // ],
   resolve: {
     alias: {
-      "~bootstrap": resolve(__dirname, "node_modules/bootstrap"),
+      "~bootstrap": resolve(import.meta.dirname, "node_modules/bootstrap"),
     },
     tsconfigPaths: true,
   },
