@@ -52,7 +52,6 @@ import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import {
   useGetProjectsByProjectIdStorageQuery,
-  useGetProjectStorageV2Query,
   useGetStorageAllowByProjectIdQuery,
 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
@@ -68,7 +67,6 @@ import {
   SearchDataConnector,
   useGetSearchQueryQuery,
 } from "~/features/searchV2/api/searchV2Api.api";
-import { useGetStorageQuotasQuery } from "~/features/sessionsV2/api/computeResources.api";
 import { useGetUserQueryState } from "~/features/usersV2/api/users.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import { NEW_DOCS_DATA_CONNECTORS } from "~/utils/constants/NewDocs";
@@ -131,16 +129,6 @@ export default function ProjectConnectDataConnectorsModal({
   );
   const canAddProjectStorage =
     canManageProjectStorage && storageAllowData && projectStorage?.length === 0;
-
-  // NEW
-  const { data: projectStoragesV2 } = useGetProjectStorageV2Query(
-    canManageProjectStorage
-      ? { params: { project_id: project.id } }
-      : skipToken,
-  );
-  const { data: storageQuotas } = useGetStorageQuotasQuery(
-    canManageProjectStorage ? undefined : skipToken,
-  );
 
   const switchMode = {
     callback: useCallback((mode: ProjectConnectDataConnectorMode) => {
