@@ -17,8 +17,8 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo } from "react";
-import { PlusLg, XLg } from "react-bootstrap-icons";
+import { useCallback, useContext, useEffect, useMemo } from "react";
+import { PlusLg, Send, XLg } from "react-bootstrap-icons";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   Button,
@@ -32,18 +32,20 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import { InfoAlert } from "~/components/Alert";
+import { InfoAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
+import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   usePatchProjectStorageV2ByStorageIdMutation,
   usePostProjectStorageV2Mutation,
 } from "~/features/cloudStorage/api/projectCloudStorage.api";
-import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   ProjectConnectDataConnectorModeSwitch,
   type switchModeProps,
 } from "~/features/ProjectPageV2/ProjectPageContent/DataConnectors/ProjectConnectDataConnectorsModal";
+import AppContext from "~/utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "~/utils/context/appParams.constants";
 import {
   PROJECT_STORAGE_DEFAULT_GB,
   PROJECT_STORAGE_DEFAULT_MOUNT_PATH,
@@ -74,6 +76,10 @@ export default function ProjectStorageV2Form({
   switchMode,
   toggle,
 }: ProjectStorageV2FormProps) {
+  const { params } = useContext(AppContext);
+  const renkuContactEmail =
+    params?.CONTACT_EMAIL ?? DEFAULT_APP_PARAMS.CONTACT_EMAIL;
+
   const { data, isLoading, error } = useGetStorageQuotasWithResourcePools();
   const { resourcePoolsWithStorageQuotas } = data;
 
@@ -121,7 +127,18 @@ export default function ProjectStorageV2Form({
             />
           </div>
         )}
-        <p>Error: no available storage class</p>
+        <InfoAlert dismissible={false} timeout={0}>
+          You don&apos;t have access to a resource pool that offers storage.{" "}
+          <a
+            target="_blank"
+            rel="noreferrer noopener"
+            href={`mailto:${renkuContactEmail}`}
+          >
+            <Send className={cx("bi", "me-1")} />
+            Contact us
+          </a>{" "}
+          to request access or set up a new resource pool.
+        </InfoAlert>
       </ModalBody>
     );
   }
@@ -250,7 +267,7 @@ function ProjectStorageV2FormInner({
             )}
           </div>
         )}
-        {selectedStorageQuota && (
+        {selectedStorageQuota ? (
           <div className="mb-3">
             <Label for="project-storage-size">Storage size</Label>
             <Controller
@@ -312,7 +329,12 @@ function ProjectStorageV2FormInner({
               }}
             />
           </div>
-        )}
+        ) : storage != null ? (
+          <WarnAlert dismissible={false} timeout={0}>
+            You do not have access to the storage quota for this project
+            storage. As such, you cannot extend the size of the storage.
+          </WarnAlert>
+        ) : null}
         <div className="mb-3">
           <div className={cx("d-flex", "align-items-center", "gap-2", "mb-1")}>
             <Label className="form-label" for="project-storage-mount-path">

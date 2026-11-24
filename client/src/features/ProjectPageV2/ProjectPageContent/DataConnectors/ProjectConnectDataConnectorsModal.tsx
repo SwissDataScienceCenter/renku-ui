@@ -141,18 +141,12 @@ export default function ProjectConnectDataConnectorsModal({
   const { data: storageQuotas } = useGetStorageQuotasQuery(
     canManageProjectStorage ? undefined : skipToken,
   );
-  const canAddProjectStorageV2 =
-    canManageProjectStorage &&
-    projectStoragesV2 != undefined &&
-    projectStoragesV2?.length == 0 &&
-    (storageQuotas?.length ?? 0) > 0;
 
   const switchMode = {
     callback: useCallback((mode: ProjectConnectDataConnectorMode) => {
       setMode(mode);
     }, []),
     canAddProjectStorage,
-    canAddProjectStorageV2,
   };
 
   return (
@@ -260,7 +254,6 @@ function ProjectCreateDataConnectorBodyAndFooter({
 export interface switchModeProps {
   callback: (mode: ProjectConnectDataConnectorMode) => void;
   canAddProjectStorage?: boolean;
-  canAddProjectStorageV2: boolean;
 }
 
 export function ProjectConnectDataConnectorModeSwitch({
@@ -344,32 +337,28 @@ export function ProjectConnectDataConnectorModeSwitch({
         </>
       )}
 
-      {switchMode.canAddProjectStorageV2 && (
-        <>
-          <Input
-            type="radio"
-            className="btn-check"
-            id="project-data-controller-mode-add-storage-v2"
-            value="add-storage-v2"
-            checked={mode === "add-storage-v2"}
-            onChange={() => switchMode.callback("add-storage-v2")}
-          />
-          <Label
-            data-cy="project-data-controller-mode-add-storage-v2"
-            for="project-data-controller-mode-add-storage-v2"
-            className={cx(
-              "align-items-center",
-              "btn-outline-primary",
-              "btn",
-              "d-flex",
-              "border-start-0",
-            )}
-          >
-            <RenkuStorageIcon className={cx("fs-3", "me-1")} />
-            Add project storage
-          </Label>
-        </>
-      )}
+      <Input
+        type="radio"
+        className="btn-check"
+        id="project-data-controller-mode-add-storage-v2"
+        value="add-storage-v2"
+        checked={mode === "add-storage-v2"}
+        onChange={() => switchMode.callback("add-storage-v2")}
+      />
+      <Label
+        data-cy="project-data-controller-mode-add-storage-v2"
+        for="project-data-controller-mode-add-storage-v2"
+        className={cx(
+          "align-items-center",
+          "btn-outline-primary",
+          "btn",
+          "d-flex",
+          "border-start-0",
+        )}
+      >
+        <RenkuStorageIcon className={cx("fs-3", "me-1")} />
+        Add project storage
+      </Label>
     </ButtonGroup>
   );
 }
@@ -411,7 +400,6 @@ function ProjectStorageV2DataConnectorBodyAndFooter({
   return (
     <ProjectStorageV2Form
       projectId={project.id}
-      // namespace={`${project.namespace}/${project.slug}`}
       switchMode={switchMode}
       toggle={toggle}
     />
