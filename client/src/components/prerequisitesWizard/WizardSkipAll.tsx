@@ -27,6 +27,7 @@ import styles from "./PrerequisitesWizard.module.scss";
 interface WizardSkipAllProps {
   buttonLabel?: string;
   className?: string;
+  color: "outline-primary" | "primary";
   isDisabled: boolean;
   note: string;
   noteId: string;
@@ -37,6 +38,7 @@ interface WizardSkipAllProps {
 export default function WizardSkipAll({
   buttonLabel,
   className,
+  color,
   isDisabled,
   note,
   noteId,
@@ -53,7 +55,7 @@ export default function WizardSkipAll({
             variant === "accordion" && "w-100",
             styles.touchTarget,
           )}
-          color="outline-primary"
+          color={color}
           data-cy={`prerequisites-wizard-skip-all-${variant}`}
           disabled={isDisabled}
           onClick={onClick}

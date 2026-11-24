@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useMemo, type ReactNode } from "react";
-import { CalendarX, SkipForward, XLg } from "react-bootstrap-icons";
+import { Ban, CalendarX, Check, SkipForward, XLg } from "react-bootstrap-icons";
 import { generatePath, Link, useNavigate } from "react-router";
 import {
   AccordionBody,
@@ -32,12 +32,18 @@ import {
 } from "reactstrap";
 
 import ScrollableModal from "~/components/modal/ScrollableModal";
+import { TimeCaption } from "~/components/TimeCaption";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { isDataConnectorExpired } from "./sessionLaunchValidation.utils";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
+
+interface VisibleItem {
+  id: string;
+  label: string;
+}
 
 interface SessionExpiredDataConnectorsModalProps {
   dataConnectors: SessionStartDataConnectorConfiguration[];
@@ -47,6 +53,7 @@ interface SessionExpiredDataConnectorsModalProps {
   onCancel?: () => void;
   onSkip?: () => void;
   continueLabel?: string;
+  visibleItems?: VisibleItem[];
 }
 export default function SessionExpiredDataConnectorsModal({
   dataConnectors,
@@ -56,6 +63,7 @@ export default function SessionExpiredDataConnectorsModal({
   onCancel: onCancelProp,
   onSkip: onSkipProp,
   continueLabel = "Launch anyway",
+  visibleItems,
 }: SessionExpiredDataConnectorsModalProps) {
   const navigate = useNavigate();
   const defaultOnCancel = useCallback(() => {
@@ -89,24 +97,35 @@ export default function SessionExpiredDataConnectorsModal({
     );
   }, [dispatch, dataConnectors]);
   const onSkip = onSkipProp ?? defaultOnSkip;
-  const openIds = expiredDataConnectors.map((config) =>
-    expiredConnectorAccordionId(config.dataConnector.id),
+  const rows = useMemo(
+    () =>
+      expiredConnectorRows(dataConnectors, visibleItems, expiredDataConnectors),
+    [dataConnectors, expiredDataConnectors, visibleItems],
   );
+  const pendingCount = rows.filter((row) => row.status == null).length;
+  const openIds = rows
+    .filter((row) => row.status == null)
+    .map((row) => expiredConnectorAccordionId(row.id));
   const list = (
     <>
-      <p data-cy="session-expired-data-connectors-warning">
-        There{" "}
-        {expiredDataConnectors.length === 1
-          ? "is 1 data connector that has expired"
-          : `are ${expiredDataConnectors.length} data connectors that have expired`}{" "}
-        and <b>will not be mounted</b> until an owner refreshes it.
-      </p>
-      <ExpiredConnectorAccordion openIds={openIds}>
-        {expiredDataConnectors.map((config) => (
+      {pendingCount > 0 && (
+        <p data-cy="session-expired-data-connectors-warning">
+          There{" "}
+          {pendingCount === 1
+            ? "is 1 data connector that has expired"
+            : `are ${pendingCount} data connectors that have expired`}{" "}
+          and <b>will not be mounted</b> until an owner refreshes it.
+        </p>
+      )}
+      <ExpiredConnectorAccordion key={openIds.join("|")} openIds={openIds}>
+        {rows.map((row) => (
           <ExpiredDataConnectorItem
-            key={config.dataConnector.id}
-            config={config}
+            key={row.id}
+            config={row.config}
+            id={row.id}
+            label={row.label}
             openInNewTab={embedded}
+            status={row.status}
           />
         ))}
       </ExpiredConnectorAccordion>
@@ -172,24 +191,120 @@ function ExpiredConnectorAccordion({
 
 function ExpiredDataConnectorItem({
   config,
+  id,
+  label,
+  openInNewTab,
+  status,
+}: {
+  config: SessionStartDataConnectorConfiguration | undefined;
+  id: string;
+  label: string;
+  openInNewTab: boolean;
+  status: "active" | "skipped" | undefined;
+}) {
+  const accordionId = expiredConnectorAccordionId(id);
+  return (
+    <AccordionItem
+      data-cy={
+        status === "skipped"
+          ? "session-wizard-skipped-item"
+          : status === "active"
+            ? "session-wizard-resolved-item"
+            : undefined
+      }
+    >
+      <AccordionHeader targetId={accordionId}>
+        <span className="fw-bold">{label}</span>
+        {status != null && <ExpiredConnectorBadge status={status} />}
+      </AccordionHeader>
+      <AccordionBody accordionId={accordionId}>
+        {config != null ? (
+          <ExpiredConnectorDetails
+            config={config}
+            openInNewTab={openInNewTab}
+          />
+        ) : (
+          <p className="mb-0">Unavailable</p>
+        )}
+      </AccordionBody>
+    </AccordionItem>
+  );
+}
+
+function ExpiredConnectorBadge({ status }: { status: "active" | "skipped" }) {
+  const active = status === "active";
+  const colorClass = active
+    ? "border-success bg-success-subtle text-success-emphasis"
+    : "border-secondary bg-secondary-subtle text-secondary-emphasis";
+  return (
+    <span className={cx("ms-2", "border", "badge", "fw-normal", colorClass)}>
+      {active ? <Check className="me-1" /> : <Ban className="me-1" />}
+      {active ? "Active" : "Skipped"}
+    </span>
+  );
+}
+
+function expiredConnectorStatus(
+  pending: boolean,
+  config: SessionStartDataConnectorConfiguration | undefined,
+): "active" | "skipped" | undefined {
+  if (pending || config == null) {
+    return undefined;
+  }
+  if (config.skip) {
+    return "skipped";
+  }
+  return "active";
+}
+
+function expiredConnectorRows(
+  dataConnectors: SessionStartDataConnectorConfiguration[],
+  visibleItems: VisibleItem[] | undefined,
+  expiredDataConnectors: SessionStartDataConnectorConfiguration[],
+) {
+  if (visibleItems == null) {
+    return expiredDataConnectors.map((config) => ({
+      config,
+      id: config.dataConnector.id,
+      label: config.dataConnector.name,
+      status: undefined,
+    }));
+  }
+  const byId = new Map(
+    dataConnectors.map((config) => [config.dataConnector.id, config]),
+  );
+  return visibleItems.map((item) => {
+    const config = byId.get(item.id);
+    const pending = config != null && isDataConnectorExpired(config);
+    const status = expiredConnectorStatus(pending, config);
+    return {
+      config,
+      id: item.id,
+      label: config?.dataConnector.name ?? item.label,
+      status,
+    } as const;
+  });
+}
+
+function ExpiredConnectorDetails({
+  config,
   openInNewTab,
 }: {
   config: SessionStartDataConnectorConfiguration;
   openInNewTab: boolean;
 }) {
-  const accordionId = expiredConnectorAccordionId(config.dataConnector.id);
+  const { expires_at: expiresAt, slug, storage } = config.dataConnector;
   return (
-    <AccordionItem>
-      <AccordionHeader targetId={accordionId}>
-        <span className="fw-bold">{config.dataConnector.name}</span>
-      </AccordionHeader>
-      <AccordionBody accordionId={accordionId}>
-        <ExpiredConnectorLink
-          openInNewTab={openInNewTab}
-          slug={config.dataConnector.slug}
-        />
-      </AccordionBody>
-    </AccordionItem>
+    <>
+      {expiresAt != null && (
+        <p className="mb-1">
+          Expired: <TimeCaption datetime={expiresAt} enableTooltip noCaption />
+        </p>
+      )}
+      <p className="mb-1">Source path: {storage.source_path}</p>
+      <p className="mb-1">Mount point: {storage.target_path}</p>
+      <ExpiredConnectorLink openInNewTab={openInNewTab} slug={slug} />
+    </>
   );
 }
 

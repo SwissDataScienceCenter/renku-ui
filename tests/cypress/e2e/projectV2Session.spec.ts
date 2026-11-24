@@ -215,6 +215,7 @@ describe("launch sessions with data connectors", () => {
       .contains("button:visible", "Test connection")
       .click();
     cy.wait("@testCloudStorage");
+    cy.getDataCy("prerequisites-wizard-submit").click();
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
@@ -302,6 +303,7 @@ describe("launch sessions with data connectors", () => {
       .contains("button:visible", "Test connection")
       .click();
     cy.wait("@testCloudStorage");
+    cy.getDataCy("prerequisites-wizard-submit").click();
     cy.contains("Saving credentials").should("be.visible");
     cy.wait("@patchDataConnectorSecrets");
     cy.wait("@getDataConnectorSecretsAfterSaving");
@@ -381,9 +383,7 @@ describe("launch sessions with data connectors", () => {
       fixture: "dataConnector/data-connector-secrets.json",
       name: "getDataConnectorSecretsAfterSaving",
     });
-    cy.getDataCy("session-data-connector-credentials-modal")
-      .contains("button:visible", "Skip")
-      .click();
+    cy.getDataCy("prerequisites-wizard-submit").click();
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
@@ -481,6 +481,7 @@ describe("launch sessions with data connectors", () => {
       .contains("button:visible", "Test connection")
       .click();
     cy.wait("@testCloudStorage");
+    cy.getDataCy("prerequisites-wizard-submit").click();
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
@@ -907,15 +908,12 @@ describe("launch sessions with secrets", () => {
     cy.wait("@getResourceClass");
     cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
 
+    cy.getDataCy("prerequisites-wizard").should("be.visible");
     cy.getDataCy("session-secrets-modal").should("be.visible");
     cy.getDataCy("session-secrets-modal")
-      .contains("Session secrets")
+      .contains("[data-cy=session-wizard-resolved-item]", "A Secret")
       .should("be.visible");
-    cy.getDataCy("session-secrets-modal").contains(
-      "[data-cy=session-wizard-resolved-item]",
-      "A Secret",
-    );
-    cy.getDataCy("session-secrets-modal").contains("button", "Skip").click();
+    cy.getDataCy("prerequisites-wizard-submit").click();
 
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
@@ -954,14 +952,8 @@ describe("launch sessions with secrets", () => {
     cy.wait("@getResourceClass");
     cy.url().should("match", /\/p\/.*\/sessions\/.*\/start$/);
 
+    cy.getDataCy("prerequisites-wizard").should("be.visible");
     cy.getDataCy("session-secrets-modal").should("be.visible");
-    cy.getDataCy("session-secrets-modal")
-      .contains("Session secrets")
-      .should("be.visible");
-    cy.getDataCy("session-secrets-modal").contains(
-      "[data-cy=session-wizard-resolved-item]",
-      "A Secret",
-    );
     cy.getDataCy("session-secrets-modal")
       .contains("[data-cy=session-secrets-unready-item]", "Another Secret")
       .should("be.visible")
@@ -988,6 +980,7 @@ describe("launch sessions with secrets", () => {
       .should("be.visible")
       .click();
     cy.wait("@patchSessionSecrets").wait("@updatedSessionSecrets");
+    cy.getDataCy("prerequisites-wizard-submit").click();
 
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
@@ -1323,7 +1316,7 @@ describe("launch session prerequisites", () => {
       "contain.text",
       "you have not set up an SSH key",
     );
-    cy.getDataCy("session-ssh-key-required-continue").click();
+    cy.getDataCy("prerequisites-wizard-submit").click();
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });
@@ -1365,7 +1358,7 @@ describe("launch session prerequisites", () => {
       "contain.text",
       "1 data connector that has expired",
     );
-    cy.getDataCy("session-expired-data-connectors-continue").click();
+    cy.getDataCy("prerequisites-wizard-submit").click();
     cy.wait("@createSession");
     cy.url().should("match", /\/p\/.*\/sessions\/show\/.*/);
   });

@@ -30,6 +30,10 @@ $status-primary: var(--#{$prefix}primary);
     border: var(--#{$prefix}border-width) solid var(--#{$prefix}border-color);
     border-radius: var(--#{$prefix}border-radius-lg);
   }
+
+  :global(.accordion-button:not(.collapsed)) {
+    background-color: var(--#{$prefix}secondary-bg);
+  }
 }
 
 .touchTarget {

@@ -24,6 +24,7 @@ import { Loader } from "~/components/Loader";
 import type { WizardStep } from "./prerequisitesWizard.types";
 import {
   getContinueLabel,
+  getRemainingItemCount,
   getStepPendingCount,
   getSubmitLabel,
 } from "./prerequisitesWizard.utils";
@@ -95,7 +96,9 @@ export default function WizardFooter({
             isSubmitDisabled ? submitDisabledReasonId : undefined
           }
           className={buttonClassName}
-          color="primary"
+          color={
+            getRemainingItemCount(steps) > 0 ? "outline-primary" : "primary"
+          }
           data-cy="prerequisites-wizard-submit"
           disabled={isSubmitDisabled || isSubmitting}
           onClick={onSubmit}

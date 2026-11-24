@@ -25,7 +25,7 @@ import {
   useState,
   type MutableRefObject,
 } from "react";
-import { Check, SkipForward, XLg } from "react-bootstrap-icons";
+import { Ban, Check, SkipForward, XLg } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import {
   Accordion,
@@ -70,6 +70,7 @@ interface SessionStorageCredentialsProps {
   onCancel?: () => void;
   onCredentialResolved?: (configs: DataConnectorConfiguration[]) => void;
   onFinished: (configs: DataConnectorConfiguration[]) => void;
+  onTestingChange?: (testing: boolean) => void;
   skipUnfinishedRef?: MutableRefObject<(() => void) | null>;
 }
 
@@ -80,6 +81,7 @@ export default function SessionStorageCredentials({
   onCancel,
   onCredentialResolved,
   onFinished,
+  onTestingChange,
   skipUnfinishedRef,
 }: SessionStorageCredentialsProps) {
   const [{ credentialConfigs, otherConfigs }] = useState(() =>
@@ -88,7 +90,7 @@ export default function SessionStorageCredentials({
   const [configs, setConfigs] = useState(credentialConfigs);
   const [openIds, setOpenIds] = useState(() =>
     credentialConfigs
-      .filter((config) => !config.skip)
+      .filter((config) => !config.skip && !isStorageCredentialTested(config))
       .map((config) => storageCredentialAccordionId(config.dataConnector.id)),
   );
   const configsRef = useRef(credentialConfigs);
@@ -170,6 +172,11 @@ export default function SessionStorageCredentials({
   }, [commit, finishIfReady, isTesting]);
 
   useEffect(() => {
+    onTestingChange?.(isTesting);
+    return () => onTestingChange?.(false);
+  }, [isTesting, onTestingChange]);
+
+  useEffect(() => {
     onCredentialResolvedRef.current = onCredentialResolved;
     onFinishedRef.current = onFinished;
     if (skipUnfinishedRef == null) return;
@@ -220,7 +227,7 @@ export default function SessionStorageCredentials({
           }
         >
           <SkipForward className={cx("bi", "me-1")} />
-          Skip
+          Skip all
         </Button>
       </ModalFooter>
     </ScrollableModal>
@@ -285,6 +292,7 @@ function SessionStorageCredentialItem({
       <AccordionHeader targetId={accordionId}>
         <span className="fw-bold">{config.dataConnector.name}</span>
         {succeeded && <StorageCredentialBadge />}
+        {!succeeded && config.skip && <StorageCredentialSkippedBadge />}
       </AccordionHeader>
       <AccordionBody accordionId={accordionId}>
         <p className="mb-2">
@@ -324,6 +332,25 @@ function SessionStorageCredentialItem({
         )}
       </AccordionBody>
     </AccordionItem>
+  );
+}
+
+function StorageCredentialSkippedBadge() {
+  return (
+    <span
+      className={cx(
+        "ms-2",
+        "border",
+        "badge",
+        "fw-normal",
+        "border-secondary",
+        "bg-secondary-subtle",
+        "text-secondary-emphasis",
+      )}
+    >
+      <Ban className="me-1" />
+      Skipped
+    </span>
   );
 }
 

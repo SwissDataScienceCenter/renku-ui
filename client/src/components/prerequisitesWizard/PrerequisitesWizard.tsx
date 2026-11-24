@@ -126,6 +126,8 @@ function PrerequisitesWizardContent({
   const disabledReason = submitBlock.reason;
   const reasonId = `${idPrefix}-submit-disabled-reason`;
   const skipAllButtonLabel = navigation.isLast ? undefined : skipAllLabel;
+  const submitColor =
+    getRemainingItemCount(steps) > 0 ? "outline-primary" : "primary";
   const stepsNavigation: WizardStepsNavigationProps = {
     currentStepId: currentStep.id,
     onSelect: navigation.goTo,
@@ -133,6 +135,7 @@ function PrerequisitesWizardContent({
       skipAllButtonLabel || disabledReason
         ? {
             buttonLabel: skipAllButtonLabel,
+            color: submitColor,
             isDisabled: submitBlock.blocked || isSubmitting,
             note:
               disabledReason ??
@@ -271,6 +274,7 @@ function WizardHeader({
 
 interface WizardSkipAllConfig {
   buttonLabel?: string;
+  color: "outline-primary" | "primary";
   isDisabled: boolean;
   note: string;
   noteIdPrefix: string;
@@ -297,6 +301,7 @@ function WizardStepsNavigation({
         <WizardSkipAll
           buttonLabel={skipAll.buttonLabel}
           className="px-3"
+          color={skipAll.color}
           isDisabled={skipAll.isDisabled}
           note={skipAll.note}
           noteId={`${skipAll.noteIdPrefix}-${variant}`}

@@ -25,6 +25,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  Ban,
   BoxArrowInLeft,
   Check,
   PlusLg,
@@ -416,6 +417,25 @@ function SessionSecretAccordionTitle({
   );
 }
 
+function SecretSkippedBadge() {
+  return (
+    <span
+      className={cx(
+        "ms-2",
+        "border",
+        "badge",
+        "fw-normal",
+        "border-secondary",
+        "bg-secondary-subtle",
+        "text-secondary-emphasis",
+      )}
+    >
+      <Ban className="me-1" />
+      Skipped
+    </span>
+  );
+}
+
 function SecretStatusBadge() {
   return (
     <span
@@ -548,6 +568,7 @@ function UnreadySessionSecretItem({
       >
         <AccordionHeader targetId={accordionId}>
           <SessionSecretAccordionTitle filename={filename} name={name} />
+          {skipped && <SecretSkippedBadge />}
         </AccordionHeader>
         <AccordionBody accordionId={accordionId}>
           <div data-cy={skipped ? "session-secrets-unready-item" : undefined}>

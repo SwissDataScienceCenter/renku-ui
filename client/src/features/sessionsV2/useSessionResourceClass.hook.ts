@@ -43,12 +43,28 @@ export default function useSessionResourceClass({
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2,
   );
-  const { data: launcherClass, isLoading: isLoadingLauncherClass } =
-    useGetClassesByClassIdQuery(
-      launcher.resource_class_id
-        ? { classId: `${launcher.resource_class_id}` }
-        : skipToken,
-    );
+  const {
+    data: launcherClass,
+    isError: isLauncherClassError,
+    isFetching: isFetchingLauncherClass,
+    isLoading: isLoadingLauncherClass,
+  } = useGetClassesByClassIdQuery(
+    launcher.resource_class_id
+      ? { classId: `${launcher.resource_class_id}` }
+      : skipToken,
+  );
+  const isResourceClassSettled =
+    resourcePools != null &&
+    (!launcher.resource_class_id ||
+      isLauncherClassError ||
+      (!isLoadingLauncherClass && !isFetchingLauncherClass));
+  const launcherClassAvailable =
+    resourcePools
+      ?.flatMap((pool) => pool.classes)
+      .some(
+        (resourceClass) =>
+          resourceClass.id == launcherClass?.id && resourceClass.matching,
+      ) ?? false;
   const [isPendingResourceClass, setIsPendingResourceClass] =
     useState<boolean>(false);
   const setResourceClass = useCallback(
@@ -109,6 +125,8 @@ export default function useSessionResourceClass({
 
   return {
     isPendingResourceClass,
+    isResourceClassSettled,
+    launcherClassAvailable,
     setResourceClass,
   };
 }

@@ -38,9 +38,7 @@ import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { dataConnectorsOverrideFromConfig } from "../cloudStorage/projectCloudStorage.utils";
-import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { resetFavicon, setFavicon } from "../display/displaySlice";
-import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetResourcePoolsQuery } from "./api/computeResources.generated-api";
@@ -50,26 +48,21 @@ import {
   usePostSessionsMutation as useLaunchSessionMutation,
   type SessionPostRequest,
 } from "./api/sessionsV2.api";
-import { SelectResourceClassModal } from "./components/SessionModals/SelectResourceClass";
 import SaveCloudStorageCredentials from "./SaveCloudStorageCredentials";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
 import { UsageAvailable, validateEnvVariableName } from "./session.utils";
-import SessionExpiredDataConnectorsModal from "./SessionExpiredDataConnectorsModal";
-import SessionImageModal from "./SessionImageModal";
 import {
   dataConnectorsNeedCredentials,
   dataConnectorsShouldSaveCredentials,
-  doesCloudStorageNeedCredentials,
 } from "./sessionLaunchValidation.utils";
-import SessionRepositoriesModal from "./SessionRepositoriesModal";
-import SessionSecretsModal from "./SessionSecretsModal";
-import SessionSshKeyRequiredModal from "./SessionSshKeyRequiredModal";
-import SessionStorageCredentials from "./SessionStorageCredentials";
+import SessionLaunchWizard from "./SessionLaunchWizard";
+import { sessionLaunchSnapshotInput } from "./sessionLaunchWizard.utils";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type {
   SessionStartDataConnectorConfiguration,
   StartSessionOptionsV2,
 } from "./startSessionOptionsV2.types";
+import useSessionLaunchSnapshot from "./useSessionLaunchSnapshot.hook";
 import useSessionLaunchState from "./useSessionLaunchState.hook";
 
 import progressBoxStyles from "~/components/progress/ProgressBox.module.scss";
@@ -238,107 +231,6 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
   );
 }
 
-interface StartSessionWithCloudStorageModalProps extends StartSessionFromLauncherProps {
-  dataConnectors: SessionStartDataConnectorConfiguration[];
-}
-
-function StartSessionWithCloudStorageModal({
-  dataConnectors,
-  launcher,
-  project,
-}: StartSessionWithCloudStorageModalProps) {
-  const [showDataConnectorSecretsModal, setShowDataConnectorSecretsModal] =
-    useState<boolean>(false);
-  const dispatch = useAppDispatch();
-
-  const configsWithCredentials = useMemo(
-    () =>
-      dataConnectors.filter(
-        (config) => !doesCloudStorageNeedCredentials(config),
-      ),
-    [dataConnectors],
-  );
-
-  const configsNeedingCredentials = useMemo(
-    () =>
-      dataConnectors.filter((config) =>
-        doesCloudStorageNeedCredentials(config),
-      ),
-    [dataConnectors],
-  );
-
-  useEffect(() => {
-    if (configsNeedingCredentials.length > 0)
-      // TODO: fix react-hooks/set-state-in-effect
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setShowDataConnectorSecretsModal(true);
-  }, [configsNeedingCredentials]);
-
-  const onStart = useCallback(
-    (configs: DataConnectorConfiguration[]) => {
-      setShowDataConnectorSecretsModal(false);
-      const changedCloudStorageConfigs = configs;
-      const cloudStorageConfigs = [
-        ...configsWithCredentials,
-        ...changedCloudStorageConfigs,
-      ];
-      dispatch(
-        startSessionOptionsV2Slice.actions.setDataConnectorsOverrides(
-          cloudStorageConfigs,
-        ),
-      );
-    },
-    [dispatch, configsWithCredentials],
-  );
-
-  const steps = [
-    {
-      id: 0,
-      status: StatusStepProgressBar.EXECUTING,
-      step: "Loading session configuration",
-    },
-    {
-      id: 1,
-      status: StatusStepProgressBar.WAITING,
-      step: "Requesting session",
-    },
-  ];
-
-  const navigate = useNavigate();
-  const onCancel = useCallback(() => {
-    const url = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
-      namespace: project.namespace,
-      slug: project.slug,
-    });
-    navigate(url);
-  }, [navigate, project.namespace, project.slug]);
-
-  return (
-    <div>
-      <div
-        className={cx(
-          progressBoxStyles.progressBoxSmall,
-          progressBoxStyles.progressBoxSmallSteps,
-        )}
-      >
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Launching session ${launcher.name}`}
-          status={steps}
-        />
-        <SessionStorageCredentials
-          dataConnectorConfigs={configsNeedingCredentials}
-          isOpen={showDataConnectorSecretsModal}
-          onCancel={onCancel}
-          onFinished={onStart}
-        />
-      </div>
-    </div>
-  );
-}
-
 interface StartSessionFromLauncherProps {
   launcher: SessionLauncher;
   project: Project;
@@ -355,6 +247,8 @@ function StartSessionFromLauncher({
   );
   const [sessionStarted, setSessionStarted] = useState(false);
   const [showSaveCredentials, setShowSaveCredentials] = useState(false);
+  const [launchRequested, setLaunchRequested] = useState(false);
+  const navigate = useNavigate();
   const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.root, {
     namespace: project.namespace,
     slug: project.slug,
@@ -366,8 +260,12 @@ function StartSessionFromLauncher({
 
   const {
     containerImage,
+    hasWritePermission,
+    isExternalImageEnvironment,
     isFetchingOrLoadingStorages,
     isPendingResourceClass,
+    isResourceClassSettled,
+    launcherClassAvailable,
     setResourceClass,
     isFetchingSessionSecrets,
     isFetchingSshKeys,
@@ -375,7 +273,10 @@ function StartSessionFromLauncher({
     isLoadingSessionImage,
     sessionImage,
     isFetchingRepositories,
+    isLoadingPermissions,
     launcherResourcesError,
+    repositories,
+    sshKeys,
   } = useSessionLaunchState({
     launcher,
     project,
@@ -406,6 +307,24 @@ function StartSessionFromLauncher({
     isFetchingSessionSecrets ||
     isFetchingSshKeys ||
     isLoadingSessionImage;
+  const snapshot = useSessionLaunchSnapshot(
+    sessionLaunchSnapshotInput({
+      containerImage,
+      dataConnectors: startSessionOptionsV2.dataConnectors,
+      hasWritePermission,
+      isCustomLaunch: hasCustomQuery,
+      isExternalImageEnvironment,
+      launcher,
+      launcherClassAvailable,
+      launcherResourcesError,
+      repositories,
+      sessionImageAccessible: sessionImage?.accessible,
+      sessionSecretSlotsWithSecrets,
+      settled: !fetchingApi && isResourceClassSettled && !isLoadingPermissions,
+      sshKeys,
+    }),
+  );
+  const wizardOpen = (snapshot?.steps.length ?? 0) > 0 && !launchRequested;
 
   // set favicon during session launch
   useEffect(() => {
@@ -419,6 +338,12 @@ function StartSessionFromLauncher({
   }, [allDataFetched, launcherResourcesError, needsCredentials, dispatch]);
 
   useEffect(() => {
+    if (snapshot == null || wizardOpen) {
+      // TODO: fix react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShowSaveCredentials(false);
+      return;
+    }
     // Handle all data fetched and no credentials needed
     if (
       allDataFetched &&
@@ -426,8 +351,6 @@ function StartSessionFromLauncher({
       startSessionOptionsV2.dataConnectors &&
       shouldSaveCredentials
     ) {
-      // TODO: fix react-hooks/set-state-in-effect
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowSaveCredentials(true);
     } else {
       // TODO: fix react-hooks/set-state-in-effect
@@ -462,6 +385,9 @@ function StartSessionFromLauncher({
     startSessionOptionsV2.repositoriesReady,
     startSessionOptionsV2.sshKeysReady,
     startSessionOptionsV2.userSecretsReady,
+    launchRequested,
+    snapshot,
+    wizardOpen,
   ]);
 
   const { data: resourcePools } = useGetResourcePoolsQuery({});
@@ -493,66 +419,6 @@ function StartSessionFromLauncher({
   if (sessionStarted)
     return <SessionStarting launcher={launcher} project={project} />;
 
-  if (
-    !fetchingApi &&
-    !sessionImage?.accessible &&
-    !startSessionOptionsV2.imageReady
-  ) {
-    return <StartSessionImageModal launcher={launcher} project={project} />;
-  }
-
-  if (!fetchingApi && !startSessionOptionsV2.repositoriesReady) {
-    return (
-      <StartSessionRepositoriesModal launcher={launcher} project={project} />
-    );
-  }
-
-  if (
-    !fetchingApi &&
-    startSessionOptionsV2.dataConnectors &&
-    !startSessionOptionsV2.dataConnectorsExpirationReady
-  ) {
-    return (
-      <StartSessionExpiredDataConnectorsModal
-        launcher={launcher}
-        project={project}
-      />
-    );
-  }
-
-  if (
-    !fetchingApi &&
-    sessionSecretSlotsWithSecrets &&
-    !startSessionOptionsV2.userSecretsReady
-  ) {
-    return (
-      <StartSessionWithSessionSecretsModal
-        launcher={launcher}
-        project={project}
-        sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
-      />
-    );
-  }
-
-  if (!fetchingApi && !startSessionOptionsV2.sshKeysReady) {
-    return <StartSessionSshKeyModal launcher={launcher} project={project} />;
-  }
-
-  // Handle all data fetched and credentials needed
-  if (
-    allDataFetched &&
-    needsCredentials &&
-    startSessionOptionsV2.dataConnectors
-  ) {
-    return (
-      <StartSessionWithCloudStorageModal
-        dataConnectors={startSessionOptionsV2.dataConnectors}
-        launcher={launcher}
-        project={project}
-      />
-    );
-  }
-
   return (
     <div
       className={cx(
@@ -574,13 +440,22 @@ function StartSessionFromLauncher({
           )
         }
       />
-      <SelectResourceClassModal
-        isOpen={isPendingResourceClass}
-        resourceClassId={launcher.resource_class_id}
-        onContinue={setResourceClass}
-        isCustom={hasCustomQuery}
-        projectUrl={projectUrl}
-      />
+      {wizardOpen && snapshot != null && (
+        <SessionLaunchWizard
+          hasWritePermission={hasWritePermission}
+          isCustomLaunch={hasCustomQuery}
+          isPendingResourceClass={isPendingResourceClass}
+          launcher={launcher}
+          onCancel={() => navigate(projectUrl)}
+          onLaunch={() => setLaunchRequested(true)}
+          onResourceClass={setResourceClass}
+          project={project}
+          projectUrl={projectUrl}
+          repositories={repositories}
+          sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets ?? []}
+          snapshot={snapshot}
+        />
+      )}
     </div>
   );
 }
@@ -636,237 +511,4 @@ export default function SessionStartPage() {
   }
 
   return <StartSessionFromLauncher launcher={launcher} project={project} />;
-}
-
-interface StartSessionWithSessionSecretsModalProps extends StartSessionFromLauncherProps {
-  sessionSecretSlotsWithSecrets: SessionSecretSlotWithSecret[];
-}
-
-function StartSessionWithSessionSecretsModal({
-  launcher,
-  project,
-  sessionSecretSlotsWithSecrets,
-}: StartSessionWithSessionSecretsModalProps) {
-  const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
-  );
-
-  const showModal = !startSessionOptionsV2.userSecretsReady;
-
-  const steps = [
-    {
-      id: 0,
-      status: StatusStepProgressBar.EXECUTING,
-      step: "Loading session configuration",
-    },
-    {
-      id: 1,
-      status: StatusStepProgressBar.WAITING,
-      step: "Requesting session",
-    },
-  ];
-
-  return (
-    <div>
-      <div
-        className={cx(
-          progressBoxStyles.progressBoxSmall,
-          progressBoxStyles.progressBoxSmallSteps,
-        )}
-      >
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Launching session ${launcher.name}`}
-          status={steps}
-        />
-        <SessionSecretsModal
-          isOpen={showModal}
-          project={project}
-          sessionSecretSlotsWithSecrets={sessionSecretSlotsWithSecrets}
-        />
-      </div>
-    </div>
-  );
-}
-
-function StartSessionImageModal({
-  launcher,
-  project,
-}: StartSessionFromLauncherProps) {
-  const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
-  );
-
-  const showModal = !startSessionOptionsV2.imageReady;
-
-  const steps = [
-    {
-      id: 0,
-      status: StatusStepProgressBar.EXECUTING,
-      step: "Loading session configuration",
-    },
-    {
-      id: 1,
-      status: StatusStepProgressBar.WAITING,
-      step: "Requesting session",
-    },
-  ];
-
-  return (
-    <div>
-      <div
-        className={cx(
-          progressBoxStyles.progressBoxSmall,
-          progressBoxStyles.progressBoxSmallSteps,
-        )}
-      >
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Launching session ${launcher.name}`}
-          status={steps}
-        />
-        <SessionImageModal
-          isOpen={showModal}
-          launcher={launcher}
-          project={project}
-        />
-      </div>
-    </div>
-  );
-}
-
-function StartSessionRepositoriesModal({
-  launcher,
-  project,
-}: StartSessionFromLauncherProps) {
-  const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
-  );
-
-  const showModal = !startSessionOptionsV2.repositoriesReady;
-
-  const steps = [
-    {
-      id: 0,
-      status: StatusStepProgressBar.EXECUTING,
-      step: "Loading session configuration",
-    },
-    {
-      id: 1,
-      status: StatusStepProgressBar.WAITING,
-      step: "Requesting session",
-    },
-  ];
-
-  return (
-    <div>
-      <div
-        className={cx(
-          progressBoxStyles.progressBoxSmall,
-          progressBoxStyles.progressBoxSmallSteps,
-        )}
-      >
-        <ProgressStepsIndicator
-          description="Preparing to start session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title={`Launching session ${launcher.name}`}
-          status={steps}
-        />
-        <SessionRepositoriesModal isOpen={showModal} project={project} />
-      </div>
-    </div>
-  );
-}
-
-function StartSessionSshKeyModal({
-  launcher,
-  project,
-}: StartSessionFromLauncherProps) {
-  const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
-  );
-
-  const showModal = !startSessionOptionsV2.sshKeysReady;
-
-  const steps = [
-    {
-      id: 0,
-      status: StatusStepProgressBar.EXECUTING,
-      step: "Loading session configuration",
-    },
-    {
-      id: 1,
-      status: StatusStepProgressBar.WAITING,
-      step: "Requesting session",
-    },
-  ];
-
-  return (
-    <div
-      className={cx(
-        progressBoxStyles.progressBoxSmall,
-        progressBoxStyles.progressBoxSmallSteps,
-      )}
-    >
-      <ProgressStepsIndicator
-        description="Preparing to start session"
-        type={ProgressType.Determinate}
-        style={ProgressStyle.Light}
-        title={`Launching session ${launcher.name}`}
-        status={steps}
-      />
-      <SessionSshKeyRequiredModal isOpen={showModal} project={project} />
-    </div>
-  );
-}
-
-function StartSessionExpiredDataConnectorsModal({
-  launcher,
-  project,
-}: StartSessionFromLauncherProps) {
-  const startSessionOptionsV2 = useAppSelector(
-    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
-  );
-
-  const showModal = !startSessionOptionsV2.dataConnectorsExpirationReady;
-
-  const steps = [
-    {
-      id: 0,
-      status: StatusStepProgressBar.EXECUTING,
-      step: "Loading session configuration",
-    },
-    {
-      id: 1,
-      status: StatusStepProgressBar.WAITING,
-      step: "Requesting session",
-    },
-  ];
-
-  return (
-    <div
-      className={cx(
-        progressBoxStyles.progressBoxSmall,
-        progressBoxStyles.progressBoxSmallSteps,
-      )}
-    >
-      <ProgressStepsIndicator
-        description="Preparing to start session"
-        type={ProgressType.Determinate}
-        style={ProgressStyle.Light}
-        title={`Launching session ${launcher.name}`}
-        status={steps}
-      />
-      <SessionExpiredDataConnectorsModal
-        isOpen={showModal}
-        project={project}
-        dataConnectors={startSessionOptionsV2.dataConnectors ?? []}
-      />
-    </div>
-  );
 }
