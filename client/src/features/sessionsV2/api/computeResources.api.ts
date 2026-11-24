@@ -268,6 +268,7 @@ export const {
   useGetStorageQuotasQuery,
   usePostStorageQuotasMutation,
   useGetStorageQuotasByStorageQuotaIdQuery,
+  usePatchStorageQuotasByStorageQuotaIdMutation,
   useDeleteStorageQuotasByStorageQuotaIdMutation,
   useGetStorageQuotasByStorageQuotaIdResourcesQuery,
 } = computeResourcesApi;

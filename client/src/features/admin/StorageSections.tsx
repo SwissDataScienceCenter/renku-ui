@@ -52,6 +52,7 @@ import {
 } from "reactstrap";
 
 import { InfoAlert, WarnAlert } from "~/components/Alert";
+import { Clipboard } from "~/components/clipboard/Clipboard";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
@@ -93,6 +94,7 @@ import DeleteStorageQuotaButton from "./DeleteStorageQuotaButton";
 import StorageFlavorValues from "./StorageFlavorValues";
 import StorageQuotaValues from "./StorageQuotaValues";
 import UpdateStorageFlavorButton from "./UpdateStorageFlavorButton";
+import UpdateStorageQuotaButton from "./UpdateStorageQuotaButton";
 
 export default function StorageSections() {
   return (
@@ -263,7 +265,24 @@ function StorageQuotaItem({
       </CardHeader>
       <Collapse isOpen={isOpen}>
         <CardBody className="pt-0">
-          <div className={cx("border-bottom", "border-top", "py-2")}>
+          <div
+            className={cx(
+              "align-items-center",
+              "border-bottom",
+              "border-top",
+              "d-flex",
+              "gap-1",
+              "py-2",
+            )}
+          >
+            Internal ID: {storageQuota.id}
+            <Clipboard
+              className={cx("border-0", "btn", "ms-1", "p-0", "shadow-none")}
+              clipboardText={storageQuota.id}
+            />
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
             {resourcePool ? (
               <>Resource pool: {resourcePool?.name}</>
             ) : (
@@ -292,7 +311,10 @@ function StorageQuotaItem({
             "pt-0",
           )}
         >
-          {/* <UpdateResourceFlavorButton resourceFlavor={resourceFlavor} /> */}
+          <UpdateStorageQuotaButton
+            storageQuota={storageQuota}
+            resourcePool={resourcePool}
+          />
           <DeleteStorageQuotaButton storageQuota={storageQuota} />
         </CardBody>
       </Collapse>
@@ -436,7 +458,24 @@ function StorageFlavorItem({ storageFlavor }: StorageFlavorItemProps) {
       </CardHeader>
       <Collapse isOpen={isOpen}>
         <CardBody className="pt-0">
-          <div className={cx("border-bottom", "border-top", "py-2")}>
+          <div
+            className={cx(
+              "align-items-center",
+              "border-bottom",
+              "border-top",
+              "d-flex",
+              "gap-1",
+              "py-2",
+            )}
+          >
+            Internal ID: {storageFlavor.id}
+            <Clipboard
+              className={cx("border-0", "btn", "ms-1", "p-0", "shadow-none")}
+              clipboardText={storageFlavor.id}
+            />
+          </div>
+
+          <div className={cx("border-bottom", "py-2")}>
             Kubernetes storage class name: <code>{k8s_storage_class_name}</code>
           </div>
 
