@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useMemo, useState } from "react";
 import { Folder, ShieldLock } from "react-bootstrap-icons";
 import { generatePath, Link } from "react-router";
-import { Badge, Col, Collapse, ListGroupItem, Row } from "reactstrap";
+import { Col, Collapse, ListGroupItem, Row } from "reactstrap";
 
 import RtkOrDataServicesError from "../../components/errors/RtkOrDataServicesError";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
@@ -110,24 +110,51 @@ function GeneralSecretUsedIn({
     return null;
   }
 
-  const projectStr = projects.length > 1 ? "projects" : "project";
+  const [firstProject] = projects;
+  const firstSlot = secretSlots.find(
+    ({ project_id }) => project_id === firstProject.id,
+  );
+  const moreLabel =
+    projects.length > 1 ? `+${projects.length - 1} more` : "Show all slots";
 
   return (
     <div>
-      <button
+      <div
         className={cx(
-          "px-0",
+          "d-flex",
+          "flex-wrap",
+          "align-items-center",
+          "column-gap-1",
           "mb-1",
-          "bg-transparent",
-          "border-0",
-          "fw-medium",
         )}
-        onClick={toggle}
+        data-cy="secret-used-in-summary"
       >
-        <ShieldLock className={cx("bi", "me-1")} />
-        This secret is used in <Badge>{projects.length}</Badge> {projectStr}
-        <ChevronFlippedIcon className={cx("bi", "ms-1")} flipped={isOpen} />
-      </button>
+        <span className="me-1">
+          <ShieldLock className={cx("bi", "me-1")} />
+          Used in
+        </span>
+        <GeneralSecretUsedInSummary
+          project={firstProject}
+          secretSlot={firstSlot}
+        />
+        {secretSlots.length > 1 && (
+          <button
+            className={cx(
+              "ms-1",
+              "px-2",
+              "bg-transparent",
+              "border",
+              "rounded-pill",
+              "small",
+            )}
+            onClick={toggle}
+            type="button"
+          >
+            {moreLabel}
+            <ChevronFlippedIcon className={cx("bi", "ms-1")} flipped={isOpen} />
+          </button>
+        )}
+      </div>
       <Collapse isOpen={isOpen}>
         <ul className={cx("list-unstyled", "d-flex", "flex-column", "gap-2")}>
           {projects.map((project) => (
@@ -140,6 +167,43 @@ function GeneralSecretUsedIn({
         </ul>
       </Collapse>
     </div>
+  );
+}
+
+interface GeneralSecretUsedInSummaryProps {
+  project: Project;
+  secretSlot: SessionSecretSlot | undefined;
+}
+
+function GeneralSecretUsedInSummary({
+  project,
+  secretSlot,
+}: GeneralSecretUsedInSummaryProps) {
+  const { data: namespace } = useGetNamespacesByNamespaceSlugQuery({
+    namespaceSlug: project.namespace,
+  });
+  const projectUrl = generatePath(ABSOLUTE_ROUTES.v2.projects.show.settings, {
+    namespace: project.namespace,
+    slug: project.slug,
+  });
+
+  return (
+    <>
+      <Link
+        className="fw-bold"
+        to={{ pathname: projectUrl, hash: SESSION_SECRETS_CARD_ID }}
+      >
+        {project.name}
+      </Link>
+      <span aria-hidden>·</span>
+      <UserAvatar namespace={project.namespace} size="xs" />
+      <span>{namespace?.name ?? project.namespace}</span>
+      {secretSlot && (
+        <span className="text-body-secondary">
+          · slot &ldquo;{secretSlot.name}&rdquo;
+        </span>
+      )}
+    </>
   );
 }
 

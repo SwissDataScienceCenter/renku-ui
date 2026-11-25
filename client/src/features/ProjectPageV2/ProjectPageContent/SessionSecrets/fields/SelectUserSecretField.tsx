@@ -29,6 +29,8 @@ import { Input, Label } from "reactstrap";
 
 import RtkOrDataServicesError from "../../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../../components/Loader";
+import SecretUsageSummary from "../../../../secretsV2/SecretUsageSummary";
+import useGetSecretsUsage from "../../../../secretsV2/useGetSecretsUsage.hook";
 import {
   useGetUserSecretsQuery,
   type SecretWithId,
@@ -122,6 +124,7 @@ function UserSecretSelector<T extends FieldValues>({
 }: UserSecretSelectorProps<T>) {
   const fieldIdSuffix = `session-secret-${name}`;
   const fieldId = formId ? `${formId}-${fieldIdSuffix}` : fieldIdSuffix;
+  const secretsUsage = useGetSecretsUsage(userSecrets);
 
   return (
     <>
@@ -137,6 +140,19 @@ function UserSecretSelector<T extends FieldValues>({
               components={selectComponents}
               getOptionValue={(option) => option.id}
               getOptionLabel={(option) => option.name}
+              formatOptionLabel={(option, { context }) =>
+                context === "menu" ? (
+                  <>
+                    <div className="fw-semibold">{option.name}</div>
+                    <SecretUsageSummary
+                      projects={secretsUsage?.[option.id]}
+                      secret={option}
+                    />
+                  </>
+                ) : (
+                  option.name
+                )
+              }
               inputId="session-secret-select-user-secret"
               isClearable={false}
               options={userSecrets}

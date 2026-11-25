@@ -220,7 +220,7 @@ describe("Project Session secret slots", () => {
   });
 
   it("Can provide a new secret value", () => {
-    fixtures.sessionSecretSlots().sessionSecrets();
+    fixtures.sessionSecretSlots().sessionSecrets().readProjectV2ById();
 
     cy.visit("/p/user1-uuid/test-2-v2-project");
     cy.contains("test 2 v2-project").should("be.visible");
@@ -245,6 +245,12 @@ describe("Project Session secret slots", () => {
       .should("be.visible")
       .as("modal");
     cy.get("@modal").contains("label", "Provide a new secret value").click();
+    cy.wait("@readProjectV2ById");
+    cy.get("@modal")
+      .find("[data-cy=saved-secret-name-input]")
+      .should("have.value", "Another Secret (test 2 v2-project)")
+      .clear()
+      .type("Another Secret (my laptop)");
     cy.get("@modal")
       .contains("label", "Secret value")
       .click()
@@ -257,13 +263,18 @@ describe("Project Session secret slots", () => {
       .sessionSecrets({
         fixture: "projectV2SessionSecrets/patched_secrets_with_new_value.json",
         name: "updatedSessionSecrets",
-      });
+      })
+      .editSecret();
 
     cy.get("@modal")
       .contains("button", "Save new secret")
       .should("be.visible")
       .click();
-    cy.wait("@patchSessionSecrets").wait("@updatedSessionSecrets");
+    cy.wait("@patchSessionSecrets");
+    cy.wait("@editSecret")
+      .its("request.body")
+      .should("deep.equal", { name: "Another Secret (my laptop)" });
+    cy.wait("@updatedSessionSecrets");
 
     cy.contains(`[data-cy=session-secret-slot-item]`, "Another Secret")
       .should("be.visible")

@@ -50,9 +50,13 @@ import { Loader } from "../../components/Loader";
 import ScrollableModal from "../../components/modal/ScrollableModal";
 import { ABSOLUTE_ROUTES } from "../../routing/routes.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import SavedSecretNameField from "../ProjectPageV2/ProjectPageContent/SessionSecrets/fields/SavedSecretNameField";
 import SelectUserSecretField from "../ProjectPageV2/ProjectPageContent/SessionSecrets/fields/SelectUserSecretField";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
 import SessionSecretSlotItem from "../ProjectPageV2/ProjectPageContent/SessionSecrets/SessionSecretSlotItem";
+import useSaveNewSessionSecret, {
+  useDefaultSecretName,
+} from "../ProjectPageV2/ProjectPageContent/SessionSecrets/useSaveNewSessionSecret.hook";
 import {
   usePatchProjectsByProjectIdSessionSecretsMutation,
   type Project,
@@ -322,50 +326,65 @@ interface ProvideNewValueContentProps {
   secretSlot: SessionSecretSlot;
 }
 function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
-  const { id: slotId, project_id: projectId } = secretSlot;
+  const { id: slotId } = secretSlot;
 
-  const [patchSessionSecrets, result] =
-    usePatchProjectsByProjectIdSessionSecretsMutation();
+  const { error, isLoading, save, status } =
+    useSaveNewSessionSecret(secretSlot);
+  const defaultName = useDefaultSecretName(secretSlot);
 
   const {
     control,
     formState: { errors },
+    getValues,
     handleSubmit,
     reset,
+    setValue,
   } = useForm<ProvideNewSecretValueForm>({
-    defaultValues: { value: "" },
+    defaultValues: { name: "", value: "" },
   });
 
-  const submitHandler = useCallback(
-    (data: ProvideNewSecretValueForm) => {
-      patchSessionSecrets({
-        projectId,
-        sessionSecretPatchList: [{ secret_slot_id: slotId, value: data.value }],
-      });
-    },
-    [patchSessionSecrets, projectId, slotId],
-  );
-  const onSubmit = useMemo(
-    () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler],
-  );
+  const onSubmit = useMemo(() => handleSubmit(save), [handleSubmit, save]);
 
   useEffect(() => {
-    reset({ value: "" });
+    reset({ name: "", value: "" });
   }, [reset, secretSlot]);
 
-  if (result.isSuccess) {
+  useEffect(() => {
+    if (defaultName && getValues("name") === "") {
+      setValue("name", defaultName);
+    }
+  }, [defaultName, getValues, setValue]);
+
+  if (status === "saved") {
     return null;
   }
 
+  if (status === "renameFailed") {
+    return (
+      <CardBody className="pt-0">
+        <WarnAlert dismissible={false}>
+          The secret is saved, but its name could not be changed. You can rename
+          it on the User Secrets page.
+        </WarnAlert>
+      </CardBody>
+    );
+  }
+
+  const formId = `new-value-${slotId}`;
   const newValueFieldId = `provide-session-secret-new-value-${slotId}`;
 
   return (
     <Form noValidate onSubmit={onSubmit}>
       <CardBody className="py-0">
-        {result.error && (
-          <RtkOrDataServicesError error={result.error} dismissible={false} />
-        )}
+        {error && <RtkOrDataServicesError error={error} dismissible={false} />}
+
+        <SavedSecretNameField
+          control={control}
+          errors={errors}
+          formId={formId}
+          name="name"
+          placeholder={secretSlot.name}
+        />
 
         <div className="mb-3">
           <Label for={newValueFieldId}>Secret value</Label>
@@ -396,11 +415,11 @@ function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
       <CardBody className={cx("d-flex", "flex-row", "justify-content-end")}>
         <Button
           color="primary"
-          disabled={result.isLoading}
+          disabled={isLoading}
           type="submit"
           data-cy="session-secrets-unready-save-button"
         >
-          {result.isLoading ? (
+          {isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
             <PlusLg className={cx("bi", "me-1")} />
@@ -413,6 +432,7 @@ function ProvideNewValueContent({ secretSlot }: ProvideNewValueContentProps) {
 }
 
 interface ProvideNewSecretValueForm {
+  name: string;
   value: string;
 }
 
