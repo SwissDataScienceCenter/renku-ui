@@ -31,11 +31,16 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { WarnAlert } from "../../../../components/Alert";
 import RtkOrDataServicesError from "../../../../components/errors/RtkOrDataServicesError";
 import { Loader } from "../../../../components/Loader";
 import type { SessionSecretSlot } from "../../../projectsV2/api/projectV2.api";
 import { usePatchProjectsByProjectIdSessionSecretsMutation } from "../../../projectsV2/api/projectV2.enhanced-api";
+import SavedSecretNameField from "./fields/SavedSecretNameField";
 import SelectUserSecretField from "./fields/SelectUserSecretField";
+import useSaveNewSessionSecret, {
+  useDefaultSecretName,
+} from "./useSaveNewSessionSecret.hook";
 
 interface ProvideSessionSecretModalContentProps {
   isOpen: boolean;
@@ -131,57 +136,68 @@ function ProvideSessionSecretModalNewValueContent({
   secretSlot,
   toggle,
 }: ProvideSessionSecretModalNewValueContentProps) {
-  const { id: slotId, project_id: projectId } = secretSlot;
-
-  const [patchSessionSecrets, result] =
-    usePatchProjectsByProjectIdSessionSecretsMutation();
+  const {
+    error,
+    isLoading,
+    reset: resetSave,
+    save,
+    status,
+  } = useSaveNewSessionSecret(secretSlot);
+  const defaultName = useDefaultSecretName(secretSlot);
 
   const {
     control,
     formState: { errors },
+    getValues,
     handleSubmit,
     reset,
+    setValue,
   } = useForm<ProvideNewSecretValueForm>({
-    defaultValues: { value: "" },
+    defaultValues: { name: "", value: "" },
   });
 
-  const submitHandler = useCallback(
-    (data: ProvideNewSecretValueForm) => {
-      patchSessionSecrets({
-        projectId,
-        sessionSecretPatchList: [{ secret_slot_id: slotId, value: data.value }],
-      });
-    },
-    [patchSessionSecrets, projectId, slotId],
-  );
-  const onSubmit = useMemo(
-    () => handleSubmit(submitHandler),
-    [handleSubmit, submitHandler],
-  );
+  const onSubmit = useMemo(() => handleSubmit(save), [handleSubmit, save]);
 
   useEffect(() => {
-    reset({ value: "" });
+    reset({ name: "", value: "" });
   }, [reset, secretSlot]);
+
+  useEffect(() => {
+    if (defaultName && getValues("name") === "") {
+      setValue("name", defaultName);
+    }
+  }, [defaultName, getValues, setValue]);
 
   useEffect(() => {
     if (!isOpen) {
       reset();
-      result.reset();
+      resetSave();
     }
-  }, [isOpen, reset, result]);
+  }, [isOpen, reset, resetSave]);
 
   useEffect(() => {
-    if (result.isSuccess) {
+    if (status === "saved") {
       toggle();
     }
-  }, [result.isSuccess, toggle]);
+  }, [status, toggle]);
 
   return (
     <Form noValidate onSubmit={onSubmit}>
       <ModalBody>
-        {result.error && (
-          <RtkOrDataServicesError error={result.error} dismissible={false} />
+        {error && <RtkOrDataServicesError error={error} dismissible={false} />}
+        {status === "renameFailed" && (
+          <WarnAlert dismissible={false}>
+            The secret is saved, but its name could not be changed. You can
+            rename it on the User Secrets page.
+          </WarnAlert>
         )}
+
+        <SavedSecretNameField
+          control={control}
+          errors={errors}
+          name="name"
+          placeholder={secretSlot.name}
+        />
 
         <div className="mb-3">
           <Label for="provide-session-secret-new-value">Secret value</Label>
@@ -218,25 +234,28 @@ function ProvideSessionSecretModalNewValueContent({
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button
-          color="primary"
-          disabled={result.isLoading}
-          data-cy="provide-session-secret-save-button"
-          type="submit"
-        >
-          {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
-          ) : (
-            <PlusLg className={cx("bi", "me-1")} />
-          )}
-          Save new secret
-        </Button>
+        {status !== "renameFailed" && (
+          <Button
+            color="primary"
+            disabled={isLoading}
+            data-cy="provide-session-secret-save-button"
+            type="submit"
+          >
+            {isLoading ? (
+              <Loader className="me-1" inline size={16} />
+            ) : (
+              <PlusLg className={cx("bi", "me-1")} />
+            )}
+            Save new secret
+          </Button>
+        )}
       </ModalFooter>
     </Form>
   );
 }
 
 interface ProvideNewSecretValueForm {
+  name: string;
   value: string;
 }
 
