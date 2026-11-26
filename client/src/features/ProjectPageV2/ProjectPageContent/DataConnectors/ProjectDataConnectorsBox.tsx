@@ -138,9 +138,7 @@ function ProjectDataConnectorBoxContent({
     setModalOpen((open) => !open);
   }, []);
   const accessibleDataConnectorsCount =
-    data.length +
-    (projectStorageData?.length ?? 0) +
-    (projectStoragesV2?.length ?? 0);
+    data.length + (projectStoragesV2?.length ?? 0);
 
   return (
     <div className={cx("d-flex", "flex-column", "gap-3")}>
