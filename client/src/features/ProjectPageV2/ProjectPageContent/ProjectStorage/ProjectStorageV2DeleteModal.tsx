@@ -23,7 +23,7 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 import { WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
-import { useDeleteStorageByStorageIdMutation } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import { useDeleteStoragesByStorageIdMutation } from "~/features/cloudStorage/api/projectCloudStorage.api";
 
 interface ProjectStorageV2DeleteModalProps {
   isOpen: boolean;
@@ -38,7 +38,7 @@ export default function ProjectStorageV2DeleteModal({
   toggle,
   executeOnSuccess,
 }: ProjectStorageV2DeleteModalProps) {
-  const [deleteStorage, result] = useDeleteStorageByStorageIdMutation();
+  const [deleteStorage, result] = useDeleteStoragesByStorageIdMutation();
   const onDelete = useCallback(() => {
     deleteStorage({ storageId });
   }, [deleteStorage, storageId]);
