@@ -17,8 +17,8 @@
  */
 
 import cx from "classnames";
-import { ExclamationTriangleFill } from "react-bootstrap-icons";
 
+import { ErrorAlert } from "~/components/Alert";
 import type { ImagePlatformCompatibility } from "../useImagePlatformCompatibility.hook";
 
 interface ImagePlatformMismatchMessageProps {
@@ -35,11 +35,14 @@ export default function ImagePlatformMismatchMessage({
   }
 
   return (
-    <p className={cx("mb-0", className)} data-cy="image-platform-mismatch">
-      <ExclamationTriangleFill className={cx("bi", "me-1")} />
+    <ErrorAlert
+      className={cx("mb-0", className)}
+      data-cy="image-platform-mismatch"
+      dismissible={false}
+    >
       The launcher image supports <code>{imagePlatforms.join(", ")}</code>, so
-      it cannot run on this resource pool. Please choose a compatible image or
-      change the resource pool.
-    </p>
+      it cannot run on this resource pool. You have to either choose a
+      compatible image or change the resource pool.
+    </ErrorAlert>
   );
 }
