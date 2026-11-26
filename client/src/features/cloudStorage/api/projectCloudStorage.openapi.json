@@ -129,375 +129,6 @@
         "tags": ["storage"]
       }
     },
-    "/storage": {
-      "post": {
-        "summary": "Create a new project storage",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectStoragePost"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "The data connector was created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectStorage"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["storage"]
-      }
-    },
-    "/storage/config": {
-      "get": {
-        "summary": "Get the current configuration for project storage",
-        "responses": {
-          "200": {
-            "description": "The configuration data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectStorageConfig"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["storage"]
-      }
-    },
-    "/storage/allow": {
-      "get": {
-        "summary": "List all projects in the storage allow list",
-        "parameters": [
-          {
-            "in": "query",
-            "description": "query parameters",
-            "name": "params",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "$ref": "#/components/schemas/ProjectStorageAllowListQuery"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of storage allow entries",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectStorageAllowList"
-                }
-              }
-            },
-            "headers": {
-              "page": {
-                "description": "The index of the current page (starting at 1).",
-                "required": true,
-                "schema": {
-                  "type": "integer"
-                }
-              },
-              "per-page": {
-                "description": "The number of items per page.",
-                "required": true,
-                "schema": {
-                  "type": "integer"
-                }
-              },
-              "total": {
-                "description": "The total number of items.",
-                "required": true,
-                "schema": {
-                  "type": "integer"
-                }
-              },
-              "total-pages": {
-                "description": "The total number of pages.",
-                "required": true,
-                "schema": {
-                  "type": "integer"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["storage"]
-      },
-      "post": {
-        "summary": "Add a project to the storage allow list",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectStorageAllowPost"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "The project was added to the allow list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectStorageAllowPost"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["storage"]
-      }
-    },
-    "/storage/allow/{project_id}": {
-      "parameters": [
-        {
-          "in": "path",
-          "name": "project_id",
-          "required": true,
-          "schema": {
-            "$ref": "#/components/schemas/Ulid"
-          }
-        }
-      ],
-      "get": {
-        "summary": "Get the storage allow entry for a project",
-        "responses": {
-          "200": {
-            "description": "The project storage allow entry",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectStorageAllow"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The project is not in the storage allow list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["storage"]
-      },
-      "patch": {
-        "summary": "Change the maximum size for a project storage",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/If-Match"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectStorageAllowPatch"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The patched project storage allow entry",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectStorageAllow"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The project storage allow entry doesn't exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["storage"]
-      },
-      "delete": {
-        "summary": "Remove a project from the storage allow list",
-        "responses": {
-          "204": {
-            "description": "The project was removed from the allow list"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["storage"]
-      }
-    },
-    "/storage/{storage_id}": {
-      "parameters": [
-        {
-          "in": "path",
-          "name": "storage_id",
-          "required": true,
-          "schema": {
-            "$ref": "#/components/schemas/Ulid"
-          }
-        }
-      ],
-      "get": {
-        "summary": "Get a project storage for a project id.",
-        "responses": {
-          "200": {
-            "description": "The project storage information",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectStorage"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The project storage does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["storage"]
-      },
-      "patch": {
-        "summary": "Change the size or mount path of a project storage",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/If-Match"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectStoragePatch"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The patched project storage entry",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectStorage"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The project storage does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["storage"]
-      },
-      "delete": {
-        "summary": "Delete a specific project storage",
-        "responses": {
-          "204": {
-            "description": "The project storage was deleted or did not exist in the first place"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["storage"]
-      }
-    },
-    "/projects/{project_id}/storage": {
-      "parameters": [
-        {
-          "in": "path",
-          "name": "project_id",
-          "required": true,
-          "schema": {
-            "$ref": "#/components/schemas/Ulid"
-          }
-        }
-      ],
-      "get": {
-        "summary": "Get the project storage for a given project",
-        "responses": {
-          "200": {
-            "description": "The list of project storages (currently either one or empty).",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectStorageList"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        },
-        "tags": ["projects"]
-      }
-    },
     "/storages": {
       "get": {
         "summary": "Get all visible project storages",
@@ -509,7 +140,7 @@
             "style": "form",
             "explode": true,
             "schema": {
-              "$ref": "#/components/schemas/ProjectStoragesGetQueryV2"
+              "$ref": "#/components/schemas/ProjectStoragesGetQuery"
             }
           }
         ],
@@ -519,7 +150,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectStoragesV2"
+                  "$ref": "#/components/schemas/ProjectStorages"
                 }
               }
             }
@@ -537,7 +168,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProjectStoragePostV2"
+                "$ref": "#/components/schemas/ProjectStoragePost"
               }
             }
           }
@@ -548,7 +179,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectStorageV2"
+                  "$ref": "#/components/schemas/ProjectStorage"
                 }
               }
             }
@@ -579,7 +210,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectStorageV2"
+                  "$ref": "#/components/schemas/ProjectStorage"
                 }
               }
             }
@@ -612,7 +243,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProjectStoragePatchV2"
+                "$ref": "#/components/schemas/ProjectStoragePatch"
               }
             }
           }
@@ -623,7 +254,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectStorageV2"
+                  "$ref": "#/components/schemas/ProjectStorage"
                 }
               }
             }
@@ -649,6 +280,63 @@
         "responses": {
           "204": {
             "description": "The project storage was deleted or did not exist in the first place"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": ["project_storage"]
+      }
+    },
+    "/storages/{storage_id}/admin": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "storage_id",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Ulid"
+          }
+        }
+      ],
+      "patch": {
+        "summary": "Update a project storage with an unsafe operation",
+        "description": "Admin only.\n\nThis endpoint allows admin to perform unsafe operations on project storages:\n- Update `project_id`, i.e. move the storage to another project\n- Update `storage_quota_id`, i.e. move the storage to another quota\n- Update `k8s_pvc_name`, i.e. link the storage to an existing PVC\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectStorageAdminPatchV2"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated project storage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectStorage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The project storage does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "default": {
             "$ref": "#/components/responses/Error"
@@ -894,179 +582,13 @@
         },
         "required": ["error"]
       },
-      "ProjectStoragePost": {
-        "description": "A special data connector for associating a shared read+write\nvolume. There can be exactly one such storage per project.\n",
-        "additionalProperties": false,
-        "properties": {
-          "namespace": {
-            "$ref": "#/components/schemas/ProjectSlug"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int32",
-            "minimum": 1
-          },
-          "mount_path": {
-            "type": "string"
-          }
-        },
-        "required": ["namespace", "size", "mount_path"]
-      },
-      "ProjectStorage": {
-        "description": "A stored shared storage configuration for a project.\n",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/Ulid"
-          },
-          "project_id": {
-            "$ref": "#/components/schemas/Ulid"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "mount_path": {
-            "type": "string"
-          },
-          "creation_date": {
-            "$ref": "#/components/schemas/CreationDate"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/UserId"
-          },
-          "updated_at": {
-            "$ref": "#/components/schemas/CreationDate"
-          },
-          "etag": {
-            "$ref": "#/components/schemas/ETag"
-          }
-        },
-        "required": [
-          "id",
-          "project_id",
-          "size",
-          "mount_path",
-          "creation_date",
-          "created_by",
-          "updated_at",
-          "etag"
-        ]
-      },
-      "ProjectStoragePatch": {
-        "description": "Data that can be updated on a project storage entry\n",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "size": {
-            "type": "integer",
-            "format": "int64",
-            "description": "The maximum size in GB"
-          },
-          "mount_path": {
-            "type": "string",
-            "description": "The mount path for the storage"
-          }
-        }
-      },
-      "ProjectStorageAllowPatch": {
-        "description": "Data that can be updated on a project storage allow entry\n",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "max_size": {
-            "$ref": "#/components/schemas/MaxStorageSize"
-          }
-        }
-      },
-      "ProjectStorageAllowPost": {
-        "description": "A project to be added to the storage allow list.\n",
-        "additionalProperties": false,
-        "properties": {
-          "project_ref": {
-            "$ref": "#/components/schemas/ProjectRef"
-          },
-          "max_size": {
-            "$ref": "#/components/schemas/MaxStorageSize"
-          }
-        },
-        "required": ["project_ref", "max_size"]
-      },
-      "ProjectStorageAllow": {
-        "description": "A project in the storage allow list.\n",
-        "additionalProperties": false,
-        "properties": {
-          "project_id": {
-            "$ref": "#/components/schemas/Ulid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "namespace": {
-            "type": "string"
-          },
-          "max_size": {
-            "$ref": "#/components/schemas/MaxStorageSize"
-          },
-          "etag": {
-            "$ref": "#/components/schemas/ETag"
-          }
-        },
-        "required": ["project_id", "max_size", "name", "namespace", "etag"]
-      },
-      "ProjectStorageList": {
-        "description": "A list of project storages.",
+      "ProjectStorages": {
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/ProjectStorage"
         }
       },
-      "ProjectStorageAllowList": {
-        "description": "A list of project storage allow entries.\n",
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/ProjectStorageAllow"
-        }
-      },
-      "ProjectStorageAllowListQuery": {
-        "description": "Query params for listing storage allow entries",
-        "additionalProperties": false,
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaginationRequest"
-          },
-          {
-            "properties": {
-              "project_name": {
-                "description": "Filter by project name (partial match).",
-                "type": "string",
-                "default": ""
-              }
-            }
-          }
-        ]
-      },
-      "ProjectStorageConfig": {
-        "description": "The current configuration for project storage as defined by admins.\n",
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "max_size": {
-            "$ref": "#/components/schemas/MaxStorageSize"
-          }
-        },
-        "required": ["enabled", "max_size"]
-      },
-      "ProjectStoragesV2": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/ProjectStorageV2"
-        }
-      },
-      "ProjectStorageV2": {
+      "ProjectStorage": {
         "description": "Self-service storage for Renku projects\n",
         "type": "object",
         "additionalProperties": false,
@@ -1120,7 +642,7 @@
           "etag"
         ]
       },
-      "ProjectStoragePostV2": {
+      "ProjectStoragePost": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1144,7 +666,7 @@
           "mount_path"
         ]
       },
-      "ProjectStoragePatchV2": {
+      "ProjectStoragePatch": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1156,9 +678,25 @@
           }
         }
       },
-      "ProjectStoragesGetQueryV2": {
+      "ProjectStorageAdminPatchV2": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "project_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "storage_quota_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "k8s_pvc_name": {
+            "type": "string"
+          }
+        }
+      },
+      "ProjectStoragesGetQuery": {
         "description": "Query parameters for filtering project storages",
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "project_id": {
             "$ref": "#/components/schemas/Ulid"
@@ -1192,64 +730,6 @@
         "type": "string",
         "description": "Entity Tag",
         "example": "9EE498F9D565D0C41E511377425F32F3"
-      },
-      "PaginationRequest": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "page": {
-            "description": "Result's page number starting from 1",
-            "type": "integer",
-            "minimum": 1,
-            "default": 1
-          },
-          "per_page": {
-            "description": "The number of results per page",
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100,
-            "default": 20
-          }
-        }
-      },
-      "ProjectSlug": {
-        "type": "string",
-        "description": "The slug used to identify a project",
-        "minLength": 3,
-        "example": "user/my-project",
-        "pattern": "^[a-zA-Z0-9]+([_.\\-/][a-zA-Z0-9]+)*[_.\\-/]?[a-zA-Z0-9]$"
-      },
-      "ProjectIdRef": {
-        "type": "object",
-        "description": "A reference to a project using its id",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/Ulid"
-          }
-        },
-        "required": ["id"]
-      },
-      "ProjectSlugRef": {
-        "type": "object",
-        "description": "A reference to a project using its slug",
-        "additionalProperties": false,
-        "properties": {
-          "slug": {
-            "$ref": "#/components/schemas/ProjectSlug"
-          }
-        },
-        "required": ["slug"]
-      },
-      "ProjectRef": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/ProjectIdRef"
-          },
-          {
-            "$ref": "#/components/schemas/ProjectSlugRef"
-          }
-        ]
       }
     },
     "responses": {
