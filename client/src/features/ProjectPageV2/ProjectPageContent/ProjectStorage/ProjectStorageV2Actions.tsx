@@ -22,12 +22,12 @@ import { Pencil, Trash } from "react-bootstrap-icons";
 import { Button } from "reactstrap";
 
 import { MenuButton, MenuButtonItem } from "~/components/buttons/MenuButton";
-import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import type { ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import useProjectPermissions from "../../utils/useProjectPermissions.hook";
 import ProjectStorageV2DeleteModal from "./ProjectStorageV2DeleteModal";
 
 interface ProjectStorageV2ActionsProps {
-  storage: ProjectStorageV2;
+  storage: ProjectStorage;
   toggleView?: () => void;
   toggleEdit: () => void;
 }

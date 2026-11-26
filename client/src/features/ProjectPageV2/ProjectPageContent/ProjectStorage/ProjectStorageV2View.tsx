@@ -33,7 +33,7 @@ import { InfoAlert } from "~/components/Alert";
 import { Clipboard } from "~/components/clipboard/Clipboard";
 import OffcanvasHeaderWithType from "~/components/offcanvas/OffcanvasHeaderWithType";
 import OffcanvasTopButtons from "~/components/offcanvas/OffcanvasTopButtons";
-import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import type { ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import { InfoEntry } from "~/features/dataConnectorsV2/components/DataConnectorInfoBox";
 import { computeResourcesApi } from "~/features/sessionsV2/api/computeResources.api";
 import ProjectStorageV2Actions from "./ProjectStorageV2Actions";
@@ -41,7 +41,7 @@ import ProjectStorageV2EditModal from "./ProjectStorageV2EditModal";
 import StorageQuotaDocumentation from "./StorageQuotaDocumentation";
 
 interface ProjectStorageV2ViewProps {
-  storage: ProjectStorageV2;
+  storage: ProjectStorage;
   showView: boolean;
   toggleView: () => void;
 }
@@ -113,7 +113,7 @@ function ProjectStorageV2ViewHeader({
   toggleView,
   toggleEdit,
 }: {
-  storage: ProjectStorageV2;
+  storage: ProjectStorage;
   toggleView: () => void;
   toggleEdit: () => void;
 }) {
@@ -135,7 +135,7 @@ function ProjectStorageV2InfoBox({
   storage,
   headerTag = "h2",
 }: {
-  storage: ProjectStorageV2;
+  storage: ProjectStorage;
   headerTag?: "h2" | "h3" | "h4";
 }) {
   const { data: storageQuota, isUninitialized } =

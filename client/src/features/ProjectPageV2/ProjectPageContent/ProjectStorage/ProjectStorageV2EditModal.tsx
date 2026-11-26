@@ -20,11 +20,11 @@ import cx from "classnames";
 import { Modal, ModalHeader } from "reactstrap";
 
 import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
-import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import type { ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import ProjectStorageV2Form from "./ProjectStorageV2Form";
 
 interface ProjectStorageV2EditModalProps {
-  storage: ProjectStorageV2;
+  storage: ProjectStorage;
   isOpen: boolean;
   toggle: () => void;
 }

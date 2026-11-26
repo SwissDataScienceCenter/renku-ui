@@ -22,7 +22,7 @@ import { Link, To, useLocation } from "react-router";
 import { Col, ListGroupItem, Row } from "reactstrap";
 
 import RenkuStorageIcon from "~/components/icons/RenkuStorageIcon";
-import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import type { ProjectStorage } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import { useGetStorageQuotasByStorageQuotaIdQuery } from "~/features/sessionsV2/api/computeResources.api";
 import useLocationHash from "~/utils/customHooks/useLocationHash.hook";
 import ProjectStorageV2Actions from "./ProjectStorageV2Actions";
@@ -30,7 +30,7 @@ import ProjectStorageV2EditModal from "./ProjectStorageV2EditModal";
 import ProjectStorageV2View from "./ProjectStorageV2View";
 
 interface ProjectStorageV2LinkDisplayProps {
-  storage: ProjectStorageV2;
+  storage: ProjectStorage;
 }
 
 export default function ProjectStorageV2LinkDisplay({

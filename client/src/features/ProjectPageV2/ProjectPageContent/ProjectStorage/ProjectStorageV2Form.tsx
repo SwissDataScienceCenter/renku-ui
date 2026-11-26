@@ -38,7 +38,7 @@ import { Loader } from "~/components/Loader";
 import {
   usePatchStoragesByStorageIdMutation,
   usePostStoragesMutation,
-  type ProjectStorageV2,
+  type ProjectStorage,
 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   ProjectConnectDataConnectorModeSwitch,
@@ -65,7 +65,7 @@ interface ProjectStorageV2FormValues {
 
 interface ProjectStorageV2FormProps {
   projectId: string;
-  storage?: ProjectStorageV2;
+  storage?: ProjectStorage;
   switchMode?: switchModeProps;
   toggle: () => void;
 }
@@ -206,14 +206,14 @@ function ProjectStorageV2FormInner({
         patchStorage({
           "If-Match": storage.etag,
           storageId: storage.id,
-          projectStoragePatchV2: {
+          projectStoragePatch: {
             requested_size: requestedSize,
             mount_path: mountPath,
           },
         });
       } else {
         postStorage({
-          projectStoragePostV2: {
+          projectStoragePost: {
             project_id: projectId,
             storage_quota_id: values.storageQuotaId,
             requested_size: values.size,
