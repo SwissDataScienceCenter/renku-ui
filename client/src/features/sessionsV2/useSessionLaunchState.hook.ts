@@ -32,6 +32,7 @@ import {
   getEnvVariableOverridesFromSearchParams,
   getLauncherImageToCheck,
   getMissingRequiredEnvVariables,
+  getResourcePoolRemoteKind,
 } from "./session.utils";
 import {
   remotePoolNeedsAttention,
@@ -41,7 +42,6 @@ import {
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import useImagePlatformCompatibility from "./useImagePlatformCompatibility.hook";
 import useResourcePoolByClassId from "./useResourcePoolByClassId.hook";
-import useResourcePoolRemoteKind from "./useResourcePoolRemoteKind.hook";
 import useSessionLaunchPrerequisites from "./useSessionLaunchPrerequisites.hook";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
 
@@ -116,7 +116,7 @@ export default function useSessionLauncherState({
   } = useResourcePoolByClassId(
     selectedSessionClass !== 0 ? selectedSessionClass : undefined,
   );
-  const isRemotePool = !!useResourcePoolRemoteKind(selectedResourcePool);
+  const isRemotePool = getResourcePoolRemoteKind(selectedResourcePool) != null;
   const missingRemotePoolEnvVariables = useMemo(
     () =>
       isRemotePool

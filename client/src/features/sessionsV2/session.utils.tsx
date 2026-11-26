@@ -25,6 +25,7 @@ import type {
   RemoteConfiguration,
   ResourceClassWithId,
   ResourcePoolWithId,
+  ResourcePoolWithIdFiltered,
 } from "./api/computeResources.api";
 import type {
   EnvironmentList as SessionEnvironmentList,
@@ -49,6 +50,7 @@ import {
   REMOTE_POOL_REQUIRED_ENV_VARIABLES,
   SUBMISSION_ID_PATTERN,
   SUBMISSION_ID_VALIDATION_MESSAGE,
+  type RemoteKind,
   type RemotePoolMatcher,
   type RemotePoolRequiredEnvVariable,
 } from "./session.constants";
@@ -611,6 +613,21 @@ export function ensureHTTPS(url: string): string {
   } catch {
     throw new Error(`Invalid URL: ${url}`);
   }
+}
+
+/**
+ * How a resource pool runs sessions remotely: through a remote session
+ * controller (`remote.kind`), or on another Kubernetes cluster (`cluster_id`).
+ * Null for local pools, or when the pool is unknown.
+ */
+export function getResourcePoolRemoteKind(
+  resourcePool:
+    | Pick<ResourcePoolWithIdFiltered, "remote" | "cluster_id">
+    | undefined,
+): RemoteKind | null {
+  if (resourcePool?.remote != null) return resourcePool.remote.kind;
+  if (resourcePool?.cluster_id != null) return "cluster";
+  return null;
 }
 
 function getRemoteApiUrl(remote: RemoteConfiguration): string {

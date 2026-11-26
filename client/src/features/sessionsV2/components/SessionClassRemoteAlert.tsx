@@ -17,12 +17,11 @@
  */
 
 import { InfoAlert } from "~/components/Alert";
+import { REMOTE_KIND_TEXT } from "../session.constants";
+import { getResourcePoolRemoteKind } from "../session.utils";
 import type { ImageToCheck } from "../sessionsV2.types";
 import useImagePlatformCompatibility from "../useImagePlatformCompatibility.hook";
 import useResourcePoolByClassId from "../useResourcePoolByClassId.hook";
-import useResourcePoolRemoteKind, {
-  REMOTE_KIND_TEXT,
-} from "../useResourcePoolRemoteKind.hook";
 import ImagePlatformMismatchMessage from "./ImagePlatformMismatchMessage";
 
 interface SessionClassRemoteAlertProps {
@@ -43,7 +42,7 @@ export default function SessionClassRemoteAlert({
   resourceClassId,
 }: SessionClassRemoteAlertProps) {
   const { resourcePool } = useResourcePoolByClassId(resourceClassId);
-  const kind = useResourcePoolRemoteKind(resourcePool);
+  const kind = getResourcePoolRemoteKind(resourcePool);
   const imageCompatibility = useImagePlatformCompatibility(
     kind != null ? image : undefined,
     resourcePool?.platform,

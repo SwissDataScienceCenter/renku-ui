@@ -29,12 +29,11 @@ import {
   useGetOauth2ProvidersQuery,
 } from "~/features/connectedServices/api/connectedServices.api";
 import { ABSOLUTE_ROUTES } from "~/routing/routes.constants";
+import { REMOTE_KIND_TEXT } from "../session.constants";
+import { getResourcePoolRemoteKind } from "../session.utils";
 import type { ImageToCheck } from "../sessionsV2.types";
 import useImagePlatformCompatibility from "../useImagePlatformCompatibility.hook";
 import useResourcePoolByClassId from "../useResourcePoolByClassId.hook";
-import useResourcePoolRemoteKind, {
-  REMOTE_KIND_TEXT,
-} from "../useResourcePoolRemoteKind.hook";
 import ImagePlatformMismatchMessage from "./ImagePlatformMismatchMessage";
 
 interface SessionRemotePoolBadgeProps {
@@ -57,7 +56,7 @@ export default function SessionRemotePoolBadge({
     ({ id }) => id === resourceClassId,
   );
 
-  const kind = useResourcePoolRemoteKind(resourcePool);
+  const kind = getResourcePoolRemoteKind(resourcePool);
   const imageCompatibility = useImagePlatformCompatibility(
     kind != null ? image : undefined,
     resourcePool?.platform,

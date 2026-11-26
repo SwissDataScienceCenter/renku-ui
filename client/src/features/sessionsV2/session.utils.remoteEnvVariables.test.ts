@@ -25,6 +25,7 @@ import {
   getEnvVariableOverridesFromSearchParams,
   getMissingRequiredEnvVariables,
   getRequiredEnvVariables,
+  getResourcePoolRemoteKind,
   isEnvVariableSet,
   matchesRemotePool,
 } from "./session.utils";
@@ -77,6 +78,20 @@ describe("matchesRemotePool", () => {
         apiDomain: "example.org",
       }),
     ).toBe(true);
+  });
+});
+
+describe("getResourcePoolRemoteKind", () => {
+  it("uses the remote kind, then the cluster, and is null for local pools", () => {
+    expect(getResourcePoolRemoteKind(firecrestPool("https://a.b"))).toBe(
+      "firecrest",
+    );
+    expect(getResourcePoolRemoteKind(runaiPool("https://a.b"))).toBe("runai");
+    expect(
+      getResourcePoolRemoteKind({ cluster_id: "01JEXAMPLECLUSTER0000000000" }),
+    ).toBe("cluster");
+    expect(getResourcePoolRemoteKind({})).toBeNull();
+    expect(getResourcePoolRemoteKind(undefined)).toBeNull();
   });
 });
 

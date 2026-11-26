@@ -370,6 +370,26 @@ export const LAUNCHER_BY_CATEGORY: Record<
   },
 };
 
+export type RemoteKind = RemoteConfiguration["kind"] | "cluster";
+
+export const REMOTE_KIND_TEXT: Record<
+  RemoteKind,
+  { title: string; description: string }
+> = {
+  firecrest: {
+    title: "HPC resource pool",
+    description: "on a remote HPC system through FirecREST", // eslint-disable-line spellcheck/spell-checker
+  },
+  runai: {
+    title: "Run:ai resource pool",
+    description: "on a Run:ai cluster",
+  },
+  cluster: {
+    title: "Remote resource pool",
+    description: "on a remote cluster",
+  },
+};
+
 /** Identifies remote resource pools by remote kind and the domain hosting their API. */
 export interface RemotePoolMatcher {
   kind: RemoteConfiguration["kind"];
