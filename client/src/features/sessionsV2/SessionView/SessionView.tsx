@@ -656,6 +656,14 @@ export function SessionView({
             </CardHeader>
             <CardBody>
               {resourceDetails}
+              {launcher?.resource_class_id != null && (
+                <SessionRemotePoolBadge
+                  className="mt-2"
+                  image={getLauncherImageToCheck(launcher)}
+                  launcherInlineText={launcherDefinition.text.inline}
+                  resourceClassId={launcher.resource_class_id}
+                />
+              )}
               {launcherResourceClass && !userLauncherResourceClass && (
                 <p>
                   <ExclamationTriangleFill
