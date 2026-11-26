@@ -37,8 +37,8 @@ import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
 import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
-  usePatchProjectStorageV2ByStorageIdMutation,
-  usePostProjectStorageV2Mutation,
+  usePatchStoragesByStorageIdMutation,
+  usePostStoragesMutation,
 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   ProjectConnectDataConnectorModeSwitch,
@@ -192,9 +192,9 @@ function ProjectStorageV2FormInner({
     [resourcePoolsWithStorageQuotas, selectedStorageQuotaId],
   );
 
-  const [postStorage, postStorageStatus] = usePostProjectStorageV2Mutation();
+  const [postStorage, postStorageStatus] = usePostStoragesMutation();
   const [patchStorage, patchStorageStatus] =
-    usePatchProjectStorageV2ByStorageIdMutation();
+    usePatchStoragesByStorageIdMutation();
 
   const onSubmit = useCallback(
     (values: ProjectStorageV2FormValues) => {

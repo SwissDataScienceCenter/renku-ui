@@ -498,7 +498,7 @@
         "tags": ["projects"]
       }
     },
-    "/project_storage_v2": {
+    "/storages": {
       "get": {
         "summary": "Get all visible project storages",
         "description": "The list of storages can be filtered using the\nquery parameters.\n",
@@ -560,7 +560,7 @@
         "tags": ["project_storage"]
       }
     },
-    "/project_storage_v2/{storage_id}": {
+    "/storages/{storage_id}": {
       "parameters": [
         {
           "in": "path",

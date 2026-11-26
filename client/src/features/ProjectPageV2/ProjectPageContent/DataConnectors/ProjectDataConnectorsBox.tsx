@@ -31,7 +31,7 @@ import {
 
 import {
   useGetProjectsByProjectIdStorageQuery,
-  useGetProjectStorageV2Query,
+  useGetStoragesQuery,
   type ProjectStorage,
   type ProjectStorageV2,
 } from "~/features/cloudStorage/api/projectCloudStorage.api";
@@ -89,7 +89,7 @@ export default function ProjectDataConnectorsBox({
     data: projectStoragesV2,
     error: projectStoragesV2Error,
     isLoading: isLoadingProjectStoragesV2,
-  } = useGetProjectStorageV2Query({
+  } = useGetStoragesQuery({
     params: { project_id: project.id },
   });
 

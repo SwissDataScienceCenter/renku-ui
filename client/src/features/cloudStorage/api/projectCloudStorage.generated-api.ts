@@ -134,41 +134,33 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({ url: `/projects/${queryArg.projectId}/storage` }),
     }),
-    getProjectStorageV2: build.query<
-      GetProjectStorageV2ApiResponse,
-      GetProjectStorageV2ApiArg
-    >({
+    getStorages: build.query<GetStoragesApiResponse, GetStoragesApiArg>({
       query: (queryArg) => ({
-        url: `/project_storage_v2`,
+        url: `/storages`,
         params: {
           params: queryArg.params,
         },
       }),
     }),
-    postProjectStorageV2: build.mutation<
-      PostProjectStorageV2ApiResponse,
-      PostProjectStorageV2ApiArg
-    >({
+    postStorages: build.mutation<PostStoragesApiResponse, PostStoragesApiArg>({
       query: (queryArg) => ({
-        url: `/project_storage_v2`,
+        url: `/storages`,
         method: "POST",
         body: queryArg.projectStoragePostV2,
       }),
     }),
-    getProjectStorageV2ByStorageId: build.query<
-      GetProjectStorageV2ByStorageIdApiResponse,
-      GetProjectStorageV2ByStorageIdApiArg
+    getStoragesByStorageId: build.query<
+      GetStoragesByStorageIdApiResponse,
+      GetStoragesByStorageIdApiArg
     >({
-      query: (queryArg) => ({
-        url: `/project_storage_v2/${queryArg.storageId}`,
-      }),
+      query: (queryArg) => ({ url: `/storages/${queryArg.storageId}` }),
     }),
-    patchProjectStorageV2ByStorageId: build.mutation<
-      PatchProjectStorageV2ByStorageIdApiResponse,
-      PatchProjectStorageV2ByStorageIdApiArg
+    patchStoragesByStorageId: build.mutation<
+      PatchStoragesByStorageIdApiResponse,
+      PatchStoragesByStorageIdApiArg
     >({
       query: (queryArg) => ({
-        url: `/project_storage_v2/${queryArg.storageId}`,
+        url: `/storages/${queryArg.storageId}`,
         method: "PATCH",
         body: queryArg.projectStoragePatchV2,
         headers: {
@@ -176,12 +168,12 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
-    deleteProjectStorageV2ByStorageId: build.mutation<
-      DeleteProjectStorageV2ByStorageIdApiResponse,
-      DeleteProjectStorageV2ByStorageIdApiArg
+    deleteStoragesByStorageId: build.mutation<
+      DeleteStoragesByStorageIdApiResponse,
+      DeleteStoragesByStorageIdApiArg
     >({
       query: (queryArg) => ({
-        url: `/project_storage_v2/${queryArg.storageId}`,
+        url: `/storages/${queryArg.storageId}`,
         method: "DELETE",
       }),
     }),
@@ -268,31 +260,31 @@ export type GetProjectsByProjectIdStorageApiResponse =
 export type GetProjectsByProjectIdStorageApiArg = {
   projectId: Ulid;
 };
-export type GetProjectStorageV2ApiResponse =
+export type GetStoragesApiResponse =
   /** status 200 The list of all visible project storages */ ProjectStoragesV2;
-export type GetProjectStorageV2ApiArg = {
+export type GetStoragesApiArg = {
   params?: ProjectStoragesGetQueryV2;
 };
-export type PostProjectStorageV2ApiResponse =
+export type PostStoragesApiResponse =
   /** status 201 The newly created project storage */ ProjectStorageV2;
-export type PostProjectStorageV2ApiArg = {
+export type PostStoragesApiArg = {
   projectStoragePostV2: ProjectStoragePostV2;
 };
-export type GetProjectStorageV2ByStorageIdApiResponse =
+export type GetStoragesByStorageIdApiResponse =
   /** status 200 The project storage */ ProjectStorageV2;
-export type GetProjectStorageV2ByStorageIdApiArg = {
+export type GetStoragesByStorageIdApiArg = {
   storageId: Ulid;
 };
-export type PatchProjectStorageV2ByStorageIdApiResponse =
+export type PatchStoragesByStorageIdApiResponse =
   /** status 200 The updated project storage */ ProjectStorageV2;
-export type PatchProjectStorageV2ByStorageIdApiArg = {
+export type PatchStoragesByStorageIdApiArg = {
   storageId: Ulid;
   /** If-Match header, for avoiding mid-air collisions */
   "If-Match": ETag;
   projectStoragePatchV2: ProjectStoragePatchV2;
 };
-export type DeleteProjectStorageV2ByStorageIdApiResponse = unknown;
-export type DeleteProjectStorageV2ByStorageIdApiArg = {
+export type DeleteStoragesByStorageIdApiResponse = unknown;
+export type DeleteStoragesByStorageIdApiArg = {
   storageId: Ulid;
 };
 export type RCloneOption = {
@@ -477,9 +469,9 @@ export const {
   usePatchStorageByStorageIdMutation,
   useDeleteStorageByStorageIdMutation,
   useGetProjectsByProjectIdStorageQuery,
-  useGetProjectStorageV2Query,
-  usePostProjectStorageV2Mutation,
-  useGetProjectStorageV2ByStorageIdQuery,
-  usePatchProjectStorageV2ByStorageIdMutation,
-  useDeleteProjectStorageV2ByStorageIdMutation,
+  useGetStoragesQuery,
+  usePostStoragesMutation,
+  useGetStoragesByStorageIdQuery,
+  usePatchStoragesByStorageIdMutation,
+  useDeleteStoragesByStorageIdMutation,
 } = injectedRtkApi;

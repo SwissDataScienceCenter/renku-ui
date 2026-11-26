@@ -4027,6 +4027,7 @@
           },
           "display_name": {
             "type": "string",
+            "minLength": 3,
             "example": "Azure Files (SMB)"
           },
           "min_size": {
@@ -4047,6 +4048,7 @@
         "properties": {
           "display_name": {
             "type": "string",
+            "minLength": 3,
             "example": "Azure Files (SMB)"
           },
           "min_size": {

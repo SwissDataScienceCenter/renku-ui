@@ -18,17 +18,14 @@
 
 import {
   projectCloudStorageGeneratedApi,
-  type GetProjectStorageV2ApiArg,
-  type GetProjectStorageV2ApiResponse,
+  type GetStoragesApiArg,
+  type GetStoragesApiResponse,
 } from "./projectCloudStorage.generated-api";
 
 // Fixes some API endpoints
 const withFixedEndpoints = projectCloudStorageGeneratedApi.injectEndpoints({
   endpoints: (build) => ({
-    getProjectStorageV2: build.query<
-      GetProjectStorageV2ApiResponse,
-      GetProjectStorageV2ApiArg
-    >({
+    getStorages: build.query<GetStoragesApiResponse, GetStoragesApiArg>({
       query: ({ params }) => ({
         url: `/project_storage_v2`,
         params,
@@ -77,7 +74,7 @@ const projectCloudStorageApi = withFixedEndpoints.enhanceEndpoints({
     patchStorageAllowByProjectId: {
       invalidatesTags: ["ProjectStorageAllow"],
     },
-    getProjectStorageV2: {
+    getStorages: {
       providesTags: (result, _error, { params }) =>
         result
           ? [
@@ -97,12 +94,7 @@ const projectCloudStorageApi = withFixedEndpoints.enhanceEndpoints({
               },
             ],
     },
-    patchProjectStorageV2ByStorageId: {
-      invalidatesTags: (_result, _error, { storageId }) => [
-        { id: storageId, type: "ProjectStorageV2" },
-      ],
-    },
-    postProjectStorageV2: {
+    postStorages: {
       invalidatesTags: (
         _result,
         _error,
@@ -126,7 +118,12 @@ const projectCloudStorageApi = withFixedEndpoints.enhanceEndpoints({
         },
       ],
     },
-    deleteProjectStorageV2ByStorageId: {
+    patchStoragesByStorageId: {
+      invalidatesTags: (_result, _error, { storageId }) => [
+        { id: storageId, type: "ProjectStorageV2" },
+      ],
+    },
+    deleteStoragesByStorageId: {
       invalidatesTags: ["ProjectStorageV2"],
     },
   },
@@ -146,10 +143,10 @@ export const {
   usePatchStorageAllowByProjectIdMutation,
 
   // "project storage v2" hooks
-  useGetProjectStorageV2Query,
-  usePostProjectStorageV2Mutation,
-  usePatchProjectStorageV2ByStorageIdMutation,
-  useDeleteProjectStorageV2ByStorageIdMutation,
+  useGetStoragesQuery,
+  usePostStoragesMutation,
+  usePatchStoragesByStorageIdMutation,
+  useDeleteStoragesByStorageIdMutation,
 } = projectCloudStorageApi;
 
 export type * from "./projectCloudStorage.generated-api";
