@@ -41,6 +41,7 @@ import { dataConnectorsOverrideFromConfig } from "../cloudStorage/projectCloudSt
 import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { resetFavicon, setFavicon } from "../display/displaySlice";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
+import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetResourcePoolsQuery } from "./api/computeResources.generated-api";
@@ -72,6 +73,7 @@ import SessionRemotePoolModal, {
 import SessionRepositoriesModal from "./SessionRepositoriesModal";
 import SessionSecretsModal from "./SessionSecretsModal";
 import SessionSshKeyRequiredModal from "./SessionSshKeyRequiredModal";
+import EnvVariablesModal from "./SessionView/EnvVariablesModal";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type {
   SessionStartDataConnectorConfiguration,
@@ -818,6 +820,14 @@ function StartSessionRemotePoolModal({
   );
 
   const showModal = !startSessionOptionsV2.remotePoolReady;
+  const { write: canWriteProject } = useProjectPermissions({
+    projectId: project.id,
+  });
+  const [isEnvVariablesOpen, setIsEnvVariablesOpen] = useState(false);
+  const toggleEnvVariables = useCallback(
+    () => setIsEnvVariablesOpen((open) => !open),
+    [],
+  );
 
   const steps = [
     {
@@ -848,10 +858,18 @@ function StartSessionRemotePoolModal({
           status={steps}
         />
         <SessionRemotePoolModal
-          isOpen={showModal}
+          isOpen={showModal && !isEnvVariablesOpen}
+          onEditEnvVariables={canWriteProject ? toggleEnvVariables : undefined}
           project={project}
           {...remotePoolIssues}
         />
+        {canWriteProject && (
+          <EnvVariablesModal
+            isOpen={isEnvVariablesOpen}
+            launcher={launcher}
+            toggle={toggleEnvVariables}
+          />
+        )}
       </div>
     </div>
   );

@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
-import { SkipForward, XLg } from "react-bootstrap-icons";
+import { Pencil, SkipForward, XLg } from "react-bootstrap-icons";
 import { generatePath, useNavigate } from "react-router";
 import {
   Button,
@@ -48,19 +48,21 @@ export interface SessionRemotePoolIssues {
 
 interface SessionRemotePoolModalProps extends SessionRemotePoolIssues {
   isOpen: boolean;
-  project: Project;
-  onSkip?: () => void;
   onCancel?: () => void;
+  onEditEnvVariables?: () => void;
+  onSkip?: () => void;
+  project: Project;
 }
 
 export default function SessionRemotePoolModal({
+  imageCompatibility,
   isOpen,
+  missingEnvVariables,
+  onCancel: onCancelProp,
+  onEditEnvVariables,
+  onSkip: onSkipProp,
   project,
   resourcePool,
-  missingEnvVariables,
-  imageCompatibility,
-  onSkip: onSkipProp,
-  onCancel: onCancelProp,
 }: SessionRemotePoolModalProps) {
   const navigate = useNavigate();
   const defaultOnCancel = useCallback(() => {
@@ -108,6 +110,18 @@ export default function SessionRemotePoolModal({
                 missing={missingEnvVariables}
                 resourcePoolName={resourcePool.name}
               />
+              {onEditEnvVariables != null && (
+                <Button
+                  className="mt-3"
+                  color="outline-primary"
+                  data-cy="session-remote-pool-edit-env-variables"
+                  onClick={onEditEnvVariables}
+                  size="sm"
+                >
+                  <Pencil className="me-1" />
+                  Edit variables
+                </Button>
+              )}
             </ListGroupItem>
           )}
           {hasImageMismatch && (
