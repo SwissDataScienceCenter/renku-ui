@@ -51,9 +51,6 @@ interface SessionRemotePoolModalProps extends SessionRemotePoolIssues {
   project: Project;
   onSkip?: () => void;
   onCancel?: () => void;
-  continueLabel?: string;
-  title?: string;
-  warningIntro?: string;
 }
 
 export default function SessionRemotePoolModal({
