@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useRef } from "react";
-import { ExclamationTriangleFill, Pencil } from "react-bootstrap-icons";
+import { ExclamationTriangleFill, Pencil, Plus } from "react-bootstrap-icons";
 import {
   Button,
   PopoverBody,
@@ -26,19 +26,52 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 
-import { WarnAlert } from "~/components/Alert";
+import { InfoAlert, WarnAlert } from "~/components/Alert";
 import ExternalLink from "~/components/ExternalLink";
 import RenkuBadge from "~/components/renkuBadge/RenkuBadge";
 import type { ResourcePoolWithIdFiltered } from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import type { RemotePoolRequiredEnvVariable } from "../session.constants";
-import { getMissingRequiredEnvVariables } from "../session.utils";
+import {
+  getMissingRequiredEnvVariables,
+  getRequiredEnvVariables,
+} from "../session.utils";
 import useResourcePoolByClassId from "../useResourcePoolByClassId.hook";
 
 function getTitle(missing: RemotePoolRequiredEnvVariable[]): string {
   return missing.length === 1
     ? "Environment variable required"
     : "Environment variables required";
+}
+
+// Name, expected value, example and guide link of a required variable.
+function RequiredEnvVariableText({
+  env,
+}: {
+  env: RemotePoolRequiredEnvVariable;
+}) {
+  return (
+    <>
+      <code>{env.name}</code>: {env.valueDescription}
+      {env.example && (
+        <>
+          {" "}
+          (e.g. <code>{env.example}</code>)
+        </>
+      )}
+      .
+      {env.docsUrl && (
+        <>
+          {" "}
+          See the{" "}
+          <ExternalLink href={env.docsUrl}>
+            {env.platformName} guide
+          </ExternalLink>
+          .
+        </>
+      )}
+    </>
+  );
 }
 
 export function MissingEnvVariablesDetails({
@@ -60,24 +93,7 @@ export function MissingEnvVariablesDetails({
       <ul className={cx("mb-0", "ps-3")}>
         {missing.map((env) => (
           <li key={env.name}>
-            <code>{env.name}</code>: {env.valueDescription}
-            {env.example && (
-              <>
-                {" "}
-                (e.g. <code>{env.example}</code>)
-              </>
-            )}
-            .
-            {env.docsUrl && (
-              <>
-                {" "}
-                See the{" "}
-                <ExternalLink href={env.docsUrl}>
-                  {env.platformName} guide
-                </ExternalLink>
-                .
-              </>
-            )}
+            <RequiredEnvVariableText env={env} />
           </li>
         ))}
       </ul>
@@ -185,5 +201,71 @@ export function RemotePoolEnvVariablesAlert({
         </Button>
       )}
     </WarnAlert>
+  );
+}
+
+interface RemotePoolEnvVariablesInfoProps {
+  className?: string;
+  envVariables?: { name: string; value?: string }[];
+  onAddEnvVariable?: (name: string) => void;
+  resourceClassId: number | null | undefined;
+}
+
+// Lists required variables with a shortcut button
+export function RemotePoolEnvVariablesInfo({
+  className,
+  envVariables,
+  onAddEnvVariable,
+  resourceClassId,
+}: RemotePoolEnvVariablesInfoProps) {
+  const { resourcePool } = useResourcePoolByClassId(resourceClassId);
+  const required = getRequiredEnvVariables(resourcePool);
+
+  if (resourcePool == null || required.length === 0) return null;
+
+  return (
+    <InfoAlert
+      className={className}
+      data-cy="remote-pool-env-variables-info"
+      dismissible={false}
+      timeout={0}
+    >
+      <p className="mb-2">
+        The <span className="fw-bold">{resourcePool.name}</span> resource pool
+        requires{" "}
+        {required.length === 1
+          ? "this environment variable"
+          : "these environment variables"}
+        :
+      </p>
+      <ul className={cx("mb-0", "ps-3")}>
+        {required.map((env) => {
+          const isInForm = !!envVariables?.some(
+            ({ name }) => name === env.name,
+          );
+          return (
+            <li
+              className="mb-1"
+              data-cy={`remote-pool-env-variables-info-${env.name}`}
+              key={env.name}
+            >
+              <RequiredEnvVariableText env={env} />
+              {!isInForm && onAddEnvVariable != null && (
+                <Button
+                  className="ms-2"
+                  color="primary"
+                  data-cy={`remote-pool-env-variables-add-${env.name}`}
+                  onClick={() => onAddEnvVariable(env.name)}
+                  size="sm"
+                >
+                  <Plus className="me-1" />
+                  Add
+                </Button>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </InfoAlert>
   );
 }

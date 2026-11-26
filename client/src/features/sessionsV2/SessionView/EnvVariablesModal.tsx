@@ -23,6 +23,7 @@ import {
   Controller,
   useFieldArray,
   useForm,
+  useWatch,
   type Control,
   type FieldErrors,
   type UseFieldArrayRemove,
@@ -46,6 +47,7 @@ import type {
   SessionLauncherPatch,
 } from "../api/sessionLaunchersV2.api";
 import { usePatchSessionLaunchersByLauncherIdMutation as useUpdateSessionLauncherMutation } from "../api/sessionLaunchersV2.api";
+import { RemotePoolEnvVariablesInfo } from "../components/RemotePoolEnvVariables";
 import {
   getLauncherCategory,
   getLauncherCategoryDefinition,
@@ -252,9 +254,12 @@ export default function EnvVariablesModal({
   const {
     control,
     formState: { errors, isDirty },
+    getValues,
     handleSubmit,
     register,
     reset,
+    setFocus,
+    setValue,
   } = useForm<EnvVariablesForm>({
     defaultValues,
   });
@@ -273,6 +278,30 @@ export default function EnvVariablesModal({
     append({ name: "", value: "" });
     onFormChange();
   }, [append, onFormChange]);
+
+  // Add a variable required by the resource pool, reusing an empty row if any
+  const envVariables = useWatch({ control, name: "envVariables" });
+  const onAddRequiredEnvVariable = useCallback(
+    (name: string) => {
+      const current = getValues("envVariables");
+      const emptyIndex = current.findIndex(
+        (env) => env.name === "" && env.value === "",
+      );
+      if (emptyIndex >= 0) {
+        setValue(`envVariables.${emptyIndex}.name`, name, {
+          shouldDirty: true,
+        });
+        setFocus(`envVariables.${emptyIndex}.value`);
+      } else {
+        append(
+          { name, value: "" },
+          { focusName: `envVariables.${current.length}.value` },
+        );
+      }
+      onFormChange();
+    },
+    [append, getValues, onFormChange, setFocus, setValue],
+  );
 
   const onSubmit = useCallback(
     (data: EnvVariablesForm) => {
@@ -329,6 +358,11 @@ export default function EnvVariablesModal({
       </ModalHeader>
       <ModalBody>
         <>
+          <RemotePoolEnvVariablesInfo
+            envVariables={envVariables}
+            onAddEnvVariable={onAddRequiredEnvVariable}
+            resourceClassId={launcher.resource_class_id}
+          />
           <RStudioInfo />
           {result.isSuccess && (
             <ConfirmationUpdate launcherCategory={launcherCategory} />
