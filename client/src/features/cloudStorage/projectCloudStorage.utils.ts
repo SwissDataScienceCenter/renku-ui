@@ -127,7 +127,11 @@ export function getSchemaStorage(
         return current;
       }
       const override = CLOUD_STORAGE_OVERRIDE.storage[element.prefix];
-      if (override && !override.hide) {
+      console.log({ prefix: element.prefix, override });
+      if (override /* && !override.hide*/) {
+        if (override.hide) {
+          return current;
+        }
         current.push({
           ...element,
           name: override.name ?? element.name,
@@ -222,7 +226,8 @@ export function getSchema(schema: CloudStorageSchema[], targetSchema?: string) {
   if (!targetSchema) return;
   const currentSchema = schema.find((s) => s.prefix === targetSchema);
   const override = CLOUD_STORAGE_OVERRIDE.storage[targetSchema];
-  if (currentSchema && override && !override.hide) {
+  console.log({ targetSchema, override });
+  if (currentSchema && override /*&& !override.hide*/) {
     return {
       ...currentSchema,
       name: override.name ?? currentSchema.name,
