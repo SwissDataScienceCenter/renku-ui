@@ -27,7 +27,7 @@ const withFixedEndpoints = projectCloudStorageGeneratedApi.injectEndpoints({
   endpoints: (build) => ({
     getStorages: build.query<GetStoragesApiResponse, GetStoragesApiArg>({
       query: ({ params }) => ({
-        url: `/project_storage_v2`,
+        url: `/storages`,
         params,
       }),
     }),
