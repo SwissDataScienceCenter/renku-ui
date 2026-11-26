@@ -35,10 +35,10 @@ import {
 import { InfoAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import { Loader } from "~/components/Loader";
-import type { ProjectStorageV2 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   usePatchStoragesByStorageIdMutation,
   usePostStoragesMutation,
+  type ProjectStorageV2,
 } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import {
   ProjectConnectDataConnectorModeSwitch,
@@ -263,7 +263,10 @@ function ProjectStorageV2FormInner({
               resourcePoolsWithStorageQuotas={resourcePoolsWithStorageQuotas}
             />
             {selectedStorageQuota && (
-              <StorageQuotaResources storageQuota={selectedStorageQuota} />
+              <StorageQuotaResources
+                className="ps-1"
+                storageQuota={selectedStorageQuota}
+              />
             )}
           </div>
         )}

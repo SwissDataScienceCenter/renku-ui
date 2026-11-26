@@ -168,6 +168,32 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
         { id: `LIST-${resourcePoolId}`, type: "ResourcePoolMember" },
       ],
     },
+    getStorageFlavors: {
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                id,
+                type: "StorageFlavor" as const,
+              })),
+              { id: "LIST", type: "StorageFlavor" },
+            ]
+          : ["StorageFlavor"],
+    },
+    postStorageFlavors: {
+      invalidatesTags: [{ id: "LIST", type: "StorageFlavor" }],
+    },
+    patchStorageFlavorsByStorageFlavorId: {
+      invalidatesTags: (_result, _error, { storageFlavorId }) => [
+        { id: storageFlavorId, type: "StorageFlavor" },
+      ],
+    },
+    deleteStorageFlavorsByStorageFlavorId: {
+      invalidatesTags: (_result, _error, { storageFlavorId }) => [
+        { id: storageFlavorId, type: "StorageFlavor" },
+        { id: "LIST", type: "StorageFlavor" },
+      ],
+    },
     getStorageQuotas: {
       providesTags: (result) =>
         result
@@ -180,9 +206,23 @@ export const computeResourcesApi = withFixedEndpoints.enhanceEndpoints({
             ]
           : [{ id: "LIST", type: "StorageQuota" }],
     },
+    postStorageQuotas: {
+      invalidatesTags: [{ id: "LIST", type: "StorageQuota" }],
+    },
     getStorageQuotasByStorageQuotaId: {
       providesTags: (result) =>
         result ? [{ id: result.id, type: "StorageQuota" }] : ["StorageQuota"],
+    },
+    patchStorageQuotasByStorageQuotaId: {
+      invalidatesTags: (_result, _error, { storageQuotaId }) => [
+        { id: storageQuotaId, type: "StorageQuota" },
+      ],
+    },
+    deleteStorageQuotasByStorageQuotaId: {
+      invalidatesTags: (_result, _error, { storageQuotaId }) => [
+        { id: storageQuotaId, type: "StorageQuota" },
+        { id: "LIST", type: "StorageQuota" },
+      ],
     },
     getStorageQuotasByStorageQuotaIdResources: {
       providesTags: (result) =>
@@ -219,11 +259,17 @@ export const {
   useDeleteResourcePoolsByResourcePoolIdMembersAndMemberTypeMemberIdMutation,
 
   // "storage flavors" hooks
-  // TODO
+  useGetStorageFlavorsQuery,
+  usePostStorageFlavorsMutation,
+  usePatchStorageFlavorsByStorageFlavorIdMutation,
+  useDeleteStorageFlavorsByStorageFlavorIdMutation,
 
   // "storage quotas" hooks
   useGetStorageQuotasQuery,
+  usePostStorageQuotasMutation,
   useGetStorageQuotasByStorageQuotaIdQuery,
+  usePatchStorageQuotasByStorageQuotaIdMutation,
+  useDeleteStorageQuotasByStorageQuotaIdMutation,
   useGetStorageQuotasByStorageQuotaIdResourcesQuery,
 } = computeResourcesApi;
 

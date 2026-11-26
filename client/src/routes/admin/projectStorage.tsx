@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import ProjectStorageAllowSection from "~/features/admin/ProjectStorageAllowSection";
+import StorageSections from "~/features/admin/StorageSections";
 
 export default function AdminProjectStoragePage() {
-  return <ProjectStorageAllowSection />;
+  return <StorageSections />;
 }
