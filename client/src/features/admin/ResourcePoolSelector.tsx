@@ -98,7 +98,9 @@ export default function ResourcePoolSelector<T extends FieldValues>({
 
   return (
     <>
-      <Label for={`${idPrefix}-resoure-pool-select-input`}>Resource pool</Label>
+      <Label for={`${idPrefix}-resource-pool-select-input`}>
+        Resource pool
+      </Label>
       <Controller
         {...controllerProps}
         render={({
@@ -106,7 +108,7 @@ export default function ResourcePoolSelector<T extends FieldValues>({
           fieldState: { error },
         }) => (
           <>
-            <div data-cy="resoure-pool-select">
+            <div data-cy="resource-pool-select">
               <ResourcePoolSelect
                 idPrefix={idPrefix}
                 defaultValue={defaultValue}
@@ -190,8 +192,8 @@ function ResourcePoolSelect({
 
   return (
     <Select
-      id={`${idPrefix}-resoure-pool-select`}
-      inputId={`${idPrefix}-resoure-pool-select-input`}
+      id={`${idPrefix}-resource-pool-select`}
+      inputId={`${idPrefix}-resource-pool-select-input`}
       name={name}
       isClearable={false}
       isSearchable={false}
