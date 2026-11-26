@@ -134,6 +134,49 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({ url: `/projects/${queryArg.projectId}/storage` }),
     }),
+    getStorages: build.query<GetStoragesApiResponse, GetStoragesApiArg>({
+      query: (queryArg) => ({
+        url: `/storages`,
+        params: {
+          params: queryArg.params,
+        },
+      }),
+    }),
+    postStorages: build.mutation<PostStoragesApiResponse, PostStoragesApiArg>({
+      query: (queryArg) => ({
+        url: `/storages`,
+        method: "POST",
+        body: queryArg.projectStoragePostV2,
+      }),
+    }),
+    getStoragesByStorageId: build.query<
+      GetStoragesByStorageIdApiResponse,
+      GetStoragesByStorageIdApiArg
+    >({
+      query: (queryArg) => ({ url: `/storages/${queryArg.storageId}` }),
+    }),
+    patchStoragesByStorageId: build.mutation<
+      PatchStoragesByStorageIdApiResponse,
+      PatchStoragesByStorageIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storages/${queryArg.storageId}`,
+        method: "PATCH",
+        body: queryArg.projectStoragePatchV2,
+        headers: {
+          "If-Match": queryArg["If-Match"],
+        },
+      }),
+    }),
+    deleteStoragesByStorageId: build.mutation<
+      DeleteStoragesByStorageIdApiResponse,
+      DeleteStoragesByStorageIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/storages/${queryArg.storageId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -216,6 +259,33 @@ export type GetProjectsByProjectIdStorageApiResponse =
   /** status 200 The list of project storages (currently either one or empty). */ ProjectStorageList;
 export type GetProjectsByProjectIdStorageApiArg = {
   projectId: Ulid;
+};
+export type GetStoragesApiResponse =
+  /** status 200 The list of all visible project storages */ ProjectStoragesV2;
+export type GetStoragesApiArg = {
+  params?: ProjectStoragesGetQueryV2;
+};
+export type PostStoragesApiResponse =
+  /** status 201 The newly created project storage */ ProjectStorageV2;
+export type PostStoragesApiArg = {
+  projectStoragePostV2: ProjectStoragePostV2;
+};
+export type GetStoragesByStorageIdApiResponse =
+  /** status 200 The project storage */ ProjectStorageV2;
+export type GetStoragesByStorageIdApiArg = {
+  storageId: Ulid;
+};
+export type PatchStoragesByStorageIdApiResponse =
+  /** status 200 The updated project storage */ ProjectStorageV2;
+export type PatchStoragesByStorageIdApiArg = {
+  storageId: Ulid;
+  /** If-Match header, for avoiding mid-air collisions */
+  "If-Match": ETag;
+  projectStoragePatchV2: ProjectStoragePatchV2;
+};
+export type DeleteStoragesByStorageIdApiResponse = unknown;
+export type DeleteStoragesByStorageIdApiArg = {
+  storageId: Ulid;
 };
 export type RCloneOption = {
   /** name of the option */
@@ -354,6 +424,35 @@ export type ProjectStoragePatch = {
   mount_path?: string;
 };
 export type ProjectStorageList = ProjectStorage[];
+export type ProjectStorageV2 = {
+  id: Ulid;
+  project_id: Ulid;
+  storage_quota_id: Ulid;
+  requested_size: MaxStorageSize;
+  actual_size?: MaxStorageSize;
+  mount_path: string;
+  k8s_pvc_name?: string;
+  k8s_pvc_status?: string;
+  created_by: UserId;
+  creation_date: CreationDate;
+  updated_at: CreationDate;
+  etag: ETag;
+};
+export type ProjectStoragesV2 = ProjectStorageV2[];
+export type ProjectStoragesGetQueryV2 = {
+  project_id?: Ulid;
+  storage_quota_id?: Ulid;
+};
+export type ProjectStoragePostV2 = {
+  project_id: Ulid;
+  storage_quota_id: Ulid;
+  requested_size: MaxStorageSize;
+  mount_path: string;
+};
+export type ProjectStoragePatchV2 = {
+  requested_size?: MaxStorageSize;
+  mount_path?: string;
+};
 export const {
   useGetStorageSchemaQuery,
   usePostStorageSchemaValidateMutation,
@@ -370,4 +469,9 @@ export const {
   usePatchStorageByStorageIdMutation,
   useDeleteStorageByStorageIdMutation,
   useGetProjectsByProjectIdStorageQuery,
+  useGetStoragesQuery,
+  usePostStoragesMutation,
+  useGetStoragesByStorageIdQuery,
+  usePatchStoragesByStorageIdMutation,
+  useDeleteStoragesByStorageIdMutation,
 } = injectedRtkApi;

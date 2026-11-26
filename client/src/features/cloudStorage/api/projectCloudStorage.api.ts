@@ -16,50 +16,118 @@
  * limitations under the License.
  */
 
-import { projectCloudStorageGeneratedApi } from "./projectCloudStorage.generated-api";
+import {
+  projectCloudStorageGeneratedApi,
+  type GetStoragesApiArg,
+  type GetStoragesApiResponse,
+} from "./projectCloudStorage.generated-api";
+
+// Fixes some API endpoints
+const withFixedEndpoints = projectCloudStorageGeneratedApi.injectEndpoints({
+  endpoints: (build) => ({
+    getStorages: build.query<GetStoragesApiResponse, GetStoragesApiArg>({
+      query: ({ params }) => ({
+        url: `/storages`,
+        params,
+      }),
+    }),
+  }),
+  overrideExisting: true,
+});
 
 // Adds tag handling for cache management
-const projectCloudStorageApi = projectCloudStorageGeneratedApi.enhanceEndpoints(
-  {
-    addTagTypes: [
-      "CloudStorageSchema",
-      "ProjectStorage",
-      "ProjectStorageAllow",
-    ],
-    endpoints: {
-      getStorageSchema: {
-        providesTags: ["CloudStorageSchema"],
-      },
-      getProjectsByProjectIdStorage: {
-        providesTags: ["ProjectStorage"],
-      },
-      postStorage: {
-        invalidatesTags: ["ProjectStorage"],
-      },
-      deleteStorageByStorageId: {
-        invalidatesTags: ["ProjectStorage"],
-      },
-      patchStorageByStorageId: {
-        invalidatesTags: ["ProjectStorage"],
-      },
-      getStorageAllow: {
-        providesTags: ["ProjectStorageAllow"],
-      },
-      getStorageAllowByProjectId: {
-        providesTags: ["ProjectStorageAllow"],
-      },
-      postStorageAllow: {
-        invalidatesTags: ["ProjectStorageAllow"],
-      },
-      deleteStorageAllowByProjectId: {
-        invalidatesTags: ["ProjectStorageAllow"],
-      },
-      patchStorageAllowByProjectId: {
-        invalidatesTags: ["ProjectStorageAllow"],
-      },
+const projectCloudStorageApi = withFixedEndpoints.enhanceEndpoints({
+  addTagTypes: [
+    "CloudStorageSchema",
+    "ProjectStorage",
+    "ProjectStorageAllow",
+    "ProjectStorageV2",
+  ],
+  endpoints: {
+    getStorageSchema: {
+      providesTags: ["CloudStorageSchema"],
+    },
+    getProjectsByProjectIdStorage: {
+      providesTags: ["ProjectStorage"],
+    },
+    postStorage: {
+      invalidatesTags: ["ProjectStorage"],
+    },
+    deleteStorageByStorageId: {
+      invalidatesTags: ["ProjectStorage"],
+    },
+    patchStorageByStorageId: {
+      invalidatesTags: ["ProjectStorage"],
+    },
+    getStorageAllow: {
+      providesTags: ["ProjectStorageAllow"],
+    },
+    getStorageAllowByProjectId: {
+      providesTags: ["ProjectStorageAllow"],
+    },
+    postStorageAllow: {
+      invalidatesTags: ["ProjectStorageAllow"],
+    },
+    deleteStorageAllowByProjectId: {
+      invalidatesTags: ["ProjectStorageAllow"],
+    },
+    patchStorageAllowByProjectId: {
+      invalidatesTags: ["ProjectStorageAllow"],
+    },
+    getStorages: {
+      providesTags: (result, _error, { params }) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                id,
+                type: "ProjectStorageV2" as const,
+              })),
+              {
+                id: `LIST-${params?.project_id}-${params?.storage_quota_id}`,
+                type: "ProjectStorageV2",
+              },
+            ]
+          : [
+              {
+                id: `LIST-${params?.project_id}-${params?.storage_quota_id}`,
+                type: "ProjectStorageV2",
+              },
+            ],
+    },
+    postStorages: {
+      invalidatesTags: (
+        _result,
+        _error,
+        { projectStoragePostV2: { project_id, storage_quota_id } },
+      ) => [
+        {
+          id: `LIST-${project_id}-${storage_quota_id}`,
+          type: "ProjectStorageV2",
+        },
+        {
+          id: `LIST-${undefined}-${storage_quota_id}`,
+          type: "ProjectStorageV2",
+        },
+        {
+          id: `LIST-${project_id}-${undefined}`,
+          type: "ProjectStorageV2",
+        },
+        {
+          id: `LIST-${undefined}-${undefined}`,
+          type: "ProjectStorageV2",
+        },
+      ],
+    },
+    patchStoragesByStorageId: {
+      invalidatesTags: (_result, _error, { storageId }) => [
+        { id: storageId, type: "ProjectStorageV2" },
+      ],
+    },
+    deleteStoragesByStorageId: {
+      invalidatesTags: ["ProjectStorageV2"],
     },
   },
-);
+});
 
 export const {
   useGetStorageSchemaQuery,
@@ -73,6 +141,12 @@ export const {
   usePostStorageAllowMutation,
   useDeleteStorageAllowByProjectIdMutation,
   usePatchStorageAllowByProjectIdMutation,
+
+  // "project storage v2" hooks
+  useGetStoragesQuery,
+  usePostStoragesMutation,
+  usePatchStoragesByStorageIdMutation,
+  useDeleteStoragesByStorageIdMutation,
 } = projectCloudStorageApi;
 
 export type * from "./projectCloudStorage.generated-api";
