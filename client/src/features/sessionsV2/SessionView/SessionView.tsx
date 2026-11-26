@@ -83,9 +83,11 @@ import {
 } from "../api/sessionLaunchersV2.api";
 import AppRuntimeCard from "../apps/AppRuntimeCard";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
+import { RemotePoolEnvVariablesAlert } from "../components/RemotePoolEnvVariables";
 import ActiveSessionButton from "../components/SessionButton/ActiveSessionButton";
 import { ModifyResourcesLauncherModal } from "../components/SessionModals/ModifyResourcesLauncher";
 import UpdateSessionLauncherEnvironmentModal from "../components/SessionModals/UpdateSessionLauncherModal";
+import SessionRemotePoolBadge from "../components/SessionRemotePoolBadge";
 import { SessionRowResourceRequests } from "../components/SessionsList";
 import {
   SessionStatusV2Badge,
@@ -97,6 +99,7 @@ import {
   getJobAccordionTargetId,
   getLauncherCategory,
   getLauncherCategoryDefinition,
+  getLauncherImageToCheck,
   resolveOpenJobSubmissionId,
   safeStringify,
   sessionLauncherKindToCategory,
@@ -161,10 +164,21 @@ function SessionCard({
   project: Project;
 }) {
   const launcherCategory = sessionLauncherKindToCategory(session.session_type);
+  const launcherDefinition = getLauncherCategoryDefinition(launcherCategory);
   return (
     <SessionCardContent
       color={getSessionColor(session.status.state, launcherCategory)}
-      contentDescription={<SessionStatusV2Description session={session} />}
+      contentDescription={
+        <div>
+          <SessionStatusV2Description session={session} />
+          <SessionRemotePoolBadge
+            className="mt-2"
+            image={{ containerImage: session.image }}
+            launcherInlineText={launcherDefinition.text.inline}
+            resourceClassId={session.resource_class_id}
+          />
+        </div>
+      }
       contentLabel={<SessionStatusV2Badge session={session} />}
       contentSession={
         <ActiveSessionButton
@@ -428,6 +442,14 @@ export function SessionView({
           </OffcanvasHeaderWithType>
 
           {description && <p className="m-0">{description}</p>}
+          {launcher != null && (
+            <RemotePoolEnvVariablesAlert
+              launcher={launcher}
+              onEditEnvVariables={
+                permissions.write ? toggleEnvVariables : undefined
+              }
+            />
+          )}
           {isRestricted && (
             <Card>
               <CardBody className={cx("d-flex", "flex-row", "gap-2")}>
@@ -634,6 +656,14 @@ export function SessionView({
             </CardHeader>
             <CardBody>
               {resourceDetails}
+              {launcher?.resource_class_id != null && (
+                <SessionRemotePoolBadge
+                  className="mt-2"
+                  image={getLauncherImageToCheck(launcher)}
+                  launcherInlineText={launcherDefinition.text.inline}
+                  resourceClassId={launcher.resource_class_id}
+                />
+              )}
               {launcherResourceClass && !userLauncherResourceClass && (
                 <p>
                   <ExclamationTriangleFill
@@ -656,6 +686,7 @@ export function SessionView({
                 )}
               {launcher && launcherCategory && (
                 <ModifyResourcesLauncherModal
+                  image={getLauncherImageToCheck(launcher)}
                   isOpen={isModifyResourcesOpen}
                   toggleModal={toggleModifyResources}
                   resourceClassId={userLauncherResourceClass?.id}

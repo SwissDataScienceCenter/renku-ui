@@ -39,7 +39,10 @@ import {
   getLauncherCategoryDefinition,
   getLauncherChangeEffectMessage,
 } from "~/features/sessionsV2/session.utils";
-import { LauncherCategory } from "~/features/sessionsV2/sessionsV2.types";
+import type {
+  ImageToCheck,
+  LauncherCategory,
+} from "~/features/sessionsV2/sessionsV2.types";
 import {
   useGetResourcePoolsQuery,
   type ResourceClassWithId,
@@ -49,6 +52,7 @@ import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../session.constants";
+import SessionClassRemoteAlert from "../SessionClassRemoteAlert";
 import SessionClassSelector from "../SessionClassSelector";
 import {
   ErrorOrNotAvailableResourcePools,
@@ -56,6 +60,7 @@ import {
 } from "./ResourceClassWarning";
 
 interface ModifyResourcesLauncherModalProps {
+  image?: ImageToCheck;
   isOpen: boolean;
   toggleModal: () => void;
   resourceClassId?: number;
@@ -65,6 +70,7 @@ interface ModifyResourcesLauncherModalProps {
 }
 
 export function ModifyResourcesLauncherModal({
+  image,
   isOpen,
   sessionLauncherId,
   toggleModal,
@@ -219,6 +225,12 @@ export function ModifyResourcesLauncherModal({
         )}
         {!result.isSuccess && changeEffect}
         <div className="field-group">{selector}</div>
+        <SessionClassRemoteAlert
+          className="mt-2"
+          image={image}
+          launcherInlineText={categoryDefinition.text.inline}
+          resourceClassId={watchCurrentSessionClass?.id}
+        />
         {watchCurrentSessionClass && (
           <div className={cx("field-group", "mt-3")}>
             <div>

@@ -41,6 +41,7 @@ export interface StartSessionOptionsV2 {
   environmentVariables: SessionEnvironmentVariable[];
   imageReady: boolean;
   lfsAutoFetch: boolean;
+  remotePoolReady: boolean;
   repositories: SessionRepository[];
   repositoriesReady: boolean;
   sessionClass: number;

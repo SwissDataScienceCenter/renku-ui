@@ -18,6 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router";
 
 import useAppDispatch from "~/utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "~/utils/customHooks/useAppSelector.hook";
@@ -27,10 +28,20 @@ import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
 import { useGetSessionsImagesQuery } from "./api/sessionsV2.api";
 import { DEFAULT_URL } from "./session.constants";
 import {
+  applyEnvVariableOverrides,
+  getEnvVariableOverridesFromSearchParams,
+  getLauncherImageToCheck,
+  getMissingRequiredEnvVariables,
+  getResourcePoolRemoteKind,
+} from "./session.utils";
+import {
+  remotePoolNeedsAttention,
   repositoriesNeedAttention,
   sshKeyNeedsAttention,
 } from "./sessionLaunchValidation.utils";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
+import useImagePlatformCompatibility from "./useImagePlatformCompatibility.hook";
+import useResourcePoolByClassId from "./useResourcePoolByClassId.hook";
 import useSessionLaunchPrerequisites from "./useSessionLaunchPrerequisites.hook";
 import useSessionResourceClass from "./useSessionResourceClass.hook";
 
@@ -94,6 +105,63 @@ export default function useSessionLauncherState({
 
   const startSessionOptionsV2 = useAppSelector(
     ({ startSessionOptionsV2 }) => startSessionOptionsV2,
+  );
+
+  // Check the launch against the requirements of the selected remote pool
+  const [searchParams] = useSearchParams();
+  const selectedSessionClass = startSessionOptionsV2.sessionClass;
+  const {
+    resourcePool: selectedResourcePool,
+    isLoading: isLoadingSelectedResourcePool,
+  } = useResourcePoolByClassId(
+    selectedSessionClass !== 0 ? selectedSessionClass : undefined,
+  );
+  const isRemotePool = getResourcePoolRemoteKind(selectedResourcePool) != null;
+  const missingRemotePoolEnvVariables = useMemo(
+    () =>
+      isRemotePool
+        ? getMissingRequiredEnvVariables(
+            {
+              env_variables: applyEnvVariableOverrides(
+                launcher.env_variables,
+                getEnvVariableOverridesFromSearchParams(searchParams),
+              ),
+            },
+            selectedResourcePool,
+          )
+        : [],
+    [isRemotePool, launcher.env_variables, searchParams, selectedResourcePool],
+  );
+  const launcherImage = useMemo(
+    () => getLauncherImageToCheck(launcher),
+    [launcher],
+  );
+  const remotePoolImageCompatibility = useImagePlatformCompatibility(
+    isRemotePool ? launcherImage : undefined,
+    selectedResourcePool?.platform,
+  );
+  const isCheckingRemotePool =
+    selectedSessionClass === 0 ||
+    isLoadingSelectedResourcePool ||
+    remotePoolImageCompatibility.isLoading;
+  const remotePoolIssues = useMemo(
+    () =>
+      selectedResourcePool != null &&
+      remotePoolNeedsAttention(
+        missingRemotePoolEnvVariables,
+        remotePoolImageCompatibility.isCompatible,
+      )
+        ? {
+            resourcePool: selectedResourcePool,
+            missingEnvVariables: missingRemotePoolEnvVariables,
+            imageCompatibility: remotePoolImageCompatibility,
+          }
+        : null,
+    [
+      missingRemotePoolEnvVariables,
+      remotePoolImageCompatibility,
+      selectedResourcePool,
+    ],
   );
 
   const defaultSessionClass = useMemo(
@@ -195,6 +263,13 @@ export default function useSessionLauncherState({
     }
   }, [dispatch, hasWritePermission, isFetchingRepositories, repositories]);
 
+  // Check the remote pool requirements -- block if they are not met
+  useEffect(() => {
+    if (!isCheckingRemotePool && remotePoolIssues == null) {
+      dispatch(startSessionOptionsV2Slice.actions.setRemotePoolReady(true));
+    }
+  }, [dispatch, isCheckingRemotePool, remotePoolIssues]);
+
   // Check for an SSH key -- only block if the frontend requires it
   useEffect(() => {
     if (!isFetchingSshKeys && !sshKeyNeedsAttention(launcher, sshKeys)) {
@@ -213,7 +288,9 @@ export default function useSessionLauncherState({
     isFetchingSshKeys,
     isLoadingSessionImage,
     launcherResourcesError,
+    isCheckingRemotePool,
     isPendingResourceClass,
+    remotePoolIssues,
     repositories,
     resourcePools,
     sessionSecretSlotsWithSecrets,

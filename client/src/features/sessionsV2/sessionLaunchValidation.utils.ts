@@ -25,6 +25,7 @@ import type { GetRepositoriesApiResponse } from "../repositories/api/repositorie
 import { storageSecretNameToFieldName } from "../secretsV2/secrets.utils";
 import type { SshKey } from "../usersV2/api/users.api";
 import type { SessionLauncher } from "./api/sessionLaunchersV2.api";
+import type { RemotePoolRequiredEnvVariable } from "./session.constants";
 import type { SessionStartDataConnectorConfiguration } from "./startSessionOptionsV2.types";
 
 export function doesCloudStorageNeedCredentials(
@@ -118,6 +119,13 @@ export function dataConnectorsHaveExpired(
   configs: SessionStartDataConnectorConfiguration[] | undefined,
 ): boolean {
   return configs?.some(isDataConnectorExpired) ?? false;
+}
+
+export function remotePoolNeedsAttention(
+  missingEnvVariables: RemotePoolRequiredEnvVariable[],
+  isImageCompatible: boolean | undefined,
+): boolean {
+  return missingEnvVariables.length > 0 || isImageCompatible === false;
 }
 
 export function sshKeyNeedsAttention(

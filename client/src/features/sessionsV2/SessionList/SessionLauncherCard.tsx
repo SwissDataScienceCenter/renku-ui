@@ -18,7 +18,7 @@
 
 import { skipToken } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import {
   Braces,
   ClockHistory,
@@ -38,7 +38,6 @@ import { Loader } from "../../../components/Loader";
 import PermissionsGuard from "../../permissionsV2/PermissionsGuard";
 import useProjectPermissions from "../../ProjectPageV2/utils/useProjectPermissions.hook";
 import { Project } from "../../projectsV2/api/projectV2.api";
-import { computeResourcesApi } from "../api/computeResources.api";
 import type { SessionLauncher } from "../api/sessionLaunchersV2.api";
 import { sessionLaunchersV2Api } from "../api/sessionLaunchersV2.api";
 import {
@@ -46,6 +45,7 @@ import {
   BuildStatusDescription,
 } from "../components/BuildStatusComponents";
 import { LauncherActions } from "../components/launcherActions/LauncherActions";
+import { RemotePoolEnvVariablesBadge } from "../components/RemotePoolEnvVariables";
 import { LauncherEnvironmentIcon } from "../components/SessionForm/LauncherEnvironmentIcon";
 import SessionImageBadge from "../components/SessionStatus/SessionImageBadge";
 import { getEnvironmentKindLabel } from "../launcherEnvironment.utils";
@@ -56,6 +56,7 @@ import {
 } from "../session.utils";
 import { SESSION_LAUNCHER_KIND, SessionV2 } from "../sessionsV2.types";
 import useLauncherEnvironmentReadiness from "../useLauncherEnvironmentReadiness.hook";
+import useResourcePoolByClassId from "../useResourcePoolByClassId.hook";
 import SessionCard from "./SessionCard";
 
 import styles from "./Session.module.scss";
@@ -168,18 +169,8 @@ export default function SessionLauncherCard({
     "text-muted",
   ];
 
-  const { data: resourcePools, isLoading: isLoadingResourcePools } =
-    computeResourcesApi.endpoints.getResourcePools.useQueryState({});
-  // Ref: https://github.com/facebook/react/issues/35577
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
-  const resourcePool = useMemo(() => {
-    if (launcher?.resource_class_id == null || resourcePools == null) {
-      return undefined;
-    }
-    return resourcePools.find(({ classes }) =>
-      classes.some(({ id }) => id === launcher.resource_class_id),
-    );
-  }, [launcher?.resource_class_id, resourcePools]);
+  const { resourcePool, isLoading: isLoadingResourcePools } =
+    useResourcePoolByClassId(launcher?.resource_class_id);
 
   const hostHandlers = useClickableHostHandlers(toggleSessionView);
 
@@ -266,7 +257,16 @@ export default function SessionLauncherCard({
               </Row>
               {isCodeEnvironment ? (
                 <Row className="g-2">
-                  <Col xs={12} xl={5}>
+                  <Col
+                    xs={12}
+                    xl={5}
+                    className={cx(
+                      "d-flex",
+                      "flex-wrap",
+                      "align-items-center",
+                      "gap-2",
+                    )}
+                  >
                     {isCodeEnvironment &&
                     (isLoadingBuilds ||
                       isLoadingContainerImage ||
@@ -287,6 +287,12 @@ export default function SessionLauncherCard({
                         isLoading={isLoadingContainerImage}
                         resourcePool={resourcePool}
                         isLoadingResourcePools={isLoadingResourcePools}
+                      />
+                    )}
+                    {launcher != null && (
+                      <RemotePoolEnvVariablesBadge
+                        launcher={launcher}
+                        resourcePool={resourcePool}
                       />
                     )}
                   </Col>
@@ -310,7 +316,12 @@ export default function SessionLauncherCard({
                 <Row>
                   <Col>
                     <div
-                      className={cx("d-flex", "align-items-center", "gap-2")}
+                      className={cx(
+                        "d-flex",
+                        "flex-wrap",
+                        "align-items-center",
+                        "gap-2",
+                      )}
                     >
                       {launcher?.is_restricted && <RestrictedBadge />}
                       <SessionImageBadge
@@ -319,6 +330,12 @@ export default function SessionLauncherCard({
                         resourcePool={resourcePool}
                         isLoadingResourcePools={isLoadingResourcePools}
                       />
+                      {launcher != null && (
+                        <RemotePoolEnvVariablesBadge
+                          launcher={launcher}
+                          resourcePool={resourcePool}
+                        />
+                      )}
                     </div>
                   </Col>
                 </Row>

@@ -41,6 +41,7 @@ import { dataConnectorsOverrideFromConfig } from "../cloudStorage/projectCloudSt
 import type { DataConnectorConfiguration } from "../dataConnectorsV2/components/useDataConnectorConfiguration.hook";
 import { resetFavicon, setFavicon } from "../display/displaySlice";
 import type { SessionSecretSlotWithSecret } from "../ProjectPageV2/ProjectPageContent/SessionSecrets/sessionSecrets.types";
+import useProjectPermissions from "../ProjectPageV2/utils/useProjectPermissions.hook";
 import type { Project } from "../projectsV2/api/projectV2.api";
 import { useGetNamespacesByNamespaceProjectsAndSlugQuery } from "../projectsV2/api/projectV2.enhanced-api";
 import { useGetResourcePoolsQuery } from "./api/computeResources.generated-api";
@@ -54,7 +55,11 @@ import { SelectResourceClassModal } from "./components/SessionModals/SelectResou
 import DataConnectorSecretsModal from "./DataConnectorSecretsModal";
 import SaveCloudStorageCredentials from "./SaveCloudStorageCredentials";
 import { CUSTOM_LAUNCH_SEARCH_PARAM } from "./session.constants";
-import { UsageAvailable, validateEnvVariableName } from "./session.utils";
+import {
+  getEnvVariableOverridesFromSearchParams,
+  getLauncherImageToCheck,
+  UsageAvailable,
+} from "./session.utils";
 import SessionExpiredDataConnectorsModal from "./SessionExpiredDataConnectorsModal";
 import SessionImageModal from "./SessionImageModal";
 import {
@@ -62,9 +67,13 @@ import {
   dataConnectorsShouldSaveCredentials,
   doesCloudStorageNeedCredentials,
 } from "./sessionLaunchValidation.utils";
+import SessionRemotePoolModal, {
+  type SessionRemotePoolIssues,
+} from "./SessionRemotePoolModal";
 import SessionRepositoriesModal from "./SessionRepositoriesModal";
 import SessionSecretsModal from "./SessionSecretsModal";
 import SessionSshKeyRequiredModal from "./SessionSshKeyRequiredModal";
+import EnvVariablesModal from "./SessionView/EnvVariablesModal";
 import startSessionOptionsV2Slice from "./startSessionOptionsV2.slice";
 import type {
   SessionStartDataConnectorConfiguration,
@@ -132,12 +141,8 @@ function SessionStarting({ launcher, project }: StartSessionFromLauncherProps) {
       data_connectors_overrides: startSessionOptionsV2.dataConnectors?.flatMap(
         dataConnectorsOverrideFromConfig,
       ),
-      env_variable_overrides: Array.from(searchParams)
-        .filter(([name]) => validateEnvVariableName(name) === true)
-        .map(([name, value]) => ({
-          name,
-          value,
-        })),
+      env_variable_overrides:
+        getEnvVariableOverridesFromSearchParams(searchParams),
     };
     return request;
   }, [
@@ -376,6 +381,8 @@ function StartSessionFromLauncher({
     sessionImage,
     isFetchingRepositories,
     launcherResourcesError,
+    isCheckingRemotePool,
+    remotePoolIssues,
   } = useSessionLaunchState({
     launcher,
     project,
@@ -443,6 +450,7 @@ function StartSessionFromLauncher({
       startSessionOptionsV2.dataConnectors &&
       startSessionOptionsV2.dataConnectorsExpirationReady &&
       startSessionOptionsV2.imageReady &&
+      startSessionOptionsV2.remotePoolReady &&
       startSessionOptionsV2.repositoriesReady &&
       startSessionOptionsV2.sshKeysReady &&
       startSessionOptionsV2.userSecretsReady &&
@@ -459,6 +467,7 @@ function StartSessionFromLauncher({
     startSessionOptionsV2.dataConnectors,
     startSessionOptionsV2.dataConnectorsExpirationReady,
     startSessionOptionsV2.imageReady,
+    startSessionOptionsV2.remotePoolReady,
     startSessionOptionsV2.repositoriesReady,
     startSessionOptionsV2.sshKeysReady,
     startSessionOptionsV2.userSecretsReady,
@@ -499,6 +508,21 @@ function StartSessionFromLauncher({
     !startSessionOptionsV2.imageReady
   ) {
     return <StartSessionImageModal launcher={launcher} project={project} />;
+  }
+
+  if (
+    !fetchingApi &&
+    !isCheckingRemotePool &&
+    remotePoolIssues != null &&
+    !startSessionOptionsV2.remotePoolReady
+  ) {
+    return (
+      <StartSessionRemotePoolModal
+        launcher={launcher}
+        project={project}
+        remotePoolIssues={remotePoolIssues}
+      />
+    );
   }
 
   if (!fetchingApi && !startSessionOptionsV2.repositoriesReady) {
@@ -575,6 +599,7 @@ function StartSessionFromLauncher({
         }
       />
       <SelectResourceClassModal
+        image={getLauncherImageToCheck(launcher)}
         isOpen={isPendingResourceClass}
         resourceClassId={launcher.resource_class_id}
         onContinue={setResourceClass}
@@ -778,6 +803,73 @@ function StartSessionRepositoriesModal({
           status={steps}
         />
         <SessionRepositoriesModal isOpen={showModal} project={project} />
+      </div>
+    </div>
+  );
+}
+
+function StartSessionRemotePoolModal({
+  launcher,
+  project,
+  remotePoolIssues,
+}: StartSessionFromLauncherProps & {
+  remotePoolIssues: SessionRemotePoolIssues;
+}) {
+  const startSessionOptionsV2 = useAppSelector(
+    ({ startSessionOptionsV2 }) => startSessionOptionsV2,
+  );
+
+  const showModal = !startSessionOptionsV2.remotePoolReady;
+  const { write: canWriteProject } = useProjectPermissions({
+    projectId: project.id,
+  });
+  const [isEnvVariablesOpen, setIsEnvVariablesOpen] = useState(false);
+  const toggleEnvVariables = useCallback(
+    () => setIsEnvVariablesOpen((open) => !open),
+    [],
+  );
+
+  const steps = [
+    {
+      id: 0,
+      status: StatusStepProgressBar.EXECUTING,
+      step: "Loading session configuration",
+    },
+    {
+      id: 1,
+      status: StatusStepProgressBar.WAITING,
+      step: "Requesting session",
+    },
+  ];
+
+  return (
+    <div>
+      <div
+        className={cx(
+          progressBoxStyles.progressBoxSmall,
+          progressBoxStyles.progressBoxSmallSteps,
+        )}
+      >
+        <ProgressStepsIndicator
+          description="Preparing to start session"
+          type={ProgressType.Determinate}
+          style={ProgressStyle.Light}
+          title={`Launching session ${launcher.name}`}
+          status={steps}
+        />
+        <SessionRemotePoolModal
+          isOpen={showModal && !isEnvVariablesOpen}
+          onEditEnvVariables={canWriteProject ? toggleEnvVariables : undefined}
+          project={project}
+          {...remotePoolIssues}
+        />
+        {canWriteProject && (
+          <EnvVariablesModal
+            isOpen={isEnvVariablesOpen}
+            launcher={launcher}
+            toggle={toggleEnvVariables}
+          />
+        )}
       </div>
     </div>
   );
