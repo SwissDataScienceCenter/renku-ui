@@ -23,7 +23,7 @@ import { Collapse } from "reactstrap";
 
 import CollapseBody from "~/components/container/CollapseBody";
 import ChevronFlippedIcon from "~/components/icons/ChevronFlippedIcon";
-import { useGetProjectsByProjectIdStorageQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
+import { useGetStoragesQuery } from "~/features/cloudStorage/api/projectCloudStorage.api";
 import { useGetProjectsByProjectIdDataConnectorLinksQuery } from "~/features/dataConnectorsV2/api/data-connectors.api";
 import { useGetDataConnectorsListByDataConnectorIdsQuery } from "~/features/dataConnectorsV2/api/data-connectors.enhanced-api";
 import { getRepositoryName } from "~/features/ProjectPageV2/ProjectPageContent/CodeRepositories/repositories.utils";
@@ -91,14 +91,13 @@ export default function ShutdownSessionContent({
       .map((dc) => dc.storage.target_path);
   }, [dataConnectorsObjects]);
 
-  const { data: projectStorageData = [] } =
-    useGetProjectsByProjectIdStorageQuery(
-      sessionProjectId
-        ? {
-            projectId: sessionProjectId,
-          }
-        : skipToken,
-    );
+  const { data: projectStorageData = [] } = useGetStoragesQuery(
+    sessionProjectId
+      ? {
+          params: { project_id: sessionProjectId },
+        }
+      : skipToken,
+  );
   const projectStorage = useMemo(() => {
     return projectStorageData.map((storage) => storage.mount_path);
   }, [projectStorageData]);

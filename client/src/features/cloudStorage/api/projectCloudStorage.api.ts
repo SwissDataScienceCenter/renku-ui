@@ -37,42 +37,10 @@ const withFixedEndpoints = projectCloudStorageGeneratedApi.injectEndpoints({
 
 // Adds tag handling for cache management
 const projectCloudStorageApi = withFixedEndpoints.enhanceEndpoints({
-  addTagTypes: [
-    "CloudStorageSchema",
-    "ProjectStorage",
-    "ProjectStorageAllow",
-    "ProjectStorageV2",
-  ],
+  addTagTypes: ["CloudStorageSchema", "ProjectStorageV2"],
   endpoints: {
     getStorageSchema: {
       providesTags: ["CloudStorageSchema"],
-    },
-    getProjectsByProjectIdStorage: {
-      providesTags: ["ProjectStorage"],
-    },
-    postStorage: {
-      invalidatesTags: ["ProjectStorage"],
-    },
-    deleteStorageByStorageId: {
-      invalidatesTags: ["ProjectStorage"],
-    },
-    patchStorageByStorageId: {
-      invalidatesTags: ["ProjectStorage"],
-    },
-    getStorageAllow: {
-      providesTags: ["ProjectStorageAllow"],
-    },
-    getStorageAllowByProjectId: {
-      providesTags: ["ProjectStorageAllow"],
-    },
-    postStorageAllow: {
-      invalidatesTags: ["ProjectStorageAllow"],
-    },
-    deleteStorageAllowByProjectId: {
-      invalidatesTags: ["ProjectStorageAllow"],
-    },
-    patchStorageAllowByProjectId: {
-      invalidatesTags: ["ProjectStorageAllow"],
     },
     getStorages: {
       providesTags: (result, _error, { params }) =>
@@ -98,7 +66,7 @@ const projectCloudStorageApi = withFixedEndpoints.enhanceEndpoints({
       invalidatesTags: (
         _result,
         _error,
-        { projectStoragePostV2: { project_id, storage_quota_id } },
+        { projectStoragePost: { project_id, storage_quota_id } },
       ) => [
         {
           id: `LIST-${project_id}-${storage_quota_id}`,
@@ -132,15 +100,6 @@ const projectCloudStorageApi = withFixedEndpoints.enhanceEndpoints({
 export const {
   useGetStorageSchemaQuery,
   usePostStorageSchemaTestConnectionMutation,
-  useGetProjectsByProjectIdStorageQuery,
-  usePostStorageMutation,
-  useDeleteStorageByStorageIdMutation,
-  usePatchStorageByStorageIdMutation,
-  useGetStorageAllowQuery,
-  useGetStorageAllowByProjectIdQuery,
-  usePostStorageAllowMutation,
-  useDeleteStorageAllowByProjectIdMutation,
-  usePatchStorageAllowByProjectIdMutation,
 
   // "project storage v2" hooks
   useGetStoragesQuery,
