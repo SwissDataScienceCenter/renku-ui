@@ -150,11 +150,12 @@ export default function SubmitJobFormModal({
       return;
     }
     setValue("resourceClass", defaultResourceClass);
+    const launcherDiskStorage = launcher.disk_storage
+      ? Math.min(launcher.disk_storage, defaultResourceClass.max_storage)
+      : undefined;
     setValue(
       "diskStorage",
-      defaultResourceClass.default_storage ??
-        launcher.disk_storage ??
-        undefined,
+      launcherDiskStorage ?? defaultResourceClass.default_storage,
     );
   }, [isOpen, watchResourceClass, launcher, resourcePools, setValue]);
 
@@ -173,7 +174,11 @@ export default function SubmitJobFormModal({
       if (!data.resourceClass) {
         return;
       }
-      handleSubmitAttempt(data);
+      handleSubmitAttempt({
+        ...data,
+        diskStorage:
+          typeof data.diskStorage === "number" ? data.diskStorage : undefined,
+      });
     },
     [handleSubmitAttempt],
   );
