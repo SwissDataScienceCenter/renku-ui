@@ -27,6 +27,7 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
+import { useSearchParams } from "react-router";
 import {
   Button,
   Form,
@@ -48,9 +49,10 @@ import { InfoAlert, WarnAlert } from "~/components/Alert";
 import RtkOrDataServicesError from "~/components/errors/RtkOrDataServicesError";
 import ExternalLink from "~/components/ExternalLink";
 import { Loader } from "~/components/Loader";
+import Pagination from "~/components/Pagination";
 import {
   useDeleteStorageAllowByProjectIdMutation,
-  useGetStorageAllowQuery,
+  useGetStorageAllowPagedQuery,
   usePatchStorageAllowByProjectIdMutation,
   usePostStorageAllowMutation,
 } from "~/features/cloudStorage/api/projectCloudStorage.api";
@@ -67,25 +69,63 @@ import {
 import AdminListFilter from "./AdminListFilter";
 import AdminSectionHeader from "./AdminSectionHeader";
 
+const PAGE_PARAM = "page";
+const PER_PAGE = 20;
+
 export default function ProjectStorageAllowSection() {
-  const { data, error, isLoading } = useGetStorageAllowQuery({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = useMemo(() => {
+    const page = parseInt(searchParams.get(PAGE_PARAM) ?? "", 10);
+    return page > 0 ? page : 1;
+  }, [searchParams]);
 
   const [filter, setFilter] = useState("");
-  const filteredProjects = useMemo(() => {
-    if (!data || !filter) return data;
-    const lowerCaseFilter = filter.toLowerCase();
-    return data.filter(
-      ({ name, namespace }) =>
-        name.toLowerCase().includes(lowerCaseFilter) ||
-        namespace.toLowerCase().includes(lowerCaseFilter),
-    );
-  }, [data, filter]);
+  const onFilterChange = useCallback(
+    (newFilter: string) => {
+      setFilter(newFilter);
+      setSearchParams(
+        (prevParams) => {
+          prevParams.delete(PAGE_PARAM);
+          return prevParams;
+        },
+        { replace: true },
+      );
+    },
+    [setSearchParams],
+  );
+
+  const { data, error, isFetching, isLoading } = useGetStorageAllowPagedQuery({
+    params: {
+      page,
+      per_page: PER_PAGE,
+      ...(filter ? { project_name: filter } : {}),
+    },
+  });
+
+  // Go back to the last page if the current page is out of range
+  useEffect(() => {
+    if (data?.totalPages && page > data.totalPages) {
+      setSearchParams(
+        (prevParams) => {
+          if (data.totalPages <= 1) {
+            prevParams.delete(PAGE_PARAM);
+          } else {
+            prevParams.set(PAGE_PARAM, `${data.totalPages}`);
+          }
+          return prevParams;
+        },
+        { replace: true },
+      );
+    }
+  }, [data?.totalPages, page, setSearchParams]);
+
+  const noProjects = !filter && (!data || data.total === 0);
 
   return (
     <section>
       <AdminSectionHeader
         action={<AddProjectStorageAllowButton />}
-        count={!isLoading && !error ? data?.length : undefined}
+        count={!isLoading && !error && !filter ? data?.total : undefined}
         icon={Archive}
         title="Project storage"
       />
@@ -106,40 +146,57 @@ export default function ProjectStorageAllowSection() {
         <Loader />
       ) : error ? (
         <RtkOrDataServicesError error={error} dismissible={false} />
-      ) : !data || !filteredProjects || data.length === 0 ? (
+      ) : noProjects ? (
         <InfoAlert dismissible={false} timeout={0}>
           No projects have been white-listed for storage yet.
         </InfoAlert>
       ) : (
         <>
-          <AdminListFilter filter={filter} onFilterChange={setFilter} />
+          <AdminListFilter
+            filter={filter}
+            onFilterChange={onFilterChange}
+            placeholder="Filter by project name..."
+          />
 
-          {filteredProjects.length === 0 ? (
+          {isFetching ? (
+            <Loader />
+          ) : !data || data.projects.length === 0 ? (
             <p className="fst-italic">
               No project matches the filter <code>{filter}</code>.
             </p>
           ) : (
-            <ListGroup>
-              {filteredProjects.map((project) => (
-                <ListGroupItem
-                  key={project.project_id}
-                  className={cx(
-                    "align-items-center",
-                    "d-flex",
-                    "justify-content-between",
-                  )}
-                >
-                  <div>
-                    <strong>{project.namespace}</strong> (max {project.max_size}{" "}
-                    GB)
-                  </div>
-                  <div className={cx("align-items-center", "d-flex", "gap-2")}>
-                    <EditProjectStorageAllowButton project={project} />
-                    <DeleteProjectStorageAllowButton project={project} />
-                  </div>
-                </ListGroupItem>
-              ))}
-            </ListGroup>
+            <>
+              <ListGroup>
+                {data.projects.map((project) => (
+                  <ListGroupItem
+                    key={project.project_id}
+                    className={cx(
+                      "align-items-center",
+                      "d-flex",
+                      "justify-content-between",
+                    )}
+                  >
+                    <div>
+                      <strong>{project.namespace}</strong> (max{" "}
+                      {project.max_size} GB)
+                    </div>
+                    <div
+                      className={cx("align-items-center", "d-flex", "gap-2")}
+                    >
+                      <EditProjectStorageAllowButton project={project} />
+                      <DeleteProjectStorageAllowButton project={project} />
+                    </div>
+                  </ListGroupItem>
+                ))}
+              </ListGroup>
+              <Pagination
+                className="mt-3"
+                currentPage={data.page}
+                pageQueryParam={PAGE_PARAM}
+                perPage={data.perPage}
+                totalItems={data.total}
+              />
+            </>
           )}
         </>
       )}
